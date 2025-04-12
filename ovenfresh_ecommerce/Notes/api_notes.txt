@@ -1,0 +1,13 @@
+API needed
+
+-- Cart --
+cart creation -> on clicking add to cart: if cart exists - add cartitem, if not - create cart & add item : params product_varition_id, product_id, qty
+cart updation -> update qty -> params - cart_item_id, qty
+cart item delete -> delete
+cart get -> give cart items on the basis of user_id / session_id
+
+XX -- order -- 
+XX order creation -> on clicking buy now - get order items from cart - place order get 
+XX order updation -> status update
+XX order get -> give cart items on the basis of user_id / session_id
+

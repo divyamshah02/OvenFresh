@@ -1,0 +1,141 @@
+Table User {
+  id integer
+  user_id integer
+  role varchar
+  email varchar
+  name varchar
+  number varchar
+  password varchar
+  created_at datetime
+}
+
+Table Products { //meta information
+  id integer
+  product_id integer //(10 digit uniquw)
+
+  title varchar
+  description varchar
+  photos image
+  created_at datetime
+ }
+
+Table ProductVariation {
+  id integer
+  product_id integer //
+  product_variation_id integer //
+
+  actual_price varchar // je cut karso, strike through
+  discounted_price varchar
+
+  is_vartied boolean
+  weight_variation varchar //(weight 500)
+  created_at datetime
+ }
+
+Table Reviews {
+  id integer
+  product_id integer //
+  ratings float // 1-5
+  review_text varchar //(3000)
+  is_approved_admin boolean
+  created_at datetime
+}
+
+Table Pincode {
+  id integer
+  pincode integer //(6 digit)
+  area_name varchar
+  created_at datetime
+}
+
+Table TimeSlot {
+  id integer
+  start_time time
+  end_time time
+  time_store_title varchar
+  created_at datetime
+} 
+
+Table DeliveryCharges {
+  id integer
+  pincode_id integer
+  timeslot_id integer
+  delivery_charges varchar
+  created_at datetime
+}
+
+Table Availability {
+  id integer
+  product_id integer
+  product_variation_id integer
+  pincode_id integer
+  timeslot_id integer
+  is_available BOOLEAN
+  created_at datetime
+}
+
+Table Order {
+  id integer
+  user_id integer
+  pincode_id integer
+  timeslot_id integer
+  status varchar
+  total_amount varchar
+  delivery_address varchar
+  payment_id varchar // Payment Gate-way id
+  payment_method varchar
+  created_at datetime
+  is_cod boolean
+  assigned_delivery_partner_id integer
+  payment_recieved boolean
+  Order_note varchar
+}
+
+Table OrderItem {
+  id integer
+  order_id integer
+  product_id integer
+  product_variation_id integer
+  quantity integer
+  amount varchar
+  discount varchar
+  final_amount varchar
+  payment_id varchar // Payment Gate-way id
+  Item_note varchar
+  created_at datetime
+}
+
+Table Cart {
+  id integer
+  user_id integer
+  active boolean
+  session_id integer
+  created_at datetime
+}
+
+Table CartItem {
+  id integer
+  cart_id integer
+  product_id integer
+  product_variation_id integer
+  quantity integer
+  created_at datetime
+}
+
+Table Wishlist {
+  id integer
+  user_id integer
+  active boolean
+  session_id integer
+  created_at datetime
+}
+
+Table WishlistItem {
+  id integer
+  wishlist_id integer
+  product_id integer
+  product_variation_id integer
+  created_at datetime
+}
+
+
