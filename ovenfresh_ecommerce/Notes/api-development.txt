@@ -1,0 +1,3 @@
+Product add api:
+product create api - name, description, slug -> product_id
+product variation - product_id, weight, price

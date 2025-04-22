@@ -1,0 +1,4 @@
+Product add:
+
+product meta info avse -> Product na table ma ek row created including product name, category, sub category, description, images
+product variation -> weight_variation, pincodes available, price
