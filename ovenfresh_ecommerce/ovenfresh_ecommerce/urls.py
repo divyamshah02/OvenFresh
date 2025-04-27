@@ -9,5 +9,6 @@ urlpatterns = [
     # path('favicon.ico', RedirectView.as_view(url='/static/assets/img/logo.ico')),
 
     path('user/', include('UserDetail.urls')),
+    path('api/orders/', include('orders.urls')),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
