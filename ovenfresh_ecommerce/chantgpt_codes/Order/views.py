@@ -190,6 +190,7 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
         order_id = request.data.get("order_id")
         status_type = request.data.get("status")  # "picked_up" or "delivered"
 
+        # to be changed to out_for_delivery
         if status_type not in ["picked_up", "delivered"]:
             return Response({"success": False, "user_not_logged_in": False, "user_unauthorized": False, "data": None, "error": "Invalid status."}, status=400)
 
