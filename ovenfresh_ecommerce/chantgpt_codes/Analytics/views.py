@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum, Avg, Q
 from datetime import datetime, timedelta
 from Order.models import Order, OrderItem
-from Product.models import Product
+from Product.models import Products
+from Product.models import TimeSlot
 from UserDetail.models import User
 from utils.decorators import handle_exceptions, check_authentication
 
@@ -84,10 +85,10 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
         for item in top:
             try:
-                product = Product.objects.get(product_id=item["product_id"])
+                product = Products.objects.get(product_id=item["product_id"])
                 item["product_name"] = product.name
             except:
-                item["product_name"] = "Unknown Product"
+                item["product_name"] = "Unknown Products"
 
         return Response({
             "success": True,
@@ -166,9 +167,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             "error": None
         })
 
-    def timeslot_insights(self):
-        from product.models import TimeSlot  # Assuming timeslot_id points to TimeSlot model
-
+    def timeslot_insights(self):        
         timeslot_data = (Order.objects
                          .filter(status="delivered")
                          .values("timeslot_id")
@@ -177,8 +176,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
         result = []
         for slot in timeslot_data:
-            try:
-                from product.models import TimeSlot
+            try:                
                 ts = TimeSlot.objects.get(timeslot_id=slot["timeslot_id"])
                 result.append({
                     "timeslot_id": ts.timeslot_id,
