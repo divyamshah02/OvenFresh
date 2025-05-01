@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .order_models import Order, OrderItem
-from .order_serializers import OrderSerializer, OrderItemSerializer
+from .models import Order, OrderItem
+from .serializers import OrderSerializer, OrderItemSerializer
 from utils.decorators import *
 from django.utils.crypto import get_random_string
 from Cart.models import Cart, CartItem

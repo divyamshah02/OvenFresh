@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .order_views import (
+from .views import (
     OrderViewSet,
     ConfirmOrderViewSet,
     PaymentStatusCheckViewSet,
