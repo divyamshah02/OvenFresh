@@ -19,6 +19,58 @@ from utils.decorators import *
 logger = None
 
 
+class TempViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication
+    def list(self, request):
+        any_get_data = request.query_params.get('any_get_data')
+        if not any_get_data:
+            return Response(
+                        {
+                            "success": False,
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,
+                            "data": None,
+                            "error": "Missing any_get_data."
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {}
+        return Response(
+                    {
+                        "success": True,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": data,
+                        "error": None
+                    }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def create(self, request):
+            any_post_data = request.data.get('any_post_data')
+            if not any_post_data:
+                return Response(
+                            {
+                                "success": False,
+                                "user_not_logged_in": False,
+                                "user_unauthorized": False,
+                                "data": None,
+                                "error": "Missing any_post_data."
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+            data = {}         
+
+            return Response(
+                        {
+                            "success": True,  
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,                       
+                            "data": data,
+                            "error": None
+                        }, status=status.HTTP_201_CREATED)
+
+
 class UserViewSet(viewsets.ViewSet):
     
     @handle_exceptions
@@ -314,6 +366,62 @@ class UserDetailViewSet(viewsets.ViewSet):
         )
 
 
+class AddressViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    @check_authentication
+    def list(self, request):
+        user_id = request.query_params.get('user_id')
+        if not user_id:
+            return Response({"success": False, "data": None, "error": "Missing user_id."}, status=status.HTTP_400_BAD_REQUEST)
+        addresses = Address.objects.filter(user__user_id=user_id)
+        return Response({"success": True, "data": AddressSerializer(addresses, many=True).data, "error": None}, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    @check_authentication
+    def create(self, request):
+        serializer = AddressSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "data": serializer.data, "error": None}, status=status.HTTP_201_CREATED)
+        return Response({"success": False, "data": None, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OTPApiViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def create(self, request):
+        user_id = request.data.get('user_id')
+        user = User.objects.filter(user_id=user_id).first()
+        if not user:
+            return Response({"success": False, "data": None, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        otp = random.randint(100000, 999999)
+        OTP.objects.create(user=user, otp=otp, tries_left=3, status='not_matched')
+
+        print(f"OTP for {user.name}: {otp}")
+
+        return Response({"success": True, "data": {"otp": otp}, "error": None}, status=status.HTTP_200_OK)
+
+
+class OTPValidateApiViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def create(self, request):
+        user_id = request.data.get('user_id')
+        otp = request.data.get('otp')
+        user = User.objects.filter(user_id=user_id).first()
+
+        if not user:
+            return Response({"success": False, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        otp_record = OTP.objects.filter(user=user, otp=otp, status="not_matched").first()
+
+        if not otp_record or otp_record.tries_left == 0:
+            return Response({"success": False, "error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        otp_record.status = "matched"
+        otp_record.save()
+        return Response({"success": True, "data": {"message": "OTP validated."}, "error": None}, status=status.HTTP_200_OK)
+
+
 def login_to_account(request):
     try:
         request_user = request.user
@@ -334,54 +442,3 @@ def login_to_account(request):
         return HttpResponse('DONE')
         return redirect('dashboard-list')
 
-
-class TempViewSet(viewsets.ViewSet):
-    
-    @handle_exceptions
-    @check_authentication
-    def list(self, request):
-        any_get_data = request.query_params.get('any_get_data')
-        if not any_get_data:
-            return Response(
-                        {
-                            "success": False,
-                            "user_not_logged_in": False,
-                            "user_unauthorized": False,
-                            "data": None,
-                            "error": "Missing any_get_data."
-                        }, status=status.HTTP_400_BAD_REQUEST)
-
-        data = {}
-        return Response(
-                    {
-                        "success": True,
-                        "user_not_logged_in": False,
-                        "user_unauthorized": False,
-                        "data": data,
-                        "error": None
-                    }, status=status.HTTP_200_OK)
-
-    @handle_exceptions
-    @check_authentication(required_role='admin')
-    def create(self, request):
-            any_post_data = request.data.get('any_post_data')
-            if not any_post_data:
-                return Response(
-                            {
-                                "success": False,
-                                "user_not_logged_in": False,
-                                "user_unauthorized": False,
-                                "data": None,
-                                "error": "Missing any_post_data."
-                            }, status=status.HTTP_400_BAD_REQUEST)
-
-            data = {}         
-
-            return Response(
-                        {
-                            "success": True,  
-                            "user_not_logged_in": False,
-                            "user_unauthorized": False,                       
-                            "data": data,
-                            "error": None
-                        }, status=status.HTTP_201_CREATED)
