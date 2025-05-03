@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oven Fresh - Delicious Cakes & Gifts</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <span class="brand-text">Oven Fresh</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#categories">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#bestsellers">Bestsellers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-primary rounded-pill" href="#">
+                            <i class="fas fa-shopping-cart me-1"></i> Cart (0)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="d-flex align-items-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center text-lg-start">
+                    <h1 class="display-4 fw-bold mb-3">Freshly Baked <span class="text-primary">Happiness</span></h1>
+                    <p class="lead mb-4">Handcrafted cakes, chocolates, and gift hampers made with love and the finest ingredients.</p>
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center justify-content-lg-start">
+                        <a href="#categories" class="btn btn-primary btn-lg rounded-pill">Shop Now</a>
+                        <a href="#about" class="btn btn-outline-secondary btn-lg rounded-pill">Learn More</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Delicious Cakes" class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="Our Bakery" class="img-fluid rounded-4 shadow">
+                </div>
+                <div class="col-lg-6 ps-lg-5">
+                    <div class="section-title mb-4">
+                        <h6 class="text-primary text-uppercase">About Us</h6>
+                        <h2>Baking Memories Since 2010</h2>
+                    </div>
+                    <p class="lead">At Oven Fresh, we believe that every celebration deserves something special.</p>
+                    <p>Our journey began in a small kitchen with a passion for creating delightful treats that bring joy to people's lives. Today, we continue that tradition with our team of master bakers who craft each product with love and precision.</p>
+                    <div class="row mt-4 g-4">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Premium Quality</h5>
+                                    <p class="mb-0">Finest ingredients only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Fast Delivery</h5>
+                                    <p class="mb-0">Same day delivery available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cake of the Month -->
+    <section id="cake-of-month" class="py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h6 class="text-primary text-uppercase">Special Feature</h6>
+                <h2>Cake of the Month</h2>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card border-0 shadow-lg">
+                        <div class="row g-0">
+                            <div class="col-md-6">
+                                <img src="https://images.unsplash.com/photo-1562777717-dc6984f65a63?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" class="img-fluid h-100 object-fit-cover rounded-start" alt="Cake of the Month">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card-body p-4 p-lg-5">
+                                    <div class="badge bg-primary mb-2">Limited Edition</div>
+                                    <h3 class="card-title">Raspberry Chocolate Delight</h3>
+                                    <div class="d-flex mb-3">
+                                        <div class="text-warning me-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <small>(128 reviews)</small>
+                                    </div>
+                                    <p class="card-text">A decadent chocolate cake layered with fresh raspberry compote and covered in smooth chocolate ganache. This month's special creation is perfect for chocolate lovers!</p>
+                                    <div class="d-flex align-items-center mb-4">
+                                        <h4 class="text-primary mb-0 me-2">$49.99</h4>
+                                        <span class="text-muted text-decoration-line-through">$59.99</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary rounded-pill">Add to Cart</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Cakes Slider -->
+    <section id="seasonal" class="py-5">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h6 class="text-primary text-uppercase">Limited Time</h6>
+                <h2>Seasonal Specials</h2>
+                <p class="text-muted">Enjoy our seasonal creations before they're gone!</p>
+            </div>
+            <div id="seasonalCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#seasonalCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#seasonalCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#seasonalCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                </div>
+                <div class="carousel-inner rounded-4 shadow">
+                    <div class="carousel-item active">
+                        <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1542826438-bd32f43d626f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1292&q=80')">
+                            <div class="carousel-caption text-start">
+                                <h3>Summer Berry Collection</h3>
+                                <p>Fresh strawberries, blueberries, and raspberries on light cream cakes.</p>
+                                <a href="#" class="btn btn-primary rounded-pill">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80')">
+                            <div class="carousel-caption text-start">
+                                <h3>Chocolate Celebration Cakes</h3>
+                                <p>Indulgent chocolate cakes perfect for any special occasion.</p>
+                                <a href="#" class="btn btn-primary rounded-pill">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1464349095431-e9a21285b5c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=936&q=80')">
+                            <div class="carousel-caption text-start">
+                                <h3>Wedding Cake Collection</h3>
+                                <p>Elegant multi-tier cakes for your special day.</p>
+                                <a href="#" class="btn btn-primary rounded-pill">Shop Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#seasonalCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#seasonalCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h6 class="text-primary text-uppercase">Explore</h6>
+                <h2>Our Categories</h2>
+                <p class="text-muted">Discover our wide range of delicious treats</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Birthday Cakes" class="img-fluid">
+                        </div>
+                        <div class="category-body">
+                            <h4>Birthday Cakes</h4>
+                            <p>Make your celebration special</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Chocolates" class="img-fluid">
+                        </div>
+                        <div class="category-body">
+                            <h4>Chocolates</h4>
+                            <p>Handcrafted premium chocolates</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Gift Hampers" class="img-fluid">
+                        </div>
+                        <div class="category-body">
+                            <h4>Gift Hampers</h4>
+                            <p>Perfect presents for loved ones</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Pastries" class="img-fluid">
+                        </div>
+                        <div class="category-body">
+                            <h4>Pastries</h4>
+                            <p>Delicate and delicious treats</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary rounded-pill">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bestsellers Section -->
+    <section id="bestsellers" class="py-5">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h6 class="text-primary text-uppercase">Popular Choices</h6>
+                <h2>Our Bestsellers</h2>
+                <p class="text-muted">Customer favorites that keep them coming back</p>
+            </div>
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2">Hot</span>
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Chocolate Truffle Cake" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Chocolate Truffle Cake</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">(42)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$35.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Assorted Chocolates" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Luxury Chocolate Box</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">(56)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$29.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <span class="badge bg-success position-absolute top-0 end-0 mt-2 me-2">New</span>
+                            <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=936&q=80" alt="Red Velvet Cake" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Red Velvet Cake</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">(38)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$32.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Deluxe Gift Hamper" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Deluxe Gift Hamper</h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">(27)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$79.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-outline-primary rounded-pill">View All Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5 bg-light">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h6 class="text-primary text-uppercase">Testimonials</h6>
+                <h2>What Our Customers Say</h2>
+                <p class="text-muted">Don't just take our word for it</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="testimonial-item text-center">
+                                    <div class="testimonial-img mb-4">
+                                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Customer" class="rounded-circle">
+                                    </div>
+                                    <div class="testimonial-content">
+                                        <p class="lead">"The birthday cake I ordered for my daughter was absolutely stunning! Not only did it look beautiful, but it tasted amazing too. Everyone at the party was impressed."</p>
+                                        <h5 class="mt-3">Sarah Johnson</h5>
+                                        <small class="text-muted">Happy Customer</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-item text-center">
+                                    <div class="testimonial-img mb-4">
+                                        <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="Customer" class="rounded-circle">
+                                    </div>
+                                    <div class="testimonial-content">
+                                        <p class="lead">"I ordered a gift hamper for my wife's birthday and she was thrilled! The packaging was beautiful and the treats inside were delicious. Will definitely order again!"</p>
+                                        <h5 class="mt-3">Michael Thompson</h5>
+                                        <small class="text-muted">Loyal Customer</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-item text-center">
+                                    <div class="testimonial-img mb-4">
+                                        <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="Customer" class="rounded-circle">
+                                    </div>
+                                    <div class="testimonial-content">
+                                        <p class="lead">"The chocolate truffles are to die for! I've tried many chocolates but these are by far the best. The gift box was perfect for my client appreciation gifts."</p>
+                                        <h5 class="mt-3">Emily Rodriguez</h5>
+                                        <small class="text-muted">Business Customer</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators position-relative mt-4">
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section id="newsletter" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="newsletter-box text-center p-4 p-md-5 rounded-4 shadow">
+                        <h3>Subscribe to Our Newsletter</h3>
+                        <p class="text-muted mb-4">Stay updated with our latest offers, seasonal specials, and baking tips!</p>
+                        <form class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" class="form-control rounded-pill-start" placeholder="Enter your email address" aria-label="Email address">
+                                <button class="btn btn-primary rounded-pill-end" type="submit">Subscribe</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact/Footer Section -->
+    <footer id="contact" class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-info">
+                        <h3 class="text-white mb-4">Oven Fresh</h3>
+                        <p>Bringing joy through freshly baked goods since 2010. We pride ourselves on quality ingredients and exceptional taste.</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-links">
+                        <h5 class="text-white mb-4">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#categories">Categories</a></li>
+                            <li><a href="#bestsellers">Bestsellers</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-links">
+                        <h5 class="text-white mb-4">Categories</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Birthday Cakes</a></li>
+                            <li><a href="#">Chocolates</a></li>
+                            <li><a href="#">Gift Hampers</a></li>
+                            <li><a href="#">Pastries</a></li>
+                            <li><a href="#">Custom Orders</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-contact">
+                        <h5 class="text-white mb-4">Contact Us</h5>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Bakery Street, Sweet City, SC 12345</p>
+                        <p><i class="fas fa-phone-alt me-2"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.com</p>
+                        <p><i class="fas fa-clock me-2"></i> Mon-Sat: 8AM - 8PM, Sunday: 9AM - 5PM</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-md-0">&copy; 2023 Oven Fresh. All Rights Reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <a href="#" class="text-white me-3">Privacy Policy</a>
+                        <a href="#" class="text-white me-3">Terms of Service</a>
+                        <a href="#" class="text-white">FAQ</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
