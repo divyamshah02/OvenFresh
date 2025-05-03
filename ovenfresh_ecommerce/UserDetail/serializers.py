@@ -16,3 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
             representation['contact_number'] = str(representation['contact_number']).replace("+91", "")
 
         return representation
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+class OTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OTP
+        fields = '__all__'
