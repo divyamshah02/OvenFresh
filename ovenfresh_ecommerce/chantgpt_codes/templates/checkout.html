@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <script src="{% static 'js/cart/checkout.js' %}"></script>
+</head>
+<body>
+
+  <h2>Checkout Page</h2>
+
+  <div id="cart-summary">
+    <h3>Cart Items</h3>
+    <table id="cart-items-table" border="1">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="cart-items-body"></tbody>
+    </table>
+    <p>Total Items: <span id="total-cart-items">0</span></p>
+    <p>Total Amount: ₹<span id="total-cart-amount">0</span></p>
+  </div>
+
+  <div id="delivery-options">
+    <h3>Select Delivery Details</h3>
+    <label for="delivery-date">Delivery Date:</label>
+    <input type="date" id="delivery-date" name="delivery-date" required><br><br>
+
+    <label for="delivery-slot">Delivery Slot:</label>
+    <select id="delivery-slot"></select><br><br>
+
+    <label for="pincode">Pincode:</label>
+    <select id="pincode-select"></select><br><br>
+
+    <label for="address-line">Address:</label>
+    <textarea id="address-line" rows="3"></textarea><br><br>
+
+    <label>Payment Method:</label>
+    <input type="radio" name="payment-method" value="COD" checked> COD
+    <input type="radio" name="payment-method" value="ONLINE"> Online<br><br>
+
+    <button onclick="PlaceOrder()">Continue to Payment</button>
+  </div>
+
+</body>
+</html>

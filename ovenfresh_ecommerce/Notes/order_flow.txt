@@ -1,0 +1,17 @@
+product page -> buy now
+
+
+buy now -> cart add -> checkout
+
+
+checkout -> checkout_api : cart products(item name, quantity, price) & is_logged_in
+
+is_logged_in -> True : address / name/ details
+is_logged_in -> False : form -> mobile number -> otp verify -> jema address / name/ details levani
+
+Place order / complete payment -> order -> cart products(item name, quantity, price) : order_id - payment id :: status of order is processing
+
+complete_payment/payment_id - status of order is placed
+
+past order - order detail
+

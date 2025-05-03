@@ -1,0 +1,8 @@
+-- 
+app : 
+
+cart - Cart, CartItems
+product - product, product variation, Availability
+sales - order, OrderItem
+Delivery - Pincode, TimeSlot, DeliveryCharges
+Wishlist - Wishlist, WishlistItem

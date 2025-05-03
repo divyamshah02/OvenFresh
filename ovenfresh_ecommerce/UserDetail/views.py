@@ -334,3 +334,54 @@ def login_to_account(request):
         return HttpResponse('DONE')
         return redirect('dashboard-list')
 
+
+class TempViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication
+    def list(self, request):
+        any_get_data = request.query_params.get('any_get_data')
+        if not any_get_data:
+            return Response(
+                        {
+                            "success": False,
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,
+                            "data": None,
+                            "error": "Missing any_get_data."
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {}
+        return Response(
+                    {
+                        "success": True,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": data,
+                        "error": None
+                    }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def create(self, request):
+            any_post_data = request.data.get('any_post_data')
+            if not any_post_data:
+                return Response(
+                            {
+                                "success": False,
+                                "user_not_logged_in": False,
+                                "user_unauthorized": False,
+                                "data": None,
+                                "error": "Missing any_post_data."
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+            data = {}         
+
+            return Response(
+                        {
+                            "success": True,  
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,                       
+                            "data": data,
+                            "error": None
+                        }, status=status.HTTP_201_CREATED)

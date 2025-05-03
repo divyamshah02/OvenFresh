@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Admin Dashboard</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <label for="dashboard_range">Select Range:</label>
+                <select class="form-control" id="dashboard_range" onchange="handleDateRangeChange()">
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-none" id="custom_date_start_div">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" class="form-control">
+            </div>
+            <div class="col-md-3 d-none" id="custom_date_end_div">
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" class="form-control">
+            </div>
+            <div class="col-md-3 d-none align-self-end" id="apply_custom_range_div">
+                <button class="btn btn-primary mt-2" onclick="fetchDashboardData()">Apply</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Total Sales</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="total_sales">₹0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Total Orders</div>
+                    <div class="card-body">
+                        <h5 class="card-title" id="total_orders">0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header">Order Status Counts</div>
+                    <div class="card-body" id="order_status_counts">
+                        <!-- Dynamic status counts -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mt-5">Recent Orders</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="recent_orders_table">
+                    <!-- Dynamic recent orders -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="{% static 'js/admin_dashboard.js' %}"></script>
+    <script>
+        window.onload = async function () {
+            await GenerateAdminDashboard("{% url 'analytics-dashboard-api-list' %}", "monthly");
+        };
+    </script>
+
+</body>
+
+</html>
