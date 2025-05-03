@@ -11,6 +11,11 @@ router.register(r'logout-api', LogoutApiViewSet, basename='logout-api')
 
 router.register(r'get-all-user-api', UserListViewSet, basename='get-all-user-api')
 
+router.register(r'address', AddressViewSet, basename='address')
+
+router.register(r'generate-otp', OTPApiViewSet, basename='generate-otp')
+router.register(r'validate-otp', OTPValidateApiViewSet, basename='validate-otp')
+
 
 urlpatterns = [
     path('', include(router.urls)),
