@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Category,
     SubCategory,
-    Products,
+    Product,
     ProductVariation,
     Reviews,
     Pincode,
@@ -23,7 +23,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
     search_fields = ['sub_category_id', 'title']
 
 
-@admin.register(Products)
+@admin.register(Product)
 class ProductsAdmin(admin.ModelAdmin):
     list_display = ['id', 'product_id', 'title', 'category_id', 'sub_category_id', 'created_at']
     search_fields = ['product_id', 'title']

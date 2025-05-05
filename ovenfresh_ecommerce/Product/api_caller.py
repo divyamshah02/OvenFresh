@@ -2,7 +2,7 @@ import requests
 import json
 
 # Base URL for your API
-BASE_URL = "http://localhost:8000"  # Update with your actual API base URL
+BASE_URL = "http://127.0.0.1:8000/product-api/"  # Update with your actual API base URL
 
 # Headers (if needed)
 HEADERS = {
@@ -13,14 +13,14 @@ HEADERS = {
 def add_pincodes_and_timeslots():
     # Adding Pincodes (Example)
     pincodes = [
-        {"pincode": 380015, "area_name": "Area 1"},
-        {"pincode": 380016, "area_name": "Area 2"},
-        {"pincode": 380017, "area_name": "Area 3"}
+        {"pincode": 380015, "area": "Area 1"},
+        {"pincode": 380016, "area": "Area 2"},
+        {"pincode": 380017, "area": "Area 3"}
     ]
     
     for pincode in pincodes:
         response = requests.post(
-            f"{BASE_URL}/api/pincode/", 
+            f"{BASE_URL}pincode/", 
             headers=HEADERS, 
             data=json.dumps(pincode)
         )
@@ -38,7 +38,7 @@ def add_pincodes_and_timeslots():
     
     for timeslot in timeslots:
         response = requests.post(
-            f"{BASE_URL}/api/timeslot/", 
+            f"{BASE_URL}timeslot/", 
             headers=HEADERS, 
             data=json.dumps(timeslot)
         )
@@ -49,8 +49,8 @@ def add_pincodes_and_timeslots():
 
 # Step 2: Fetch all Pincodes and Timeslots
 def get_pincodes_and_timeslots():
-    pincodes_response = requests.get(f"{BASE_URL}/api/pincode/", headers=HEADERS)
-    timeslots_response = requests.get(f"{BASE_URL}/api/timeslot/", headers=HEADERS)
+    pincodes_response = requests.get(f"{BASE_URL}pincode/", headers=HEADERS)
+    timeslots_response = requests.get(f"{BASE_URL}timeslot/", headers=HEADERS)
     
     if pincodes_response.status_code == 200 and timeslots_response.status_code == 200:
         pincodes = pincodes_response.json()['data']
@@ -59,6 +59,31 @@ def get_pincodes_and_timeslots():
     else:
         print("Error fetching pincodes or timeslots.")
         return [], []
+
+def add_category_sub_category():
+    response = requests.post(
+        f"{BASE_URL}category/", 
+        headers=HEADERS, 
+        data=json.dumps({'title': 'Cakes'})
+    )
+    if response.status_code == 201:
+        print(f"Category added successfully!")
+        category_id = response.json()['data']['category_id']
+    else:
+        print(f"Failed to add category : {response.text}")
+
+    
+    sub_category_response = requests.post(
+        f"{BASE_URL}sub-category/", 
+        headers=HEADERS, 
+        data=json.dumps({'title': 'Birthday Cakes', 'category_id': category_id})
+    )
+    if sub_category_response.status_code == 201:
+        print(f"Sub Category added successfully!")
+        sub_category_id = sub_category_response.json()['sub_category_id']
+        print(sub_category_id)
+    else:
+        print(f"Failed to add sub category : {sub_category_response.text}")
 
 # Step 3: Create Product and Add Availability (With Example Data)
 def add_test_product_and_variation():
@@ -69,13 +94,13 @@ def add_test_product_and_variation():
     product_data = {
         "title": "Test Product",
         "description": "Test Product Description",
-        "photos": "image_url_here",
-        "category_id": 1,  # Example category_id
-        "sub_category_id": 1,  # Example sub_category_id
+        "photos": ["https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png"],
+        "category_id": 	5569583165,  # Example category_id
+        "sub_category_id": 832019240,  # Example sub_category_id
     }
     
     product_response = requests.post(
-        f"{BASE_URL}/api/product/", 
+        f"{BASE_URL}product/", 
         headers=HEADERS, 
         data=json.dumps(product_data)
     )
@@ -87,7 +112,6 @@ def add_test_product_and_variation():
         # Step 2: Add Product Variation
         product_variation_data = {
             "product_id": product_id,
-            "product_variation_id": 1234567890,  # Generate a unique ID
             "actual_price": "1000",
             "discounted_price": "800",
             "is_vartied": True,
@@ -95,7 +119,7 @@ def add_test_product_and_variation():
         }
         
         variation_response = requests.post(
-            f"{BASE_URL}/api/product-variation/", 
+            f"{BASE_URL}product-variation/", 
             headers=HEADERS, 
             data=json.dumps(product_variation_data)
         )
@@ -109,7 +133,7 @@ def add_test_product_and_variation():
                 for timeslot in timeslots:
                     availability_data.append({
                         "product_id": product_id,
-                        "product_variation_id": product_variation_data["product_variation_id"],
+                        "product_variation_id": variation_response.json()['data']["product_variation_id"],
                         "pincode_id": pincode["id"],
                         "timeslot_data": json.dumps({
                             str(timeslot['id']): {"available": True, "charge": 50}
@@ -119,17 +143,35 @@ def add_test_product_and_variation():
                     })
 
             # Step 4: Save Availability
-            for availability in availability_data:
-                availability_response = requests.post(
-                    f"{BASE_URL}/api/availability-charges/", 
-                    headers=HEADERS, 
-                    data=json.dumps(availability)
-                )
+            # for availability in availability_data:
+            #     availability_response = requests.post(
+            #         f"{BASE_URL}availability-charges/", 
+            #         headers=HEADERS, 
+            #         data=json.dumps(availability)
+            #     )
 
-                if availability_response.status_code == 201:
-                    print(f"Availability for Pincode {availability['pincode_id']} and Timeslot {availability['timeslot_data']} added successfully!")
-                else:
-                    print(f"Failed to add availability for Pincode {availability['pincode_id']} and Timeslot {availability['timeslot_data']}: {availability_response.text}")
+            #     if availability_response.status_code == 201:
+            #         print(f"Availability for Pincode {availability['pincode_id']} and Timeslot {availability['timeslot_data']} added successfully!")
+            #     else:
+            #         print(f"Failed to add availability for Pincode {availability['pincode_id']} and Timeslot {availability['timeslot_data']}: {availability_response.text}")
+
+
+            data = {
+                'availability_data': availability_data,
+                "product_id": product_id,
+                "product_variation_id": variation_response.json()['data']["product_variation_id"],
+            }
+
+            availability_response = requests.post(
+                f"{BASE_URL}availability-charges/", 
+                headers=HEADERS, 
+                data=json.dumps(data)
+            )
+
+            if availability_response.status_code == 201:
+                print(f"Availability added successfully!")
+            else:
+                print(f"Failed to add availability")
 
     else:
         print(f"Failed to create product: {product_response.text}")
@@ -137,7 +179,12 @@ def add_test_product_and_variation():
 # Run the functions
 if __name__ == "__main__":
     # Step 1: Add Pincodes and Timeslots (One-time)
-    add_pincodes_and_timeslots()
+    # add_pincodes_and_timeslots()
+
+    # pincodes, timeslots = get_pincodes_and_timeslots()
+    # print(pincodes, timeslots)
 
     # Step 2: Add Product with Variations and Availability
     add_test_product_and_variation()
+
+    # add_category_sub_category()

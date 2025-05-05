@@ -4,7 +4,7 @@ from django.utils.crypto import get_random_string
 from django.utils import timezone
 
 from .models import Cart, CartItem
-from .serializers import CartSerializer, CartItemSerializer
+from .serializers import CartItemSerializer
 from utils.decorators import *
 
 

@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'UserDetail',
     'Cart',
     'Order',
+    'Delivery',
     'Product',
     'Analytics',
 ]

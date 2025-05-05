@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     Category,
     SubCategory,
-    Products,
+    Product,
     ProductVariation,
     Reviews,
     Pincode,
@@ -25,7 +25,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Products
+        model = Product
         fields = [
             'id', 'product_id', 'title', 'description', 'photos',
             'category_id', 'sub_category_id', 'created_at'
