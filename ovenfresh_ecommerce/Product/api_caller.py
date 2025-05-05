@@ -130,17 +130,18 @@ def add_test_product_and_variation():
             # Step 3: Generate Availability Data
             availability_data = []
             for pincode in pincodes:
+                pincode_timeslots = {}
                 for timeslot in timeslots:
-                    availability_data.append({
-                        "product_id": product_id,
-                        "product_variation_id": variation_response.json()['data']["product_variation_id"],
-                        "pincode_id": pincode["id"],
-                        "timeslot_data": json.dumps({
-                            str(timeslot['id']): {"available": True, "charge": 50}
-                        }),
-                        "delivery_charges": "50",
-                        "is_available": True
-                    })
+                    pincode_timeslots[str(timeslot['id'])] = {"available": True, "charge": 50}
+
+                availability_data.append({
+                    "product_id": product_id,
+                    "product_variation_id": variation_response.json()['data']["product_variation_id"],
+                    "pincode_id": pincode["id"],
+                    "timeslot_data": pincode_timeslots,
+                    "delivery_charges": "50",
+                    "is_available": True
+                })
 
             # Step 4: Save Availability
             # for availability in availability_data:
