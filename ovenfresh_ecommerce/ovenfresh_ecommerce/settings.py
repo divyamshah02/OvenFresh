@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'Order',
     'Product',
     'Analytics',
+    'Payments',
 ]
 
 MIDDLEWARE = [
@@ -110,3 +111,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RAZORPAY_KEY_ID = "abc"
+RAZORPAY_KEY_SECRET = "123"
