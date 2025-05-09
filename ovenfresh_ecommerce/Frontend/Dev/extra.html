@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Showcase</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    .video-portrait {
+      height: 100vh;
+      width: auto;
+      object-fit: cover;
+    }
+
+    @media (max-width: 991.98px) {
+      .video-portrait {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body class="">
+
+  <div class="container-fluid">
+    <div class="d-flex flex-column flex-lg-row">
+
+      <!-- Left Video -->
+      <div class="col-12 col-lg-4 d-flex justify-content-center align-items-center overflow-hidden p-0">
+        <video src="static/img/left.mp4" class="video-portrait" autoplay muted loop playsinline></video>
+      </div>
+
+      <!-- Center Card -->
+      <div class="col-12 col-lg-4 d-flex justify-content-center align-items-center p-4" style="min-height: 100vh;">
+        <div class="card border-0 p-4 rounded-4 shadow-lg w-100 bg-light text-dark text-center">
+          <h3 class="card-title" style="font-family: 'Dancing Script', cursive; font-size: 1.8rem;">
+            “Here is Every bite is a celebration,<br>Every petals whisper poetry”
+          </h3>
+        </div>
+      </div>
+
+      <!-- Right Video -->
+      <div class="col-12 col-lg-4 d-flex justify-content-center align-items-center overflow-hidden p-0">
+        <video src="static/img/right.mp4" class="video-portrait" autoplay muted loop playsinline></video>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

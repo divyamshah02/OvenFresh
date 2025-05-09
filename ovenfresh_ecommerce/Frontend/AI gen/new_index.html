@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oven Fresh Bakery - Delicious Handcrafted Treats</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="new_styles.css">
+    <!-- Additional CSS for enhanced graphics -->
+    <style>
+        :root {
+            --primary-color: #FF85A2;
+            --secondary-color: #FFC2D1;
+            --accent-color: #FF619A;
+            --accent-secondary: #FFD0E0;
+            --dark-color: #4A3636;
+            --light-color: #FFF5F7;
+            --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        /* Animation keyframes */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .sprinkle-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        
+        .sprinkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        .sprinkle:nth-child(2n) {
+            background-color: var(--accent-color);
+            width: 8px;
+            height: 8px;
+        }
+        
+        .sprinkle:nth-child(3n) {
+            background-color: var(--secondary-color);
+            width: 12px;
+            height: 12px;
+        }
+        
+        .sprinkle:nth-child(4n) {
+            background-color: var(--accent-secondary);
+            width: 6px;
+            height: 6px;
+        }
+        
+        .sprinkle-1 { top: 10%; left: 5%; animation-delay: 0.5s; }
+        .sprinkle-2 { top: 20%; left: 15%; animation-delay: 1s; }
+        .sprinkle-3 { top: 15%; left: 25%; animation-delay: 1.5s; }
+        .sprinkle-4 { top: 5%; left: 35%; animation-delay: 2s; }
+        .sprinkle-5 { top: 25%; left: 45%; animation-delay: 2.5s; }
+        .sprinkle-6 { top: 10%; left: 55%; animation-delay: 3s; }
+        .sprinkle-7 { top: 20%; left: 65%; animation-delay: 3.5s; }
+        .sprinkle-8 { top: 15%; left: 75%; animation-delay: 4s; }
+        .sprinkle-9 { top: 5%; left: 85%; animation-delay: 4.5s; }
+        .sprinkle-10 { top: 25%; left: 95%; animation-delay: 5s; }
+        
+        /* Decorative elements */
+        .floating-cupcake {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: 2;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-cupcake img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .cupcake-1 {
+            top: -20px;
+            left: -20px;
+        }
+        
+        .cupcake-2 {
+            bottom: -20px;
+            right: -20px;
+            animation-delay: 1s;
+        }
+        
+        .hero-decoration-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+        }
+        
+        .rolling-pin {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-image: url('https://i.imgur.com/JHWkErI.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            animation: rotate 20s linear infinite;
+            z-index: 1;
+        }
+        
+        .whisk {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        /* Section specific styles */
+        #hero {
+            position: relative;
+            padding: 160px 0 100px;
+            background-color: var(--light-color);
+            overflow: hidden;
+        }
+        
+        .hero-img {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+        
+        .title-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .title-decoration .line {
+            height: 1px;
+            width: 50px;
+            background-color: var(--primary-color);
+        }
+        
+        .title-decoration img {
+            width: 30px;
+            height: 30px;
+            margin: 0 10px;
+        }
+        
+        .section-title {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title h6 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-title h2 {
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        /* Feature cards */
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .feature-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .feature-decoration {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            animation: float 5s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .feature-decoration-1 {
+            top: 10px;
+            right: 10px;
+            background-image: url('https://i.imgur.com/JqUXpLk.png');
+        }
+        
+        .feature-decoration-2 {
+            bottom: 10px;
+            left: 10px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+            animation-delay: 2.5s;
+        }
+        
+        /* About section */
+        #about {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about-img {
+            position: relative;
+        }
+        
+        .experience-badge {
+            position: absolute;
+            bottom: -20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 3;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .experience-badge .years {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .experience-badge .text {
+            font-size: 0.8rem;
+            max-width: 80px;
+        }
+        
+        .about-decoration {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 100px;
+            height: 100px;
+            z-index: 2;
+            animation: rotate 20s linear infinite;
+        }
+        
+        .about-decoration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        /* Cake of the month */
+        #cake-of-month {
+            position: relative;
+            background-color: white;
+        }
+        
+        .cake-of-month-card {
+            position: relative;
+        }
+        
+        .ribbon {
+            position: absolute;
+            top: 20px;
+            left: -10px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            z-index: 3;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .ribbon:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-top: 10px solid var(--primary-color);
+        }
+        
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .ingredient-tag {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+        
+        /* Seasonal slider */
+        .seasonal-slide {
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .seasonal-slide:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+        }
+        
+        .carousel-caption {
+            text-align: left;
+            left: 10%;
+            right: 10%;
+            bottom: 50%;
+            transform: translateY(50%);
+        }
+        
+        .seasonal-badge {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Video section */
+        .video-section {
+            background-color: var(--light-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-decoration {
+            position: absolute;
+            z-index: 1;
+            opacity: 0.2;
+        }
+        
+        .video-decoration-1 {
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-image: url('https://i.imgur.com/JqUXpLk.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: rotate 30s linear infinite;
+        }
+        
+        .video-decoration-2 {
+            bottom: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        .video-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            transition: var(--transition);
+            background-color: white;
+            height: 100%;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-content {
+            padding: 1.5rem;
+        }
+        
+        .video-badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-badge.tutorial {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        
+        /* Categories */
+        .category-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            transition: var(--transition);
+            background-color: white;
+            height: 100%;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .category-img {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+        
+        .category-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .category-card:hover .category-img img {
+            transform: scale(1.1);
+        }
+        
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .category-card:hover .category-overlay {
+            opacity: 1;
+        }
+        
+        .category-body {
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            margin: -50px auto 1rem;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .category-icon img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+        }
+        
+        /* Product cards */
+        .product-card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            transition: var(--transition);
+            background-color: white;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-img {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+        
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .product-card:hover .product-img img {
+            transform: scale(1.1);
+        }
+        
+        .product-actions {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .product-card:hover .product-actions {
+            opacity: 1;
+        }
+        
+        .btn-product-action {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .btn-product-action:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .product-body {
+            padding: 1.5rem;
+        }
+        
+        .product-rating {
+            color: #FFD700;
+        }
+        
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        /* Process cards */
+        .process-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .process-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .process-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+        
+        .process-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .process-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Testimonials */
+        .testimonial-item {
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+        }
+        
+        .testimonial-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .quote-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            opacity: 0.2;
+            margin-bottom: 1rem;
+        }
+        
+        .testimonial-rating {
+            color: #FFD700;
+            margin-top: 0.5rem;
+        }
+        
+        .testimonial-indicators {
+            margin-top: 2rem;
+        }
+        
+        .testimonial-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--light-color);
+            border: none;
+        }
+        
+        .testimonial-indicators button.active {
+            background-color: var(--primary-color);
+        }
+        
+        /* Newsletter */
+        .newsletter-box {
+            background-color: var(--light-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .newsletter-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .decoration-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.2;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .decoration-right {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.2;
+            animation: float 6s ease-in-out infinite;
+            animation-delay: 3s;
+        }
+        
+        .newsletter-form {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .rounded-pill-start {
+            border-top-left-radius: 50px;
+            border-bottom-left-radius: 50px;
+        }
+        
+        .rounded-pill-end {
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-decoration {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .footer-decoration img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .footer-info h3 {
+            font-family: 'Pacifico', cursive;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .social-icon:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .footer-links h5, .footer-contact h5 {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links h5:after, .footer-contact h5:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .footer-links ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links ul li a {
+            color: rgba(255,255,255,0.7);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .footer-links ul li a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+        
+        .footer-contact p {
+            margin-bottom: 0.5rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .footer-contact p i {
+            color: var(--primary-color);
+        }
+        
+        hr {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        footer a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            #hero {
+                padding: 140px 0 80px;
+            }
+            
+            .hero-img {
+                margin-top: 3rem;
+            }
+            
+            .experience-badge {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .experience-badge .years {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 767.98px) {
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .seasonal-slide {
+                height: 300px;
+            }
+            
+            .carousel-caption h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            margin-right: 0.5rem;
+        }
+        
+        .brand-text {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .nav-link {
+            color: var(--dark-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        .cake-slice {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://i.imgur.com/JqUXpLk.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.2;
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .cake-slice-1 {
+            top: 10%;
+            left: 5%;
+            animation-delay: 1s;
+        }
+        
+        .cake-slice-2 {
+            bottom: 10%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+        
+        .cupcake-decoration {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.2;
+            animation: float 7s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .cupcake-decoration-1 {
+            top: 20%;
+            right: 10%;
+            animation-delay: 1.5s;
+        }
+        
+        .cupcake-decoration-2 {
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 2.5s;
+        }
+        
+        .ribbon-decoration {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('https://i.imgur.com/JHWkErI.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            animation: rotate 25s linear infinite;
+            z-index: 1;
+        }
+        
+        .ribbon-decoration-1 {
+            top: 30%;
+            left: 20%;
+        }
+        
+        .ribbon-decoration-2 {
+            bottom: 30%;
+            right: 20%;
+            animation-direction: reverse;
+        }
+        
+        .category-decoration {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            z-index: 1;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .category-decoration-1 {
+            top: 10px;
+            right: 10px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+        }
+        
+        .category-decoration-2 {
+            bottom: 10px;
+            left: 10px;
+            background-image: url('https://i.imgur.com/JqUXpLk.png');
+            animation-delay: 2s;
+        }
+        
+        .testimonial-decoration {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            animation: float 5s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .testimonial-decoration-1 {
+            top: 10px;
+            right: 10px;
+            background-image: url('https://i.imgur.com/JHWkErI.png');
+        }
+        
+        .testimonial-decoration-2 {
+            bottom: 10px;
+            left: 10px;
+            background-image: url('https://i.imgur.com/8kLOSKD.png');
+            animation-delay: 2.5s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="https://i.imgur.com/8kLOSKD.png" alt="Oven Fresh Logo" class="logo-img">
+                <span class="brand-text">Oven Fresh</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-primary rounded-pill" href="#">
+                            <i class="fas fa-shopping-cart me-1"></i> Cart (0)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <span class="hero-badge mb-3">Freshly Baked Every Day</span>
+                    <h1 class="display-4 fw-bold mb-4">Delicious Handcrafted Treats for Every Occasion</h1>
+                    <p class="lead mb-4">Experience the joy of freshly baked goods made with love and premium ingredients. From birthday cakes to artisan bread, we've got your cravings covered.</p>
+                    <div class="d-flex gap-3">
+                        <a href="shop.html" class="btn btn-primary rounded-pill">Shop Now</a>
+                        <a href="#about" class="btn btn-outline-primary rounded-pill">Learn More</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-img position-relative">
+                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Delicious Cake" class="img-fluid rounded-4 shadow">
+                        <div class="floating-cupcake cupcake-1">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake cupcake-2">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake" style="top: 50%; right: -30px; animation-delay: 1.5s;">
+                            <img src="https://i.imgur.com/JHWkErI.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake" style="bottom: -20px; right: 100px; animation-delay: 2s;">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sprinkle-decoration">
+            <div class="sprinkle sprinkle-1"></div>
+            <div class="sprinkle sprinkle-2"></div>
+            <div class="sprinkle sprinkle-3"></div>
+            <div class="sprinkle sprinkle-4"></div>
+            <div class="sprinkle sprinkle-5"></div>
+            <div class="sprinkle sprinkle-6"></div>
+            <div class="sprinkle sprinkle-7"></div>
+            <div class="sprinkle sprinkle-8"></div>
+            <div class="sprinkle sprinkle-9"></div>
+            <div class="sprinkle sprinkle-10"></div>
+        </div>
+        <div class="hero-decoration-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100">
+                <path fill="#FFFFFF" fill-opacity="1" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Why Choose Us</h6>
+                <h2>Our Sweet Promises</h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">We're committed to delivering not just delicious treats, but also an exceptional experience with every bite.</p>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Premium Ingredients" class="img-fluid">
+                        </div>
+                        <h4>Premium Ingredients</h4>
+                        <p>We use only the finest ingredients to ensure exceptional taste and quality in every bite.</p>
+                        <div class="feature-decoration feature-decoration-1"></div>
+                        <div class="feature-decoration feature-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Freshly Baked" class="img-fluid">
+                        </div>
+                        <h4>Freshly Baked</h4>
+                        <p>Our products are baked fresh daily to ensure you get the best taste and texture.</p>
+                        <div class="feature-decoration feature-decoration-1"></div>
+                        <div class="feature-decoration feature-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="https://i.imgur.com/JHWkErI.png" alt="Custom Orders" class="img-fluid">
+                        </div>
+                        <h4>Custom Orders</h4>
+                        <p>We create personalized treats for your special occasions with attention to detail.</p>
+                        <div class="feature-decoration feature-decoration-1"></div>
+                        <div class="feature-decoration feature-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Fast Delivery" class="img-fluid">
+                        </div>
+                        <h4>Fast Delivery</h4>
+                        <p>We ensure your treats arrive fresh and on time with our reliable delivery service.</p>
+                        <div class="feature-decoration feature-decoration-1"></div>
+                        <div class="feature-decoration feature-decoration-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rolling-pin" style="bottom: 20px; left: 5%;"></div>
+        <div class="whisk" style="top: 20px; right: 5%;"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-img position-relative">
+                        <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="About Oven Fresh" class="img-fluid rounded-4 shadow">
+                        <div class="experience-badge">
+                            <span class="years">13</span>
+                            <span class="text">Years of Experience</span>
+                        </div>
+                        <div class="about-decoration">
+                            <img src="https://i.imgur.com/JHWkErI.png" alt="Decoration" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake" style="top: 20%; right: -20px; animation-delay: 1.2s;">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake" style="bottom: 20%; left: -20px; animation-delay: 2.2s;">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="section-title">
+                        <div class="title-decoration">
+                            <span class="line"></span>
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                            <span class="line"></span>
+                        </div>
+                        <h6 class="text-primary text-uppercase">Our Story</h6>
+                        <h2>Baking with Love Since 2010</h2>
+                    </div>
+                    <p>Oven Fresh began as a small family bakery with a passion for creating delicious treats that bring joy to people's lives. Over the years, we've grown into a beloved local institution, known for our commitment to quality and exceptional taste.</p>
+                    <p>Our team of skilled bakers combines traditional techniques with innovative flavors to create a wide range of products that cater to every taste and occasion. From birthday cakes to wedding pastries, we put our heart into every creation.</p>
+                    <div class="row g-4 mt-4">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Quality Assurance</h5>
+                                    <p class="mb-0">Premium ingredients only</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Made with Love</h5>
+                                    <p class="mb-0">Passion in every bite</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Expert Bakers</h5>
+                                    <p class="mb-0">Skilled artisan team</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box me-3">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Eco-Friendly</h5>
+                                    <p class="mb-0">Sustainable packaging</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="shop.html" class="btn btn-primary rounded-pill mt-4">Explore Our Products</a>
+                </div>
+            </div>
+        </div>
+        <div class="cake-slice cake-slice-1"></div>
+        <div class="cake-slice cake-slice-2"></div>
+    </section>
+
+    <!-- Cake of the Month Section -->
+    <section id="cake-of-month" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Special Feature</h6>
+                <h2>Cake of the Month</h2>
+            </div>
+            <div class="row align-items-center mt-4">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="cake-of-month-card position-relative">
+                        <div class="ribbon">Featured</div>
+                        <img src="https://images.unsplash.com/photo-1551404973-761c83dab2df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Blueberry Cheesecake" class="img-fluid rounded-4 shadow">
+                        <div class="floating-cupcake" style="top: -20px; right: -20px; animation-delay: 0.7s;">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                        <div class="floating-cupcake" style="bottom: -20px; left: -20px; animation-delay: 1.7s;">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h3>Blueberry Cheesecake</h3>
+                    <div class="product-rating mb-3">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="ms-2">(47 reviews)</span>
+                    </div>
+                    <p class="lead">A creamy cheesecake topped with fresh blueberry compote on a buttery graham cracker crust. This month's featured cake is a perfect balance of tangy and sweet flavors.</p>
+                    <div class="ingredients-list mb-4">
+                        <span class="ingredient-tag">Cream Cheese</span>
+                        <span class="ingredient-tag">Fresh Blueberries</span>
+                        <span class="ingredient-tag">Graham Crackers</span>
+                        <span class="ingredient-tag">Vanilla Extract</span>
+                        <span class="ingredient-tag">Lemon Zest</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <h4 class="product-price mb-0 me-3">$34.99</h4>
+                        <span class="badge bg-primary">20% OFF</span>
+                    </div>
+                    <a href="product-detail.html" class="btn btn-primary rounded-pill">View Details</a>
+                    <a href="#" class="btn btn-outline-primary rounded-pill ms-2">Add to Cart</a>
+                </div>
+            </div>
+        </div>
+        <div class="cupcake-decoration cupcake-decoration-1"></div>
+        <div class="cupcake-decoration cupcake-decoration-2"></div>
+    </section>
+
+    <!-- Seasonal Cakes Slider -->
+    <section id="seasonal" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Limited Time</h6>
+                <h2>Seasonal Specials</h2>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="seasonalCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner rounded-4 shadow">
+                            <div class="carousel-item active">
+                                <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1587314168485-3236d6710814?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1078&q=80');">
+                                    <div class="carousel-caption">
+                                        <span class="seasonal-badge">Summer Special</span>
+                                        <h2 class="display-5 fw-bold">Rainbow Birthday Cake</h2>
+                                        <p class="d-none d-md-block">A colorful celebration cake with six vibrant layers and vanilla buttercream frosting.</p>
+                                        <a href="product-detail.html" class="btn btn-primary rounded-pill mt-3">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80');">
+                                    <div class="carousel-caption">
+                                        <span class="seasonal-badge">Summer Special</span>
+                                        <h2 class="display-5 fw-bold">Strawberry Shortcake</h2>
+                                        <p class="d-none d-md-block">Light vanilla sponge layered with fresh strawberries and whipped cream.</p>
+                                        <a href="product-detail.html" class="btn btn-primary rounded-pill mt-3">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="seasonal-slide" style="background-image: url('https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80');">
+                                    <div class="carousel-caption">
+                                        <span class="seasonal-badge">Summer Special</span>
+                                        <h2 class="display-5 fw-bold">Tiramisu Cake</h2>
+                                        <p class="d-none d-md-block">Coffee-soaked layers with mascarpone cream and a dusting of cocoa powder.</p>
+                                        <a href="product-detail.html" class="btn btn-primary rounded-pill mt-3">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#seasonalCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#seasonalCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ribbon-decoration ribbon-decoration-1"></div>
+        <div class="ribbon-decoration ribbon-decoration-2"></div>
+    </section>
+
+    <!-- Video Section (New) -->
+    <section id="video-tutorials" class="video-section py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Watch & Learn</h6>
+                <h2>Baking Videos & Tutorials</h2>
+                <p class="text-muted mx-auto" style="max-width: 600px;">Discover the art of baking with our exclusive videos and tutorials. Learn techniques from our master bakers and get inspired!</p>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-lg-6">
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Perfect Chocolate Cake Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-content">
+                            <span class="video-badge tutorial">Tutorial</span>
+                            <h4>How to Make the Perfect Chocolate Cake</h4>
+                            <p>Learn the secrets to creating a moist, rich chocolate cake with smooth ganache frosting. Our head baker shares professional tips and techniques.</p>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-clock text-primary"></i> 15:42
+                                </div>
+                                <div>
+                                    <i class="fas fa-eye text-primary"></i> 24.5K views
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Cake Decorating Masterclass" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-content">
+                            <span class="video-badge">Masterclass</span>
+                            <h4>Cake Decorating Techniques for Beginners</h4>
+                            <p>Master the basics of cake decorating with simple tools and techniques. Learn how to create beautiful designs, from rosettes to smooth finishes.</p>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-clock text-primary"></i> 18:27
+                                </div>
+                                <div>
+                                    <i class="fas fa-eye text-primary"></i> 32.1K views
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-primary rounded-pill">View All Videos</a>
+            </div>
+        </div>
+        <div class="video-decoration video-decoration-1"></div>
+        <div class="video-decoration video-decoration-2"></div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Browse By</h6>
+                <h2>Popular Categories</h2>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Birthday Cakes">
+                            <div class="category-overlay">
+                                <a href="shop.html" class="btn btn-primary rounded-pill">View All</a>
+                            </div>
+                        </div>
+                        <div class="category-body">
+                            <div class="category-icon">
+                                <img src="https://i.imgur.com/JqUXpLk.png" alt="Birthday Cake Icon">
+                            </div>
+                            <h4>Birthday Cakes</h4>
+                            <p>Celebrate special days with our custom birthday cakes.</p>
+                        </div>
+                        <div class="category-decoration category-decoration-1"></div>
+                        <div class="category-decoration category-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="category-card">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Cupcakes">
+                            <div class="category-overlay">
+                                <a href="shop.html" class="btn btn-primary rounded-pill">View All</a>
+                            </div>
+                        </div>
+                        <div class="category-body">
+                            <div class="category-icon">
+                                <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake Icon">
+                            </div>
+                            <h4>Cupcakes</h4>
+                            <p>Delightful bite-sized treats in various flavors.</p>
+                        </div>
+                        <div class="category-decoration category-decoration-1"></div>
+                        <div class="category-decoration category-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="category-card gift-hamper">
+                        <div class="category-img">
+                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Gift Hampers">
+                            <div class="category-overlay">
+                                <a href="shop.html" class="btn btn-primary rounded-pill">View All</a>
+                            </div>
+                        </div>
+                        <div class="category-body">
+                            <div class="category-icon">
+                                <img src="https://i.imgur.com/JHWkErI.png" alt="Gift Hamper Icon">
+                            </div>
+                            <h4>Gift Hampers</h4>
+                            <p>Curated gift boxes for every occasion.</p>
+                        </div>
+                        <div class="category-decoration category-decoration-1"></div>
+                        <div class="category-decoration category-decoration-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bestsellers Section -->
+    <section id="bestsellers" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Customer Favorites</h6>
+                <h2>Our Bestsellers</h2>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Chocolate Truffle Cake" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="product-detail.html" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5><a href="product-detail.html" class="text-decoration-none text-dark">Chocolate Truffle Cake</a></h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">(42)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$35.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1551404973-761c83dab2df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Blueberry Cheesecake" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="product-detail.html" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5><a href="product-detail.html" class="text-decoration-none text-dark">Blueberry Cheesecake</a></h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">(47)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$34.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5c3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=936&q=80" alt="Red Velvet Cake" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="product-detail.html" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5><a href="product-detail.html" class="text-decoration-none text-dark">Red Velvet Cake</a></h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">(38)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$32.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Assorted Cupcakes" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="product-detail.html" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5><a href="product-detail.html" class="text-decoration-none text-dark">Assorted Cupcakes (Box of 6)</a></h5>
+                            <div class="product-rating mb-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">(64)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">$24.99</span>
+                                <span class="old-price">$29.99</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <a href="shop.html" class="btn btn-primary rounded-pill">View All Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Baking Process Section -->
+    <section id="baking-process" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/8kLOSKD.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">How We Work</h6>
+                <h2>Our Baking Process</h2>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Select Ingredients" class="img-fluid">
+                            <div class="process-number">1</div>
+                        </div>
+                        <h4>Select Ingredients</h4>
+                        <p>We carefully select premium quality ingredients for the best taste and texture.</p>
+                        <div class="process-decoration process-decoration-1"></div>
+                        <div class="process-decoration process-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Mix & Prepare" class="img-fluid">
+                            <div class="process-number">2</div>
+                        </div>
+                        <h4>Mix & Prepare</h4>
+                        <p>Our skilled bakers mix ingredients with precision for perfect consistency.</p>
+                        <div class="process-decoration process-decoration-1"></div>
+                        <div class="process-decoration process-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <img src="https://i.imgur.com/JHWkErI.png" alt="Bake with Love" class="img-fluid">
+                            <div class="process-number">3</div>
+                        </div>
+                        <h4>Bake with Love</h4>
+                        <p>We bake at the perfect temperature to ensure ideal texture and flavor.</p>
+                        <div class="process-decoration process-decoration-1"></div>
+                        <div class="process-decoration process-decoration-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="process-card">
+                        <div class="process-icon">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Decorate & Deliver" class="img-fluid">
+                            <div class="process-number">4</div>
+                        </div>
+                        <h4>Decorate & Deliver</h4>
+                        <p>We add beautiful finishing touches and deliver fresh to your doorstep.</p>
+                        <div class="process-decoration process-decoration-1"></div>
+                        <div class="process-decoration process-decoration-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5">
+        <div class="container">
+            <div class="section-title text-center">
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <img src="https://i.imgur.com/JqUXpLk.png" alt="Cupcake" class="img-fluid">
+                    <span class="line"></span>
+                </div>
+                <h6 class="text-primary text-uppercase">Happy Customers</h6>
+                <h2>What People Say</h2>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8">
+                                        <div class="testimonial-item text-center">
+                                            <div class="testimonial-img mx-auto mb-4">
+                                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="rounded-circle">
+                                            </div>
+                                            <div class="quote-icon">
+                                                <i class="fas fa-quote-left"></i>
+                                            </div>
+                                            <p class="lead mb-4">The cake was absolutely divine! The chocolate was rich without being too sweet, and the ganache was perfectly smooth. Everyone at my daughter's birthday party loved it!</p>
+                                            <h5>Sarah Johnson</h5>
+                                            <p class="text-muted">Happy Customer</p>
+                                            <div class="testimonial-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="testimonial-decoration testimonial-decoration-1"></div>
+                                            <div class="testimonial-decoration testimonial-decoration-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8">
+                                        <div class="testimonial-item text-center">
+                                            <div class="testimonial-img mx-auto mb-4">
+                                                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="Michael Thompson" class="rounded-circle">
+                                            </div>
+                                            <div class="quote-icon">
+                                                <i class="fas fa-quote-left"></i>
+                                            </div>
+                                            <p class="lead mb-4">The cake tasted amazing and looked beautiful. The only reason I'm giving 4 stars instead of 5 is that the delivery was a bit late. Otherwise, the cake itself was perfect for my wife's birthday.</p>
+                                            <h5>Michael Thompson</h5>
+                                            <p class="text-muted">Happy Customer</p>
+                                            <div class="testimonial-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                            </div>
+                                            <div class="testimonial-decoration testimonial-decoration-1"></div>
+                                            <div class="testimonial-decoration testimonial-decoration-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-8">
+                                        <div class="testimonial-item text-center">
+                                            <div class="testimonial-img mx-auto mb-4">
+                                                <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="Emily Rodriguez" class="rounded-circle">
+                                            </div>
+                                            <div class="quote-icon">
+                                                <i class="fas fa-quote-left"></i>
+                                            </div>
+                                            <p class="lead mb-4">This cake is a chocolate lover's dream! The texture was perfect - moist and not too dense. The truffles on top were an elegant touch. I ordered this for a corporate event and received many compliments.</p>
+                                            <h5>Emily Rodriguez</h5>
+                                            <p class="text-muted">Happy Customer</p>
+                                            <div class="testimonial-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <div class="testimonial-decoration testimonial-decoration-1"></div>
+                                            <div class="testimonial-decoration testimonial-decoration-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-indicators testimonial-indicators position-relative mt-4">
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section id="newsletter" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="newsletter-box text-center p-4 p-md-5 rounded-4 shadow">
+                        <div class="newsletter-decoration">
+                            <img src="https://i.imgur.com/JqUXpLk.png" alt="Decoration" class="img-fluid decoration-left">
+                            <img src="https://i.imgur.com/8kLOSKD.png" alt="Decoration" class="img-fluid decoration-right">
+                        </div>
+                        <h3>Join Our Sweet Community</h3>
+                        <p class="text-muted mb-4">Subscribe to our newsletter for exclusive offers, recipes, and updates on new products!</p>
+                        <form class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" class="form-control rounded-pill-start" placeholder="Enter your email address" aria-label="Email address">
+                                <button class="btn btn-primary rounded-pill-end" type="submit">Subscribe</button>
+                            </div>
+                        </form>
+                        <p class="small text-muted mt-3">By subscribing, you agree to receive marketing emails from Oven Fresh.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-info">
+                        <h3 class="mb-4">Oven Fresh</h3>
+                        <p>Bringing joy through freshly baked goods since 2010. We pride ourselves on quality ingredients and exceptional taste.</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-links">
+                        <h5 class="mb-4">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="shop.html">Shop</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-links">
+                        <h5 class="mb-4">Categories</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Birthday Cakes</a></li>
+                            <li><a href="#">Chocolates</a></li>
+                            <li><a href="#">Gift Hampers</a></li>
+                            <li><a href="#">Pastries</a></li>
+                            <li><a href="#">Custom Orders</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-contact">
+                        <h5 class="mb-4">Contact Us</h5>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Bakery Street, Sweet City, SC 12345</p>
+                        <p><i class="fas fa-phone-alt me-2"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.com</p>
+                        <p><i class="fas fa-clock me-2"></i> Mon-Sat: 8AM - 8PM, Sunday: 9AM - 5PM</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-md-0">&copy; 2023 Oven Fresh. All Rights Reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <a href="#" class="me-3">Privacy Policy</a>
+                        <a href="#" class="me-3">Terms of Service</a>
+                        <a href="#">FAQ</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-decoration">
+            <img src="https://i.imgur.com/JHWkErI.png" alt="Decoration" class="img-fluid">
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    
+    <!-- Script to fix image rendering issues -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to check if images are loaded correctly
+            function checkImages() {
+                const images = document.querySelectorAll('img');
+                images.forEach(img => {
+                    if (!img.complete || img.naturalHeight === 0) {
+                        // If image failed to load, replace with a fallback or retry
+                        img.onerror = function() {
+                            // Try to reload the image
+                            const src = img.src;
+                            img.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; // Transparent GIF
+                            setTimeout(() => {
+                                img.src = src;
+                            }, 1000);
+                        };
+                    }
+                });
+            }
+            
+            // Check images after page load
+            window.addEventListener('load', checkImages);
+            
+            // Make back to top button functional
+            const backToTopButton = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('active');
+                } else {
+                    backToTopButton.classList.remove('active');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

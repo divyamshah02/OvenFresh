@@ -1,0 +1,301 @@
+:root {
+    --of-primary-color: #FF6B8B;
+    --of-primary-faded-color: rgba(255, 107, 139, 0.6);
+
+    --of-secondary-color: #A8E6CF;
+    --of-secondary-faded-color: rgba(168, 230, 207, 0.6);
+
+    --of-body-bg-color: #F6F8F9;
+
+    --of-dark-color: #4A2C2A;
+    --of-light-color: #FFF8E1;
+    --of-accent-color: #FFD166;
+    --of-accent-secondary: #FF9A76;
+
+    --of-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    --of-transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--of-body-bg-color);
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.of-bg-primary {
+    background-color: var(--of-primary-color) !important;
+}
+
+.of-bg-secondary {
+    background-color: var(--of-secondary-color) !important;
+}
+
+.of-bg-primary-faded {
+    background-color: var(--of-primary-faded-color) !important;
+}
+
+.of-bg-secondary-faded {
+    background-color: var(--of-secondary-faded-color) !important;
+}
+
+.of-bg-light {
+    background-color: var(--of-light-color) !important;
+}
+
+.of-bg-dark {
+    background-color: var(--of-dark-color) !important;
+}
+
+.of-bg-accent {
+    background-color: var(--of-accent-color) !important;
+}
+
+.of-border-primary {
+    border-color: var(--of-primary-color) !important;
+}
+
+.of-border-secondary {
+    border-color: var(--of-secondary-color) !important;
+}
+
+.of-border-primary-faded {
+    border-color: var(--of-primary-faded-color) !important;
+}
+
+.of-border-secondary-faded {
+    border-color: var(--of-secondary-faded-color) !important;
+}
+
+.of-btn-primary {
+    background-color: var(--of-primary-color) !important;
+    color: #fff !important;
+}
+
+.of-btn-primary:hover {
+    background-color: var(--of-primary-faded-color) !important;
+    border: solid 2px var(--of-primary-color) !important;
+}
+
+.of-btn-outline-primary {
+    background-color: transparent !important;
+    color: var(--of-primary-color) !important;
+    border: solid 2px var(--of-primary-color) !important;
+}
+
+.of-btn-outline-primary:hover {
+    background-color: var(--of-primary-color) !important;
+    color: #fff !important;
+}
+
+
+
+.navbar-search {
+    max-width: 300px;
+    width: 100%;
+}
+
+.nav-link {
+    color: #000;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    color: var(--of-primary-color) !important;
+    font-weight: 800;
+    border-bottom: 2px solid var(--of-primary-color) !important;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: #000;
+}
+
+.offcanvas-end {
+    width: 75% !important;
+    backdrop-filter: blur(5px);
+}
+
+.topbar {
+    background-color: #f1f1f1;
+    font-size: 0.9rem;
+    padding: 5px 0;
+}
+
+.menu-bar-fixed {
+    top: 0;
+    z-index: 1030;
+}
+
+@media (max-width: 767.98px) {
+
+    .topbar,
+    .main-menu {
+        display: none !important;
+    }
+
+    .menu-bar-fixed {
+        position: static !important;
+    }
+}
+
+
+/* Seasonal Cakes Slider */
+.seasonal-slide {
+    height: 80vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.seasonal-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.carousel-caption {
+    text-align: left;
+    left: 10%;
+    right: auto;
+    bottom: 50%;
+    transform: translateY(50%);
+    max-width: 500px;
+}
+
+
+/* Categories Section */
+.category-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-img {
+    height: 200px;
+    overflow: hidden;
+}
+
+.category-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.category-card:hover .category-img img {
+    transform: scale(1.1);
+}
+
+.category-body {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.category-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--of-dark-color);
+}
+
+.dashboard-scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    position: relative;
+    scroll-snap-type: x mandatory;
+}
+
+.dashboard-scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Hide the default scrollbar */
+}
+
+.dashboard-main-card {
+    display: inline-block;
+    margin-right: 0.25rem;
+    scroll-snap-align: start;
+    /* Ensure cards snap to position */
+}
+
+/* Flexbox layout for larger screens */
+/* @media (min-width: 550px) {
+    .dashboard-scroll-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        overflow-x: hidden; To be removed
+        overflow-x: auto;
+    }
+
+    .dashboard-main-card {
+        flex: 1;
+        max-width: calc(100% / 6); 
+    }
+
+    .dashboard-dots-container {
+        display: none;
+    }
+
+    .dashboard-dot {
+        display: none;
+    }
+} */
+
+.dashboard-dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 1rem;
+}
+
+.dashboard-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    /* background-color: #ccc; */
+    background-color: var(--of-primary-faded-color);
+    transition: background-color 0.3s;
+}
+
+.dashboard-dot.active {
+    background-color: var(--of-primary-color);
+}
+
+.dashboard-card {
+    box-shadow: 0 0 0 2px var(--of-dark-color);
+    background-color: white;
+    /* border: 2px solid black; */
+    border-radius: 20px;
+}
+
+.video-portrait {
+    height: 90vh;
+    width: auto;
+    object-fit: cover;
+
+    border: var(--of-primary-color) solid 4px;
+    border-radius: 20px;
+    box-shadow: 5px 5px 5px var(--of-primary-faded-color);
+    
+}
+
+@media (max-width: 991.98px) {
+    .video-portrait {
+        width: 100%;
+        height: auto;
+
+        border: var(--of-primary-color) solid 4px;
+        border-radius: 20px;
+        box-shadow: 5px 5px 5px var(--of-primary-faded-color);
+    }
+}
