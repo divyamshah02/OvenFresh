@@ -174,6 +174,40 @@ class ProductViewSet(viewsets.ViewSet):
             if not Product.objects.filter(is_active=True, product_id=product_id).exists():
                 return product_id
 
+    @handle_exceptions
+    @check_authentication()
+    def list(self, request):
+        product_id = request.query_params.get('product_id')
+
+        if not product_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing product_id."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        product_obj = Product.objects.filter(product_id=product_id).first()
+        if not product_obj:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "No data found for this product."
+            }, status=status.HTTP_200_OK)
+        
+        product_data = ProductSerializer(product_obj)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": product_data.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
 
 class ProductVariationViewSet(viewsets.ViewSet):
 
@@ -235,6 +269,48 @@ class ProductVariationViewSet(viewsets.ViewSet):
             product_variation_id = ''.join(random.choices(string.digits, k=10))
             if not ProductVariation.objects.filter(is_active=True, product_variation_id=product_variation_id).exists():
                 return product_variation_id
+
+    @handle_exceptions
+    # @check_authentication
+    def list(self, request):
+        product_id = request.query_params.get('product_id')
+
+        if not product_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing product_id."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        variations = ProductVariation.objects.filter(product_id=product_id)
+        if not variations.exists():
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": [],
+                "error": "No variations found for this product."
+            }, status=status.HTTP_200_OK)
+        
+        serialized_variations = ProductVariationSerializer(variations, many=True)
+        if not serialized_variations.data:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": [],
+                "error": "No variations found for this product."
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": serialized_variations.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
 
 
 class AvailabilityChargesViewSet(viewsets.ViewSet):

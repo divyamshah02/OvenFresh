@@ -14,6 +14,7 @@ router.register(r'availability-charges', AvailabilityChargesViewSet, basename='a
 
 router.register(r'pincode', PincodeViewSet, basename='pincode')
 router.register(r'timeslot', TimeSlotViewSet, basename='timeslot')
+router.register(r'pincode-timeslots', TimeSlotAndPincodeViewSet, basename='pincode-timeslots')
 
 
 urlpatterns = [

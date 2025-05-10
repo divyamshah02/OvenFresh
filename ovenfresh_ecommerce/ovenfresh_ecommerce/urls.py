@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('favicon.ico', RedirectView.as_view(url='/static/assets/img/logo.ico')),
 
+    path('', include('FrontEnd.urls')),
     path('user-api/', include('UserDetail.urls')),
     path('cart-api/', include('Cart.urls')),
     path('order-api/', include('Order.urls')),

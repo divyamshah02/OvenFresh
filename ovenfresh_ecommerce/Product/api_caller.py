@@ -60,31 +60,6 @@ def get_pincodes_and_timeslots():
         print("Error fetching pincodes or timeslots.")
         return [], []
 
-def add_category_sub_category():
-    response = requests.post(
-        f"{BASE_URL}category/", 
-        headers=HEADERS, 
-        data=json.dumps({'title': 'Cakes'})
-    )
-    if response.status_code == 201:
-        print(f"Category added successfully!")
-        category_id = response.json()['data']['category_id']
-    else:
-        print(f"Failed to add category : {response.text}")
-
-    
-    sub_category_response = requests.post(
-        f"{BASE_URL}sub-category/", 
-        headers=HEADERS, 
-        data=json.dumps({'title': 'Birthday Cakes', 'category_id': category_id})
-    )
-    if sub_category_response.status_code == 201:
-        print(f"Sub Category added successfully!")
-        sub_category_id = sub_category_response.json()['sub_category_id']
-        print(sub_category_id)
-    else:
-        print(f"Failed to add sub category : {sub_category_response.text}")
-
 # Step 3: Create Product and Add Availability (With Example Data)
 def add_test_product_and_variation():
     # Fetch Pincodes and Timeslots for availability data
@@ -176,6 +151,31 @@ def add_test_product_and_variation():
 
     else:
         print(f"Failed to create product: {product_response.text}")
+
+def add_category_sub_category():
+    response = requests.post(
+        f"{BASE_URL}category/", 
+        headers=HEADERS, 
+        data=json.dumps({'title': 'Cakes'})
+    )
+    if response.status_code == 201:
+        print(f"Category added successfully!")
+        category_id = response.json()['data']['category_id']
+    else:
+        print(f"Failed to add category : {response.text}")
+
+    
+    sub_category_response = requests.post(
+        f"{BASE_URL}sub-category/", 
+        headers=HEADERS, 
+        data=json.dumps({'title': 'Birthday Cakes', 'category_id': category_id})
+    )
+    if sub_category_response.status_code == 201:
+        print(f"Sub Category added successfully!")
+        sub_category_id = sub_category_response.json()['sub_category_id']
+        print(sub_category_id)
+    else:
+        print(f"Failed to add sub category : {sub_category_response.text}")
 
 # Run the functions
 if __name__ == "__main__":
