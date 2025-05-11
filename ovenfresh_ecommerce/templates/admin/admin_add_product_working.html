@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product - Admin Panel</title>
+</head>
+
+<body>
+    <h2>Add New Product</h2>
+
+    <!-- Product Info -->
+    <div>
+        <label>Product Title:</label>
+        <input type="text" id="productTitle" placeholder="Enter product title">
+    </div>
+    <div>
+        <label>Product Description:</label>
+        <textarea id="productDesc" placeholder="Enter description"></textarea>
+    </div>
+    <div>
+        <label>Product Photo URL:</label>
+        <input type="text" id="productPhoto" placeholder="Enter photo URL">
+    </div>
+    <div>
+        <label>Category:</label>
+        <select id="categorySelect">
+            <option disabled selected>-- Select Category --</option>
+        </select>
+    </div>
+    <div>
+        <label>Sub-Category:</label>
+        <select id="subCategorySelect">
+            <option disabled selected>-- Select Sub-Category --</option>
+        </select>
+    </div>
+
+    <hr>
+
+    <!-- Variation -->
+    <h3>Product Variation</h3>
+    <div>
+        <label>Weight:</label>
+        <input type="text" id="weight" placeholder="e.g. 500g">
+    </div>
+    <div>
+        <label>Actual Price:</label>
+        <input type="number" id="actualPrice" placeholder="e.g. 1000">
+    </div>
+    <div>
+        <label>Discounted Price:</label>
+        <input type="number" id="discountedPrice" placeholder="e.g. 800">
+    </div>
+
+    <hr>
+
+    <!-- Pincode Timeslot Availability -->
+    <h3>Availability by Pincode & Timeslot</h3>
+    <div id="pincodeAvailability">
+        <!-- JS will populate pincode and timeslot checkboxes here -->
+    </div>
+
+    <hr>
+
+    <button id="submitProductBtn">Create Product</button>
+
+
+
+    <script src="/static/js/api_caller.js"></script> <!-- Your shared callApi file -->
+
+    <script src="/static/js/admin/admin_add_product.js"></script>
+    <script>        
+        const csrfToken = "{{ csrf_token }}";
+
+        AdminAddProduct(
+            csrfToken,
+            "{% url 'category-list' %}",
+            "{% url 'sub-category-list' %}",
+            "{% url 'pincode-timeslots-list' %}",
+            "{% url 'product-list' %}",
+            "{% url 'product-variation-list' %}",
+            "{% url 'availability-charges-list' %}"
+        );
+    </script>
+</body>
+
+</html>

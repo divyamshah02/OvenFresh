@@ -15,6 +15,8 @@ ALLOWED_HOSTS = ['*']
 
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+# X_FRAME_OPTIONS = 'ALLOWALL'
+# CORS_ALLOW_ALL_ORIGINS = True  # allow fetch/ajax from anywhere
 
 AUTH_USER_MODEL = 'UserDetail.User'
 
@@ -30,8 +32,10 @@ INSTALLED_APPS = [
     'UserDetail',
     'Cart',
     'Order',
+    'Delivery',
     'Product',
     'Analytics',
+    'FrontEnd',
 ]
 
 MIDDLEWARE = [

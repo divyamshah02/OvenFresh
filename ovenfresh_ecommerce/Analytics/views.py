@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum, Avg, Q
 from datetime import datetime, timedelta
 from Order.models import Order, OrderItem
-from Product.models import Products
+from Product.models import Product
 from Product.models import TimeSlot
 from UserDetail.models import User
 from utils.decorators import handle_exceptions, check_authentication
@@ -85,7 +85,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
         for item in top:
             try:
-                product = Products.objects.get(product_id=item["product_id"])
+                product = Product.objects.get(product_id=item["product_id"])
                 item["product_name"] = product.name
             except:
                 item["product_name"] = "Unknown Products"

@@ -1,28 +1,129 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import (
-    Products, ProductVariation, AvailabilityCharges, TimeSlot, Pincode
-)
-from .serializers import (
-    ProductSerializer, ProductVariationSerializer,
-    TimeSlotSerializer, PincodeSerializer
-)
-from utils.decorators import handle_exceptions, check_authentication
-import random
+
 from django.utils import timezone
+
+from .models import *
+from .serializers import *
+
+from utils.decorators import *
+
+import random
+import string
+
+
+class CategoryViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        categories = Category.objects.all()
+        category_serializer = CategorySerializer(categories, many=True)
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": category_serializer.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    # @check_authentication(required_role='admin')
+    def create(self, request):
+        title = request.data.get("title")
+        category_id = self.generate_category_id()
+
+        if not title:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Title is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        new_category = Category(
+            category_id=category_id,
+            title=title
+        )
+        new_category.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"category_id": category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
+
+    def generate_category_id(self):
+        while True:
+            category_id = ''.join(random.choices(string.digits, k=10))
+            if not Category.objects.filter(is_active=True, category_id=category_id).exists():
+                return category_id
+
+
+class SubCategoryViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def list(self, request):
+        sub_categories = SubCategory.objects.all()
+        sub_category_serializer = SubCategorySerializer(sub_categories, many=True)
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": sub_category_serializer.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    # @check_authentication(required_role='admin')
+    def create(self, request):
+        title = request.data.get("title")
+        category_id = request.data.get("category_id")
+        sub_category_id = self.generate_sub_category_id()
+
+        if not title or not category_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Title & category_id are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        new_sub_category = SubCategory(
+            category_id=category_id,
+            sub_category_id=sub_category_id,
+            title=title
+        )
+        new_sub_category.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"sub_category_id": sub_category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
+
+    def generate_sub_category_id(self):
+        while True:
+            sub_category_id = ''.join(random.choices(string.digits, k=10))
+            if not SubCategory.objects.filter(is_active=True, sub_category_id=sub_category_id).exists():
+                return sub_category_id
 
 
 class ProductViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    @check_authentication(required_role='admin')
+    # @check_authentication(required_role='admin')
     def create(self, request):
         try:
             data = request.data
 
             title = data.get("title")
             description = data.get("description")
-            photos = data.get("photos")  # Assuming single image for now
+            photos = data.get("photos", [])
             category_id = data.get("category_id")
             sub_category_id = data.get("sub_category_id")
 
@@ -35,9 +136,9 @@ class ProductViewSet(viewsets.ViewSet):
                     "error": "Missing required fields."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            product_id = random.randint(1000000000, 9999999999)
+            product_id = self.generate_product_id()
 
-            new_product = Products(
+            new_product = Product(
                 product_id=product_id,
                 title=title,
                 description=description,
@@ -67,73 +168,186 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-class ProductVariationViewSet(viewsets.ViewSet):
+    def generate_product_id(self):
+        while True:
+            product_id = ''.join(random.choices(string.digits, k=10))
+            if not Product.objects.filter(is_active=True, product_id=product_id).exists():
+                return product_id
 
     @handle_exceptions
-    @check_authentication(required_role='admin')
-    def create(self, request):
-        try:
-            data = request.data
+    @check_authentication()
+    def list(self, request):
+        product_id = request.query_params.get('product_id')
 
-            product_id = data.get("product_id")
-            actual_price = data.get("actual_price")
-            discounted_price = data.get("discounted_price")
-            is_vartied = data.get("is_vartied", True)
-            weight_variation = data.get("weight_variation")
-            availability_data = data.get("availability_data", [])
-
-            if not product_id or not actual_price or not discounted_price:
-                return Response({
-                    "success": False,
-                    "user_not_logged_in": False,
-                    "user_unauthorized": False,
-                    "data": None,
-                    "error": "Missing required fields."
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            product_variation_id = random.randint(1000000000, 9999999999)
-
-            new_variation = ProductVariation(
-                product_id=product_id,
-                product_variation_id=product_variation_id,
-                actual_price=actual_price,
-                discounted_price=discounted_price,
-                is_vartied=is_vartied,
-                weight_variation=weight_variation,
-                created_at=timezone.now()
-            )
-            new_variation.save()
-
-            for item in availability_data:
-                AvailabilityCharges.objects.create(
-                    product_id=product_id,
-                    product_variation_id=product_variation_id,
-                    pincode_id=item["pincode_id"],
-                    timeslot_data=item["timeslot_data"],
-                    delivery_charges=item.get("delivery_charges", 0),
-                    is_available=item.get("is_available", True),
-                    created_at=timezone.now()
-                )
-
-            return Response({
-                "success": True,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": {
-                    "product_variation_id": product_variation_id
-                },
-                "error": None
-            }, status=status.HTTP_201_CREATED)
-
-        except Exception as e:
+        if not product_id:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": str(e)
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                "error": "Missing product_id."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        product_obj = Product.objects.filter(product_id=product_id).first()
+        if not product_obj:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "No data found for this product."
+            }, status=status.HTTP_200_OK)
+        
+        product_data = ProductSerializer(product_obj)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": product_data.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class ProductVariationViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    # @check_authentication(required_role='admin')
+    def create(self, request):
+        product_id = request.data.get("product_id")
+        actual_price = request.data.get("actual_price")
+        discounted_price = request.data.get("discounted_price")
+        is_vartied = request.data.get("is_vartied", True)
+        weight_variation = request.data.get("weight_variation")
+        availability_data = request.data.get("availability_data", [])
+
+        if not product_id or not actual_price or not discounted_price:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        product_variation_id = self.generate_product_variation_id()
+
+        new_variation = ProductVariation(
+            product_id=product_id,
+            product_variation_id=product_variation_id,
+            actual_price=actual_price,
+            discounted_price=discounted_price,
+            is_vartied=is_vartied,
+            weight_variation=weight_variation,
+            created_at=timezone.now()
+        )
+        new_variation.save()
+
+        for item in availability_data:
+            AvailabilityCharges.objects.create(
+                product_id=product_id,
+                product_variation_id=product_variation_id,
+                pincode_id=item["pincode_id"],
+                timeslot_data=item["timeslot_data"],
+                delivery_charges=item.get("delivery_charges", 0),
+                is_available=item.get("is_available", True),
+                created_at=timezone.now()
+            )
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "product_variation_id": product_variation_id
+            },
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+    def generate_product_variation_id(self):
+        while True:
+            product_variation_id = ''.join(random.choices(string.digits, k=10))
+            if not ProductVariation.objects.filter(is_active=True, product_variation_id=product_variation_id).exists():
+                return product_variation_id
+
+    @handle_exceptions
+    # @check_authentication
+    def list(self, request):
+        product_id = request.query_params.get('product_id')
+
+        if not product_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing product_id."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        variations = ProductVariation.objects.filter(product_id=product_id)
+        if not variations.exists():
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": [],
+                "error": "No variations found for this product."
+            }, status=status.HTTP_200_OK)
+        
+        serialized_variations = ProductVariationSerializer(variations, many=True)
+        if not serialized_variations.data:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": [],
+                "error": "No variations found for this product."
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": serialized_variations.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class AvailabilityChargesViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    # @check_authentication
+    def create(self, request):
+        availability_data = request.data.get("availability_data")
+        product_id = request.data.get('product_id')
+        product_variation_id = request.data.get('product_variation_id')
+
+        if not availability_data or not product_id or not product_variation_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        for item in availability_data:
+            AvailabilityCharges.objects.create(
+                product_id=product_id,
+                product_variation_id=product_variation_id,
+                pincode_id=item["pincode_id"],
+                timeslot_data=item["timeslot_data"],
+                delivery_charges=item.get("delivery_charges", 0),
+                is_available=item.get("is_available", True),
+                created_at=timezone.now()
+            )
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"All {len(availability_data)} rows added",
+            "error": None
+        }, status=status.HTTP_201_CREATED)
 
 
 class TimeSlotAndPincodeViewSet(viewsets.ViewSet):
@@ -167,3 +381,152 @@ class TimeSlotAndPincodeViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PincodeViewSet(viewsets.ViewSet):
+    # @check_authentication
+    @handle_exceptions
+    def list(self, request):
+        pincodes = Pincode.objects.all()
+        serializer = PincodeSerializer(pincodes, many=True)
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": serializer.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    # @check_authentication(required_role='admin')
+    def create(self, request):
+        is_multiple = request.data.get("is_multiple", False)
+        
+        if is_multiple == True:
+            pincodes = request.data.get("pincodes")
+            if not pincodes or len(pincodes) == 0:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Pincodes are required."
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            for ind,pincode in enumerate(pincodes):
+                try:
+                    pincode_code = pincode['pincode']
+                    area = pincode['area']
+                    if Pincode.objects.filter(pincode=pincode_code).exists():
+                        continue
+                    else:
+                        Pincode.objects.create(
+                            pincode=pincode_code,
+                            area=area
+                        )
+
+                except Exception as e:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Invalid pincode data, at index {ind+1} - error: {e}."
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": "Created successfully.",
+                "error": None
+            }, status=status.HTTP_201_CREATED)
+
+        else:
+            pincode_code = request.data.get("pincode")
+            area = request.data.get("area")
+
+            if not pincode_code or not area:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Pincode and area are required."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if Pincode.objects.filter(pincode=pincode_code).exists():
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Pincode already exists."
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            Pincode.objects.create(
+                    pincode=pincode_code,
+                    area_name=area
+                )
+        
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": f"Pincode : {pincode_code} Created successfully.",
+                "error": None
+            }, status=status.HTTP_201_CREATED)
+
+
+class TimeSlotViewSet(viewsets.ViewSet):
+    # @check_authentication
+    @handle_exceptions
+    def list(self, request):
+        timeslots = TimeSlot.objects.all()
+        serializer = TimeSlotSerializer(timeslots, many=True)
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": serializer.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    # @check_authentication(required_role='admin')
+    def create(self, request):
+        start_time = request.data.get("start_time")
+        end_time = request.data.get("end_time")
+        time_slot_title = request.data.get("time_slot_title")
+
+        if not start_time or not end_time or not time_slot_title:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "start_time, end_time & time_slot_title are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if TimeSlot.objects.filter(start_time=start_time, end_time=end_time).exists():
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Time Slot already exists."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        TimeSlot.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                time_slot_title=time_slot_title,
+            )
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"Timeslot : {start_time} - {end_time} Created successfully.",
+            "error": None
+        }, status=status.HTTP_201_CREATED)

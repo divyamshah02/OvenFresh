@@ -1,0 +1,39 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #fff;
+  color: #333;
+}
+.text-ovenfresh {
+  color: #e94e77;
+}
+.btn-ovenfresh {
+  background: #e94e77;
+  color: #fff;
+  border: none;
+}
+.btn-ovenfresh:hover {
+  background: #c0395b;
+  color: #fff;
+}
+.navbar-brand img {
+  max-height: 50px;
+}
+.card-title {
+  font-size: 1.1rem;
+  color: #e94e77;
+}
+footer a {
+  text-decoration: none;
+}
+footer h5 {
+  color: #e94e77;
+}
+.carousel-inner img {
+  height: 350px;
+  object-fit: cover;
+}
+@media (max-width: 768px) {
+  .carousel-inner img {
+    height: 200px;
+  }
+}
