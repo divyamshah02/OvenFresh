@@ -156,7 +156,7 @@ def add_category_sub_category():
     response = requests.post(
         f"{BASE_URL}category/", 
         headers=HEADERS, 
-        data=json.dumps({'title': 'Cakes'})
+        data=json.dumps({'title': 'Cookies'})
     )
     if response.status_code == 201:
         print(f"Category added successfully!")
@@ -168,7 +168,7 @@ def add_category_sub_category():
     sub_category_response = requests.post(
         f"{BASE_URL}sub-category/", 
         headers=HEADERS, 
-        data=json.dumps({'title': 'Birthday Cakes', 'category_id': category_id})
+        data=json.dumps({'title': 'Chocolate Cookies', 'category_id': category_id})
     )
     if sub_category_response.status_code == 201:
         print(f"Sub Category added successfully!")
@@ -186,6 +186,6 @@ if __name__ == "__main__":
     # print(pincodes, timeslots)
 
     # Step 2: Add Product with Variations and Availability
-    add_test_product_and_variation()
+    # add_test_product_and_variation()
 
-    # add_category_sub_category()
+    add_category_sub_category()

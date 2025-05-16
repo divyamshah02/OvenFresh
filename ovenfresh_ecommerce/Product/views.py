@@ -116,7 +116,7 @@ class SubCategoryViewSet(viewsets.ViewSet):
 class ProductViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         try:
             data = request.data
@@ -175,7 +175,7 @@ class ProductViewSet(viewsets.ViewSet):
                 return product_id
 
     @handle_exceptions
-    @check_authentication()
+    @check_authentication(required_role='admin')
     def list(self, request):
         product_id = request.query_params.get('product_id')
 
@@ -208,11 +208,61 @@ class ProductViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk=None):
+        product_id = pk
+        
+        data = request.data
+
+        title = data.get("title")
+        description = data.get("description")
+        photos = data.get("photos", [])
+        category_id = data.get("category_id")
+        sub_category_id = data.get("sub_category_id")
+
+        if not product_id or not title or not photos or not category_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        product_obj = Product.objects.filter(product_id=product_id).first()
+
+        if not product_obj:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        product_obj.title = title
+        product_obj.description = description
+        product_obj.photos = photos
+        product_obj.category_id = category_id
+        product_obj.sub_category_id = sub_category_id
+
+        product_obj.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": "Product updated",
+            "error": None
+        }, status=status.HTTP_200_OK)
+
 
 class ProductVariationViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         product_id = request.data.get("product_id")
         actual_price = request.data.get("actual_price")
@@ -271,7 +321,7 @@ class ProductVariationViewSet(viewsets.ViewSet):
                 return product_variation_id
 
     @handle_exceptions
-    # @check_authentication
+    @check_authentication(required_role='admin')
     def list(self, request):
         product_id = request.query_params.get('product_id')
 
@@ -312,10 +362,56 @@ class ProductVariationViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk=None):
+        product_id = request.data.get("product_id")
+        product_variation_id = pk
+        actual_price = request.data.get("actual_price")
+        discounted_price = request.data.get("discounted_price")
+        is_vartied = request.data.get("is_vartied", True)
+        weight_variation = request.data.get("weight_variation")
+        availability_data = request.data.get("availability_data", [])
+
+        if not product_variation_id or not product_id or not actual_price or not discounted_price:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        product_variation_obj = ProductVariation.objects.filter(product_variation_id=product_variation_id).first()
+        if not product_variation_obj:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product Variation not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        product_variation_obj.actual_price = actual_price
+        product_variation_obj.discounted_price = discounted_price
+        product_variation_obj.is_vartied = is_vartied
+        product_variation_obj.weight_variation = weight_variation
+        product_variation_obj.availability_data = availability_data
+
+        product_variation_obj.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": "Product updated",
+            "error": None
+        }, status=status.HTTP_200_OK)
+
 
 class AvailabilityChargesViewSet(viewsets.ViewSet):
     @handle_exceptions
-    # @check_authentication
+    @check_authentication(required_role='admin')
     def create(self, request):
         availability_data = request.data.get("availability_data")
         product_id = request.data.get('product_id')
@@ -340,6 +436,41 @@ class AvailabilityChargesViewSet(viewsets.ViewSet):
                 is_available=item.get("is_available", True),
                 created_at=timezone.now()
             )
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"All {len(availability_data)} rows added",
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+    # @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk=None):
+        availability_data = request.data.get("availability_data")
+        product_id = request.data.get('product_id')
+        product_variation_id = request.data.get('product_variation_id')
+
+        if not availability_data or not product_id or not product_variation_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        for item in availability_data:
+            availability_obj = AvailabilityCharges.objects.filter(id=item['id']).first()
+            if availability_obj:
+                availability_obj.product_id = product_id
+                availability_obj.product_variation_id = product_variation_id
+                availability_obj.pincode_id = item["pincode_id"]
+                availability_obj.timeslot_data = item["timeslot_data"]
+                availability_obj.delivery_charges = item.get("delivery_charges", 0)
+                availability_obj.is_available = item.get("is_available", True)
+                availability_obj.save()
 
         return Response({
             "success": True,
