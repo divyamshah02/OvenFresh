@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - E-commerce Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky">
+          <div class="brand-container mb-4 p-3">
+            <h2 class="brand-name">ShopAdmin</h2>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="products.html">
+                <i class="fas fa-box me-2"></i>
+                Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="add-product.html">
+                <i class="fas fa-plus-circle me-2"></i>
+                Add Product
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="categories.html">
+                <i class="fas fa-tags me-2"></i>
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="orders.html">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="users.html">
+                <i class="fas fa-users me-2"></i>
+                Users
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="h2">Products</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="add-product.html" class="btn btn-sm btn-primary me-2">
+              <i class="fas fa-plus me-1"></i> Add New Product
+            </a>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products Content -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-6 mb-2 mb-md-0">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search products...">
+                  <button class="btn btn-primary" type="button">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex justify-content-md-end">
+                <div class="btn-group me-2">
+                  <button type="button" class="btn btn-outline-secondary">
+                    <i class="fas fa-filter me-1"></i> Filter
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary">
+                    <i class="fas fa-sort me-1"></i> Sort
+                  </button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-secondary">
+                    <i class="fas fa-download me-1"></i> Export
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label" for="selectAll"></label>
+                      </div>
+                    </th>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Wireless Earbuds</td>
+                    <td>SKU-001</td>
+                    <td>Electronics</td>
+                    <td>$89.99</td>
+                    <td>120</td>
+                    <td><span class="badge bg-success">In Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Smart Watch</td>
+                    <td>SKU-002</td>
+                    <td>Electronics</td>
+                    <td>$199.99</td>
+                    <td>85</td>
+                    <td><span class="badge bg-success">In Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Bluetooth Speaker</td>
+                    <td>SKU-003</td>
+                    <td>Electronics</td>
+                    <td>$59.99</td>
+                    <td>42</td>
+                    <td><span class="badge bg-success">In Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Laptop Sleeve</td>
+                    <td>SKU-004</td>
+                    <td>Accessories</td>
+                    <td>$29.99</td>
+                    <td>78</td>
+                    <td><span class="badge bg-success">In Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Phone Charger</td>
+                    <td>SKU-005</td>
+                    <td>Accessories</td>
+                    <td>$19.99</td>
+                    <td>0</td>
+                    <td><span class="badge bg-danger">Out of Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label"></label>
+                      </div>
+                    </td>
+                    <td>
+                      <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                    </td>
+                    <td>Wireless Mouse</td>
+                    <td>SKU-006</td>
+                    <td>Accessories</td>
+                    <td>$24.99</td>
+                    <td>15</td>
+                    <td><span class="badge bg-warning">Low Stock</span></td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <span>Showing 1 to 6 of 24 entries</span>
+              </div>
+              <nav>
+                <ul class="pagination mb-0">
+                  <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                  </li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">4</a></li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>

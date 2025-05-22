@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-commerce Admin UI Components</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ovenfresh-theme">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky">
+          <div class="brand-container mb-4 p-3 d-flex justify-content-between align-items-center">
+            <h2 class="brand-name">ShopAdmin</h2>
+            <button id="theme-toggle" class="btn btn-sm theme-toggle">
+              <i class="fas fa-sun"></i>
+            </button>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#dashboard-section">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#products-section">
+                <i class="fas fa-box me-2"></i>
+                Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#categories-section">
+                <i class="fas fa-tags me-2"></i>
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#orders-section">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#customers-section">
+                <i class="fas fa-users me-2"></i>
+                Customers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#forms-section">
+                <i class="fas fa-edit me-2"></i>
+                Forms
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#ui-elements-section">
+                <i class="fas fa-palette me-2"></i>
+                UI Elements
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#modals-section">
+                <i class="fas fa-window-restore me-2"></i>
+                Modals
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="h2">E-commerce Admin UI Components</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Welcome to the E-commerce Admin UI Components</h5>
+            <p class="card-text">This page contains all the essential UI elements for building an e-commerce admin portal. Use the sidebar to navigate between different component sections.</p>
+            <p class="card-text">Click the sun/moon icon in the sidebar to toggle between light and dark themes.</p>
+          </div>
+        </div>
+
+        <!-- Forms Section -->
+        <section id="forms-section" class="mb-5">
+          
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Product Form</h5>
+            </div>
+            <div class="card-body">
+              <form id="productForm">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Basic Information</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="productDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="productSKU" class="form-label">SKU <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="productSKU" required>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="productBarcode" class="form-label">Barcode (ISBN, UPC, GTIN, etc.)</label>
+                            <input type="text" class="form-control" id="productBarcode">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Pricing</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="productPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="productPrice" step="0.01" required>
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="comparePrice" class="form-label">Compare at Price</label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="comparePrice" step="0.01">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="costPerItem" class="form-label">Cost per Item</label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="costPerItem" step="0.01">
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="taxClass" class="form-label">Tax Class</label>
+                            <select class="form-select" id="taxClass">
+                              <option value="standard">Standard</option>
+                              <option value="reduced">Reduced Rate</option>
+                              <option value="zero">Zero Rate</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4">
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Status</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productStatus" class="form-label">Product Status</label>
+                          <select class="form-select" id="productStatus">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="archived">Archived</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Organization</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                          <select class="form-select" id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="1">Electronics</option>
+                            <option value="2">Clothing</option>
+                            <option value="3">Home & Kitchen</option>
+                            <option value="4">Beauty & Personal Care</option>
+                            <option value="5">Sports & Outdoors</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="productTags" class="form-label">Tags</label>
+                          <input type="text" class="form-control" id="productTags" placeholder="Enter tags separated by commas">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Inventory</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="trackInventory" checked>
+                            <label class="form-check-label" for="trackInventory">Track Inventory</label>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                          <input type="number" class="form-control" id="stockQuantity" value="0" required>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-3">
+                  <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>
