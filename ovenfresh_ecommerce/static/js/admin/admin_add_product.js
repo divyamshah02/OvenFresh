@@ -11,6 +11,7 @@ let pincodes = [];
 let timeslots = [];
 let product_id = null;
 let copiedAvailability = null;
+let categoryData = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get("product_id")) {
@@ -93,22 +94,35 @@ async function loadProductData() {
 }
 
 async function loadCategoriesAndSubcategories() {
-    const [catSuccess, catRes] = await callApi("GET", category_url);
-    const [subCatSuccess, subCatRes] = await callApi("GET", sub_category_url);
+    const [catSuccess, catRes] = await callApi("GET", category_url); // Must return subcategories too
 
     if (catSuccess && catRes.success) {
+        categoryData = catRes.data;
+
         const catSelect = document.getElementById("categorySelect");
-        catRes.data.forEach(cat => {
+        catSelect.innerHTML = `<option value="">Select Category</option>`; // Clear before fill
+
+        categoryData.forEach(cat => {
             const option = document.createElement("option");
             option.value = cat.category_id;
             option.text = cat.title;
             catSelect.appendChild(option);
         });
-    }
 
-    if (subCatSuccess && subCatRes.success) {
-        const subCatSelect = document.getElementById("subCategorySelect");
-        subCatRes.data.forEach(sub => {
+        // Optional: attach event listener to category select
+        catSelect.addEventListener("change", handleCategoryChange);
+    }
+}
+
+function handleCategoryChange(event) {
+    const selectedCatId = parseInt(event.target.value);
+    const subCatSelect = document.getElementById("subCategorySelect");
+    subCatSelect.innerHTML = `<option value="">Select Sub-Category</option>`; // Clear
+
+    const selectedCategory = categoryData.find(cat => cat.category_id === selectedCatId);
+
+    if (selectedCategory && selectedCategory.subcategories) {
+        selectedCategory.subcategories.forEach(sub => {
             const option = document.createElement("option");
             option.value = sub.sub_category_id;
             option.text = sub.title;

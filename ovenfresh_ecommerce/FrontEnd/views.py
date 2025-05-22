@@ -11,7 +11,7 @@ from Order.serializers import OrderItemSerializer
 
 class AdminAddProductViewSet(viewsets.ViewSet):
 
-    # @handle_exceptions
-    # @check_authentication(required_role="admin")
+    @handle_exceptions
+    @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_add_product.html')

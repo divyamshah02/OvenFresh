@@ -16,11 +16,27 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'category_id', 'title']
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        if 'category_id' in representation:
+            sub_category_obj = SubCategory.objects.filter(category_id=representation['category_id'])
+            sub_category_data = SubCategoryOnlyNameSerializer(sub_category_obj, many=True).data
+            
+            representation['subcategories'] = sub_category_data
+
+        return representation
+
 
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = ['id', 'category_id', 'sub_category_id', 'title']
+
+class SubCategoryOnlyNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubCategory
+        fields = ['sub_category_id', 'title']
 
 
 class ProductSerializer(serializers.ModelSerializer):
