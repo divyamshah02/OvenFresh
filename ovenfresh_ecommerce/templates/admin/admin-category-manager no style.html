@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Manager</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <script type="module" src="/static/js/admin/admin-category-manager.js"></script>
+</head>
+<body>
+    <h2>Manage Categories & Subcategories</h2>
+
+    <!-- Add Category -->
+    <div>
+        <input type="text" id="categoryNameInput" placeholder="Enter new category name">
+        <button id="addCategoryBtn">Add Category</button>
+    </div>
+
+    <hr>
+
+    <!-- Category List -->
+    <div id="categoryList"></div>
+
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal" style="display:none;">
+        <h3>Edit Category</h3>
+        <input type="hidden" id="editCategoryId">
+        <input type="text" id="editCategoryInput" placeholder="Edit category name">
+        <button id="saveEditCategoryBtn">Save</button>
+        <button onclick="document.getElementById('editCategoryModal').style.display='none'">Cancel</button>
+    </div>
+
+    <!-- Add Subcategory Modal -->
+    <div id="addSubcategoryModal" style="display:none;">
+        <h3>Add Subcategory</h3>
+        <input type="hidden" id="parentCategoryId">
+        <input type="text" id="addSubcategoryInput" placeholder="Enter subcategory name">
+        <button id="saveAddSubcategoryBtn">Add</button>
+        <button onclick="document.getElementById('addSubcategoryModal').style.display='none'">Cancel</button>
+    </div>
+
+    <!-- Edit Subcategory Modal -->
+    <div id="editSubcategoryModal" style="display:none;">
+        <h3>Edit Subcategory</h3>
+        <input type="hidden" id="editSubcategoryId">
+        <input type="text" id="editSubcategoryInput" placeholder="Edit subcategory name">
+        <button id="saveEditSubcategoryBtn">Save</button>
+        <button onclick="document.getElementById('editSubcategoryModal').style.display='none'">Cancel</button>
+    </div>
+
+  <script src="/static/js/api_caller.js"></script>
+
+    <!-- Call JS main() -->
+    <script type="module">
+        import { main } from "/static/js/admin/admin-category-manager.js";
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        main(csrfToken, {
+            categoryUrl: "{% url 'category-list' %}",
+            subcategoryUrl: "{% url 'sub-category-list' %}"
+        });
+    </script>
+</body>
+</html>

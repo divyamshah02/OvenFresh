@@ -1131,33 +1131,3 @@ body {
     color: black !important;
   }
 }
-
-
-/* Style for active (opened) accordion header */
-.accordion-button:not(.collapsed) {
-    background-color: var(--primary-color);  /* --primary-color */
-    color: white;
-    box-shadow: 0 4px 10px rgba(88, 129, 87, 0.4); /* Soft shadow based on primary color */
-}
-
-/* Hover effect for the active button */
-.accordion-button:not(.collapsed):hover {
-    background-color: var(--primary-hover);  /* --primary-hover */
-}
-
-/* Chevron icon in active state */
-.accordion-button:not(.collapsed)::after {
-    filter: invert(1); /* Makes the chevron white on dark background */
-}
-
-/* Optional: style for collapsed (inactive) buttons */
-.accordion-button.collapsed {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    box-shadow: none;
-}
-
-/* Hover effect for collapsed buttons */
-.accordion-button.collapsed:hover {
-    background-color: var(--primary-hover); /* A subtle light green shade on hover */
-}

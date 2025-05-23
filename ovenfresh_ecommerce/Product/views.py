@@ -27,7 +27,7 @@ class CategoryViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         title = request.data.get("title")
         category_id = self.generate_category_id()
@@ -55,6 +55,43 @@ class CategoryViewSet(viewsets.ViewSet):
             "error": None
             }, status=status.HTTP_201_CREATED)
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        title = request.data.get("title")
+        category_id = pk
+
+        if not title:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Title is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        update_category = Category.objects.filter(category_id=category_id).first()
+        if not update_category:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Category not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        update_category.title = title        
+        update_category.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"category_id": category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
+
+
     def generate_category_id(self):
         while True:
             category_id = ''.join(random.choices(string.digits, k=10))
@@ -76,7 +113,7 @@ class SubCategoryViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         title = request.data.get("title")
         category_id = request.data.get("category_id")
@@ -97,6 +134,42 @@ class SubCategoryViewSet(viewsets.ViewSet):
             title=title
         )
         new_sub_category.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"sub_category_id": sub_category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        title = request.data.get("title")        
+        sub_category_id = pk
+
+        if not title:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Title is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        update_sub_category = SubCategory.objects.filter(sub_category_id=sub_category_id).first()
+        if not update_sub_category:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "SubCategory not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        update_sub_category.title = title
+        update_sub_category.save()
 
         return Response({
             "success": True,

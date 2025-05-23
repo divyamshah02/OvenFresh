@@ -9,9 +9,26 @@ from UserDetail.models import User
 from Order.models import Order, OrderItem
 from Order.serializers import OrderItemSerializer
 
+
+class AdminTemplateViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_template.html')
+
+
 class AdminAddProductViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_add_product.html')
+
+
+class AdminManageCategoryViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_category.html')
