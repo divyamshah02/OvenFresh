@@ -332,6 +332,23 @@ class ProductViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
 
+class AllProductsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        product_obj = Product.objects.all()
+        product_data = ProductSerializer(product_obj, many=True)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": product_data.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
 class ProductVariationViewSet(viewsets.ViewSet):
 
     @handle_exceptions

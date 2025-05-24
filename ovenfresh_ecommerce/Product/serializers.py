@@ -42,10 +42,7 @@ class SubCategoryOnlyNameSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = [
-            'id', 'product_id', 'title', 'description', 'photos',
-            'category_id', 'sub_category_id', 'created_at'
-        ]
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

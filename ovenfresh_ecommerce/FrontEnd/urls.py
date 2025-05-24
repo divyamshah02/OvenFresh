@@ -5,8 +5,10 @@ from .views import *
 
 router = DefaultRouter()
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
+router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')
 router.register(r'admin-category', AdminManageCategoryViewSet, basename='admin-category')
+router.register(r'admin-pincodes', AdminPincodeViewSet, basename='admin-pincodes')
 
 urlpatterns = [
     path('', include(router.urls)),
