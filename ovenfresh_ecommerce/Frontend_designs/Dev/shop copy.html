@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - OvenFresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>🎂 Celebrate Occasions with Mumbai's best Online Gift Store</span>
+                    <div class="d-flex gap-3">
+                        <span><i class="fas fa-phone me-1"></i> +91 9876543210</span>
+                        <span><i class="fas fa-envelope me-1"></i> info@ovenfresh.in</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom sticky-top">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <a href="index.html" class="navbar-brand">
+                    <img src="static/img/logo.png" alt="OvenFresh Logo" class="img-fluid">
+                </a>
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search for cakes, gifts & more..." id="searchInput">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center gap-2">
+                    <a href="cart.html" class="icon-btn position-relative" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <a href="account.html" class="icon-btn d-none d-md-block" aria-label="Account">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div class="bg-light border-bottom py-2 text-center main-menu d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="shop.html">
+                            <i class="fas fa-birthday-cake me-2"></i>Cakes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-gift me-2"></i>Gifting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-seedling me-2"></i>Flowers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-ice-cream me-2"></i>Desserts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-candy-cane me-2"></i>Chocolates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-building me-2"></i>Corporate Gifting
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header of-bg-gradient text-white">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">
+                    <i class="fas fa-bars me-2"></i>Menu
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="shop.html">
+                            <i class="fas fa-birthday-cake me-3"></i>Cakes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-gift me-3"></i>Gifting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-seedling me-3"></i>Flowers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-ice-cream me-3"></i>Desserts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-candy-cane me-3"></i>Chocolates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-building me-3"></i>Corporate Gifting
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Shop Header -->
+        <section class="py-5 of-bg-gradient text-white">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="badge bg-white text-dark mb-3 px-3 py-2 rounded-pill">
+                            <i class="fas fa-store me-2"></i>Our Collection
+                        </div>
+                        <h1 class="display-4 fw-bold mb-3">Sweet Delights Await</h1>
+                        <p class="lead mb-4">Discover our extensive collection of freshly baked cakes, artisanal chocolates, and beautiful gifts for every occasion.</p>
+                        <div class="d-flex gap-3">
+                            <div class="text-center">
+                                <h4 class="mb-1">500+</h4>
+                                <small>Products</small>
+                            </div>
+                            <div class="text-center">
+                                <h4 class="mb-1">50+</h4>
+                                <small>Categories</small>
+                            </div>
+                            <div class="text-center">
+                                <h4 class="mb-1">24/7</h4>
+                                <small>Delivery</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end bg-transparent">
+                                <li class="breadcrumb-item"><a href="index.html" class="text-white">Home</a></li>
+                                <li class="breadcrumb-item active text-white-50" aria-current="page">Shop</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shop Content -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Sidebar Filters -->
+                    <div class="col-lg-3">
+                        <div class="shop-sidebar">
+                            <!-- Search Filter -->
+                            <div class="filter-card modern-card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-search me-2 of-text-primary"></i>Search Products
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="search-wrapper">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="form-control" placeholder="Search products..." id="productSearch">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="filter-card modern-card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-list me-2 of-text-primary"></i>Categories
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="category-filters">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="all" id="categoryAll" checked>
+                                            <label class="form-check-label" for="categoryAll">
+                                                All Products <span class="badge of-bg-secondary ms-2">24</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="cakes" id="categoryCakes">
+                                            <label class="form-check-label" for="categoryCakes">
+                                                Cakes <span class="badge of-bg-secondary ms-2">12</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="chocolates" id="categoryChocolates">
+                                            <label class="form-check-label" for="categoryChocolates">
+                                                Chocolates <span class="badge of-bg-secondary ms-2">8</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="gifts" id="categoryGifts">
+                                            <label class="form-check-label" for="categoryGifts">
+                                                Gift Hampers <span class="badge of-bg-secondary ms-2">4</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Price Filter -->
+                            <div class="filter-card modern-card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-rupee-sign me-2 of-text-primary"></i>Price Range
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="price-filters">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="priceRange" value="all" id="priceAll" checked>
+                                            <label class="form-check-label" for="priceAll">All Prices</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="priceRange" value="0-500" id="price1">
+                                            <label class="form-check-label" for="price1">₹0 - ₹500</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="priceRange" value="500-1000" id="price2">
+                                            <label class="form-check-label" for="price2">₹500 - ₹1000</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="priceRange" value="1000-2000" id="price3">
+                                            <label class="form-check-label" for="price3">₹1000 - ₹2000</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="priceRange" value="2000+" id="price4">
+                                            <label class="form-check-label" for="price4">₹2000+</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div class="filter-card modern-card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-star me-2 of-text-primary"></i>Customer Rating
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="rating-filters">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="5" id="rating5">
+                                            <label class="form-check-label" for="rating5">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="stars text-warning me-2">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                    </div>
+                                                    <span>5 Stars</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="4" id="rating4">
+                                            <label class="form-check-label" for="rating4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="stars text-warning me-2">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                    </div>
+                                                    <span>4+ Stars</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="3" id="rating3">
+                                            <label class="form-check-label" for="rating3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="stars text-warning me-2">
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="fas fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                        <i class="far fa-star"></i>
+                                                    </div>
+                                                    <span>3+ Stars</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Special Offers -->
+                            <div class="filter-card modern-card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-tags me-2 of-text-primary"></i>Special Offers
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="offer-filters">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="sale" id="onSale">
+                                            <label class="form-check-label" for="onSale">
+                                                <i class="fas fa-percentage me-2 of-text-accent"></i>On Sale
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="new" id="newArrivals">
+                                            <label class="form-check-label" for="newArrivals">
+                                                <i class="fas fa-sparkles me-2 of-text-accent"></i>New Arrivals
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" value="bestseller" id="bestsellers">
+                                            <label class="form-check-label" for="bestsellers">
+                                                <i class="fas fa-crown me-2 of-text-accent"></i>Best Sellers
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Clear Filters -->
+                            <button class="btn of-btn-outline-primary w-100 btn-rounded" id="clearFilters">
+                                <i class="fas fa-refresh me-2"></i>Clear All Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="col-lg-9">
+                        <!-- Toolbar -->
+                        <div class="shop-toolbar modern-card mb-4">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="results-info">
+                                            <span class="fw-bold of-text-primary">Showing 1-12 of 24 results</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center justify-content-md-end gap-3">
+                                            <label for="sortBy" class="form-label mb-0 fw-bold">Sort by:</label>
+                                            <select class="form-select" id="sortBy" style="width: auto;">
+                                                <option value="default">Default</option>
+                                                <option value="price-low">Price: Low to High</option>
+                                                <option value="price-high">Price: High to Low</option>
+                                                <option value="rating">Customer Rating</option>
+                                                <option value="newest">Newest First</option>
+                                                <option value="popular">Most Popular</option>
+                                            </select>
+                                            <div class="view-toggle">
+                                                <button class="btn btn-sm of-btn-outline-primary active" id="gridView">
+                                                    <i class="fas fa-th"></i>
+                                                </button>
+                                                <button class="btn btn-sm of-btn-outline-primary" id="listView">
+                                                    <i class="fas fa-list"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="products-grid" id="productsGrid">
+                            <div class="row g-4">
+                                <!-- Product 1 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="cakes" data-price="899" data-rating="4.5">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                                 alt="Chocolate Truffle Cake" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart" 
+                                                   data-id="1" data-name="Chocolate Truffle Cake" data-price="899" data-image="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                            <div class="position-absolute top-0 start-0 m-3">
+                                                <span class="badge bg-danger">Hot</span>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Chocolate Truffle Cake</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <span class="ms-2 text-muted small">(42)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Rich chocolate cake with truffle frosting</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹899</span>
+                                                    <span class="original-price ms-2">₹1199</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="1" data-name="Chocolate Truffle Cake" data-price="899" data-image="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 2 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="cakes" data-price="799" data-rating="4.0">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" 
+                                                 alt="Red Velvet Cake" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart"
+                                                   data-id="2" data-name="Red Velvet Cake" data-price="799" data-image="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                            <div class="position-absolute top-0 start-0 m-3">
+                                                <span class="badge bg-success">New</span>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Red Velvet Cake</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                                <span class="ms-2 text-muted small">(38)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Classic red velvet with cream cheese frosting</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹799</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="2" data-name="Red Velvet Cake" data-price="799" data-image="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 3 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="chocolates" data-price="699" data-rating="5.0">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" 
+                                                 alt="Chocolate Box" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart"
+                                                   data-id="3" data-name="Luxury Chocolate Box" data-price="699" data-image="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Luxury Chocolate Box</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <span class="ms-2 text-muted small">(56)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Assorted premium chocolates in elegant box</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹699</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="3" data-name="Luxury Chocolate Box" data-price="699" data-image="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 4 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="gifts" data-price="1999" data-rating="4.5">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" 
+                                                 alt="Gift Hamper" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart"
+                                                   data-id="4" data-name="Deluxe Gift Hamper" data-price="1999" data-image="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                            <div class="position-absolute top-0 start-0 m-3">
+                                                <span class="badge of-bg-accent">Premium</span>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Deluxe Gift Hamper</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <span class="ms-2 text-muted small">(27)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Complete gift set with cake, chocolates & flowers</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹1999</span>
+                                                    <span class="original-price ms-2">₹2499</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="4" data-name="Deluxe Gift Hamper" data-price="1999" data-image="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- More products would continue here... -->
+                                <!-- For brevity, I'll add a few more products with similar structure -->
+                                
+                                <!-- Product 5 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="cakes" data-price="649" data-rating="4.2">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" 
+                                                 alt="Fresh Fruit Pastries" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart"
+                                                   data-id="5" data-name="Fresh Fruit Pastries" data-price="649" data-image="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Fresh Fruit Pastries</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="far fa-star"></i>
+                                                <span class="ms-2 text-muted small">(23)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Assorted pastries topped with fresh fruits</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹649</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="5" data-name="Fresh Fruit Pastries" data-price="649" data-image="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product 6 -->
+                                <div class="col-lg-4 col-md-6 product-item" data-category="cakes" data-price="1299" data-rating="4.8">
+                                    <div class="product-card modern-card h-100">
+                                        <div class="product-img">
+                                            <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1039&q=80" 
+                                                 alt="Wedding Cake" class="img-fluid">
+                                            <div class="product-actions">
+                                                <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="product-detail.html" class="btn-product-action" title="Quick View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn-product-action add-to-cart" title="Add to Cart"
+                                                   data-id="6" data-name="Elegant Wedding Cake" data-price="1299" data-image="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1039&q=80">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                            </div>
+                                            <div class="position-absolute top-0 start-0 m-3">
+                                                <span class="badge of-bg-accent">Premium</span>
+                                            </div>
+                                        </div>
+                                        <div class="product-body">
+                                            <h6 class="mb-2">Elegant Wedding Cake</h6>
+                                            <div class="product-rating mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <span class="ms-2 text-muted small">(15)</span>
+                                            </div>
+                                            <p class="text-muted small mb-3">Multi-tier cake perfect for special occasions</p>
+                                            <div class="product-price d-flex align-items-center justify-content-between">
+                                                <div>
+                                                    <span class="price">₹1299</span>
+                                                </div>
+                                                <button class="btn of-btn-primary btn-sm rounded-pill add-to-cart"
+                                                        data-id="6" data-name="Elegant Wedding Cake" data-price="1299" data-image="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1039&q=80">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Products pagination" class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-info">
+                            <img src="static/img/ovenfresh-logo-min.webp" alt="OvenFresh Logo" class="mb-3" style="height: 60px;">
+                            <p class="mb-4">For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely on for a wonderful experience. We deliver fresh, delicious cakes with love.</p>
+                            <div class="social-links">
+                                <a href="#" class="social-icon" title="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Pinterest">
+                                    <i class="fab fa-pinterest"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h6 class="mb-4 fw-bold">Quick Links</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html"><i class="fas fa-home me-2"></i>Home</a></li>
+                                <li><a href="shop.html"><i class="fas fa-shopping-bag me-2"></i>Shop</a></li>
+                                <li><a href="about.html"><i class="fas fa-info-circle me-2"></i>About Us</a></li>
+                                <li><a href="contact.html"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+                                <li><a href="account.html"><i class="fas fa-user me-2"></i>My Account</a></li>
+                                <li><a href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h6 class="mb-4 fw-bold">Categories</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="shop.html"><i class="fas fa-birthday-cake me-2"></i>Cakes</a></li>
+                                <li><a href="shop.html"><i class="fas fa-gift me-2"></i>Gifts</a></li>
+                                <li><a href="shop.html"><i class="fas fa-seedling me-2"></i>Flowers</a></li>
+                                <li><a href="shop.html"><i class="fas fa-candy-cane me-2"></i>Chocolates</a></li>
+                                <li><a href="shop.html"><i class="fas fa-ice-cream me-2"></i>Desserts</a></li>
+                                <li><a href="shop.html"><i class="fas fa-cookie-bite me-2"></i>Cookies</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="footer-contact">
+                            <h6 class="mb-4 fw-bold">Get in Touch</h6>
+                            <div class="contact-item d-flex align-items-center mb-3">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Address:</strong><br>
+                                    123 Cake Street, Bandra West<br>
+                                    Mumbai, Maharashtra 400050
+                                </div>
+                            </div>
+                            <div class="contact-item d-flex align-items-center mb-3">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Phone:</strong><br>
+                                    +91 9876543210
+                                </div>
+                            </div>
+                            <div class="contact-item d-flex align-items-center">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <strong>Email:</strong><br>
+                                    info@ovenfresh.in
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-5 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved. Made with <i class="fas fa-heart of-text-accent"></i> in Mumbai</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="footer-links d-inline-flex gap-3">
+                            <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            <a href="#" class="text-decoration-none">Terms of Service</a>
+                            <a href="#" class="text-decoration-none">Cookie Policy</a>
+                            <a href="#" class="text-decoration-none">FAQ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="static/js/loader.js"></script>
+
+    <script>
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartCount() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        function addToCart(id, name, price, image) {
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: name,
+                    price: parseFloat(price),
+                    image: image,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            showToast('Product added to cart!', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            // Create toast container if it doesn't exist
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+            
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            
+            // Remove toast element after it's hidden
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        // Filter and search functionality
+        function filterProducts() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const selectedCategories = Array.from(document.querySelectorAll('.category-filters input:checked')).map(cb => cb.value);
+            const selectedPriceRange = document.querySelector('input[name="priceRange"]:checked').value;
+            const selectedRatings = Array.from(document.querySelectorAll('.rating-filters input:checked')).map(cb => parseFloat(cb.value));
+            const selectedOffers = Array.from(document.querySelectorAll('.offer-filters input:checked')).map(cb => cb.value);
+            
+            const products = document.querySelectorAll('.product-item');
+            let visibleCount = 0;
+            
+            products.forEach(product => {
+                const productName = product.querySelector('h6').textContent.toLowerCase();
+                const productCategory = product.dataset.category;
+                const productPrice = parseFloat(product.dataset.price);
+                const productRating = parseFloat(product.dataset.rating);
+                
+                let show = true;
+                
+                // Search filter
+                if (searchTerm && !productName.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                // Category filter
+                if (!selectedCategories.includes('all') && selectedCategories.length > 0 && !selectedCategories.includes(productCategory)) {
+                    show = false;
+                }
+                
+                // Price filter
+                if (selectedPriceRange !== 'all') {
+                    const [min, max] = selectedPriceRange.split('-').map(p => p === '' ? Infinity : parseFloat(p.replace('+', '')));
+                    if (max === undefined) {
+                        if (productPrice < min) show = false;
+                    } else {
+                        if (productPrice < min || productPrice > max) show = false;
+                    }
+                }
+                
+                // Rating filter
+                if (selectedRatings.length > 0) {
+                    const matchesRating = selectedRatings.some(rating => productRating >= rating);
+                    if (!matchesRating) show = false;
+                }
+                
+                if (show) {
+                    product.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+            
+            // Update results count
+            document.querySelector('.results-info').innerHTML = `<span class="fw-bold of-text-primary">Showing ${visibleCount} results</span>`;
+        }
+
+        // Sort functionality
+        function sortProducts() {
+            const sortBy = document.getElementById('sortBy').value;
+            const productsContainer = document.querySelector('.products-grid .row');
+            const products = Array.from(document.querySelectorAll('.product-item'));
+            
+            products.sort((a, b) => {
+                switch (sortBy) {
+                    case 'price-low':
+                        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                    case 'price-high':
+                        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                    case 'rating':
+                        return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                    case 'newest':
+                        // For demo purposes, reverse order
+                        return products.indexOf(b) - products.indexOf(a);
+                    case 'popular':
+                        // For demo purposes, sort by rating
+                        return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Re-append sorted products
+            products.forEach(product => {
+                productsContainer.appendChild(product);
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add to cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
+                    const price = this.dataset.price;
+                    const image = this.dataset.image;
+                    addToCart(id, name, price, image);
+                });
+            });
+
+            // Filter inputs
+            document.querySelectorAll('.category-filters input, .rating-filters input, .offer-filters input, input[name="priceRange"]').forEach(input => {
+                input.addEventListener('change', filterProducts);
+            });
+
+            // Search input
+            document.getElementById('productSearch').addEventListener('input', filterProducts);
+
+            // Sort dropdown
+            document.getElementById('sortBy').addEventListener('change', sortProducts);
+
+            // Clear filters
+            document.getElementById('clearFilters').addEventListener('click', function() {
+                document.querySelectorAll('.filter-card input').forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = input.id === 'categoryAll';
+                    } else if (input.type === 'radio') {
+                        input.checked = input.id === 'priceAll';
+                    }
+                });
+                document.getElementById('productSearch').value = '';
+                filterProducts();
+            });
+
+            // View toggle
+            document.getElementById('gridView').addEventListener('click', function() {
+                this.classList.add('active');
+                document.getElementById('listView').classList.remove('active');
+                document.querySelectorAll('.product-item').forEach(item => {
+                    item.className = 'col-lg-4 col-md-6 product-item';
+                });
+            });
+
+            document.getElementById('listView').addEventListener('click', function() {
+                this.classList.add('active');
+                document.getElementById('gridView').classList.remove('active');
+                document.querySelectorAll('.product-item').forEach(item => {
+                    item.className = 'col-12 product-item';
+                });
+            });
+        });
+
+        window.onload = function () {
+            toggle_loader();
+            updateCartCount();
+        };
+
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.main-menu');
+            const scrollTrigger = 50;
+
+            if (window.scrollY >= scrollTrigger) {
+                navbar.classList.add('fixed-top');
+                navbar.style.top = '0';
+            } else {
+                navbar.classList.remove('fixed-top');
+                navbar.style.top = 'auto';
+            }
+        });
+        
+    </script>
+
+</body>
+
+</html>

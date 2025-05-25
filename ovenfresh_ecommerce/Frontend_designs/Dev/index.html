@@ -70,7 +70,10 @@
 
                 <!-- Right Section -->
                 <div class="d-flex align-items-center">
-                    <button class="icon-btn me-2" aria-label="Cart"><i class="bi bi-cart"></i></button>
+                    <a href="cart.html" class="icon-btn me-2" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
                     <button class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
                             class="bi bi-person-circle"></i></button>
 
@@ -85,24 +88,7 @@
         </nav>
 
         <!-- Menu Bar -->
-        <!-- <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
-            <div class="container">
-                <ul class="nav justify-content-center">
-                    <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
-                </ul>
-            </div>
-        </div> -->
-
-        <div
-            class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+        <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
             <div class="container position-relative">
                 <ul class="nav justify-content-center">
                     <!-- Cakes with Mega Menu -->
@@ -166,7 +152,6 @@
             </div>
         </div>
 
-
         <!-- Mobile Offcanvas Menu -->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
             <div class="offcanvas-header">
@@ -187,7 +172,6 @@
                 </ul>
             </div>
         </div>
-
         <!-- ##### ##### End Nav Section ##### ##### -->
 
 

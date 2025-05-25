@@ -48,3 +48,12 @@ class AdminPincodeViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_pincode_manager.html')
+
+
+class AdminTimeslotViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_timeslots_manager.html')
+

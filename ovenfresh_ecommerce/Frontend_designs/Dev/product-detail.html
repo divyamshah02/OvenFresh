@@ -266,7 +266,7 @@
                             <!-- Product Options -->
                             <div class="product-options mb-4">
                                 <div class="row g-3">
-                                    <div class="col-md-6">
+                                    <div class="col-6">
                                         <label for="weight" class="form-label">Weight:</label>
                                         <select class="form-select" id="weight">
                                             <option value="500g">500g - $35.99</option>
@@ -275,29 +275,7 @@
                                             <option value="2kg">2kg - $125.99</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="flavor" class="form-label">Flavor:</label>
-                                        <select class="form-select" id="flavor">
-                                            <option value="chocolate">Chocolate Truffle</option>
-                                            <option value="vanilla">Vanilla Truffle</option>
-                                            <option value="strawberry">Strawberry Truffle</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="message" class="form-label">Custom Message:</label>
-                                        <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
-                                        <input type="date" class="form-control" id="delivery-date">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Quantity and Add to Cart -->
-                            <div class="product-actions mb-4">
-                                <div class="row g-3 align-items-end">
-                                    <div class="col-md-3">
+                                    <div class="col-6">                                        
                                         <label for="quantity" class="form-label">Quantity:</label>
                                         <div class="quantity-selector">
                                             <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(-1)">-</button>
@@ -305,13 +283,46 @@
                                             <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
                                         </div>
                                     </div>
-                                    <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
+                                        <input type="date" class="form-control" id="delivery-date">
+                                    </div>
+                                    <div class="col-md-6">                                        
+                                        <label for="timeslot" class="form-label">Time Slots:</label>
+                                        <select class="form-select" id="timeslot">
+                                            <option value="10:00 AM - 02:00 PM">10:00 AM - 02:00 PM</option>
+                                            <option value="12:00 PM - 04:00 PM">12:00 PM - 04:00 PM</option>
+                                            <option value="04:00 PM - 07:00 PM">04:00 PM - 07:00 PM</option>
+                                            <option value="07:00 PM - 10:00 PM (Evening Delivery: ₹80)">07:00 PM - 10:00 PM (Evening Delivery: ₹80)</option>
+                                            <option value="10:45 PM - 11:59 PM (Late Night Delivery: ₹100)">10:45 PM - 11:59 PM (Late Night Delivery: ₹100)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="message" class="form-label">Custom Message:</label>
+                                        <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quantity and Add to Cart -->
+                            <div class="mb-4">
+                                <div class="row g-3 align-items-end">
+                                    <!-- <div class="col-md-3">
+                                        <label for="quantity" class="form-label">Quantity:</label>
+                                        <div class="quantity-selector">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(-1)">-</button>
+                                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
+                                        </div>
+                                    </div> -->
+                                    <div class="col-md-12">
                                         <div class="d-grid gap-2 d-md-flex">
                                             <button class="btn of-btn-primary rounded-pill flex-fill" onclick="addToCart()">
                                                 <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                             </button>
                                             <button class="btn of-btn-outline-primary rounded-pill">
-                                                <i class="fas fa-heart"></i>
+                                                <!-- <i class="fas fa-heart"></i> -->
+                                                Buy Now
                                             </button>
                                         </div>
                                     </div>
