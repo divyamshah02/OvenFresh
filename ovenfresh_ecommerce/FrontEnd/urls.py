@@ -4,6 +4,11 @@ from .views import *
 
 
 router = DefaultRouter()
+
+router.register(r'', HomeViewSet, basename='home')
+router.register(r'shop', ShopViewSet, basename='shop')
+router.register(r'product-detail', ProductDetailViewSet, basename='product-detail')
+
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')

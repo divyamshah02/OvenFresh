@@ -10,6 +10,26 @@ from Order.models import Order, OrderItem
 from Order.serializers import OrderItemSerializer
 
 
+class HomeViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'home.html')
+
+class ShopViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'shop.html')
+
+
+class ProductDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'product-detail.html')
+
+
 class AdminTemplateViewSet(viewsets.ViewSet):
 
     @handle_exceptions

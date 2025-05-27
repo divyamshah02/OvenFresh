@@ -206,15 +206,15 @@
                                              alt="View 1" class="img-fluid rounded thumbnail-img active" onclick="changeMainImage(this.src)">
                                     </div>
                                     <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" 
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
                                              alt="View 2" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
                                     </div>
                                     <div class="col-3">
-                                        <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" 
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
                                              alt="View 3" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
                                     </div>
                                     <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" 
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
                                              alt="View 4" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
                                     </div>
                                 </div>
@@ -247,32 +247,42 @@
                             </div>
                             
                             <div class="product-price mb-4">
-                                <span class="current-price h2 of-text-primary">$35.99</span>
-                                <span class="original-price text-muted text-decoration-line-through ms-2">$45.99</span>
+                                <span class="current-price h2 of-text-primary">₹35.99</span>
+                                <span class="original-price text-muted text-decoration-line-through ms-2">₹45.99</span>
                                 <span class="discount-badge badge bg-warning ms-2">22% OFF</span>
                             </div>
                             
                             <div class="product-description mb-4">
                                 <p>Indulge in our rich and decadent Chocolate Truffle Cake, made with premium Belgian chocolate and fresh cream. This heavenly dessert features multiple layers of moist chocolate sponge cake filled with smooth chocolate truffle cream and topped with chocolate ganache.</p>
                                 
-                                <ul class="list-unstyled">
+                                <!-- <ul class="list-unstyled">
                                     <li><i class="fas fa-check of-text-primary me-2"></i>Made with premium Belgian chocolate</li>
                                     <li><i class="fas fa-check of-text-primary me-2"></i>Fresh cream and natural ingredients</li>
                                     <li><i class="fas fa-check of-text-primary me-2"></i>Eggless option available</li>
                                     <li><i class="fas fa-check of-text-primary me-2"></i>Same day delivery in Mumbai</li>
-                                </ul>
+                                </ul> -->
                             </div>
                             
                             <!-- Product Options -->
                             <div class="product-options mb-4">
                                 <div class="row g-3">
+                                    <!-- <div class="row align-items-center" style="min-height: 100px;">
+                                        <label for="pincode-check" class="form-label">Check Pincode:</label>
+                                        <div class="col-md-8">
+                                            <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-center">
+                                            <button class="btn of-btn-primary rounded-pill flex-fill mt-3 mt-md-0 text-nowrap" onclick="addToCart()">Check Pincode</button>
+                                        </div>
+                                    </div> -->
+
                                     <div class="col-6">
                                         <label for="weight" class="form-label">Weight:</label>
                                         <select class="form-select" id="weight">
-                                            <option value="500g">500g - $35.99</option>
-                                            <option value="1kg">1kg - $65.99</option>
-                                            <option value="1.5kg">1.5kg - $95.99</option>
-                                            <option value="2kg">2kg - $125.99</option>
+                                            <option value="500g">500g - ₹35.99</option>
+                                            <option value="1kg">1kg - ₹65.99</option>
+                                            <option value="1.5kg">1.5kg - ₹95.99</option>
+                                            <option value="2kg">2kg - ₹125.99</option>
                                         </select>
                                     </div>
                                     <div class="col-6">                                        
@@ -283,6 +293,17 @@
                                             <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
                                         </div>
                                     </div>
+                                    <div class="col-12">
+                                        <label for="pincode-check" class="form-label">Check Pincode:</label>
+                                        <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" onclick="addToCart()">
+                                            Check Pincode
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row m-0 p-0 g-3" style="display: none;">
                                     <div class="col-md-6">
                                         <label for="delivery-date" class="form-label">Delivery Date:</label>
                                         <input type="date" class="form-control" id="delivery-date">
@@ -302,6 +323,7 @@
                                         <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
                                     </div>
                                 </div>
+
                             </div>
                             
                             <!-- Quantity and Add to Cart -->
@@ -329,43 +351,46 @@
                                 </div>
                             </div>
                             
-                            <!-- Product Features -->
-                            <div class="product-features">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="feature-item d-flex align-items-center">
-                                            <i class="fas fa-truck of-text-primary me-3"></i>
-                                            <div>
-                                                <h6 class="mb-0">Free Delivery</h6>
-                                                <small class="text-muted">On orders above $50</small>
-                                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <!-- Product Features -->
+                        <div class="product-features">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-truck of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Free Delivery</h6>
+                                            <small class="text-muted">On orders above ₹50</small>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="feature-item d-flex align-items-center">
-                                            <i class="fas fa-clock of-text-primary me-3"></i>
-                                            <div>
-                                                <h6 class="mb-0">Same Day Delivery</h6>
-                                                <small class="text-muted">Order before 6 PM</small>
-                                            </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-clock of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Same Day Delivery</h6>
+                                            <small class="text-muted">Order before 6 PM</small>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="feature-item d-flex align-items-center">
-                                            <i class="fas fa-shield-alt of-text-primary me-3"></i>
-                                            <div>
-                                                <h6 class="mb-0">Quality Guarantee</h6>
-                                                <small class="text-muted">100% fresh products</small>
-                                            </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-shield-alt of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Quality Guarantee</h6>
+                                            <small class="text-muted">100% fresh products</small>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="feature-item d-flex align-items-center">
-                                            <i class="fas fa-undo of-text-primary me-3"></i>
-                                            <div>
-                                                <h6 class="mb-0">Easy Returns</h6>
-                                                <small class="text-muted">Hassle-free returns</small>
-                                            </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-undo of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Easy Returns</h6>
+                                            <small class="text-muted">Hassle-free returns</small>
                                         </div>
                                     </div>
                                 </div>
@@ -377,7 +402,7 @@
         </section>
 
         <!-- Product Details Tabs -->
-        <section class="py-5 bg-light">
+        <section class="pb-5 bg-light">
             <div class="container">
                 <div class="row">
                     <div class="col-12">
@@ -572,9 +597,9 @@
                                     <div class="col-md-6">
                                         <h6>Delivery Charges:</h6>
                                         <ul>
-                                            <li>Free delivery on orders above $50</li>
-                                            <li>Regular delivery: $5.99</li>
-                                            <li>Midnight delivery: $9.99</li>
+                                            <li>Free delivery on orders above ₹50</li>
+                                            <li>Regular delivery: ₹5.99</li>
+                                            <li>Midnight delivery: ₹9.99</li>
                                         </ul>
                                         
                                         <h6>Special Instructions:</h6>
@@ -593,7 +618,7 @@
         </section>
 
         <!-- Related Products -->
-        <section class="py-5">
+        <section class="pb-5">
             <div class="container">
                 <div class="section-title text-center mb-5">
                     <h2>Related Products</h2>
@@ -622,7 +647,7 @@
                                     <span class="ms-2">(38)</span>
                                 </div>
                                 <div class="product-price">
-                                    <span class="price">$32.99</span>
+                                    <span class="price">₹32.99</span>
                                 </div>
                             </div>
                         </div>
@@ -649,7 +674,7 @@
                                     <span class="ms-2">(56)</span>
                                 </div>
                                 <div class="product-price">
-                                    <span class="price">$29.99</span>
+                                    <span class="price">₹29.99</span>
                                 </div>
                             </div>
                         </div>
@@ -676,7 +701,7 @@
                                     <span class="ms-2">(27)</span>
                                 </div>
                                 <div class="product-price">
-                                    <span class="price">$79.99</span>
+                                    <span class="price">₹79.99</span>
                                 </div>
                             </div>
                         </div>
@@ -703,7 +728,7 @@
                                     <span class="ms-2">(23)</span>
                                 </div>
                                 <div class="product-price">
-                                    <span class="price">$18.99</span>
+                                    <span class="price">₹18.99</span>
                                 </div>
                             </div>
                         </div>

@@ -335,24 +335,15 @@ class ProductViewSet(viewsets.ViewSet):
 class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
     def list(self, request):
         category_id = request.query_params.get('category_id')
-
-        product_obj = Product.objects.all()
-
         if category_id:
-            try:
-                # Convert to integer and filter
-                category_id = int(category_id)
-                product_obj = product_obj.filter(category_id=category_id)
-            except (ValueError, TypeError):
-                return Response({
-                    "success": False,
-                    "error": "Invalid category ID format - must be numeric"
-                }, status=status.HTTP_400_BAD_REQUEST)
+            product_obj = Product.objects.filter(category_id=category_id)
 
-        product_data = ProductSerializer(product_obj, many=True)
+        else:
+            product_obj = Product.objects.all()
+
+        product_data = AllProductSerializer(product_obj, many=True)
 
         return Response({
             "success": True,

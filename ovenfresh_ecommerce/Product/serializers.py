@@ -57,6 +57,46 @@ class ProductSerializer(serializers.ModelSerializer):
             
             representation['sub_category_name'] = sub_category_data.title if sub_category_data else None
 
+            related_products = Product.objects.filter(sub_category_id=representation['sub_category_id'])
+            related_products_data = AllProductSerializer(related_products, many=True).data
+            representation['related_products'] = related_products_data
+
+        if 'product_id' in representation:
+            product_variation_obj = ProductVariation.objects.filter(product_id=representation['product_id'])
+            product_variation = ProductVariationDetailSerializer(product_variation_obj, many=True).data
+            representation['product_variation'] = product_variation
+
+            reviews_obj = Reviews.objects.filter(product_id=representation['product_id'], is_approved_admin=True)
+            review_data = ReviewSerializer(reviews_obj, many=True).data
+            representation['reviews'] = review_data
+
+        return representation
+
+class AllProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        if 'category_id' in representation:        
+            category_data = Category.objects.filter(category_id=representation['category_id']).first()
+            
+            representation['category_name'] = category_data.title if category_data else None
+
+        if 'sub_category_id' in representation:        
+            sub_category_data = SubCategory.objects.filter(sub_category_id=representation['sub_category_id']).first()
+            
+            representation['sub_category_name'] = sub_category_data.title if sub_category_data else None
+        
+        if 'product_id' in representation:
+            product_variation_obj = ProductVariation.objects.filter(product_id=representation['product_id']).first()
+            if product_variation_obj:
+                representation['product_variation_id'] = product_variation_obj.product_variation_id
+                representation['actual_price'] = product_variation_obj.discounted_price
+                representation['weight'] = product_variation_obj.weight_variation
+
         return representation
 
 
@@ -78,6 +118,24 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
         return representation
 
+
+class ProductVariationDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductVariation
+        fields = [
+            'id', 'product_id', 'product_variation_id', 'actual_price',
+            'discounted_price', 'is_vartied', 'weight_variation', 'created_at'
+        ]
+
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+
+    #     if 'product_variation_id' in representation:            
+    #         availability_obj = AvailabilityCharges.objects.filter(product_variation_id=representation['product_variation_id'])
+    #         availability_data = AvailabilityChargesSerializer(availability_obj, many=True).data
+    #         representation['availability_data'] = availability_data
+
+    #     return representation
 
 
 class ReviewSerializer(serializers.ModelSerializer):
