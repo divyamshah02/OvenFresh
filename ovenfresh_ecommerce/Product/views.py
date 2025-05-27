@@ -349,7 +349,7 @@ class AllProductsViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": product_data.data,
+            "data": serializer.data,
             "error": None
         }, status=status.HTTP_200_OK)
 
