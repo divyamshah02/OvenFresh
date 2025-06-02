@@ -252,7 +252,7 @@
                                 <span class="discount-badge badge bg-warning ms-2">22% OFF</span>
                             </div>
                             
-                            <div class="product-description mb-4">
+                            <div class="product-description mb-4" style="display: none;">
                                 <p>Indulge in our rich and decadent Chocolate Truffle Cake, made with premium Belgian chocolate and fresh cream. This heavenly dessert features multiple layers of moist chocolate sponge cake filled with smooth chocolate truffle cream and topped with chocolate ganache.</p>
                                 
                                 <!-- <ul class="list-unstyled">
@@ -292,6 +292,16 @@
                                             <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
                                             <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
                                         </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="weight" class="form-label">Greeting Cards:</label>
+                                        <select class="form-select" id="weight">
+                                            <option value="Retirement Card">Retirement Card (₹ 100)</option>
+                                            <option value="Farewell Card">Farewell Card (₹ 100)</option>
+                                            <option value="Sorry Card">Sorry Card (₹ 100)</option>
+                                            <option value="Get Well Soon">Get Well Soon (₹ 100)</option>
+                                            <option value="Diwali Greeting Card">Diwali Greeting Card (₹ 100)</option>
+                                        </select>
                                     </div>
                                     <div class="col-12">
                                         <label for="pincode-check" class="form-label">Check Pincode:</label>
@@ -363,7 +373,7 @@
                                         <i class="fas fa-truck of-text-primary me-3"></i>
                                         <div>
                                             <h6 class="mb-0">Free Delivery</h6>
-                                            <small class="text-muted">On orders above ₹50</small>
+                                            <small class="text-muted">On orders above ₹500</small>
                                         </div>
                                     </div>
                                 </div>
@@ -597,7 +607,7 @@
                                     <div class="col-md-6">
                                         <h6>Delivery Charges:</h6>
                                         <ul>
-                                            <li>Free delivery on orders above ₹50</li>
+                                            <li>Free delivery on orders above ₹500</li>
                                             <li>Regular delivery: ₹5.99</li>
                                             <li>Midnight delivery: ₹9.99</li>
                                         </ul>
@@ -736,6 +746,127 @@
                 </div>
             </div>
         </section>
+
+                <!-- Related Products -->
+        <section class="pb-5">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2>Recently Viewed Products</h2>
+                    <p class="text-muted">You might also like these delicious treats</p>
+                </div>
+                <div class="row g-4">
+                    <!-- Related Product 1 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" alt="Red Velvet Cake" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Red Velvet Cake</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(38)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹32.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 2 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Chocolate Box" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Luxury Chocolate Box</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-2">(56)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹29.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 3 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Gift Hamper" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Deluxe Gift Hamper</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-2">(27)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹79.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 4 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Pastries" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Fresh Fruit Pastries</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(23)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹18.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
 
         <!-- Footer -->
         <footer id="contact" class="pt-5 pb-3">

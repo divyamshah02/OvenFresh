@@ -1,5 +1,4 @@
 let cart_list_url = null;
-let cart_update_url = null;
 let cart_delete_url = null;
 let csrf_token = null;
 
@@ -14,10 +13,9 @@ const promoCodes = {
 let appliedPromoCode = null;
 let promoDiscount = 0;
 
-async function GenerateCart(csrfTokenParam, cartListUrlParam, cartUpdateUrlParam, cartDeleteUrlParam) {
+async function GenerateCart(csrfTokenParam, cartListUrlParam, cartDeleteUrlParam) {
     csrf_token = csrfTokenParam;
     cart_list_url = cartListUrlParam;
-    cart_update_url = cartUpdateUrlParam;
     cart_delete_url = cartDeleteUrlParam;
 
     try {
@@ -54,7 +52,7 @@ function renderCartItems(cartItems) {
 
     // Render cart items
     cartItemsContainer.innerHTML = cartItems.map(item => `
-        <div class="border-bottom p-4" id="cart_item_${item.cart_item_id}">
+        <div class="border-bottom p-4" id="cart_item_${item.id}">
             <div class="row align-items-center">
                 <div class="col-md-2">
                     <img src="${item.product_image || '/placeholder.svg?height=80&width=80'}" 
@@ -71,23 +69,23 @@ function renderCartItems(cartItems) {
                 <div class="col-md-3">
                     <div class="d-flex align-items-center">
                         <button class="btn btn-sm btn-outline-secondary" 
-                                onclick="updateCartItemQuantity(${item.cart_item_id}, ${item.qty - 1})"
-                                ${item.qty <= 1 ? 'disabled' : ''}>
+                                onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})"
+                                ${item.quantity <= 1 ? 'disabled' : ''}>
                             <i class="fas fa-minus"></i>
                         </button>
-                        <span class="mx-3 fw-bold">${item.qty}</span>
+                        <span class="mx-3 fw-bold">${item.quantity}</span>
                         <button class="btn btn-sm btn-outline-secondary" 
-                                onclick="updateCartItemQuantity(${item.cart_item_id}, ${item.qty + 1})">
+                                onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <strong class="of-text-primary">₹${(parseFloat(item.price) * item.qty).toFixed(2)}</strong>
+                    <strong class="of-text-primary">₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</strong>
                 </div>
                 <div class="col-md-1">
                     <button class="btn btn-sm btn-outline-danger" 
-                            onclick="removeCartItem(${item.cart_item_id})"
+                            onclick="removeCartItem(${item.id})"
                             title="Remove item">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -111,7 +109,8 @@ function showEmptyCart() {
 }
 
 function updateCartCount(cartItems) {
-    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.qty), 0);
+    console.log(cartItems);
+    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
     const cartCountElement = document.getElementById('cart-count');
     if (cartCountElement) {
         cartCountElement.textContent = cartCount;
@@ -119,7 +118,7 @@ function updateCartCount(cartItems) {
 }
 
 function calculateTotals(cartItems) {
-    const subtotal = cartItems.reduce((total, item) => total + (parseFloat(item.price) * parseInt(item.qty)), 0);
+    const subtotal = cartItems.reduce((total, item) => total + (parseFloat(item.price) * parseInt(item.quantity)), 0);
     const shipping = subtotal >= 50 ? 0 : 5.99; // Free shipping over ₹50
     const tax = subtotal * 0.08; // 8% tax
     const discount = subtotal * promoDiscount;
@@ -159,7 +158,7 @@ function updateOrderSummary(subtotal, shipping, tax, total, discount = 0) {
     }
 }
 
-async function AddToCart(product_variation_id, qty = 1, additionalData = {}) {
+async function AddToCart(product_id, product_variation_id, qty=1) {
     if (!product_variation_id || qty < 1) {
         showNotification("Invalid product or quantity.", "error");
         return false;
@@ -167,9 +166,9 @@ async function AddToCart(product_variation_id, qty = 1, additionalData = {}) {
 
     try {
         const bodyData = {
+            product_id: product_id,
             product_variation_id: product_variation_id,
-            qty: qty,
-            ...additionalData
+            qty: qty
         };
 
         const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token);
@@ -177,7 +176,7 @@ async function AddToCart(product_variation_id, qty = 1, additionalData = {}) {
             showNotification("Item added to cart!", "success");
             // Refresh cart if we're on cart page
             if (document.getElementById('cart-items')) {
-                await GenerateCart(csrf_token, cart_list_url, cart_update_url, cart_delete_url);
+                await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
             } else {
                 // Just update cart count if we're on other pages
                 updateCartCountFromAPI();
@@ -204,13 +203,13 @@ async function updateCartItemQuantity(cart_item_id, newQty) {
     try {
         const bodyData = {
             cart_item_id: cart_item_id,
-            qty: newQty,
+            quantity: newQty,
         };
 
-        const [success, result] = await callApi("PUT", cart_update_url, bodyData, csrf_token);
+        const [success, result] = await callApi("PUT", `${cart_list_url}${cart_item_id}/`, bodyData, csrf_token);
         if (success && result.success) {
             showNotification("Cart updated!", "success");
-            await GenerateCart(csrf_token, cart_list_url, cart_update_url, cart_delete_url);
+            await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
         } else {
             showNotification("Failed to update item.", "error");
             console.error(result);
@@ -231,10 +230,10 @@ async function removeCartItem(cart_item_id) {
             cart_item_id: cart_item_id
         };
 
-        const [success, result] = await callApi("DELETE", cart_delete_url, bodyData, csrf_token);
+        const [success, result] = await callApi("DELETE", `${cart_delete_url}${cart_item_id}/`, bodyData, csrf_token);
         if (success && result.success) {
             showNotification("Item removed from cart!", "success");
-            await GenerateCart(csrf_token, cart_list_url, cart_update_url, cart_delete_url);
+            await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
         } else {
             showNotification("Failed to remove item.", "error");
             console.error(result);

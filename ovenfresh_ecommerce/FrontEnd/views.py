@@ -30,6 +30,13 @@ class ProductDetailViewSet(viewsets.ViewSet):
         return render(request, 'product-detail.html')
 
 
+class CartViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'cart.html')
+
+
 class AdminTemplateViewSet(viewsets.ViewSet):
 
     @handle_exceptions

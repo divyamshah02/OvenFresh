@@ -107,6 +107,9 @@ body {
     border-color: var(--of-secondary-faded-color) !important;
 }
 
+.breadcrumb-item a {
+    color: var(--of-primary-color) !important;
+}
 
 /* Utility Classes */
 .of-text-primary { color: var(--of-primary-color) !important; }
