@@ -150,7 +150,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class PincodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pincode
-        fields = ['id', 'pincode', 'area_name', 'created_at']
+        fields = '__all__'
 
 
 class TimeSlotSerializer(serializers.ModelSerializer):
@@ -158,7 +158,7 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         model = TimeSlot
         fields = [
             'id', 'start_time', 'end_time', 'time_slot_title',
-            'is_active', 'created_at'
+            'is_active', 'created_at', 'delivery_charges'
         ]
 
 

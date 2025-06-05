@@ -185,7 +185,7 @@ function createProductCard(product) {
                             <div class="product-actions">
                                 <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
                                 <a href="#" class="btn-product-action" onclick="addToCart(${product.product_id})"><i class="fas fa-shopping-cart"></i></a>
-                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-eye"></i></a>
                             </div>
                         </div>
                         <div class="product-body">

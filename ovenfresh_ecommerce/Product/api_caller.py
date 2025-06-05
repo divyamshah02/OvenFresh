@@ -9,14 +9,23 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
+final_codes= {'South Mumbai': ['400001', '400002', '400003', '400004', '400005', '400006', '400007', '400008', '400009', '400010', '400011', '400012', '400020', '400021', '400023', '400026', '400027', '400033', '400034', '400036', '400039', '400035'], 'Western Mumbai': ['400029', '400050', '400049', '400051', '400052', '400053', '400054', '400055', '400056', '400057', '400058', '400059', '400069', '400093', '400098', '400099'], 'Western 1': ['400060', '400062', '400063', '400064', '400065', '400066', '400067', '400090', '400091', '400092', '400095', '400097', '400101', '400102', '400103', '400104', '400096', '401104', '400073'], 'Central': ['400022', '400024', '400042', '400047', '400070', '400075', '400077', '400078', '400079', '400080', '400081', '400082', '400083', '400084', '400085', '400086', '400087'], 'Central 1': ['400072', '400076', '400601', '400602', '400603', '400604', '400606', '400607', '400608', '400609', '400610', '400615'], 'Mumbai 1': ['400068', '401101', '401105', '401107'], 'harbour': ['400037', '400043', '400071', '400074', '400089'], 'harbour 1': ['400614', '400701', '400703', '400705', '400709', '400710', '410210', '400706', '400210', '400708', '400709', '400088', '400094'], 'local': ['400016', '400014', '400025', '400030', '400031', '400019', '400017', '400013', '400018', '400028', '400015']}
+
 # Step 1: Add Pincodes and Timeslots (One-time Activity)
 def add_pincodes_and_timeslots():
     # Adding Pincodes (Example)
-    pincodes = [
-        {"pincode": 380015, "area": "Area 1"},
-        {"pincode": 380016, "area": "Area 2"},
-        {"pincode": 380017, "area": "Area 3"}
-    ]
+    pincodes = []
+
+    for i in final_codes.keys():
+        for j in final_codes[i]:
+            dd = {
+                "pincode": j,
+                "area": i,
+                "city": "Mumbai",
+                "state": "Maharashtra"
+            }
+            pincodes.append(dd)
+
     
     for pincode in pincodes:
         response = requests.post(
@@ -30,22 +39,22 @@ def add_pincodes_and_timeslots():
             print(f"Failed to add pincode {pincode['pincode']}: {response.text}")
 
     # Adding Timeslots (Example)
-    timeslots = [
-        {"start_time": "08:00:00", "end_time": "10:00:00", "time_slot_title": "Morning Slot", "is_active": True},
-        {"start_time": "10:00:00", "end_time": "12:00:00", "time_slot_title": "Late Morning Slot", "is_active": True},
-        {"start_time": "12:00:00", "end_time": "14:00:00", "time_slot_title": "Afternoon Slot", "is_active": True}
-    ]
+    # timeslots = [
+    #     {"start_time": "08:00:00", "end_time": "10:00:00", "time_slot_title": "Morning Slot", "is_active": True},
+    #     {"start_time": "10:00:00", "end_time": "12:00:00", "time_slot_title": "Late Morning Slot", "is_active": True},
+    #     {"start_time": "12:00:00", "end_time": "14:00:00", "time_slot_title": "Afternoon Slot", "is_active": True}
+    # ]
     
-    for timeslot in timeslots:
-        response = requests.post(
-            f"{BASE_URL}timeslot/", 
-            headers=HEADERS, 
-            data=json.dumps(timeslot)
-        )
-        if response.status_code == 201:
-            print(f"Timeslot {timeslot['time_slot_title']} added successfully!")
-        else:
-            print(f"Failed to add timeslot {timeslot['time_slot_title']}: {response.text}")
+    # for timeslot in timeslots:
+    #     response = requests.post(
+    #         f"{BASE_URL}timeslot/", 
+    #         headers=HEADERS, 
+    #         data=json.dumps(timeslot)
+    #     )
+    #     if response.status_code == 201:
+    #         print(f"Timeslot {timeslot['time_slot_title']} added successfully!")
+    #     else:
+    #         print(f"Failed to add timeslot {timeslot['time_slot_title']}: {response.text}")
 
 # Step 2: Fetch all Pincodes and Timeslots
 def get_pincodes_and_timeslots():
@@ -180,7 +189,7 @@ def add_category_sub_category():
 # Run the functions
 if __name__ == "__main__":
     # Step 1: Add Pincodes and Timeslots (One-time)
-    # add_pincodes_and_timeslots()
+    add_pincodes_and_timeslots()
 
     # pincodes, timeslots = get_pincodes_and_timeslots()
     # print(pincodes, timeslots)
@@ -188,4 +197,4 @@ if __name__ == "__main__":
     # Step 2: Add Product with Variations and Availability
     # add_test_product_and_variation()
 
-    add_category_sub_category()
+    # add_category_sub_category()

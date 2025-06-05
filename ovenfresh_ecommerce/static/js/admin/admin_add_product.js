@@ -208,7 +208,7 @@ async function loadPincodesAndTimeslots() {
                                             </td>
                                             <td>
                                                 <input type="number" class="form-control form-control-sm" 
-                                                       id="charge_${pincode.id}_${slot.id}" value="50" style="width: 80px">
+                                                       id="charge_${pincode.id}_${slot.id}" value="${pincode.delivery_charge}" style="width: 80px">
                                             </td>
                                         </tr>
                                     `).join('')}

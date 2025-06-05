@@ -17,6 +17,7 @@ router.register(r'pincode', PincodeViewSet, basename='pincode')
 router.register(r'timeslot', TimeSlotViewSet, basename='timeslot')
 router.register(r'pincode-timeslots', TimeSlotAndPincodeViewSet, basename='pincode-timeslots')
 
+router.register(r'check-pincode', CheckPincodeViewSet, basename='check-pincode')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -57,7 +57,7 @@ class PincodeAdmin(admin.ModelAdmin):
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ['id', 'start_time', 'end_time', 'time_slot_title', 'is_active', 'created_at']
+    list_display = ['id', 'time_slot_title', 'start_time', 'end_time', 'delivery_charges', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['time_slot_title']
 

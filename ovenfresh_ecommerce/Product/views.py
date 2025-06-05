@@ -248,7 +248,6 @@ class ProductViewSet(viewsets.ViewSet):
                 return product_id
 
     @handle_exceptions
-    @check_authentication(required_role='admin')
     def list(self, request):
         product_id = request.query_params.get('product_id')
 
@@ -671,6 +670,8 @@ class PincodeViewSet(viewsets.ViewSet):
         else:
             pincode_code = request.data.get("pincode")
             area = request.data.get("area")
+            city = request.data.get("city")
+            state = request.data.get("state")
 
             if not pincode_code or not area:
                 return Response({
@@ -692,7 +693,9 @@ class PincodeViewSet(viewsets.ViewSet):
             
             Pincode.objects.create(
                     pincode=pincode_code,
-                    area_name=area
+                    area_name=area,
+                    city=city,
+                    state=state
                 )
         
             return Response({
@@ -702,6 +705,40 @@ class PincodeViewSet(viewsets.ViewSet):
                 "data": f"Pincode : {pincode_code} Created successfully.",
                 "error": None
             }, status=status.HTTP_201_CREATED)
+
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        pincode_id = pk
+
+        pincode_data = Pincode.objects.filter(id=pincode_id).first()
+        
+        if not pincode_data:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": f"Pincode with id {pincode_id} doesnot exists."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        pincode_data.pincode = request.data.get('pincode')
+        pincode_data.area_name = request.data.get('area_name')
+        pincode_data.city = request.data.get('city')
+        pincode_data.state = request.data.get('state')
+        pincode_data.delivery_charge = request.data.get('delivery_charge')
+        pincode_data.active = request.data.get('status')
+
+        pincode_data.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": None,
+            "error": None
+        }, status=status.HTTP_200_OK)
 
 
 class TimeSlotViewSet(viewsets.ViewSet):
@@ -719,11 +756,12 @@ class TimeSlotViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         start_time = request.data.get("start_time")
         end_time = request.data.get("end_time")
         time_slot_title = request.data.get("time_slot_title")
+        delivery_charges = request.data.get("delivery_charges", 0)
 
         if not start_time or not end_time or not time_slot_title:
             return Response({
@@ -747,6 +785,7 @@ class TimeSlotViewSet(viewsets.ViewSet):
                 start_time=start_time,
                 end_time=end_time,
                 time_slot_title=time_slot_title,
+                delivery_charges=delivery_charges,
             )
 
         return Response({
@@ -756,3 +795,123 @@ class TimeSlotViewSet(viewsets.ViewSet):
             "data": f"Timeslot : {start_time} - {end_time} Created successfully.",
             "error": None
         }, status=status.HTTP_201_CREATED)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        timeslot_id = pk
+        start_time = request.data.get("start_time")
+        end_time = request.data.get("end_time")
+        time_slot_title = request.data.get("time_slot_title")
+        delivery_charges = request.data.get("delivery_charges", 0)
+
+        if not start_time or not end_time or not time_slot_title:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "start_time, end_time & time_slot_title are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        timeslot_data = TimeSlot.objects.get(id=timeslot_id)
+            
+        timeslot_data.start_time=start_time
+        timeslot_data.end_time=end_time
+        timeslot_data.time_slot_title=time_slot_title
+        timeslot_data.delivery_charges=delivery_charges
+
+        timeslot_data.save()
+    
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"Timeslot : {start_time} - {end_time} Created successfully.",
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def partial_update(self, request, pk):
+        timeslot_id = pk                
+        status_param = request.data.get("status")
+
+        if not status_param:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "start_time, end_time & time_slot_title are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        timeslot_data = TimeSlot.objects.get(id=timeslot_id)
+            
+        if status_param == 'inactive':
+            timeslot_data.is_active = False
+        else:
+            timeslot_data.is_active = True
+
+        timeslot_data.save()
+    
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"Timeslot Updated successfully.",
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+
+class CheckPincodeViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        pincode = request.query_params.get('pincode')
+        product_id = request.query_params.get('product_id')
+        product_variation_id = request.query_params.get('product_variation_id')
+
+        pincode_data = Pincode.objects.filter(pincode=pincode).first()
+        if not pincode_data:
+            # TODO: To be handeled if the pincode is not in our database 
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": f"Pincode with {pincode} doesnot exists."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        availability_details = AvailabilityCharges.objects.filter(pincode_id=pincode_data.id, product_id=product_id, product_variation_id=product_variation_id).first()
+        availability_data = []
+        if availability_details:
+            timeslots_data = availability_details.timeslot_data
+            for timeslot in timeslots_data.keys():
+                timeslot_detail = TimeSlot.objects.filter(id=timeslot, is_active=True).first()
+                temp_timeslot_dict = {
+                    "timeslot_id": timeslot,
+                    "timeslot_name": timeslot_detail.time_slot_title,                    
+                    "delivery_charge": timeslots_data[timeslot]['charge'],
+                    "available": timeslots_data[timeslot]['available'],
+                }
+                availability_data.append(temp_timeslot_dict)
+        
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"is_deliverable": True, "availability_data": availability_data},
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"is_deliverable": False, "availability_data": availability_data},
+            "error": None
+        }, status=status.HTTP_200_OK)

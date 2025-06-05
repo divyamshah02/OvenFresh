@@ -46,25 +46,6 @@ function initializeTheme() {
 }
 
 function initializeEventListeners() {
-  // Search functionality
-  const searchInput = document.getElementById("searchInput")
-  const searchBtn = document.getElementById("searchBtn")
-
-  searchBtn.addEventListener("click", handleSearch)
-  searchInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      handleSearch()
-    }
-  })
-
-  // Filter changes
-  document.getElementById("statusFilter").addEventListener("change", handleFilterChange)
-  document.getElementById("typeFilter").addEventListener("change", handleFilterChange)
-  document.getElementById("sortBy").addEventListener("change", handleFilterChange)
-
-  // Clear filters
-  document.getElementById("clearFiltersBtn").addEventListener("click", clearFilters)
-
   // Refresh button
   document.getElementById("refreshBtn").addEventListener("click", () => {
     loadTimeslots()
@@ -88,15 +69,6 @@ function initializeEventListeners() {
   // Delete confirmation
   document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete)
 
-  // Quick action buttons
-  document.getElementById("createMorningSlots").addEventListener("click", () => createQuickSlots("morning"))
-  document.getElementById("createAfternoonSlots").addEventListener("click", () => createQuickSlots("afternoon"))
-  document.getElementById("createEveningSlots").addEventListener("click", () => createQuickSlots("evening"))
-  document.getElementById("create24HourSlots").addEventListener("click", () => createQuickSlots("24hour"))
-
-  // Bulk create
-  document.getElementById("createBulkTimeslotsBtn").addEventListener("click", createBulkTimeslots)
-
   // Timeline toggle
   document.getElementById("toggleTimelineBtn").addEventListener("click", toggleTimeline)
 
@@ -110,13 +82,8 @@ async function loadTimeslots() {
 
   try {
     // Build query parameters
-    const params = new URLSearchParams({
-      page: currentPage,
-      limit: itemsPerPage,
-      ...currentFilters,
-    })
 
-    const [success, result] = await callApi("GET", `${timeslots_url}?${params}`)
+    const [success, result] = await callApi("GET", `${timeslots_url}`)
 
     if (success && result.success) {
       allTimeslots = result.data.timeslots || result.data
@@ -176,6 +143,12 @@ function createTimeslotRow(timeslot) {
   // Format created date
   const createdDate = new Date(timeslot.created_at || Date.now()).toLocaleDateString()
 
+  // <td>${getTypeBadge(timeslot.type || getTimeType(timeslot.start_time))}</td>
+
+  //   <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewTimeslot(${timeslot.id})" title="View Details">
+  //     <i class="fas fa-eye"></i>
+  // </button>
+
   row.innerHTML = `
         <td>
             <div class="form-check">
@@ -197,8 +170,8 @@ function createTimeslotRow(timeslot) {
             <span class="badge bg-light text-dark">${timeRange}</span>
         </td>
         <td>${duration}</td>
-        <td>${getTypeBadge(timeslot.type || getTimeType(timeslot.start_time))}</td>
-        <td>${getStatusBadge(timeslot.status || "active")}</td>
+        <td class="text-center">${timeslot.delivery_charges}</td>
+        <td>${getStatusBadge(timeslot.is_active)}</td>
         <td>
             <div class="d-flex align-items-center">
                 <span class="badge bg-info me-2">${usage} orders</span>
@@ -208,15 +181,12 @@ function createTimeslotRow(timeslot) {
         <td>${createdDate}</td>
         <td>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewTimeslot(${timeslot.id})" title="View Details">
-                    <i class="fas fa-eye"></i>
-                </button>
                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="editTimeslot(${timeslot.id})" title="Edit">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button type="button" class="btn btn-sm ${(timeslot.status || "active") === "active" ? "btn-outline-warning" : "btn-outline-success"}" 
-                        onclick="toggleTimeslotStatus(${timeslot.id})" title="${(timeslot.status || "active") === "active" ? "Deactivate" : "Activate"}">
-                    <i class="fas fa-toggle-${(timeslot.status || "active") === "active" ? "on" : "off"}"></i>
+                <button type="button" class="btn btn-sm ${timeslot.is_active ? "btn-outline-success" : "btn-outline-danger"}" 
+                        onclick="toggleTimeslotStatus(${timeslot.id})" title="${timeslot.is_active ? "Deactivate" : "Activate"}">
+                    <i class="fas fa-toggle-${timeslot.is_active ? "on" : "off"}"></i>
                 </button>
                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTimeslot(${timeslot.id})" title="Delete">
                     <i class="fas fa-trash"></i>
@@ -242,10 +212,10 @@ function calculateDuration(startTime, endTime) {
 
   if (diffHours < 1) {
     const diffMinutes = diffMs / (1000 * 60)
-    return `${Math.round(diffMinutes)} min`
+    return `${Math.round(diffMinutes.toFixed(2))} min`
   }
 
-  return `${diffHours} hrs`
+  return `${diffHours.toFixed(2)} hrs`
 }
 
 function formatTime(time) {
@@ -344,38 +314,6 @@ function changePage(page) {
   loadTimeslots()
 }
 
-function handleSearch() {
-  currentFilters.search = document.getElementById("searchInput").value.trim()
-  currentPage = 1
-  loadTimeslots()
-}
-
-function handleFilterChange() {
-  currentFilters.status = document.getElementById("statusFilter").value
-  currentFilters.type = document.getElementById("typeFilter").value
-  currentFilters.sortBy = document.getElementById("sortBy").value
-  currentPage = 1
-  loadTimeslots()
-}
-
-function clearFilters() {
-  document.getElementById("searchInput").value = ""
-  document.getElementById("statusFilter").value = ""
-  document.getElementById("typeFilter").value = ""
-  document.getElementById("sortBy").value = "start_time_asc"
-
-  currentFilters = {
-    search: "",
-    status: "",
-    type: "",
-    sortBy: "start_time_asc",
-  }
-
-  currentPage = 1
-  loadTimeslots()
-  showToast("info", "Filters Cleared", "All filters have been reset")
-}
-
 function handleSelectAll() {
   const selectAll = document.getElementById("selectAll")
   const checkboxes = document.querySelectorAll(".timeslot-checkbox")
@@ -457,18 +395,20 @@ function editTimeslot(timeslotId) {
   if (!timeslot) return
 
   editingTimeslot = timeslot
+  console.log(timeslot);
 
   // Populate form
   document.getElementById("timeslotId").value = timeslot.id
   document.getElementById("timeslotTitle").value = timeslot.time_slot_title
   document.getElementById("startTime").value = timeslot.start_time
   document.getElementById("endTime").value = timeslot.end_time
-  document.getElementById("timeslotType").value = timeslot.type || getTimeType(timeslot.start_time)
-  document.getElementById("timeslotStatus").value = timeslot.status || "active"
-  document.getElementById("maxOrders").value = timeslot.max_orders || ""
-  document.getElementById("priority").value = timeslot.priority || 1
-  document.getElementById("description").value = timeslot.description || ""
-  document.getElementById("isPeakHour").checked = timeslot.is_peak_hour || false
+  document.getElementById("deliveryCharges").value = timeslot.delivery_charges
+  // document.getElementById("timeslotType").value = timeslot.type || getTimeType(timeslot.start_time)
+  // document.getElementById("timeslotStatus").value = timeslot.status || "active"
+  // document.getElementById("maxOrders").value = timeslot.max_orders || ""
+  // document.getElementById("priority").value = timeslot.priority || 1
+  // document.getElementById("description").value = timeslot.description || ""
+  // document.getElementById("isPeakHour").checked = timeslot.is_peak_hour || false
 
   // Update modal title
   document.getElementById("timeslotModalTitle").textContent = "Edit Timeslot"
@@ -482,7 +422,7 @@ async function toggleTimeslotStatus(timeslotId) {
   const timeslot = allTimeslots.find((t) => t.id === timeslotId)
   if (!timeslot) return
 
-  const newStatus = (timeslot.status || "active") === "active" ? "inactive" : "active"
+  const newStatus = timeslot.is_active ? "inactive" : "active"
 
   try {
     const [success, result] = await callApi(
@@ -578,7 +518,7 @@ async function handleBulkToggle() {
   try {
     const updatePromises = selectedTimeslots.map(async (timeslotId) => {
       const timeslot = allTimeslots.find((t) => t.id === timeslotId)
-      const newStatus = (timeslot.status || "active") === "active" ? "inactive" : "active"
+      const newStatus = timeslot.is_active ? "inactive" : "active"
       return callApi("PATCH", `${timeslots_url}${timeslotId}/`, { status: newStatus }, csrf_token)
     })
 
@@ -608,16 +548,24 @@ async function saveTimeslot() {
     return
   }
 
+  // const timeslotData_old = {
+  //   time_slot_title: document.getElementById("timeslotTitle").value,
+  //   start_time: document.getElementById("startTime").value,
+  //   end_time: document.getElementById("endTime").value,
+  //   delivery_charges: document.getElementById("deliveryCharges").value || 0,
+  //   type: document.getElementById("timeslotType").value,
+  //   status: document.getElementById("timeslotStatus").value,
+  //   max_orders: document.getElementById("maxOrders").value || null,
+  //   priority: document.getElementById("priority").value || 1,
+  //   description: document.getElementById("description").value || null,
+  //   is_peak_hour: document.getElementById("isPeakHour").checked,
+  // }
+
   const timeslotData = {
     time_slot_title: document.getElementById("timeslotTitle").value,
     start_time: document.getElementById("startTime").value,
     end_time: document.getElementById("endTime").value,
-    type: document.getElementById("timeslotType").value,
-    status: document.getElementById("timeslotStatus").value,
-    max_orders: document.getElementById("maxOrders").value || null,
-    priority: document.getElementById("priority").value || 1,
-    description: document.getElementById("description").value || null,
-    is_peak_hour: document.getElementById("isPeakHour").checked,
+    delivery_charges: document.getElementById("deliveryCharges").value || 0,    
   }
 
   try {
@@ -654,7 +602,7 @@ function resetTimeslotForm() {
   document.getElementById("timeslotForm").reset()
   document.getElementById("timeslotId").value = ""
   document.getElementById("timeslotModalTitle").textContent = "Add New Timeslot"
-  document.getElementById("priority").value = 1
+  // document.getElementById("priority").value = 1
   editingTimeslot = null
 }
 
@@ -671,69 +619,6 @@ function validateTimeRange() {
     } else {
       document.getElementById("endTime").setCustomValidity("")
     }
-  }
-}
-
-function createQuickSlots(type) {
-  const modal = new bootstrap.Modal(document.getElementById("bulkCreateModal"))
-
-  // Set default values based on type
-  const defaults = {
-    morning: { start: "06:00", end: "12:00", duration: "2", prefix: "Morning Slot" },
-    afternoon: { start: "12:00", end: "18:00", duration: "2", prefix: "Afternoon Slot" },
-    evening: { start: "18:00", end: "22:00", duration: "2", prefix: "Evening Slot" },
-    "24hour": { start: "00:00", end: "23:59", duration: "4", prefix: "24/7 Slot" },
-  }
-
-  const config = defaults[type]
-  if (config) {
-    document.getElementById("bulkStartTime").value = config.start
-    document.getElementById("bulkEndTime").value = config.end
-    document.getElementById("slotDuration").value = config.duration
-    document.getElementById("bulkType").value = type === "24hour" ? "morning" : type
-    document.getElementById("titlePrefix").value = config.prefix
-    document.getElementById("bulkCreateTitle").textContent = `Create ${config.prefix}s`
-  }
-
-  modal.show()
-}
-
-async function createBulkTimeslots() {
-  const form = document.getElementById("bulkCreateForm")
-  if (!form.checkValidity()) {
-    form.reportValidity()
-    return
-  }
-
-  const startTime = document.getElementById("bulkStartTime").value
-  const endTime = document.getElementById("bulkEndTime").value
-  const duration = Number.parseInt(document.getElementById("slotDuration").value)
-  const type = document.getElementById("bulkType").value
-  const prefix = document.getElementById("titlePrefix").value
-
-  try {
-    showLoading("Creating timeslots...")
-
-    const timeslots = generateTimeslots(startTime, endTime, duration, type, prefix)
-
-    const createPromises = timeslots.map((timeslot) => callApi("POST", timeslots_url, timeslot, csrf_token))
-
-    const results = await Promise.all(createPromises)
-    const successCount = results.filter(([success]) => success).length
-
-    if (successCount === timeslots.length) {
-      showToast("success", "Success", `${successCount} timeslots created successfully`)
-    } else {
-      showToast("warning", "Partial Success", `${successCount} of ${timeslots.length} timeslots created`)
-    }
-
-    bootstrap.Modal.getInstance(document.getElementById("bulkCreateModal")).hide()
-    loadTimeslots()
-  } catch (error) {
-    console.error("Error creating bulk timeslots:", error)
-    showToast("error", "Error", "Failed to create timeslots")
-  } finally {
-    hideLoading()
   }
 }
 
@@ -816,7 +701,7 @@ function renderTimeline() {
     const timelineItem = document.createElement("div")
     timelineItem.className = "timeline-item d-flex align-items-center p-3 border rounded"
     timelineItem.style.cssText = `
-            background: ${(timeslot.status || "active") === "active" ? "var(--surface-color)" : "var(--surface-color-2)"};
+            background: ${timeslot.is_active ? "var(--surface-color)" : "var(--surface-color-2)"};
             border-color: ${timeslot.is_peak_hour ? "var(--warning-color)" : "var(--border-color)"} !important;
         `
 
@@ -833,7 +718,7 @@ function renderTimeline() {
                     <span class="badge bg-light text-dark">${timeRange}</span>
                     <span class="badge bg-secondary">${duration}</span>
                     ${getTypeBadge(timeslot.type || getTimeType(timeslot.start_time))}
-                    ${(timeslot.status || "active") === "active" ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}
+                    ${timeslot.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}
                     ${timeslot.is_peak_hour ? '<span class="badge bg-warning">Peak</span>' : ""}
                 </div>
             </div>
@@ -860,11 +745,7 @@ function exportData(format) {
     "End Time": timeslot.end_time,
     Duration: calculateDuration(timeslot.start_time, timeslot.end_time),
     Type: timeslot.type || getTimeType(timeslot.start_time),
-    Status: timeslot.status || "active",
-    "Max Orders": timeslot.max_orders || "Unlimited",
-    Priority: timeslot.priority || 1,
-    "Peak Hour": timeslot.is_peak_hour ? "Yes" : "No",
-    Description: timeslot.description || "",
+    Status: timeslot.is_active,
     Created: new Date(timeslot.created_at || Date.now()).toLocaleDateString(),
   }))
 
@@ -889,9 +770,7 @@ function exportSchedule() {
     "Timeslot Title": timeslot.time_slot_title,
     Duration: calculateDuration(timeslot.start_time, timeslot.end_time),
     Type: timeslot.type || getTimeType(timeslot.start_time),
-    Status: timeslot.status || "active",
-    "Peak Hour": timeslot.is_peak_hour ? "Yes" : "No",
-    "Max Orders": timeslot.max_orders || "Unlimited",
+    Status: timeslot.is_active,
   }))
 
   downloadCSV(scheduleData, "delivery_schedule.csv")

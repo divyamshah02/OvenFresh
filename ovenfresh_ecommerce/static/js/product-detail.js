@@ -1,6 +1,5 @@
 let product_detail_url = null;
 let pincode_check_url = null;
-let timeslots_url = null;
 let csrf_token = null;
 
 // Current product data
@@ -13,13 +12,11 @@ let pincodeTimeslots = [];
 async function InitializeProductDetail(
     csrfTokenParam,
     productDetailUrlParam,
-    pincodeCheckUrlParam,
-    timeslotsUrlParam
+    pincodeCheckUrlParam
 ) {
     csrf_token = csrfTokenParam;
     product_detail_url = productDetailUrlParam;
     pincode_check_url = pincodeCheckUrlParam;
-    timeslots_url = timeslotsUrlParam;
 
     // Get product ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -32,7 +29,7 @@ async function InitializeProductDetail(
 
     try {
         await loadProductData(productId);
-        await loadTimeslots();
+        // await loadTimeslots();
         initializeEventListeners();
         updateCartCountFromAPI();
     } catch (error) {

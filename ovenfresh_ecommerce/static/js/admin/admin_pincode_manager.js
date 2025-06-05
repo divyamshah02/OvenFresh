@@ -226,6 +226,7 @@ function renderPincodesTable() {
 
 function createPincodeRow(pincode) {
   const row = document.createElement("tr")
+  console.log(pincode);
 
   // Get timeslots count
   const timeslotsCount = pincode.timeslots ? pincode.timeslots.length : 0
