@@ -68,7 +68,7 @@ class Pincode(models.Model):
     area_name = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
-    delivery_charge = models.CharField(max_length=10)
+    delivery_charge = models.JSONField(default=dict, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 

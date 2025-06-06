@@ -115,6 +115,40 @@
                                     <strong id="total">$0.00</strong>
                                 </div>
                                 
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="pincode-check" class="form-label">Check Pincode:</label>
+                                        <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" id="check-pincode-btn" onclick="checkPincode()">
+                                            Check Pincode
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="row m-0 p-0 g-3 mb-3" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
+                                        <input type="date" class="form-control" id="delivery-date">
+                                    </div>
+                                    <div class="col-md-6">                                        
+                                        <label for="timeslot" class="form-label">Time Slots:</label>
+                                        <select class="form-select" id="timeslot">
+                                            <option value="10:00 AM - 02:00 PM">10:00 AM - 02:00 PM</option>
+                                            <option value="12:00 PM - 04:00 PM">12:00 PM - 04:00 PM</option>
+                                            <option value="04:00 PM - 07:00 PM">04:00 PM - 07:00 PM</option>
+                                            <option value="07:00 PM - 10:00 PM (Evening Delivery: ₹80)">07:00 PM - 10:00 PM (Evening Delivery: ₹80)</option>
+                                            <option value="10:45 PM - 11:59 PM (Late Night Delivery: ₹100)">10:45 PM - 11:59 PM (Late Night Delivery: ₹100)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="message" class="form-label">Custom Message:</label>
+                                        <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
+                                    </div>
+                                </div>
+
+
                                 <!-- Promo Code -->
                                 <div class="mb-4">
                                     <label for="promoCode" class="form-label">Promo Code</label>
@@ -244,7 +278,7 @@
         GenerateCart(
             csrfToken,
             "{% url 'cart-api-list' %}",
-            "{% url 'cart-api-list' %}"
+            "{% url 'check-pincode-list' %}"
         );
         toggle_loader();
     </script>

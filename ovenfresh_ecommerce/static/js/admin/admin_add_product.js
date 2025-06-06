@@ -170,6 +170,7 @@ async function loadPincodesAndTimeslots() {
         accordion.id = "pincodeAccordion";
 
         pincodes.forEach((pincode, i) => {
+            console.log(pincode);
             const accordionItem = document.createElement("div");
             accordionItem.className = "accordion-item";
             
@@ -202,13 +203,14 @@ async function loadPincodesAndTimeslots() {
                                             <td>${slot.time_slot_title}</td>
                                             <td>
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input timeslot-checkbox" type="checkbox" 
+                                                    <input class="form-check-input timeslot-checkbox" type="checkbox"
+                                                    ${pincode.delivery_charge[`${slot.id}`]['available'] ? "checked" : ""}
                                                            id="pincode_${pincode.id}_slot_${slot.id}">
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td>                                                
                                                 <input type="number" class="form-control form-control-sm" 
-                                                       id="charge_${pincode.id}_${slot.id}" value="${pincode.delivery_charge}" style="width: 80px">
+                                                       id="charge_${pincode.id}_${slot.id}" value="${pincode.delivery_charge[`${slot.id}`]['charges']}" style="width: 80px">
                                             </td>
                                         </tr>
                                     `).join('')}

@@ -3,6 +3,7 @@ let pincodes_url = null
 let timeslots_url = null
 let pincode_timeslots_url = null
 
+let extra = null
 let currentPage = 1
 const itemsPerPage = 10
 let totalItems = 0
@@ -144,6 +145,8 @@ function populateTimeslotsInModal() {
             <label class="form-check-label" for="timeslot_${timeslot.id}">
                 ${timeslot.time_slot_title} (${timeslot.start_time} - ${timeslot.end_time})
             </label>
+            <input class="form-control" type="number" value="0" placeholder="Enter Delivery Charge" id="timeslot_delivery_charge_${timeslot.id}">
+
         `
     container.appendChild(timeslotDiv)
   })
@@ -226,13 +229,6 @@ function renderPincodesTable() {
 
 function createPincodeRow(pincode) {
   const row = document.createElement("tr")
-  console.log(pincode);
-
-  // Get timeslots count
-  const timeslotsCount = pincode.timeslots ? pincode.timeslots.length : 0
-
-  // Format delivery charge
-  const deliveryCharge = pincode.delivery_charge ? `₹${pincode.delivery_charge}` : "Not set"
 
   row.innerHTML = `
         <td>
@@ -246,11 +242,7 @@ function createPincodeRow(pincode) {
         <td>${pincode.area_name}</td>
         <td>${pincode.city}</td>
         <td>${pincode.state}</td>
-        <td>${deliveryCharge}</td>
-        <td>${getStatusBadge(pincode.status || "active")}</td>
-        <td>
-            <span class="badge bg-info">${timeslotsCount} slots</span>
-        </td>
+        <td>${getStatusBadge(pincode.is_active)}</td>
         <td>
             <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewPincode(${pincode.id})" title="View Details">
@@ -274,8 +266,15 @@ function getStatusBadge(status) {
     active: { class: "bg-success", text: "Active" },
     inactive: { class: "bg-secondary", text: "Inactive" },
   }
-
-  const config = statusConfig[status] || statusConfig["active"]
+  
+  let config = null
+  
+  if (status) {
+    config = statusConfig["active"]
+  }
+  else {
+    config = statusConfig["inactive"]
+  }
   return `<span class="badge ${config.class}">${config.text}</span>`
 }
 
@@ -411,8 +410,8 @@ function updateSelectedCount() {
 function updateStats() {
   // Calculate stats
   const totalPincodes = allPincodes.length
-  const activePincodes = allPincodes.filter((p) => (p.status || "active") === "active").length
-  const inactivePincodes = allPincodes.filter((p) => (p.status || "active") === "inactive").length
+  const activePincodes = allPincodes.filter((p) => (p.is_active) === true).length
+  const inactivePincodes = allPincodes.filter((p) => (p.is_active) === false).length
   const totalTimeslots = allTimeslots.length
 
   // Update DOM
@@ -434,6 +433,7 @@ function editPincode(pincodeId) {
   if (!pincode) return
 
   editingPincode = pincode
+  console.log(pincode);
 
   // Populate form
   document.getElementById("pincodeId").value = pincode.id
@@ -441,22 +441,32 @@ function editPincode(pincodeId) {
   document.getElementById("areaName").value = pincode.area_name
   document.getElementById("city").value = pincode.city
   document.getElementById("state").value = pincode.state
-  document.getElementById("deliveryCharge").value = pincode.delivery_charge || ""
-  document.getElementById("pincodeStatus").value = pincode.status || "active"
-
+  document.getElementById("pincodeStatus").value = `${pincode.is_active ? "active" : "inactive"}`
   // Update modal title
   document.getElementById("pincodeModalTitle").textContent = "Edit Pincode"
 
-  // Check associated timeslots
-  if (pincode.timeslots) {
-    const timeslotIds = pincode.timeslots.map((t) => t.id)
-    allTimeslots.forEach((timeslot) => {
-      const checkbox = document.getElementById(`timeslot_${timeslot.id}`)
+  extra = pincode.delivery_charge;
+
+  for (const i of Object.keys(extra)) {
+      console.log(i);
+      console.log(extra[i]);
+      const checkbox = document.getElementById(`timeslot_${i}`)
       if (checkbox) {
-        checkbox.checked = timeslotIds.includes(timeslot.id)
+        checkbox.checked = extra[i]['available'];
+        document.getElementById(`timeslot_delivery_charge_${i}`).value = extra[i]['charges'];
       }
-    })
+
   }
+  // Check associated timeslots
+  // if (pincode.delivery_charge) {
+  //   const timeslotIds = pincode.delivery_charge.map((t) => t.id)
+  //   allTimeslots.forEach((timeslot) => {
+  //     const checkbox = document.getElementById(`timeslot_${timeslot.id}`)
+  //     if (checkbox) {
+  //       checkbox.checked = timeslotIds.includes(timeslot.id)
+  //     }
+  //   })
+  // }
 
   // Show modal
   const modal = new bootstrap.Modal(document.getElementById("addPincodeModal"))
@@ -541,20 +551,27 @@ async function savePincode() {
     area_name: document.getElementById("areaName").value,
     city: document.getElementById("city").value,
     state: document.getElementById("state").value,
-    delivery_charge: document.getElementById("deliveryCharge").value || null,
-    status: document.getElementById("pincodeStatus").value,
+    is_active: document.getElementById("pincodeStatus").value,
   }
 
   // Get selected timeslots
-  const selectedTimeslots = []
+  const selectedTimeslots = {}
   allTimeslots.forEach((timeslot) => {
     const checkbox = document.getElementById(`timeslot_${timeslot.id}`)
+    let temp_dict = {}
     if (checkbox && checkbox.checked) {
-      selectedTimeslots.push(timeslot.id)
+      // selectedTimeslots.push(timeslot.id)
+      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value;
+      temp_dict.available = true;
     }
+    else {
+      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value;
+      temp_dict.available = false;
+    }
+    selectedTimeslots[`${timeslot.id}`] = temp_dict;
   })
 
-  pincodeData.timeslots = selectedTimeslots
+  pincodeData.delivery_charge = selectedTimeslots
 
   try {
     showLoading("Saving pincode...")
@@ -628,7 +645,7 @@ function exportData(format) {
     City: pincode.city,
     State: pincode.state,
     "Delivery Charge": pincode.delivery_charge || "",
-    Status: pincode.status || "active",
+    Status: pincode.is_active,
     Timeslots: pincode.timeslots ? pincode.timeslots.length : 0,
   }))
 

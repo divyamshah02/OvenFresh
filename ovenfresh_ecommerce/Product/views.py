@@ -10,6 +10,7 @@ from utils.decorators import *
 
 import random
 import string
+from datetime import datetime
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -626,7 +627,8 @@ class PincodeViewSet(viewsets.ViewSet):
     # @check_authentication(required_role='admin')
     def create(self, request):
         is_multiple = request.data.get("is_multiple", False)
-        
+        timeslot_charge_dict = request.data.get('timeslot_charge_dict')
+
         if is_multiple == True:
             pincodes = request.data.get("pincodes")
             if not pincodes or len(pincodes) == 0:
@@ -642,12 +644,17 @@ class PincodeViewSet(viewsets.ViewSet):
                 try:
                     pincode_code = pincode['pincode']
                     area = pincode['area']
+                    city = pincode['city']
+                    state = pincode['state']
                     if Pincode.objects.filter(pincode=pincode_code).exists():
                         continue
                     else:
                         Pincode.objects.create(
                             pincode=pincode_code,
-                            area=area
+                            area=area,
+                            city=city,
+                            state=state,
+                            delivery_charge=timeslot_charge_dict
                         )
 
                 except Exception as e:
@@ -695,9 +702,10 @@ class PincodeViewSet(viewsets.ViewSet):
                     pincode=pincode_code,
                     area_name=area,
                     city=city,
-                    state=state
+                    state=state,
+                    delivery_charge=timeslot_charge_dict
                 )
-        
+
             return Response({
                 "success": True,
                 "user_not_logged_in": False,
@@ -728,7 +736,12 @@ class PincodeViewSet(viewsets.ViewSet):
         pincode_data.city = request.data.get('city')
         pincode_data.state = request.data.get('state')
         pincode_data.delivery_charge = request.data.get('delivery_charge')
-        pincode_data.active = request.data.get('status')
+        is_active = request.data.get('is_active', 'active')
+        if is_active=='active':
+            is_active = True
+        else:
+            is_active = False
+        pincode_data.is_active = is_active
 
         pincode_data.save()
 
@@ -872,46 +885,53 @@ class CheckPincodeViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         pincode = request.query_params.get('pincode')
-        product_id = request.query_params.get('product_id')
-        product_variation_id = request.query_params.get('product_variation_id')
 
-        pincode_data = Pincode.objects.filter(pincode=pincode).first()
+        pincode_data = Pincode.objects.filter(pincode=pincode, is_active=True).first()
         if not pincode_data:
-            # TODO: To be handeled if the pincode is not in our database 
-            return Response({
-                "success": False,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": None,
-                "error": f"Pincode with {pincode} doesnot exists."
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        availability_details = AvailabilityCharges.objects.filter(pincode_id=pincode_data.id, product_id=product_id, product_variation_id=product_variation_id).first()
-        availability_data = []
-        if availability_details:
-            timeslots_data = availability_details.timeslot_data
-            for timeslot in timeslots_data.keys():
-                timeslot_detail = TimeSlot.objects.filter(id=timeslot, is_active=True).first()
-                temp_timeslot_dict = {
-                    "timeslot_id": timeslot,
-                    "timeslot_name": timeslot_detail.time_slot_title,                    
-                    "delivery_charge": timeslots_data[timeslot]['charge'],
-                    "available": timeslots_data[timeslot]['available'],
-                }
-                availability_data.append(temp_timeslot_dict)
-        
             return Response({
                 "success": True,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
-                "data": {"is_deliverable": True, "availability_data": availability_data},
-                "error": None
+                "data": {"is_deliverable": False},
+                "error": f"Pincode with {pincode} does not exist."
             }, status=status.HTTP_200_OK)
+
+        availability_data = []
+        timeslots_data = pincode_data.delivery_charge
+
+        now = timezone.localtime().time()
+        # now = datetime.strptime("11:55", "%H:%M").time()
+
+        for timeslot in timeslots_data.keys():
+            timeslot_detail = TimeSlot.objects.filter(id=timeslot, is_active=True).first()
+            if not timeslot_detail:
+                continue
+
+            if isinstance(timeslot_detail.start_time, str):
+                try:
+                    start_time_obj = datetime.strptime(timeslot_detail.start_time, "%H:%M").time()
+                except ValueError:
+                    continue
+            else:
+                start_time_obj = timeslot_detail.start_time
+
+            # Only include timeslots that start after current time
+            if start_time_obj > now:
+                temp_timeslot_dict = {
+                    "timeslot_id": timeslot,
+                    "timeslot_name": timeslot_detail.time_slot_title,     
+                    "start_time": timeslot_detail.start_time,
+                    "end_time": timeslot_detail.end_time,
+                    "delivery_charge": timeslots_data[timeslot]['charges'],
+                    "available": timeslots_data[timeslot]['available'],
+                }
+                availability_data.append(temp_timeslot_dict)
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"is_deliverable": False, "availability_data": availability_data},
+            "data": {"is_deliverable": bool(availability_data), "availability_data": availability_data},
             "error": None
         }, status=status.HTTP_200_OK)
+

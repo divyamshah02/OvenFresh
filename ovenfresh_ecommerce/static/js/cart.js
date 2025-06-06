@@ -1,6 +1,10 @@
 let cart_list_url = null;
 let cart_delete_url = null;
 let csrf_token = null;
+let pincode_check_url = null;
+
+let pincodeTimeslots = [];
+let availableTimeslots = [];
 
 // Promo codes configuration
 const promoCodes = {
@@ -13,10 +17,11 @@ const promoCodes = {
 let appliedPromoCode = null;
 let promoDiscount = 0;
 
-async function GenerateCart(csrfTokenParam, cartListUrlParam, cartDeleteUrlParam) {
+async function GenerateCart(csrfTokenParam, cartListUrlParam, pincodeCheckUrlParam) {
     csrf_token = csrfTokenParam;
     cart_list_url = cartListUrlParam;
-    cart_delete_url = cartDeleteUrlParam;
+    cart_delete_url = cartListUrlParam;
+    pincode_check_url = pincodeCheckUrlParam;
 
     try {
         const [success, result] = await callApi("GET", cart_list_url);
@@ -54,19 +59,19 @@ function renderCartItems(cartItems) {
     cartItemsContainer.innerHTML = cartItems.map(item => `
         <div class="border-bottom p-4" id="cart_item_${item.id}">
             <div class="row align-items-center">
-                <div class="col-md-2">
+                <div class="col-4 pb-3 col-md-2">
                     <img src="${item.product_image || '/placeholder.svg?height=80&width=80'}" 
                          alt="${item.product_name}" 
                          class="img-fluid rounded" 
                          style="max-height: 80px; object-fit: cover;">
                 </div>
-                <div class="col-md-4">
+                <div class="col-8 pb-3 col-md-4">
                     <h6 class="mb-1">${item.product_name}</h6>
                     <p class="text-muted small mb-0">₹${parseFloat(item.price).toFixed(2)} each</p>
                     ${item.weight ? `<p class="text-muted small mb-0">Weight: ${item.weight}</p>` : ''}
                     ${item.message ? `<p class="text-muted small mb-0">Message: ${item.message}</p>` : ''}
                 </div>
-                <div class="col-md-3">
+                <div class="col-4 col-md-3">
                     <div class="d-flex align-items-center">
                         <button class="btn btn-sm btn-outline-secondary" 
                                 onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})"
@@ -80,10 +85,10 @@ function renderCartItems(cartItems) {
                         </button>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <strong class="of-text-primary">₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</strong>
                 </div>
-                <div class="col-md-1">
+                <div class="col-2 col-md-1">
                     <button class="btn btn-sm btn-outline-danger" 
                             onclick="removeCartItem(${item.id})"
                             title="Remove item">
@@ -176,7 +181,7 @@ async function AddToCart(product_id, product_variation_id, qty=1) {
             showNotification("Item added to cart!", "success");
             // Refresh cart if we're on cart page
             if (document.getElementById('cart-items')) {
-                await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
+                await GenerateCart(csrf_token, cart_list_url, pincode_check_url);
             } else {
                 // Just update cart count if we're on other pages
                 updateCartCountFromAPI();
@@ -209,7 +214,7 @@ async function updateCartItemQuantity(cart_item_id, newQty) {
         const [success, result] = await callApi("PUT", `${cart_list_url}${cart_item_id}/`, bodyData, csrf_token);
         if (success && result.success) {
             showNotification("Cart updated!", "success");
-            await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
+            await GenerateCart(csrf_token, cart_list_url, pincode_check_url);
         } else {
             showNotification("Failed to update item.", "error");
             console.error(result);
@@ -233,7 +238,7 @@ async function removeCartItem(cart_item_id) {
         const [success, result] = await callApi("DELETE", `${cart_delete_url}${cart_item_id}/`, bodyData, csrf_token);
         if (success && result.success) {
             showNotification("Item removed from cart!", "success");
-            await GenerateCart(csrf_token, cart_list_url, cart_delete_url);
+            await GenerateCart(csrf_token, cart_list_url, pincode_check_url);
         } else {
             showNotification("Failed to remove item.", "error");
             console.error(result);
@@ -321,6 +326,77 @@ function showNotification(message, type = "info") {
             notification.remove();
         }
     }, 5000);
+}
+
+async function checkPincode() {
+    const pincodeInput = document.getElementById('pincode-check');
+    const pincode = pincodeInput.value.trim();
+    
+    if (!pincode) {
+        showNotification("Please enter a pincode.", "warning");
+        return;
+    }
+
+    if (!/^\d{6}$/.test(pincode)) {
+        showNotification("Please enter a valid 6-digit pincode.", "error");
+        return;
+    }
+
+    try {
+        const pincode_params = { 
+            pincode: pincode
+        }
+        const url = `${pincode_check_url}?` + toQueryString(pincode_params);
+        const [success, result] = await callApi("GET", url);
+        
+        if (success && result.success) {
+            console.log(result.data);
+            if (result.data.is_deliverable) {
+                showNotification("Delivery available in your area!", "success");
+                pincodeTimeslots = result.data.availability_data || [];
+                showDeliveryOptions();
+            } else {
+                showNotification("Sorry, delivery not available in your area.", "error");
+                hideDeliveryOptions();
+            }
+        } else {
+            showNotification(result.error || "Error checking pincode.", "error");
+        }
+    } catch (error) {
+        console.error("Error checking pincode:", error);
+        showNotification("Error checking pincode availability.", "error");
+    }
+}
+
+function showDeliveryOptions() {
+    const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+    if (deliveryOptionsRow) {
+        deliveryOptionsRow.style.display = 'flex';
+        
+        // Update timeslots with pricing from pincode check
+        const timeslotSelect = document.getElementById('timeslot');
+        if (timeslotSelect && pincodeTimeslots.length > 0) {
+            timeslotSelect.innerHTML = pincodeTimeslots.map(slot => {
+                // Find matching timeslot from general timeslots to get title
+                const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
+                const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
+                const charge = parseFloat(slot.delivery_charge || 0);
+                
+                return `
+                    <option value="${slot.timeslot_id}" data-charge="${charge}">
+                        ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
+                    </option>
+                `;
+            }).join('');
+        }
+    }
+}
+
+function hideDeliveryOptions() {
+    const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+    if (deliveryOptionsRow) {
+        deliveryOptionsRow.style.display = 'none';
+    }
 }
 
 // Initialize cart when page loads

@@ -101,7 +101,7 @@
                                 <span class="badge bg-success">In Stock</span>
                             </div>
                             
-                            <h1 class="product-title mb-3">Chocolate Truffle Cake</h1>
+                            <h1 class="product-title mb-3">Loading...</h1>
                             
                             <div class="product-rating mb-3">
                                 <div class="d-flex align-items-center">
@@ -118,13 +118,13 @@
                             </div>
                             
                             <div class="product-price mb-4">
-                                <span class="current-price h2 of-text-primary">₹35.99</span>
-                                <span class="original-price text-muted text-decoration-line-through ms-2">₹45.99</span>
-                                <span class="discount-badge badge bg-warning ms-2">22% OFF</span>
+                                <span class="current-price h2 of-text-primary">Loading...</span>
+                                <span class="original-price text-muted text-decoration-line-through ms-2">Loading...</span>
+                                <span class="discount-badge badge bg-warning ms-2">Loading...</span>
                             </div>
                             
                             <div class="product-description mb-4">
-                                <p>Indulge in our rich and decadent Chocolate Truffle Cake, made with premium Belgian chocolate and fresh cream. This heavenly dessert features multiple layers of moist chocolate sponge cake filled with smooth chocolate truffle cream and topped with chocolate ganache.</p>
+                                <p>Loading...</p>
                                 
                                 <!-- <ul class="list-unstyled">
                                     <li><i class="fas fa-check of-text-primary me-2"></i>Made with premium Belgian chocolate</li>
@@ -169,7 +169,7 @@
                                         <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
                                     </div>
                                     <div class="col-12">
-                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" onclick="addToCart()">
+                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" id="check-pincode-btn">
                                             Check Pincode
                                         </button>
                                     </div>
@@ -836,8 +836,7 @@
         InitializeProductDetail(
             csrfToken,
             "{% url 'product-list' %}",
-            "{% url 'product-list' %}",
-            "{% url 'product-list' %}"
+            "{% url 'check-pincode-list' %}"
         );
     </script>
 </body>

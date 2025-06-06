@@ -315,10 +315,9 @@ function initializeEventListeners() {
     }
 
     // Update pincode check button text and function
-    const pincodeCheckBtn = document.querySelector('button[onclick="addToCart()"]');
-    if (pincodeCheckBtn && pincodeCheckBtn.textContent.includes('Check Pincode')) {
-        pincodeCheckBtn.setAttribute('onclick', 'checkPincode()');
-    }
+    const pincodeCheckBtn = document.getElementById('check-pincode-btn');
+    pincodeCheckBtn.setAttribute('onclick', 'checkPincode()');
+    
 }
 
 function changeMainImage(src) {
@@ -361,15 +360,17 @@ async function checkPincode() {
     }
 
     try {
-        const [success, result] = await callApi("POST", pincode_check_url, { 
+        const pincode_params = { 
             pincode: pincode,
             product_id: currentProduct.product_id 
-        }, csrf_token);
+        }
+        const url = `${pincode_check_url}?` + toQueryString(pincode_params);
+        const [success, result] = await callApi("GET", url);
         
         if (success && result.success) {
-            if (result.data.available) {
+            if (result.data.is_deliverable) {
                 showNotification("Delivery available in your area!", "success");
-                pincodeTimeslots = result.data.timeslots || [];
+                pincodeTimeslots = result.data.availability_data || [];
                 showDeliveryOptions();
             } else {
                 showNotification("Sorry, delivery not available in your area.", "error");
