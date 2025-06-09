@@ -30,8 +30,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="static/css/style.css">
-    <link rel="stylesheet" href="static/css/loader.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
 </head>
 
 <body>
@@ -42,136 +42,7 @@
 
     <div class="blur" id="main-content">
         <!-- ##### ##### Start Nav Section ##### ##### -->
-        <!-- Topbar -->
-        <div class="topbar text-center d-none d-md-block">
-            <div class="container">
-                Celebrate Occasions with Mumbai's best Online Gift Store.
-            </div>
-        </div>
-
-        <!-- Main Navbar -->
-        <nav class="navbar bg-white px-3 border-bottom">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
-
-                <!-- Logo -->
-                <a href="index.html">
-                    <img src="static/img/logo.png" alt="">
-                </a>
-
-                <!-- Search Center -->
-                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
-                    <div class="search-wrapper mx-auto">
-                        <i class="bi bi-search"></i>
-                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
-                    </div>
-                </form>
-
-                <!-- Right Section -->
-                <div class="d-flex align-items-center">
-                    <a href="cart.html" class="icon-btn me-2" aria-label="Cart">
-                        <i class="bi bi-cart"></i>
-                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
-                    </a>
-                    <button class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
-                            class="bi bi-person-circle"></i></button>
-
-                    <!-- Hamburger only on mobile -->
-                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
-                        <i class="bi bi-list"></i>
-                    </button>
-                </div>
-
-            </div>
-        </nav>
-
-        <!-- Menu Bar -->
-        <div
-            class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
-            <div class="container position-relative">
-                <ul class="nav justify-content-center">
-                    <!-- Cakes with Mega Menu -->
-                    <li class="nav-item position-static dropdown-mega">
-                        <a class="nav-link" href="#">Cakes</a>
-                        <div class="mega-menu d-none">
-                            <div class="container py-4">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <p>Theme Cakes</p>
-                                        <p>Rosette Cakes</p>
-                                        <p>Bento Cakes</p>
-                                        <p>Numeric Cakes</p>
-                                        <p>Fault Line Cakes</p>
-                                        <p>Fresh Fruit Cakes</p>
-                                        <p>Classic Cakes</p>
-                                        <p>Dutch Truffle Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>Gourmet Cakes</p>
-                                        <p>Tea Cakes</p>
-                                        <p>Pinata Cakes</p>
-                                        <p>Butter Cream Cakes</p>
-                                        <p>Chocolate Cakes</p>
-                                        <p>Cheese Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>99% Gold Cakes</p>
-                                        <p>Fusion Cakes</p>
-                                        <p>Red Velvet Cakes</p>
-                                        <p>Two Tier Cakes</p>
-                                        <p>Photo Cakes</p>
-                                        <p>Pastry</p>
-                                        <p>Geode Cakes</p>
-                                        <p>Alphabet Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>Trending Bomb Cakes</p>
-                                        <p>Heart Shape Cakes</p>
-                                        <p>Pull Me Up Cakes</p>
-                                        <p>Butterscotch Cakes</p>
-                                        <p>Fresh Flower Cakes</p>
-                                        <p>Low Frosting Cakes</p>
-                                        <p>Overloaded Cakes</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <!-- Other Menu Items -->
-                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Mobile Offcanvas Menu -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
-                </ul>
-            </div>
-        </div>
-
+        {% include 'nav.html' %}
         <!-- ##### ##### End Nav Section ##### ##### -->
 
         <!-- Checkout Header -->
@@ -185,9 +56,9 @@
                     <div class="col-md-6">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb justify-content-md-end">
-                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
-                                <li class="breadcrumb-item"><a href="cart.html">Cart</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'shop-list' %}">Shop</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'cart-list' %}">Cart</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                             </ol>
                         </nav>
@@ -261,19 +132,24 @@
                                             <label for="address" class="form-label">Address *</label>
                                             <input type="text" class="form-control" id="address" placeholder="Street address" required>
                                         </div>
+                                        <div class="col-12">
+                                            <label for="addressName" class="form-label">Address Type *</label>
+                                            <input type="text" class="form-control" id="addressName" placeholder="Home, work etc.." required>
+                                        </div>
                                         <div class="col-md-6">
                                             <label for="city" class="form-label">City *</label>
                                             <select class="form-select" id="city" required>
                                                 <option value="">Select City</option>
-                                                <option value="mumbai">Mumbai</option>
-                                                <option value="thane">Thane</option>
-                                                <option value="navi-mumbai">Navi Mumbai</option>
+                                                <option value="Mumbai">Mumbai</option>
+                                                <option value="Thane">Thane</option>
+                                                <option value="Navi-mumbai">Navi Mumbai</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="pincode" class="form-label">Pincode *</label>
                                             <input type="text" class="form-control" id="pincode" required>
                                         </div>
+                                    
                                         <div class="col-12">
                                             <label for="deliveryDate" class="form-label">Preferred Delivery Date *</label>
                                             <input type="date" class="form-control" id="deliveryDate" required>
@@ -282,12 +158,6 @@
                                             <label for="deliveryTime" class="form-label">Preferred Delivery Time *</label>
                                             <select class="form-select" id="deliveryTime" required>
                                                 <option value="">Select Time Slot</option>
-                                                <option value="10-12">10:00 AM - 12:00 PM</option>
-                                                <option value="12-14">12:00 PM - 2:00 PM</option>
-                                                <option value="14-16">2:00 PM - 4:00 PM</option>
-                                                <option value="16-18">4:00 PM - 6:00 PM</option>
-                                                <option value="18-20">6:00 PM - 8:00 PM</option>
-                                                <option value="midnight">Midnight Delivery (11:00 PM - 12:00 AM)</option>
                                             </select>
                                         </div>
                                         <div class="col-12">
@@ -422,20 +292,20 @@
                                 <hr>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Subtotal:</span>
-                                    <span id="checkout-subtotal">$0.00</span>
+                                    <span id="checkout-subtotal">₹0.00</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Shipping:</span>
-                                    <span id="checkout-shipping">$5.99</span>
+                                    <span id="checkout-shipping">₹0.00</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Tax:</span>
-                                    <span id="checkout-tax">$0.00</span>
+                                    <span id="checkout-tax">₹0.00</span>
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-between mb-3">
                                     <strong>Total:</strong>
-                                    <strong id="checkout-total">$0.00</strong>
+                                    <strong id="checkout-total">₹0.00</strong>
                                 </div>
                             </div>
                         </div>
@@ -459,7 +329,7 @@
                 <div class="row g-4">
                     <div class="col-lg-3">
                         <div class="footer-info">
-                            <img src="static/img/ovenfresh-logo-min.webp" alt="">
+                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
                             <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
                                 on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
                                 with on time delivery.</p>
@@ -540,7 +410,35 @@
     <!-- Import Wow Animation JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
 
-    <script src="static/js/loader.js"></script>
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/checkout.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        // {% comment %}// InitializeCheckout(
+        //     csrfToken,
+        //     "{% url 'check-user-loggedin' %}",
+        //     "{% url 'check-pincode-list' %}",
+        //     "{% url 'send-otp' %}",
+        //     "{% url 'verify-otp' %}",
+        //     "{% url 'place-order' %}"
+        // );
+        //{% endcomment %}
+        InitializeCheckout(
+            csrfToken,
+            "/cart-api/cart-api/",
+            "/user-api/is-user-logged-in-api/",
+            "/product-api/check-pincode/",
+            "/user-api/otp-api/",
+            "/user-api/otp-api/",
+            "/place_order/",
+            "/user-api/update-user-api/",
+            "/user-api/add-address-api/",
+        );
+        toggle_loader();
+
+    </script>
 
     <style>
         .checkout-progress {
@@ -589,261 +487,10 @@
             margin: 0 20px;
             margin-top: 20px;
         }
+
+        .border-dashed {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #dee2e6;
+        }
     </style>
-
-    <script>
-        // Cart and checkout functionality
-        // let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let cart = [
-                {
-                    "id": 2,
-                    "name": "Luxury Chocolate Box",
-                    "price": 29.99,
-                    "image": "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                    "quantity": 1
-                }
-            ]
-        let currentStep = 1;
-
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cart-count').textContent = cartCount;
-        }
-
-        function calculateTotals() {
-            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-            const shipping = subtotal > 50 ? 0 : 5.99;
-            const tax = subtotal * 0.08; // 8% tax
-            const total = subtotal + shipping + tax;
-
-            document.getElementById('checkout-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('checkout-shipping').textContent = subtotal > 50 ? 'Free' : `$${shipping.toFixed(2)}`;
-            document.getElementById('checkout-tax').textContent = `$${tax.toFixed(2)}`;
-            document.getElementById('checkout-total').textContent = `$${total.toFixed(2)}`;
-        }
-
-        function renderCheckoutItems() {
-            const checkoutItemsContainer = document.getElementById('checkout-items');
-            
-            if (cart.length === 0) {
-                window.location.href = 'cart.html';
-                return;
-            }
-
-            checkoutItemsContainer.innerHTML = cart.map(item => `
-                <div class="d-flex align-items-center mb-3">
-                    <img src="${item.image}" alt="${item.name}" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                    <div class="flex-grow-1">
-                        <h6 class="mb-1">${item.name}</h6>
-                        <small class="text-muted">Qty: ${item.quantity}</small>
-                    </div>
-                    <div class="text-end">
-                        <strong>$${(item.price * item.quantity).toFixed(2)}</strong>
-                    </div>
-                </div>
-            `).join('');
-
-            calculateTotals();
-        }
-
-        function nextStep() {
-            if (currentStep === 1) {
-                // Validate shipping form
-                const form = document.getElementById('checkout-form');
-                const shippingInputs = form.querySelectorAll('#shipping-section input[required], #shipping-section select[required]');
-                let isValid = true;
-
-                shippingInputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
-                    }
-                });
-
-                if (!isValid) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-
-                currentStep = 2;
-                showStep(2);
-            } else if (currentStep === 2) {
-                // Validate payment form
-                const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-                
-                if (paymentMethod !== 'cod') {
-                    const paymentInputs = document.querySelectorAll('#payment-section input[required]:not([style*="display: none"])');
-                    let isValid = true;
-
-                    paymentInputs.forEach(input => {
-                        if (!input.value.trim()) {
-                            input.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            input.classList.remove('is-invalid');
-                        }
-                    });
-
-                    if (!isValid) {
-                        alert('Please fill in all required payment fields');
-                        return;
-                    }
-                }
-
-                currentStep = 3;
-                showStep(3);
-                generateOrderReview();
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                showStep(currentStep);
-            }
-        }
-
-        function showStep(step) {
-            // Hide all sections
-            document.getElementById('shipping-section').style.display = 'none';
-            document.getElementById('payment-section').style.display = 'none';
-            document.getElementById('review-section').style.display = 'none';
-
-            // Show current section
-            if (step === 1) {
-                document.getElementById('shipping-section').style.display = 'block';
-            } else if (step === 2) {
-                document.getElementById('payment-section').style.display = 'block';
-            } else if (step === 3) {
-                document.getElementById('review-section').style.display = 'block';
-            }
-
-            // Update progress indicators
-            document.querySelectorAll('.step').forEach((stepEl, index) => {
-                if (index + 1 <= step) {
-                    stepEl.classList.add('active');
-                } else {
-                    stepEl.classList.remove('active');
-                }
-            });
-        }
-
-        function generateOrderReview() {
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const city = document.getElementById('city').value;
-            const pincode = document.getElementById('pincode').value;
-            const deliveryDate = document.getElementById('deliveryDate').value;
-            const deliveryTime = document.getElementById('deliveryTime').value;
-            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-
-            const reviewContent = `
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <h6>Shipping Address</h6>
-                        <p class="mb-1">${firstName} ${lastName}</p>
-                        <p class="mb-1">${address}</p>
-                        <p class="mb-1">${city}, ${pincode}</p>
-                        <p class="mb-1">Phone: ${phone}</p>
-                        <p class="mb-0">Email: ${email}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Delivery Details</h6>
-                        <p class="mb-1">Date: ${new Date(deliveryDate).toLocaleDateString()}</p>
-                        <p class="mb-1">Time: ${getTimeSlotText(deliveryTime)}</p>
-                        <p class="mb-0">Payment: ${getPaymentMethodText(paymentMethod)}</p>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('order-review-content').innerHTML = reviewContent;
-        }
-
-        function getTimeSlotText(value) {
-            const timeSlots = {
-                '10-12': '10:00 AM - 12:00 PM',
-                '12-14': '12:00 PM - 2:00 PM',
-                '14-16': '2:00 PM - 4:00 PM',
-                '16-18': '4:00 PM - 6:00 PM',
-                '18-20': '6:00 PM - 8:00 PM',
-                'midnight': 'Midnight Delivery (11:00 PM - 12:00 AM)'
-            };
-            return timeSlots[value] || value;
-        }
-
-        function getPaymentMethodText(value) {
-            const methods = {
-                'credit': 'Credit Card',
-                'debit': 'Debit Card',
-                'upi': 'UPI',
-                'cod': 'Cash on Delivery'
-            };
-            return methods[value] || value;
-        }
-
-        // Payment method change handler
-        document.addEventListener('change', function(e) {
-            if (e.target.name === 'paymentMethod') {
-                const cardDetails = document.getElementById('card-details');
-                const upiDetails = document.getElementById('upi-details');
-                
-                if (e.target.value === 'upi') {
-                    cardDetails.style.display = 'none';
-                    upiDetails.style.display = 'block';
-                } else if (e.target.value === 'cod') {
-                    cardDetails.style.display = 'none';
-                    upiDetails.style.display = 'none';
-                } else {
-                    cardDetails.style.display = 'block';
-                    upiDetails.style.display = 'none';
-                }
-            }
-        });
-
-        // Form submission
-        document.getElementById('checkout-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (!document.getElementById('termsAccept').checked) {
-                alert('Please accept the terms and conditions');
-                return;
-            }
-
-            // Simulate order processing
-            alert('Order placed successfully! You will receive a confirmation email shortly.');
-            
-            // Clear cart and redirect
-            localStorage.removeItem('cart');
-            window.location.href = 'index.html';
-        });
-
-        // Set minimum date to today
-        document.getElementById('deliveryDate').min = new Date().toISOString().split('T')[0];
-
-        window.onload = function () {
-            toggle_loader();
-            updateCartCount();
-            renderCheckoutItems();
-            showStep(1);
-        };
-
-        window.addEventListener('scroll', function () {
-            const menuBar = document.querySelector('.main-menu');
-            const scrollTrigger = 95;
-
-            if (window.scrollY >= scrollTrigger) {
-                menuBar.classList.add('fixed-top');
-            } else {
-                menuBar.classList.remove('fixed-top');
-            }
-        });
-    </script>
-
-</body>
-
-</html>

@@ -8,6 +8,8 @@ let currentVariations = [];
 let selectedVariation = null;
 let availableTimeslots = [];
 let pincodeTimeslots = [];
+let todayPincodeTimeslots = [];
+
 
 async function InitializeProductDetail(
     csrfTokenParam,
@@ -309,14 +311,17 @@ function initializeEventListeners() {
     const deliveryDateInput = document.getElementById('delivery-date');
     if (deliveryDateInput) {
         const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        // tomorrow.setDate(tomorrow.getDate() + 1);
         deliveryDateInput.min = tomorrow.toISOString().split('T')[0];
-        deliveryDateInput.value = tomorrow.toISOString().split('T')[0];
+        // deliveryDateInput.value = tomorrow.toISOString().split('T')[0];
     }
+    deliveryDateInput.addEventListener('change', checkIfTodaySelected);
 
     // Update pincode check button text and function
     const pincodeCheckBtn = document.getElementById('check-pincode-btn');
     pincodeCheckBtn.setAttribute('onclick', 'checkPincode()');
+
+
     
 }
 
@@ -345,6 +350,77 @@ function changeQuantity(change) {
     }
 }
 
+// async function checkPincode() {
+//     const pincodeInput = document.getElementById('pincode-check');
+//     const pincode = pincodeInput.value.trim();
+    
+//     if (!pincode) {
+//         showNotification("Please enter a pincode.", "warning");
+//         return;
+//     }
+
+//     if (!/^\d{6}$/.test(pincode)) {
+//         showNotification("Please enter a valid 6-digit pincode.", "error");
+//         return;
+//     }
+
+//     try {
+//         const pincode_params = { 
+//             pincode: pincode,
+//             product_id: currentProduct.product_id 
+//         }
+//         const url = `${pincode_check_url}?` + toQueryString(pincode_params);
+//         const [success, result] = await callApi("GET", url);
+        
+//         if (success && result.success) {
+//             if (result.data.is_deliverable) {
+//                 showNotification("Delivery available in your area!", "success");
+//                 pincodeTimeslots = result.data.availability_data || [];
+//                 showDeliveryOptions();
+//             } else {
+//                 showNotification("Sorry, delivery not available in your area.", "error");
+//                 hideDeliveryOptions();
+//             }
+//         } else {
+//             showNotification(result.error || "Error checking pincode.", "error");
+//         }
+//     } catch (error) {
+//         console.error("Error checking pincode:", error);
+//         showNotification("Error checking pincode availability.", "error");
+//     }
+// }
+
+// function showDeliveryOptions() {
+//     const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+//     if (deliveryOptionsRow) {
+//         deliveryOptionsRow.style.display = 'flex';
+        
+//         // Update timeslots with pricing from pincode check
+//         const timeslotSelect = document.getElementById('timeslot');
+//         if (timeslotSelect && pincodeTimeslots.length > 0) {
+//             timeslotSelect.innerHTML = pincodeTimeslots.map(slot => {
+//                 // Find matching timeslot from general timeslots to get title
+//                 const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
+//                 const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
+//                 const charge = parseFloat(slot.delivery_charge || 0);
+                
+//                 return `
+//                     <option value="${slot.timeslot_id}" data-charge="${charge}">
+//                         ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
+//                     </option>
+//                 `;
+//             }).join('');
+//         }
+//     }
+// }
+
+// function hideDeliveryOptions() {
+//     const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+//     if (deliveryOptionsRow) {
+//         deliveryOptionsRow.style.display = 'none';
+//     }
+// }
+
 async function checkPincode() {
     const pincodeInput = document.getElementById('pincode-check');
     const pincode = pincodeInput.value.trim();
@@ -361,16 +437,17 @@ async function checkPincode() {
 
     try {
         const pincode_params = { 
-            pincode: pincode,
-            product_id: currentProduct.product_id 
+            pincode: pincode
         }
         const url = `${pincode_check_url}?` + toQueryString(pincode_params);
         const [success, result] = await callApi("GET", url);
         
         if (success && result.success) {
+            console.log(result.data);
             if (result.data.is_deliverable) {
                 showNotification("Delivery available in your area!", "success");
                 pincodeTimeslots = result.data.availability_data || [];
+                todayPincodeTimeslots = result.data.today_availability_data || [];
                 showDeliveryOptions();
             } else {
                 showNotification("Sorry, delivery not available in your area.", "error");
@@ -386,7 +463,7 @@ async function checkPincode() {
 }
 
 function showDeliveryOptions() {
-    const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+    const deliveryOptionsRow = document.getElementById('delivery_options');
     if (deliveryOptionsRow) {
         deliveryOptionsRow.style.display = 'flex';
         
@@ -395,8 +472,33 @@ function showDeliveryOptions() {
         if (timeslotSelect && pincodeTimeslots.length > 0) {
             timeslotSelect.innerHTML = pincodeTimeslots.map(slot => {
                 // Find matching timeslot from general timeslots to get title
-                const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
-                const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
+                // const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
+                // const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
+                const title =  `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`;
+                const charge = parseFloat(slot.delivery_charge || 0);
+                
+                return `
+                    <option value="${slot.timeslot_id}" data-charge="${charge}">
+                        ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
+                    </option>
+                `;
+            }).join('');
+        }
+    }
+}
+
+function showTodayDeliveryOptions() {
+    const deliveryOptionsRow = document.getElementById('delivery_options');
+    if (deliveryOptionsRow) {
+        deliveryOptionsRow.style.display = 'flex';
+        
+        // Update timeslots with pricing from pincode check
+        const timeslotSelect = document.getElementById('timeslot');
+        if (timeslotSelect && todayPincodeTimeslots.length > 0) {
+            timeslotSelect.innerHTML = todayPincodeTimeslots.map(slot => {
+                // Find matching timeslot from general timeslots to get title
+                
+                const title =  `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`;
                 const charge = parseFloat(slot.delivery_charge || 0);
                 
                 return `
@@ -410,9 +512,28 @@ function showDeliveryOptions() {
 }
 
 function hideDeliveryOptions() {
-    const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
+    const deliveryOptionsRow = document.getElementById('delivery_options');
     if (deliveryOptionsRow) {
         deliveryOptionsRow.style.display = 'none';
+    }
+}
+
+function checkIfTodaySelected() {
+    const input = document.getElementById('delivery-date');
+    const selectedDate = input.value; // in format "YYYY-MM-DD"
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    if (selectedDate === todayStr) {
+        // If today's date is selected
+        showTodayDeliveryOptions();
+    } else {
+        // If a different date is selected
+        showDeliveryOptions();
     }
 }
 

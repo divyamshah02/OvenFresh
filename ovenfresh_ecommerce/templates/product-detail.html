@@ -50,8 +50,8 @@
             <div class="container">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'shop-list' %}">Shop</a></li>
                         <li class="breadcrumb-item"><a href="#">Cakes</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Chocolate Truffle Cake</li>
                     </ol>
@@ -174,7 +174,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row m-0 p-0 g-3" style="display: none;">
+                                <div class="row m-0 p-0 g-3" style="display: none;" id="delivery_options">
                                     <div class="col-md-6">
                                         <label for="delivery-date" class="form-label">Delivery Date:</label>
                                         <input type="date" class="form-control" id="delivery-date">
@@ -182,17 +182,35 @@
                                     <div class="col-md-6">                                        
                                         <label for="timeslot" class="form-label">Time Slots:</label>
                                         <select class="form-select" id="timeslot">
-                                            <option value="10:00 AM - 02:00 PM">10:00 AM - 02:00 PM</option>
-                                            <option value="12:00 PM - 04:00 PM">12:00 PM - 04:00 PM</option>
-                                            <option value="04:00 PM - 07:00 PM">04:00 PM - 07:00 PM</option>
-                                            <option value="07:00 PM - 10:00 PM (Evening Delivery: ₹80)">07:00 PM - 10:00 PM (Evening Delivery: ₹80)</option>
-                                            <option value="10:45 PM - 11:59 PM (Late Night Delivery: ₹100)">10:45 PM - 11:59 PM (Late Night Delivery: ₹100)</option>
+                                            <option value="6" data-charge="100">
+                                                Early morning Delivery (07:15 - 08:45) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="7" data-charge="100">
+                                                Morning Delivery (10:00 - 14:00) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="8" data-charge="0">
+                                                Afternoon Delivery (12:00 - 16:00) (Free delivery)
+                                            </option>
+
+                                            <option value="9" data-charge="0">
+                                                Evening Delivery (16:00 - 19:00) (Free delivery)
+                                            </option>
+
+                                            <option value="10" data-charge="100">
+                                                Night Delivery (19:00 - 22:00) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="11" data-charge="100">
+                                                Late Night Delivery (22:45 - 23:59) (₹100 delivery charge)
+                                            </option>
                                         </select>
                                     </div>
-                                    <div class="col-md-12">
+                                    <!-- <div class="col-md-12">
                                         <label for="message" class="form-label">Custom Message:</label>
                                         <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
-                                    </div>
+                                    </div> -->
                                 </div>
 
                             </div>

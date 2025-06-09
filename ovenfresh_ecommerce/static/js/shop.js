@@ -85,6 +85,7 @@ const default_products = [
 let csrf_token = null;
 let all_products_url = null;
 let category_url = null;
+let cart_list_url = null;
 // let products = [...default_products]; // Initialize with default products
 let products = []; // Initialize with default products
 
@@ -93,10 +94,11 @@ const productsPerPage = 8;
 let filteredProducts = [];
 
 
-async function Shop(csrf_token_param, all_products_url_param, category_url_param) {
+async function Shop(csrf_token_param, all_products_url_param, category_url_param, cart_list_url_param) {
     csrf_token = csrf_token_param;
     all_products_url = all_products_url_param;
     category_url = category_url_param;
+    cart_list_url = cart_list_url_param;
 
     const [success, res] = await callApi("GET", all_products_url);
     if (success && res.success) {
@@ -131,35 +133,86 @@ async function loadCategoriesAndSubcategories() {
     }
 }
 
-// Cart functionality
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-function updateCartCount() {
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    document.getElementById('cart-count').textContent = cartCount;
-}
+// function addToCart(productId) {
+//     const product = products.find(p => p.id === productId);
+//     const existingItem = cart.find(item => item.id === productId);
 
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    const existingItem = cart.find(item => item.id === productId);
+//     if (existingItem) {
+//         existingItem.quantity += 1;
+//     } else {
+//         cart.push({
+//             id: product.id,
+//             name: product.name,
+//             price: product.price,
+//             image: product.image,
+//             quantity: 1
+//         });
+//     }
 
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            quantity: 1
-        });
+//     localStorage.setItem('cart', JSON.stringify(cart));
+//     updateCartCount();
+
+//     // Show success message
+//     alert('Product added to cart!');
+// }
+
+
+async function AddToCart(product_id, product_variation_id, qty=1) {
+    if (!product_variation_id || qty < 1) {
+        showNotification("Invalid product or quantity.", "error");
+        return false;
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
+    try {
+        const bodyData = {
+            product_id: product_id,
+            product_variation_id: product_variation_id,
+            qty: qty
+        };
 
-    // Show success message
-    alert('Product added to cart!');
+        const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token);
+        if (success && result.success) {
+            showNotification("Item added to cart!", "success");
+            // Refresh cart if we're on cart page
+            if (document.getElementById('cart-items')) {
+                // await GenerateCart(csrf_token, cart_list_url, pincode_check_url);
+            } else {
+                // Just update cart count if we're on other pages
+                updateCartCountFromAPI();
+            }
+            return true;
+        } else {
+            showNotification(result.error || "Failed to add item to cart.", "error");
+            console.error(result);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+        showNotification("Error adding item to cart.", "error");
+        return false;
+    }
+}
+
+async function updateCartCountFromAPI() {
+    try {
+        const [success, result] = await callApi("GET", cart_list_url);
+        if (success && result.success) {
+            const cartItems = result.data.cart_items || [];
+            updateCartCount(cartItems);
+        }
+    } catch (error) {
+        console.error("Error updating cart count:", error);
+    }
+}
+
+function updateCartCount(cartItems) {
+    console.log(cartItems);
+    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
 }
 
 function createProductCard(product) {
@@ -184,7 +237,7 @@ function createProductCard(product) {
                             <img src="${product.photos[0]}" alt="${product.title}" class="img-fluid">
                             <div class="product-actions">
                                 <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
-                                <a href="#" class="btn-product-action" onclick="addToCart(${product.product_id})"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action" onclick="AddToCart(${product.product_id}, ${product.product_variation_id})"><i class="fas fa-shopping-cart"></i></a>
                                 <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-eye"></i></a>
                             </div>
                         </div>
@@ -246,6 +299,26 @@ function filterProducts() {
     loadProducts();
 }
 
+function showNotification(message, type = "info") {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
 // Event listeners
 document.getElementById('categoryFilter').addEventListener('change', filterProducts);
 document.getElementById('sortBy').addEventListener('change', filterProducts);
@@ -253,7 +326,7 @@ document.getElementById('load-more').addEventListener('click', loadProducts);
 
 window.onload = function () {
     toggle_loader();
-    updateCartCount();
+    updateCartCountFromAPI();
     loadProducts();
 };
 

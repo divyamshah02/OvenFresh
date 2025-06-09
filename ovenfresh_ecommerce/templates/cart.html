@@ -56,8 +56,8 @@
                     <div class="col-md-6">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb justify-content-md-end">
-                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'shop-list' %}">Shop</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Cart</li>
                             </ol>
                         </nav>
@@ -84,12 +84,12 @@
                                     <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
                                     <h4>Your cart is empty</h4>
                                     <p class="text-muted">Add some delicious items to your cart!</p>
-                                    <a href="shop.html" class="btn of-btn-primary rounded-pill">Continue Shopping</a>
+                                    <a href="{% url 'shop-list' %}" class="btn of-btn-primary rounded-pill">Continue Shopping</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-lg-4">
                         <!-- Order Summary -->
                         <div class="card border-0 shadow-sm">
@@ -114,38 +114,59 @@
                                     <strong>Total:</strong>
                                     <strong id="total">$0.00</strong>
                                 </div>
-                                
+
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label for="pincode-check" class="form-label">Check Pincode:</label>
-                                        <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                        <input type="text" placeholder="Enter your pincode" class="form-control"
+                                            id="pincode-check">
                                     </div>
                                     <div class="col-12 mb-3">
-                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" id="check-pincode-btn" onclick="checkPincode()">
+                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill"
+                                            id="check-pincode-btn" onclick="checkPincode()">
                                             Check Pincode
                                         </button>
                                     </div>
                                 </div>
 
-                                <div class="row m-0 p-0 g-3 mb-3" style="display: none;">
+                                <div class="row m-0 p-0 g-3 mb-3" style="display: none;" id="delivery_options">
                                     <div class="col-md-6">
                                         <label for="delivery-date" class="form-label">Delivery Date:</label>
                                         <input type="date" class="form-control" id="delivery-date">
                                     </div>
-                                    <div class="col-md-6">                                        
+                                    <div class="col-md-6">
                                         <label for="timeslot" class="form-label">Time Slots:</label>
                                         <select class="form-select" id="timeslot">
-                                            <option value="10:00 AM - 02:00 PM">10:00 AM - 02:00 PM</option>
-                                            <option value="12:00 PM - 04:00 PM">12:00 PM - 04:00 PM</option>
-                                            <option value="04:00 PM - 07:00 PM">04:00 PM - 07:00 PM</option>
-                                            <option value="07:00 PM - 10:00 PM (Evening Delivery: ₹80)">07:00 PM - 10:00 PM (Evening Delivery: ₹80)</option>
-                                            <option value="10:45 PM - 11:59 PM (Late Night Delivery: ₹100)">10:45 PM - 11:59 PM (Late Night Delivery: ₹100)</option>
+                                            <option value="6" data-charge="100">
+                                                Early morning Delivery (07:15 - 08:45) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="7" data-charge="100">
+                                                Morning Delivery (10:00 - 14:00) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="8" data-charge="0">
+                                                Afternoon Delivery (12:00 - 16:00) (Free delivery)
+                                            </option>
+
+                                            <option value="9" data-charge="0">
+                                                Evening Delivery (16:00 - 19:00) (Free delivery)
+                                            </option>
+
+                                            <option value="10" data-charge="100">
+                                                Night Delivery (19:00 - 22:00) (₹100 delivery charge)
+                                            </option>
+
+                                            <option value="11" data-charge="100">
+                                                Late Night Delivery (22:45 - 23:59) (₹100 delivery charge)
+                                            </option>
                                         </select>
                                     </div>
-                                    <div class="col-md-12">
+                                    <!-- <div class="col-md-12">
                                         <label for="message" class="form-label">Custom Message:</label>
-                                        <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
-                                    </div>
+                                        <input type="text" class="form-control" id="message"
+                                            placeholder="Happy Birthday!">
+                                    </div> -->
                                 </div>
 
 
@@ -154,17 +175,20 @@
                                     <label for="promoCode" class="form-label">Promo Code</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="promoCode" placeholder="Enter code">
-                                        <button class="btn of-btn-outline-primary" type="button" onclick="applyPromoCode()">Apply</button>
+                                        <button class="btn of-btn-outline-primary" type="button"
+                                            onclick="applyPromoCode()">Apply</button>
                                     </div>
                                 </div>
-                                
+
                                 <div class="d-grid gap-2">
-                                    <a href="checkout.html" class="btn of-btn-primary rounded-pill" id="checkout-btn">Proceed to Checkout</a>
-                                    <a href="shop.html" class="btn of-btn-outline-primary rounded-pill">Continue Shopping</a>
+                                    <a href="{% url 'checkout-list' %}" class="btn of-btn-primary rounded-pill"
+                                        id="checkout-btn">Proceed to Checkout</a>
+                                    <a href="{% url 'shop-list' %}" class="btn of-btn-outline-primary rounded-pill">Continue
+                                        Shopping</a>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Delivery Info -->
                         <div class="card border-0 shadow-sm mt-4">
                             <div class="card-body">
@@ -173,7 +197,8 @@
                                     Delivery Information
                                 </h6>
                                 <p class="card-text small text-muted">
-                                    Free delivery on orders over $50. Same day delivery available in Mumbai, Thane & Navi Mumbai.
+                                    Free delivery on orders over $50. Same day delivery available in Mumbai, Thane &
+                                    Navi Mumbai.
                                 </p>
                             </div>
                         </div>

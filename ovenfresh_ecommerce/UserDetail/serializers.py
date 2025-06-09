@@ -22,7 +22,8 @@ class AddressSerializer(serializers.ModelSerializer):
         model = Address
         fields = '__all__'
 
-class OTPSerializer(serializers.ModelSerializer):
+class OTPVerificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OTP
+        model = OTPVerification
         fields = '__all__'
+

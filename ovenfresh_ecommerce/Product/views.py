@@ -897,6 +897,7 @@ class CheckPincodeViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
 
         availability_data = []
+        today_availability_data = []
         timeslots_data = pincode_data.delivery_charge
 
         now = timezone.localtime().time()
@@ -916,22 +917,24 @@ class CheckPincodeViewSet(viewsets.ViewSet):
                 start_time_obj = timeslot_detail.start_time
 
             # Only include timeslots that start after current time
-            if start_time_obj > now:
-                temp_timeslot_dict = {
-                    "timeslot_id": timeslot,
-                    "timeslot_name": timeslot_detail.time_slot_title,     
-                    "start_time": timeslot_detail.start_time,
-                    "end_time": timeslot_detail.end_time,
-                    "delivery_charge": timeslots_data[timeslot]['charges'],
-                    "available": timeslots_data[timeslot]['available'],
-                }
-                availability_data.append(temp_timeslot_dict)
+            temp_timeslot_dict = {
+                "timeslot_id": timeslot,
+                "timeslot_name": timeslot_detail.time_slot_title,     
+                "start_time": timeslot_detail.start_time,
+                "end_time": timeslot_detail.end_time,
+                "delivery_charge": timeslots_data[timeslot]['charges'],
+                "available": timeslots_data[timeslot]['available'],
+            }
+            availability_data.append(temp_timeslot_dict)
+            
+            if start_time_obj > now:                
+                today_availability_data.append(temp_timeslot_dict)
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"is_deliverable": bool(availability_data), "availability_data": availability_data},
+            "data": {"is_deliverable": bool(availability_data), "availability_data": availability_data, "today_availability_data": today_availability_data},
             "error": None
         }, status=status.HTTP_200_OK)
 
