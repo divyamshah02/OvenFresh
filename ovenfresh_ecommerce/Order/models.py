@@ -14,6 +14,9 @@ class Order(models.Model):
     is_cod = models.BooleanField(default=False)
     payment_received = models.BooleanField(default=False)
 
+    razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
+
     assigned_delivery_partner_id = models.CharField(max_length=20, null=True, blank=True)
     order_note = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

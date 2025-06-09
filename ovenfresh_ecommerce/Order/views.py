@@ -7,6 +7,8 @@ from django.utils.crypto import get_random_string
 from Cart.models import Cart, CartItem
 from UserDetail.models import User
 import datetime
+from utils.razorpay_utils import create_razorpay_order, verify_payment_signature, fetch_payment_status
+
 
 class OrderViewSet(viewsets.ViewSet):
 
@@ -68,7 +70,8 @@ class OrderViewSet(viewsets.ViewSet):
             total_amount=str(total_amount),
             payment_method=data["payment_method"],
             is_cod=data.get("is_cod", False),
-            order_note=data.get("order_note", "")
+            order_note=data.get("order_note", ""),
+            razorpay_order_id=""
         )
 
         for item in cart_items:
@@ -82,6 +85,17 @@ class OrderViewSet(viewsets.ViewSet):
                 final_amount=item.total_price,
                 item_note=item.notes or ""
             )
+
+        if not order.is_cod:
+            razorpay_order = create_razorpay_order(
+                order_id=order.order_id,
+                amount=float(total_amount)
+            )
+
+            if razorpay_order:
+                # Update order with Razorpay ID
+                order.razorpay_order_id = razorpay_order['id']
+                order.save()
 
         return Response({"success": True, "user_not_logged_in": False, "user_unauthorized": False, "data": {"order_id": order.order_id}, "error": None}, status=201)
 
@@ -100,8 +114,9 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
         Called by payment redirect URL to confirm order.
         """
         order_id = request.data.get("order_id")
-        payment_status = request.data.get("payment_status")
-        payment_id = request.data.get("payment_id")
+        razorpay_payment_id = request.data.get("razorpay_payment_id")
+        razorpay_signature = request.data.get("razorpay_signature")
+        razorpay_order_id = request.data.get("razorpay_order_id")
 
         if not order_id:
             return Response({"success": False, "user_not_logged_in": False, "user_unauthorized": False, "data": None, "error": "Missing order_id."}, status=400)
@@ -111,16 +126,34 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
         except Order.DoesNotExist:
             return Response({"success": False, "user_not_logged_in": False, "user_unauthorized": False, "data": None, "error": "Order not found."}, status=404)
 
-        if payment_status == "success":
-            order.status = "order_placed"
-            order.payment_received = True
+        if razorpay_payment_id and razorpay_signature and razorpay_order_id:
+            # Verify payment signature for immediate payments
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            }
+
+            if verify_payment_signature(params_dict):
+                # Signature valid - mark payment received
+                order.payment_received = True
+                order.razorpay_payment_id = razorpay_payment_id
+                order.payment_id = razorpay_payment_id
+            else:
+                # Signature invalid - mark for later verification
+                order.payment_received = False
+                order.razorpay_payment_id = razorpay_payment_id
+                order.payment_id = razorpay_payment_id
+
         else:
-            order.status = "order_placed"
+            # No payment info yet - mark as pending
             order.payment_received = False
 
-        order.payment_id = payment_id or ""
+        # Always mark order as placed regardless of payment status
+        order.status = "order_placed"
         order.save()
-        OrderItem.objects.filter(order_id=order_id).update(payment_id=payment_id)
+
+        OrderItem.objects.filter(order_id=order_id).update(payment_id=order.payment_id or "")
 
         return Response({"success": True, "user_not_logged_in": False, "user_unauthorized": False, "data": {"message": "Order placed."}, "error": None}, status=200)
 

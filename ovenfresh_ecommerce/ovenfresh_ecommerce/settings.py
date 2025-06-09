@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from utils.encrypt_decrypt import *
+from utils.encrypt_decrypt import base64_to_text, text_to_base64
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -114,3 +114,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfaUpJM3RCR2puVDRIbG0=")
+RAZORPAY_KEY_SECRET = base64_to_text("MFBaRUlRNVZMVjJlb0ZqYmhCcU9CZHVv")
