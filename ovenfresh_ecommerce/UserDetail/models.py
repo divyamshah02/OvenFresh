@@ -33,6 +33,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     user_id = models.CharField(max_length=12, unique=True)
     contact_number = models.CharField(max_length=15)
+    alternate_phone = models.CharField(max_length=15, blank=True, null=True)
 
     # Override save to assign user_id automatically
     def save(self, *args, **kwargs):

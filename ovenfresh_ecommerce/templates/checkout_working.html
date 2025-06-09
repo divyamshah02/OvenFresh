@@ -67,6 +67,34 @@
             </div>
         </section>
 
+        <!-- Checkout Progress -->
+        <section class="py-3 border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <div class="checkout-progress d-flex align-items-center">
+                                <div class="step active">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Shipping</div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Payment</div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Review</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Checkout Content -->
         <section class="py-5">
             <div class="container">
@@ -101,7 +129,7 @@
                                             <input type="tel" class="form-control" id="phone" required>
                                         </div>
                                         <div class="col-12">
-                                            <label for="alternate_phone" class="form-label">Alternate Phone Number</label>
+                                            <label for="phone" class="form-label">Alternate Phone Number</label>
                                             <input type="tel" class="form-control" id="alternate_phone">
                                         </div>
                                         <div class="col-12">
@@ -140,116 +168,125 @@
                                             <label for="specialInstructions" class="form-label">Special Instructions</label>
                                             <textarea class="form-control" id="specialInstructions" rows="3" placeholder="Any special delivery instructions..."></textarea>
                                         </div>
-                                        
-                                        <!-- Different Billing Address Checkbox -->
                                         <div class="col-12">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="differentBillingAddress">
-                                                <label class="form-check-label" for="differentBillingAddress">
-                                                    Different billing address?
-                                                </label>
+                                                <!-- form-switch -->
+                                                <input class="form-check-input" type="checkbox" id="sameBillingAddress">
+                                                <label class="form-check-label" for="sameBillingAddress">Different billing address?</label>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <!-- Billing Address Section (Hidden by default) -->
-                                    <div id="billing-address-section" class="mt-4" style="display: none;">
-                                        <h6 class="mb-3">Billing Address</h6>
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label for="billingFirstName" class="form-label">First Name *</label>
-                                                <input type="text" class="form-control" id="billingFirstName">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="billingLastName" class="form-label">Last Name *</label>
-                                                <input type="text" class="form-control" id="billingLastName">
-                                            </div>
-                                            <div class="col-12">
-                                                <label for="billingAddress" class="form-label">Address *</label>
-                                                <input type="text" class="form-control" id="billingAddress" placeholder="Street address">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="billingCity" class="form-label">City *</label>
-                                                <select class="form-select" id="billingCity">
-                                                    <option value="">Select City</option>
-                                                    <option value="Mumbai">Mumbai</option>
-                                                    <option value="Thane">Thane</option>
-                                                    <option value="Navi-mumbai">Navi Mumbai</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="billingPincode" class="form-label">Pincode *</label>
-                                                <input type="text" class="form-control" id="billingPincode">
-                                            </div>
-                                            <div class="col-12">
-                                                <label for="billingPhone" class="form-label">Phone Number (Optional)</label>
-                                                <input type="tel" class="form-control" id="billingPhone">
-                                            </div>
-                                            <div class="col-12">
-                                                <label for="billingAlternatePhone" class="form-label">Alternate Number (Optional)</label>
-                                                <input type="tel" class="form-control" id="billingAlternatePhone">
-                                            </div>
+                                        <div>
+                                            
                                         </div>
                                     </div>
-
-                                    <!-- Payment Method Selection -->
-                                    <div class="mt-4">
-                                        <h6 class="mb-3">Payment Method</h6>
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <div class="card payment-option">
-                                                    <div class="card-body text-center">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod" checked>
-                                                            <label class="form-check-label w-100" for="cod">
-                                                                <i class="fas fa-money-bill-wave fa-2x mb-2 d-block"></i>
-                                                                <strong>Cash on Delivery</strong>
-                                                                <small class="d-block text-muted">Pay when you receive</small>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="card payment-option">
-                                                    <div class="card-body text-center">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" value="razorpay">
-                                                            <label class="form-check-label w-100" for="razorpay">
-                                                                <i class="fas fa-credit-card fa-2x mb-2 d-block"></i>
-                                                                <strong>Pay Now</strong>
-                                                                <small class="d-block text-muted">Secure online payment</small>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="d-flex justify-content-end mt-4">
-                                        <button type="button" class="btn of-btn-primary rounded-pill" onclick="continueToPayment()">Continue to Payment</button>
+                                        <button type="button" class="btn of-btn-primary rounded-pill" onclick="nextStep()">Continue to Payment</button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Payment Overview Section (Hidden by default) -->
-                            <div class="card border-0 shadow-sm mb-4" id="payment-overview-section" style="display: none;">
+                            <!-- Payment Information -->
+                            <div class="card border-0 shadow-sm mb-4" id="payment-section" style="display: none;">
                                 <div class="card-header bg-white border-bottom">
                                     <h5 class="mb-0">
                                         <i class="fas fa-credit-card me-2 of-text-primary"></i>
-                                        Payment Overview
+                                        Payment Information
                                     </h5>
                                 </div>
                                 <div class="card-body">
-                                    <div id="payment-order-summary">
-                                        <!-- Order summary will be populated here -->
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label">Payment Method *</label>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit" checked>
+                                                        <label class="form-check-label" for="creditCard">
+                                                            <i class="fas fa-credit-card me-2"></i>Credit Card
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="debit">
+                                                        <label class="form-check-label" for="debitCard">
+                                                            <i class="fas fa-credit-card me-2"></i>Debit Card
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="upi">
+                                                        <label class="form-check-label" for="upi">
+                                                            <i class="fas fa-mobile-alt me-2"></i>UPI
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod">
+                                                        <label class="form-check-label" for="cod">
+                                                            <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="card-details">
+                                            <div class="col-12">
+                                                <label for="cardNumber" class="form-label">Card Number *</label>
+                                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="expiryDate" class="form-label">Expiry Date *</label>
+                                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="cvv" class="form-label">CVV *</label>
+                                                <input type="text" class="form-control" id="cvv" placeholder="123">
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="cardName" class="form-label">Name on Card *</label>
+                                                <input type="text" class="form-control" id="cardName" placeholder="John Doe">
+                                            </div>
+                                        </div>
+
+                                        <div id="upi-details" style="display: none;">
+                                            <div class="col-12">
+                                                <label for="upiId" class="form-label">UPI ID *</label>
+                                                <input type="text" class="form-control" id="upiId" placeholder="yourname@upi">
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="text-center mt-4">
-                                        <button type="button" class="btn of-btn-primary btn-lg" id="razorpay-payment-btn">
-                                            <i class="fas fa-lock me-2"></i>
-                                            Pay Securely
-                                        </button>
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn of-btn-outline-primary rounded-pill" onclick="prevStep()">Back to Shipping</button>
+                                        <button type="button" class="btn of-btn-primary rounded-pill" onclick="nextStep()">Review Order</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Review -->
+                            <div class="card border-0 shadow-sm mb-4" id="review-section" style="display: none;">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-check-circle me-2 of-text-primary"></i>
+                                        Review Your Order
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="order-review-content">
+                                        <!-- Order review content will be populated here -->
+                                    </div>
+                                    <div class="form-check mb-4">
+                                        <input class="form-check-input" type="checkbox" id="termsAccept" required>
+                                        <label class="form-check-label" for="termsAccept">
+                                            I agree to the <a href="#" class="of-text-primary">Terms and Conditions</a> and <a href="#" class="of-text-primary">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn of-btn-outline-primary rounded-pill" onclick="prevStep()">Back to Payment</button>
+                                        <button type="submit" class="btn of-btn-primary rounded-pill">Place Order</button>
                                     </div>
                                 </div>
                             </div>
@@ -393,6 +430,15 @@
 
     <script>
         const csrfToken = "{{ csrf_token }}";
+        // {% comment %}// InitializeCheckout(
+        //     csrfToken,
+        //     "{% url 'check-user-loggedin' %}",
+        //     "{% url 'check-pincode-list' %}",
+        //     "{% url 'send-otp' %}",
+        //     "{% url 'verify-otp' %}",
+        //     "{% url 'place-order' %}"
+        // );
+        //{% endcomment %}
         InitializeCheckout(
             csrfToken,
             "/cart-api/cart-api/",
@@ -406,27 +452,55 @@
             "/user-api/add-address-api/",
         );
         toggle_loader();
+
     </script>
 
     <style>
-        .payment-option {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
+        .checkout-progress {
+            max-width: 400px;
         }
 
-        .payment-option:hover {
-            border-color: var(--of-primary-color);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
-        .payment-option input[type="radio"]:checked + label {
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background-color: var(--of-primary-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
             color: var(--of-primary-color);
+            font-weight: 600;
         }
 
-        .payment-option:has(input[type="radio"]:checked) {
-            border-color: var(--of-primary-color);
-            background-color: rgba(var(--of-primary-color-rgb), 0.05);
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background-color: #e9ecef;
+            margin: 0 20px;
+            margin-top: 20px;
         }
 
         .border-dashed {
@@ -435,7 +509,5 @@
             border-color: #dee2e6;
         }
     </style>
-
 </body>
-
 </html>

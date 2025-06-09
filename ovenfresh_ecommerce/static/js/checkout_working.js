@@ -25,8 +25,7 @@ let selectedTimeslot = null
 let mobileVerified = false
 let otpRequestId = null
 
-let cartItems = []
-let currentOrderData = null
+let cartItems = [];
 
 async function InitializeCheckout(
   csrfTokenParam,
@@ -89,9 +88,9 @@ async function checkUserLoggedIn() {
         }
 
         userAddresses = result.data.addresses || []
-        if (userAddresses.length == 0) {
-          userDataAdded = false
-        }
+        if (userAddresses.length == 0) [
+          userDataAdded = false,
+        ]
 
         populateUserData()
         renderAddresses()
@@ -109,12 +108,13 @@ async function checkUserLoggedIn() {
 }
 
 async function transferCart() {
-  showLoading()
+  showLoading();
   try {
-    const [success, result] = await callApi("POST", transfer_cart_url, {}, csrf_token)
-    console.log(result)
+    const [success, result] = await callApi("POST", transfer_cart_url, {}, csrf_token);
+    console.log(result);
     if (success && result.success) {
-      return true
+      return true;
+      
     } else {
       throw new Error(result.error || "Failed to transfer cart")
     }
@@ -124,6 +124,7 @@ async function transferCart() {
   } finally {
     hideLoading()
   }
+
 }
 
 function populateUserData() {
@@ -421,7 +422,7 @@ async function verifyOtp() {
       },
       csrf_token,
     )
-    console.log(result)
+    console.log(result);
     if (success && result.success) {
       if (result.data.otp_verified) {
         mobileVerified = true
@@ -433,11 +434,13 @@ async function verifyOtp() {
         // Update UI to show verified status
         updatePhoneVerifiedUI()
 
-        userDataAdded = result.data.user_details
-        csrf_token = getCSRFToken()
-        await transferCart()
+        userDataAdded =  result.data.user_details;
+        csrf_token = getCSRFToken();
+        await transferCart();
 
-        window.location.reload()
+        window.location.reload();
+        // await checkUserLoggedIn();
+        // await loadCartSummary();
       } else {
         document.getElementById("otpError").textContent = result.data.message || "Invalid OTP. Please try again."
         document.getElementById("otpError").style.display = "block"
@@ -567,10 +570,10 @@ function updateTimeslots() {
 }
 
 function updateShippingCharge() {
-  const selectElement = document.getElementById("deliveryTime")
-  const selectedOption = selectElement.options[selectElement.selectedIndex]
-  const charge = selectedOption.getAttribute("data-charge")
-  return charge ? Number.parseFloat(charge) : 0
+    const selectElement = document.getElementById("deliveryTime");
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const charge = selectedOption.getAttribute("data-charge");
+    return charge ? parseFloat(charge) : 0;
 }
 
 function clearTimeslots() {
@@ -592,16 +595,25 @@ function isSelectedDateToday() {
 
 async function loadCartSummary() {
   try {
-    const [success, result] = await callApi("GET", cart_list_url)
-    if (success && result.success) {
-      cartItems = result.data.cart_items || []
-      console.log("Cart items loaded:", cartItems)
-      renderCheckoutItems()
-      calculateTotals()
-    } else {
-      console.error("Failed to fetch cart items:", result)
-      showEmptyCart()
-    }
+
+      const [success, result] = await callApi("GET", cart_list_url);
+      if (success && result.success) {
+          cartItems = result.data.cart_items || [];
+          console.log("Cart items loaded:", cartItems);
+          renderCheckoutItems();
+          calculateTotals();
+      } else {
+          console.error("Failed to fetch cart items:", result);
+          showEmptyCart();
+      }
+
+    // This would typically be an API call to get cart data
+    // For now, we'll just populate with sample data
+    // const cartItems = [
+    //   { name: "Birthday Cake", price: 799, quantity: 1, image: "/static/img/products/cake1.jpg" },
+    //   { name: "Chocolate Truffle", price: 599, quantity: 2, image: "/static/img/products/cake2.jpg" },
+    // ]
+
   } catch (error) {
     console.error("Error loading cart summary:", error)
     showNotification("Error loading cart summary.", "error")
@@ -632,26 +644,27 @@ function renderCheckoutItems() {
 }
 
 function calculateTotals() {
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)  
   const tax = subtotal * 0.18 // 18% tax
   const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
   const total = subtotal + shipping + tax
 
-  updateOrderSummary(subtotal, shipping, tax, total)
+  updateOrderSummary(subtotal, shipping, tax, total);
+
 }
 
-function updateOrderSummary(subtotal, shipping = null, tax, total) {
+function updateOrderSummary(subtotal, shipping=null, tax, total) {
   const subtotalElement = document.getElementById("checkout-subtotal")
   const shippingElement = document.getElementById("checkout-shipping")
   const taxElement = document.getElementById("checkout-tax")
   const totalElement = document.getElementById("checkout-total")
 
   if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`
-
+  // if (shippingElement) shippingElement.textContent = shipping === 0 ? "Free" : `₹${shipping.toFixed(2)}`
   if (shipping === null) {
-    if (shippingElement) shippingElement.textContent = "To be calculated after selecting delivery time slot"
+    if (shippingElement) shippingElement.textContent = 'To be calculated after selecting delivery time slot';
   } else if (shipping === 0) {
-    if (shippingElement) shippingElement.textContent = "Free"
+    if (shippingElement) shippingElement.textContent = "Free";
   } else {
     if (shippingElement) shippingElement.textContent = `₹${shipping.toFixed(2)}`
   }
@@ -682,27 +695,27 @@ function initializeEventListeners() {
     })
   }
 
-  // Add event listener for different billing address checkbox
-  const differentBillingCheckbox = document.getElementById("differentBillingAddress")
-  if (differentBillingCheckbox) {
-    differentBillingCheckbox.addEventListener("change", function () {
-      const billingSection = document.getElementById("billing-address-section")
-      if (this.checked) {
-        billingSection.style.display = "block"
-      } else {
-        billingSection.style.display = "none"
-      }
+  // Add event listener for form submission
+  const checkoutForm = document.getElementById("checkout-form")
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", (e) => {
+      e.preventDefault()
+      placeOrder()
     })
   }
 
-  // Add event listener for delivery time change
-  document.getElementById("deliveryTime").addEventListener("change", calculateTotals)
+  // Add event listeners for step navigation
+  const nextButtons = document.querySelectorAll('button[onclick="nextStep()"]')
+  nextButtons.forEach((button) => {
+    button.onclick = nextStep
+  })
 
-  // Add event listener for Razorpay payment button
-  const razorpayBtn = document.getElementById("razorpay-payment-btn")
-  if (razorpayBtn) {
-    razorpayBtn.addEventListener("click", processRazorpayPayment)
-  }
+  const prevButtons = document.querySelectorAll('button[onclick="prevStep()"]')
+  prevButtons.forEach((button) => {
+    button.onclick = prevStep
+  })
+
+  document.getElementById("deliveryTime").addEventListener("change", calculateTotals);
 }
 
 async function updateUserData() {
@@ -719,15 +732,15 @@ async function updateUserData() {
     "pincode",
   ]
 
-  const bodyData = {}
+  let bodyData = {}
   requiredFields.forEach((fieldId) => {
     const field = document.getElementById(fieldId)
-    bodyData[fieldId] = field.value.trim()
+    bodyData[fieldId] = field.value.trim()    
   })
 
   try {
-    const [success, result] = await callApi("POST", add_user_data_url, bodyData, csrf_token)
-    console.log(result)
+    const [success, result] = await callApi("POST", add_user_data_url, bodyData, csrf_token);
+    console.log(result);
     if (success && result.success) {
       showNotification("Update user data.")
     } else {
@@ -742,7 +755,7 @@ async function updateUserData() {
 }
 
 async function addNewAddress() {
-  showLoading()
+  showLoading();
 
   const address = document.getElementById("address").value.trim()
   const city = document.getElementById("city").value.trim()
@@ -757,12 +770,13 @@ async function addNewAddress() {
   }
 
   try {
-    const [success, result] = await callApi("POST", add_address_url, bodyData, csrf_token)
-    console.log(result)
+    const [success, result] = await callApi("POST", add_address_url, bodyData, csrf_token);
+    console.log(result);
     if (success && result.success) {
       showNotification("Address Added.")
       userAddresses = result.data.addresses || userAddresses
-      renderAddresses()
+      renderAddresses();
+      
     } else {
       throw new Error(result.error || "Failed to add address")
     }
@@ -772,76 +786,83 @@ async function addNewAddress() {
   } finally {
     hideLoading()
   }
+
 }
 
 function getCSRFToken() {
-  const name = "csrftoken"
-  const cookies = document.cookie.split(";")
+    const name = 'csrftoken';
+    const cookies = document.cookie.split(';');
 
-  for (let cookie of cookies) {
-    cookie = cookie.trim()
-    if (cookie.startsWith(name + "=")) {
-      return decodeURIComponent(cookie.substring(name.length + 1))
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+            return decodeURIComponent(cookie.substring(name.length + 1));
+        }
     }
-  }
-  return null
+    return null;
 }
 
-async function continueToPayment() {
-  // Validate shipping form
-  if (!validateShippingForm()) {
-    return
+let currentStep = 1
+
+async function nextStep() {
+  if (currentStep === 1) {
+    // Validate shipping form
+    if (!validateShippingForm()) {
+      return
+    }
+
+    if (!userDataAdded){
+      await updateUserData();
+    }
+
+    if (selectedAddress === "new") {
+    await addNewAddress();
+    }
+
+    currentStep = 2
+    showStep(2)
+  } else if (currentStep === 2) {
+    // Validate payment form
+    if (!validatePaymentForm()) {
+      return
+    }
+
+    currentStep = 3
+    showStep(3)
+    generateOrderReview()
   }
-
-  if (!userDataAdded) {
-    await updateUserData()
-  }
-
-  if (selectedAddress === "new") {
-    await addNewAddress()
-  }
-
-  // Get payment method
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
-
-  // Prepare order data
-  currentOrderData = {
-    shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
-    different_billing_address: document.getElementById("differentBillingAddress").checked,
-    billing_address: getBillingAddressData(),
-    payment_method: paymentMethod,
-    first_name: document.getElementById("firstName").value,
-    last_name: document.getElementById("lastName").value,
-    email: document.getElementById("email").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-    city: document.getElementById("city").value,
-    pincode: document.getElementById("pincode").value,
-    delivery_date: document.getElementById("deliveryDate").value,
-    timeslot_id: document.getElementById("deliveryTime").value,
-    special_instructions: document.getElementById("specialInstructions").value,
-  }
-
-  // Call place order API
-  await placeOrder()
 }
 
-function getBillingAddressData() {
-  const isDifferentBilling = document.getElementById("differentBillingAddress").checked
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--
+    showStep(currentStep)
+  }
+}
 
-  if (!isDifferentBilling) {
-    return null
+function showStep(step) {
+  // Hide all sections
+  document.getElementById("shipping-section").style.display = "none"
+  document.getElementById("payment-section").style.display = "none"
+  document.getElementById("review-section").style.display = "none"
+
+  // Show current section
+  if (step === 1) {
+    document.getElementById("shipping-section").style.display = "block"
+  } else if (step === 2) {
+    document.getElementById("payment-section").style.display = "block"
+  } else if (step === 3) {
+    document.getElementById("review-section").style.display = "block"
   }
 
-  return {
-    first_name: document.getElementById("billingFirstName").value,
-    last_name: document.getElementById("billingLastName").value,
-    address: document.getElementById("billingAddress").value,
-    city: document.getElementById("billingCity").value,
-    pincode: document.getElementById("billingPincode").value,
-    phone: document.getElementById("billingPhone").value,
-    alternate_phone: document.getElementById("billingAlternatePhone").value,
-  }
+  // Update progress indicators
+  document.querySelectorAll(".step").forEach((stepEl, index) => {
+    if (index + 1 <= step) {
+      stepEl.classList.add("active")
+    } else {
+      stepEl.classList.remove("active")
+    }
+  })
 }
 
 function validateShippingForm() {
@@ -850,6 +871,7 @@ function validateShippingForm() {
     "lastName",
     "email",
     "phone",
+    "alternate_phone",
     "address",
     "addressName",
     "city",
@@ -878,28 +900,6 @@ function validateShippingForm() {
     isValid = false
   }
 
-  // Validate billing address if different billing is checked
-  const isDifferentBilling = document.getElementById("differentBillingAddress").checked
-  if (isDifferentBilling) {
-    const billingRequiredFields = [
-      "billingFirstName",
-      "billingLastName",
-      "billingAddress",
-      "billingCity",
-      "billingPincode",
-    ]
-
-    billingRequiredFields.forEach((fieldId) => {
-      const field = document.getElementById(fieldId)
-      if (!field || !field.value.trim()) {
-        field.classList.add("is-invalid")
-        isValid = false
-      } else {
-        field.classList.remove("is-invalid")
-      }
-    })
-  }
-
   if (!isValid) {
     showNotification("Please fill in all required fields.", "error")
   }
@@ -907,19 +907,90 @@ function validateShippingForm() {
   return isValid
 }
 
+function validatePaymentForm() {
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')
+
+  if (!paymentMethod) {
+    showNotification("Please select a payment method.", "error")
+    return false
+  }
+
+  // For now, we'll just validate the payment method selection
+  // In a real implementation, you would validate card details, UPI ID, etc.
+
+  return true
+}
+
+function generateOrderReview() {
+  const firstName = document.getElementById("firstName").value
+  const lastName = document.getElementById("lastName").value
+  const email = document.getElementById("email").value
+  const phone = document.getElementById("phone").value
+  const address = document.getElementById("address").value
+  const city = document.getElementById("city").value
+  const pincode = document.getElementById("pincode").value
+  const deliveryDate = document.getElementById("deliveryDate").value
+  const deliveryTime = document.getElementById("deliveryTime")
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
+
+  const timeSlotText = deliveryTime.options[deliveryTime.selectedIndex].text
+
+  const reviewContent = `
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h6>Shipping Address</h6>
+                <p class="mb-1">${firstName} ${lastName}</p>
+                <p class="mb-1">${address}</p>
+                <p class="mb-1">${city}, ${pincode}</p>
+                <p class="mb-1">Phone: ${phone}</p>
+                <p class="mb-0">Email: ${email}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Delivery Details</h6>
+                <p class="mb-1">Date: ${formatDate(deliveryDate)}</p>
+                <p class="mb-1">Time: ${timeSlotText}</p>
+                <p class="mb-0">Payment: ${getPaymentMethodText(paymentMethod)}</p>
+            </div>
+        </div>
+    `
+
+  document.getElementById("order-review-content").innerHTML = reviewContent
+}
+
 async function placeOrder() {
+  if (!document.getElementById("termsAccept").checked) {
+    showNotification("Please accept the terms and conditions.", "error")
+    return
+  }
+
   try {
     showLoading()
 
-    const [success, result] = await callApi("POST", place_order_url, currentOrderData, csrf_token)
+    // Gather order data
+    const orderData = {
+      first_name: document.getElementById("firstName").value,
+      last_name: document.getElementById("lastName").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      pincode: document.getElementById("pincode").value,
+      delivery_date: document.getElementById("deliveryDate").value,
+      timeslot_id: document.getElementById("deliveryTime").value,
+      payment_method: document.querySelector('input[name="paymentMethod"]:checked').value,
+      special_instructions: document.getElementById("specialInstructions").value,
+    }
+
+    const [success, result] = await callApi("POST", place_order_url, orderData, csrf_token)
 
     if (success && result.success) {
-      if (currentOrderData.payment_method === "razorpay") {
-        // Show payment overview section
-        showPaymentOverview(result.data)
+      // If Razorpay payment link is returned
+      if (result.data.razorpay_link) {
+        // Open Razorpay payment
+        openRazorpayPayment(result.data.razorpay_link)
       } else {
-        // COD - Show success modal
-        showCODSuccessModal(result.data.order_id)
+        // For COD or other payment methods
+        showOrderConfirmation(result.data.order_id)
       }
     } else {
       throw new Error(result.error || "Failed to place order")
@@ -932,78 +1003,34 @@ async function placeOrder() {
   }
 }
 
-function showPaymentOverview(orderData) {
-  // Hide shipping section
-  document.getElementById("shipping-section").style.display = "none"
-
-  // Show payment overview section
-  const paymentOverviewSection = document.getElementById("payment-overview-section")
-  paymentOverviewSection.style.display = "block"
-
-  // Populate order summary in payment overview
-  const paymentOrderSummary = document.getElementById("payment-order-summary")
-  paymentOrderSummary.innerHTML = `
-    <div class="row g-4 mb-4">
-      <div class="col-md-6">
-        <h6>Shipping Address</h6>
-        <p class="mb-1">${currentOrderData.first_name} ${currentOrderData.last_name}</p>
-        <p class="mb-1">${currentOrderData.address}</p>
-        <p class="mb-1">${currentOrderData.city}, ${currentOrderData.pincode}</p>
-        <p class="mb-0">Phone: ${currentOrderData.phone}</p>
-      </div>
-      <div class="col-md-6">
-        <h6>Order Details</h6>
-        <p class="mb-1">Order ID: ${orderData.order_id}</p>
-        <p class="mb-1">Payment ID: ${orderData.payment_id}</p>
-        <p class="mb-0">Amount: ₹${orderData.total_amount}</p>
-      </div>
-    </div>
-  `
-
-  // Store payment data for processing
-  window.currentPaymentData = orderData
-}
-
-function processRazorpayPayment() {
+function openRazorpayPayment(razorpayLink) {
   // In a real implementation, you would initialize Razorpay here
-  // For now, we'll simulate payment success
-  showNotification("Payment processed successfully!", "success")
-
-  setTimeout(() => {
-    window.location.href = `/order-confirmation/${window.currentPaymentData.order_id}/`
-  }, 2000)
+  // For now, we'll just redirect to the payment link
+  window.location.href = razorpayLink
 }
 
-function showCODSuccessModal(orderId) {
-  const modalHtml = `
-    <div class="modal fade" id="codSuccessModal" tabindex="-1" aria-labelledby="codSuccessModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-body text-center py-5">
-            <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
-            <h3>Order Placed Successfully!</h3>
+function showOrderConfirmation(orderId) {
+  // Show order confirmation message
+  const confirmationHtml = `
+        <div class="text-center py-5">
+            <i class="fas fa-check-circle fa-4x of-text-primary mb-4"></i>
+            <h2>Order Placed Successfully!</h2>
             <p class="lead">Your order #${orderId} has been placed successfully.</p>
-            <p class="text-muted">You will be redirected shortly...</p>
-            <div class="spinner-border text-primary mt-3" role="status">
-              <span class="visually-hidden">Loading...</span>
+            <p>You will receive a confirmation email shortly.</p>
+            <div class="mt-4">
+                <a href="index.html" class="btn of-btn-outline-primary me-2">Continue Shopping</a>
+                <a href="orders.html" class="btn of-btn-primary">View Orders</a>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  `
+    `
 
-  // Append modal to body
-  document.body.insertAdjacentHTML("beforeend", modalHtml)
+  // Replace form with confirmation
+  const checkoutForm = document.getElementById("checkout-form")
+  checkoutForm.innerHTML = confirmationHtml
 
-  // Show modal
-  const modal = new bootstrap.Modal(document.getElementById("codSuccessModal"))
-  modal.show()
-
-  // Redirect after 3 seconds
-  setTimeout(() => {
-    window.location.href = `/order-confirmation/${orderId}/`
-  }, 3000)
+  // Hide order summary
+  const orderSummary = document.querySelector(".col-lg-4")
+  if (orderSummary) orderSummary.style.display = "none"
 }
 
 // Utility functions
@@ -1020,8 +1047,10 @@ function formatDate(dateString) {
 
 function getPaymentMethodText(value) {
   const methods = {
+    credit: "Credit Card",
+    debit: "Debit Card",
+    upi: "UPI",
     cod: "Cash on Delivery",
-    razorpay: "Online Payment",
   }
   return methods[value] || value
 }
@@ -1062,10 +1091,107 @@ function showNotification(message, type = "info") {
   }, 5000)
 }
 
-// Make functions globally available
-// window.continueToPayment = continueToPayment
-// window.showSendOtpModal = showSendOtpModal
-// window.sendOtp = sendOtp
-// window.verifyOtp = verifyOtp
-// window.checkPincode = checkPincode
-// window.processRazorpayPayment = processRazorpayPayment
+
+// Mock callApi function (replace with your actual API call logic)
+// async function callApi(method, url, data = null, csrf_token = null) {
+//   // Simulate API call delay
+//   await new Promise((resolve) => setTimeout(resolve, 500))
+
+//   // Simulate success or failure based on URL or data
+//   const success = true
+//   let result = {}
+//     console.log(url);
+//   if (url.includes("check_user_loggedin")) {
+//     result = {
+//       success: true,
+//       user_not_logged_in: false,
+//       data: {
+//         user: {
+//           first_name: "John",
+//           last_name: "Doe",
+//           email: "john.doe@example.com",
+//           phone: "1234567890",
+//         },
+//         addresses: [
+//           {
+//             id: 1,
+//             address_type: "Home",
+//             address_line1: "123 Main St",
+//             address_line2: "Apt 4B",
+//             city: "Mumbai",
+//             pincode: "400015",
+//           },
+//         ],
+//       },
+//     }
+//   } else if (url.includes("check_pincode")) {
+//     if (data && data.pincode === "123456") {
+//       result = {
+//         success: true,
+//         data: {
+//           is_deliverable: true,
+//           availability_data: [
+//             {
+//               timeslot_id: 1,
+//               timeslot_name: "Morning",
+//               start_time: "9:00 AM",
+//               end_time: "12:00 PM",
+//               delivery_charge: 0,
+//             },
+//             {
+//               timeslot_id: 2,
+//               timeslot_name: "Afternoon",
+//               start_time: "1:00 PM",
+//               end_time: "4:00 PM",
+//               delivery_charge: 50,
+//             },
+//           ],
+//           today_availability_data: [
+//             {
+//               timeslot_id: 3,
+//               timeslot_name: "Evening",
+//               start_time: "6:00 PM",
+//               end_time: "9:00 PM",
+//               delivery_charge: 0,
+//             },
+//           ],
+//         },
+//       }
+//     } else {
+//       result = {
+//         success: true,
+//         data: {
+//           is_deliverable: false,
+//         },
+//       }
+//     }
+//   } else if (url.includes("send_otp")) {
+//     result = {
+//       success: true,
+//       data: {
+//         request_id: "12345",
+//       },
+//     }
+//   } else if (url.includes("verify_otp")) {
+//     result = {
+//       success: true,
+//       data: {
+//         otp_verified: true,
+//       },
+//     }
+//   } else if (url.includes("place_order")) {
+//     result = {
+//       success: true,
+//       data: {
+//         order_id: "ORDER123",
+//       },
+//     }
+//   } else {
+//     result = {
+//       success: false,
+//       error: "Mock API Error",
+//     }
+//   }
+
+//   return [success, result]
+// }
