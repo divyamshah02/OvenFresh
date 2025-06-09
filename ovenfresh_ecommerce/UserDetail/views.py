@@ -271,12 +271,14 @@ class UserDetailViewSet(viewsets.ViewSet):
         email = request.data.get('email')
         address = request.data.get('address')
         city = request.data.get('city')
+        alternate_phone = request.data.get('alternate_phone', "")
         pincode = request.data.get('pincode')
 
         user_obj = User.objects.get(user_id=user.user_id)
         user_obj.first_name = firstName
         user_obj.last_name = lastName
         user_obj.email = email
+        user_obj.alternate_phone = alternate_phone
         user_obj.save()
 
         new_address = Address(

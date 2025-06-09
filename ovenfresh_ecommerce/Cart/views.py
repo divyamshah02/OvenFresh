@@ -218,6 +218,7 @@ class CartViewSet(viewsets.ViewSet):
 class CartTransferViewSet(viewsets.ViewSet):
 
     @handle_exceptions
+    @check_authentication(required_role=None)
     def create(self, request):
         user = request.user
         # session_id = request.session.session_key  # get session id from request
@@ -232,7 +233,7 @@ class CartTransferViewSet(viewsets.ViewSet):
                 "error": "No session ID available"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        guest_cart = Cart.objects.filter(session_id=session_id, active_cart=True).first()
+        guest_cart = Cart.objects.get(session_id=session_id, active_cart=True)
         if not guest_cart:
             return Response({
                 "success": False,
@@ -242,35 +243,20 @@ class CartTransferViewSet(viewsets.ViewSet):
                 "error": "No open cart found for this session"
             }, status=status.HTTP_404_NOT_FOUND)
 
-        user_cart = Cart.objects.filter(user_id=user.user_id, active_cart=True).first()
-        if not user_cart:
-            cart_id = generate_unique_cart_id()
-            user_cart = Cart.objects.create(
-                cart_id=cart_id,
-                user_id=user.user_id
-            )
-
-        guest_items = CartItem.objects.filter(cart_id=guest_cart.cart_id)
-        for item in guest_items:
-            existing_item = CartItem.objects.filter(
-                cart_id=user_cart.cart_id,
-                product_id=item.product_id,
-                product_variation_id=item.product_variation_id
-            ).first()
-
-            if existing_item:
-                existing_item.quantity += item.quantity
-                existing_item.save()
-            else:
-                item.cart_id = user_cart.cart_id
-                item.save()
-
-        guest_cart.delete()
+        user_cart = Cart.objects.get(user_id=user.user_id, active_cart=True)
+        if user_cart:
+            user_cart.active_cart = False
+            user_cart.save()
+        
+        guest_cart.user_id = user.user_id
+        guest_cart.session_id = None
+        guest_cart.active_cart = True
+        guest_cart.save()
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"cart_id": user_cart.cart_id},
+            "data": {"cart_id": guest_cart.cart_id},
             "error": None
         }, status=status.HTTP_200_OK)
