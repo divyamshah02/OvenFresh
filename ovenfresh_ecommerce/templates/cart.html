@@ -99,7 +99,11 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between mb-3">
                                     <span>Subtotal:</span>
-                                    <span id="subtotal">$0.00</span>
+                                    <span id="subtotal">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3" id="discount-row" style="display: none !important;">
+                                    <span>Discount:</span>
+                                    <span id="discount">₹0.00</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-3">
                                     <span>Shipping:</span>
@@ -107,12 +111,12 @@
                                 </div>
                                 <div class="d-flex justify-content-between mb-3">
                                     <span>Tax:</span>
-                                    <span id="tax">$0.00</span>
+                                    <span id="tax">₹0.00</span>
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-between mb-4">
                                     <strong>Total:</strong>
-                                    <strong id="total">$0.00</strong>
+                                    <strong id="total">₹0.00</strong>
                                 </div>
 
                                 <div class="row g-3">
@@ -131,12 +135,13 @@
 
                                 <div class="row m-0 p-0 g-3 mb-3" style="display: none;" id="delivery_options">
                                     <div class="col-md-6">
-                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
-                                        <input type="date" class="form-control" id="delivery-date">
+                                        <label for="deliveryDate" class="form-label">Delivery Date:</label>
+                                        <input type="date" class="form-control" id="deliveryDate">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="timeslot" class="form-label">Time Slots:</label>
-                                        <select class="form-select" id="timeslot">
+                                        <label for="deliveryTime" class="form-label">Time Slots:</label>
+                                        <select class="form-select" id="deliveryTime">
+                                            <option value="">Select Time Slot</option>
                                             <option value="6" data-charge="100">
                                                 Early morning Delivery (07:15 - 08:45) (₹100 delivery charge)
                                             </option>
@@ -181,8 +186,8 @@
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <a href="{% url 'checkout-list' %}" class="btn of-btn-primary rounded-pill"
-                                        id="checkout-btn">Proceed to Checkout</a>
+                                    <button onclick="proceedToCheckout()" class="btn of-btn-primary rounded-pill"
+                                        id="checkout-btn">Proceed to Checkout</button>
                                     <a href="{% url 'shop-list' %}" class="btn of-btn-outline-primary rounded-pill">Continue
                                         Shopping</a>
                                 </div>
@@ -303,7 +308,8 @@
         GenerateCart(
             csrfToken,
             "{% url 'cart-api-list' %}",
-            "{% url 'check-pincode-list' %}"
+            "{% url 'check-pincode-list' %}",
+            "{% url 'checkout-list' %}"
         );
         toggle_loader();
     </script>

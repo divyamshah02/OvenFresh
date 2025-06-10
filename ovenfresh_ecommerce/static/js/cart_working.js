@@ -2,15 +2,12 @@ let cart_list_url = null;
 let cart_delete_url = null;
 let csrf_token = null;
 let pincode_check_url = null;
-let checkout_url = null;
 
 let pincodeTimeslots = [];
 let todayPincodeTimeslots = [];
 let availableTimeslots = [];
 let todayAvailableTimeslots = [];
 let cartItems = [];
-let selectedTimeslot = null
-
 
 
 // Promo codes configuration
@@ -24,13 +21,10 @@ const promoCodes = {
 let appliedPromoCode = null;
 let promoDiscount = 0;
 
-async function GenerateCart(csrfTokenParam, cartListUrlParam, pincodeCheckUrlParam, checkoutUrlParam = null) {
+async function GenerateCart(csrfTokenParam, cartListUrlParam, pincodeCheckUrlParam) {
     csrf_token = csrfTokenParam;
     cart_list_url = cartListUrlParam;
     cart_delete_url = cartListUrlParam;
-    if (checkoutUrlParam) {
-        checkout_url = checkoutUrlParam;        
-    }
     pincode_check_url = pincodeCheckUrlParam;
 
     try {
@@ -129,6 +123,47 @@ function updateCartCount() {
     const cartCountElement = document.getElementById('cart-count');
     if (cartCountElement) {
         cartCountElement.textContent = cartCount;
+    }
+}
+
+function calculateTotals() {
+    const subtotal = cartItems.reduce((total, item) => total + (parseFloat(item.price) * parseInt(item.quantity)), 0);
+    const shipping = subtotal >= 50 ? 0 : 5.99; // Free shipping over ₹50
+    const tax = subtotal * 0.08; // 8% tax
+    const discount = subtotal * promoDiscount;
+    const total = subtotal + shipping + tax - discount;
+
+    updateOrderSummary(subtotal, shipping, tax, total, discount);
+}
+
+function updateOrderSummary(subtotal, shipping, tax, total, discount = 0) {
+    const subtotalElement = document.getElementById('subtotal');
+    const shippingElement = document.getElementById('shipping');
+    const taxElement = document.getElementById('tax');
+    const totalElement = document.getElementById('total');
+
+    if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    if (shippingElement) shippingElement.textContent = shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`;
+    if (taxElement) taxElement.textContent = `₹${tax.toFixed(2)}`;
+    if (totalElement) totalElement.textContent = `₹${total.toFixed(2)}`;
+
+    // Show discount if applied
+    let discountElement = document.getElementById('discount-row');
+    if (discount > 0) {
+        if (!discountElement) {
+            discountElement = document.createElement('div');
+            discountElement.id = 'discount-row';
+            discountElement.className = 'd-flex justify-content-between mb-3 text-success';
+            discountElement.innerHTML = `
+                <span>Discount (${appliedPromoCode}):</span>
+                <span id="discount">-₹${discount.toFixed(2)}</span>
+            `;
+            document.getElementById('tax').parentElement.insertAdjacentElement('afterend', discountElement);
+        } else {
+            discountElement.querySelector('#discount').textContent = `-₹${discount.toFixed(2)}`;
+        }
+    } else if (discountElement) {
+        discountElement.remove();
     }
 }
 
@@ -296,169 +331,120 @@ function showNotification(message, type = "info") {
     }, 5000);
 }
 
-
-
-async function checkPincode(pincodeValue = null) {
-  const pincode = pincodeValue || document.getElementById("pincode-check").value.trim()
-
-  if (!pincode) {
-    showNotification("Please enter a pincode.", "warning")
-    return
-  }
-
-  if (!/^\d{6}$/.test(pincode)) {
-    showNotification("Please enter a valid 6-digit pincode.", "error")
-    return
-  }
-
-  try {
-    // showLoading()
-
-    const pincode_params = {
-      pincode: pincode,
+async function checkPincode() {
+    const pincodeInput = document.getElementById('pincode-check');
+    const pincode = pincodeInput.value.trim();
+    
+    if (!pincode) {
+        showNotification("Please enter a pincode.", "warning");
+        return;
     }
-    const url = `${pincode_check_url}?` + toQueryString(pincode_params)
-    const [success, result] = await callApi("GET", url)
 
-    if (success && result.success) {
-      if (result.data.is_deliverable) {
-        showNotification("Delivery available in your area!", "success")
-        pincodeTimeslots = result.data.availability_data || []
-        todayPincodeTimeslots = result.data.today_availability_data || []
-        updateTimeslots()
-      } else {
-        showNotification("Sorry, delivery not available in your area.", "error")
-        clearTimeslots()
-      }
-    } else {
-      throw new Error(result.error || "Error checking pincode.")
+    if (!/^\d{6}$/.test(pincode)) {
+        showNotification("Please enter a valid 6-digit pincode.", "error");
+        return;
     }
-  } catch (error) {
-    console.error("Error checking pincode:", error)
-    showNotification("Error checking pincode availability.", "error")
-  } finally {
-    // hideLoading()
-  }
+
+    try {
+        const pincode_params = { 
+            pincode: pincode
+        }
+        const url = `${pincode_check_url}?` + toQueryString(pincode_params);
+        const [success, result] = await callApi("GET", url);
+        
+        if (success && result.success) {
+            console.log(result.data);
+            if (result.data.is_deliverable) {
+                showNotification("Delivery available in your area!", "success");
+                pincodeTimeslots = result.data.availability_data || [];
+                todayPincodeTimeslots = result.data.today_availability_data || [];
+                showDeliveryOptions();
+            } else {
+                showNotification("Sorry, delivery not available in your area.", "error");
+                hideDeliveryOptions();
+            }
+        } else {
+            showNotification(result.error || "Error checking pincode.", "error");
+        }
+    } catch (error) {
+        console.error("Error checking pincode:", error);
+        showNotification("Error checking pincode availability.", "error");
+    }
 }
 
-function updateTimeslots() {
+function showDeliveryOptions() {
     const deliveryOptionsRow = document.getElementById('delivery_options');
     if (deliveryOptionsRow) {
-        deliveryOptionsRow.style.display = 'flex';}
-  const deliveryDateInput = document.getElementById("deliveryDate")
-  const timeslotSelect = document.getElementById("deliveryTime")
-
-  if (!timeslotSelect) return
-
-  // Check if selected date is today
-  const isToday = isSelectedDateToday()
-  const timeslots = isToday ? todayPincodeTimeslots : pincodeTimeslots
-
-  if (timeslots.length === 0) {
-    timeslotSelect.innerHTML = '<option value="">No delivery slots available</option>'
-    return
-  }
-
-  timeslotSelect.innerHTML =
-    `<option value="">Select Time Slot</option>` +
-    timeslots
-      .map((slot) => {
-        const title = `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`
-        const charge = Number.parseFloat(slot.delivery_charge || 0)
-
-        return `
-                <option value="${slot.timeslot_id}" data-charge="${charge}" ${selectedTimeslot == slot.timeslot_id ? "selected" : ""}>
-                    ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : "(Free delivery)"}
-                </option>
-            `
-      })
-      .join("")
+        deliveryOptionsRow.style.display = 'flex';
+        
+        // Update timeslots with pricing from pincode check
+        const timeslotSelect = document.getElementById('timeslot');
+        if (timeslotSelect && pincodeTimeslots.length > 0) {
+            timeslotSelect.innerHTML = pincodeTimeslots.map(slot => {
+                // Find matching timeslot from general timeslots to get title
+                // const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
+                // const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
+                const title =  `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`;
+                const charge = parseFloat(slot.delivery_charge || 0);
+                
+                return `
+                    <option value="${slot.timeslot_id}" data-charge="${charge}">
+                        ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
+                    </option>
+                `;
+            }).join('');
+        }
+    }
 }
 
-function updateShippingCharge() {
-  const selectElement = document.getElementById("deliveryTime")
-  const selectedOption = selectElement.options[selectElement.selectedIndex]
-  const charge = selectedOption.getAttribute("data-charge")
-  return charge ? Number.parseFloat(charge) : 0
+function showTodayDeliveryOptions() {
+    const deliveryOptionsRow = document.getElementById('delivery_options');
+    if (deliveryOptionsRow) {
+        deliveryOptionsRow.style.display = 'flex';
+        
+        // Update timeslots with pricing from pincode check
+        const timeslotSelect = document.getElementById('timeslot');
+        if (timeslotSelect && todayPincodeTimeslots.length > 0) {
+            timeslotSelect.innerHTML = todayPincodeTimeslots.map(slot => {
+                // Find matching timeslot from general timeslots to get title
+                
+                const title =  `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`;
+                const charge = parseFloat(slot.delivery_charge || 0);
+                
+                return `
+                    <option value="${slot.timeslot_id}" data-charge="${charge}">
+                        ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
+                    </option>
+                `;
+            }).join('');
+        }
+    }
 }
 
-function clearTimeslots() {
-  const timeslotSelect = document.getElementById("deliveryTime")
-  if (timeslotSelect) {
-    timeslotSelect.innerHTML = '<option value="">Select Time Slot</option>'
-  }
+function hideDeliveryOptions() {
+    const deliveryOptionsRow = document.getElementById('delivery_options');
+    if (deliveryOptionsRow) {
+        deliveryOptionsRow.style.display = 'none';
+    }
 }
 
-function isSelectedDateToday() {
-  const deliveryDateInput = document.getElementById("deliveryDate")
-  if (!deliveryDateInput || !deliveryDateInput.value) return false
+function checkIfTodaySelected() {
+    const input = document.getElementById('delivery-date');
+    const selectedDate = input.value; // in format "YYYY-MM-DD"
 
-  const selectedDate = new Date(deliveryDateInput.value)
-  const today = new Date()
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
 
-  return selectedDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)
-}
-
-function calculateTotals() {
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const tax = subtotal * 0.18 // 18% tax
-  const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
-//   const total = subtotal + shipping + tax
-  const discount = subtotal * promoDiscount;
-  if (discount > 0) {
-    document.getElementById("discount-row").style.display = "";
-    document.getElementById("discount").textContent = `- ₹${discount.toFixed(2)} (${appliedPromoCode})`;
-  }
-  const total = subtotal + shipping + tax - discount;
-
-  updateOrderSummary(subtotal, shipping, tax, total)
-}
-
-function updateOrderSummary(subtotal, shipping = null, tax, total) {
-  const subtotalElement = document.getElementById("subtotal")
-  const shippingElement = document.getElementById("shipping")
-  const taxElement = document.getElementById("tax")
-  const totalElement = document.getElementById("total")
-
-  if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`
-
-  if (shipping === null) {
-    if (shippingElement) shippingElement.textContent = "To be calculated after selecting delivery time slot"
-  } else if (shipping === 0) {
-    if (shippingElement) shippingElement.textContent = "Free"
-  } else {
-    if (shippingElement) shippingElement.textContent = `₹${shipping.toFixed(2)}`
-  }
-
-  if (taxElement) taxElement.textContent = `₹${tax.toFixed(2)}`
-  if (totalElement) totalElement.textContent = `₹${total.toFixed(2)}`
-}
-
-function proceedToCheckout() {
-    const deliveryDate = document.getElementById("deliveryDate").value;
-    const deliveryTime = document.getElementById("deliveryTime").value;
-    const pincode = document.getElementById("pincode-check").value;
-
-    // if (!deliveryDate) {
-    //     showNotification("Please select a delivery date.", "warning");
-    //     return;
-    // }
-
-    // if (!deliveryTime) {
-    //     showNotification("Please select a delivery time slot.", "warning");
-    //     return;
-    // }
-
-    // Prepare checkout data
-    const checkoutData = {
-        delivery_date: deliveryDate,
-        delivery_time: deliveryTime,
-        pincode: pincode,
-    };
-
-    const checkoutUrl = `${checkout_url}?` + toQueryString(checkoutData);
-
-    window.location.href = checkoutUrl;
+    if (selectedDate === todayStr) {
+        // If today's date is selected
+        showTodayDeliveryOptions();
+    } else {
+        // If a different date is selected
+        showDeliveryOptions();
+    }
 }
 
 // Initialize cart when page loads
@@ -466,27 +452,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update cart count on all pages
     
     updateCartCountFromAPI();
-    
-    const deliveryDateInput = document.getElementById("deliveryDate")
+        // Set minimum delivery date to tomorrow
+    const deliveryDateInput = document.getElementById('delivery-date');
     if (deliveryDateInput) {
-        const today = new Date()
-        deliveryDateInput.min = today.toISOString().split("T")[0]
-        deliveryDateInput.value = today.toISOString().split("T")[0]
-
-        // Add event listener for date change
-        deliveryDateInput.addEventListener("change", () => {
-        updateTimeslots()
-        })
+        const tomorrow = new Date();
+        // tomorrow.setDate(tomorrow.getDate() + 1);
+        deliveryDateInput.min = tomorrow.toISOString().split('T')[0];
+        // deliveryDateInput.value = tomorrow.toISOString().split('T')[0];
     }
-
-    // Add event listener for pincode check
-    const pincodeInput = document.getElementById("pincode-check")
-    if (pincodeInput) {
-        pincodeInput.addEventListener("blur", () => {
-        checkPincode()
-        })
-    }
+    deliveryDateInput.addEventListener('change', checkIfTodaySelected);
     
-    // Add event listener for delivery time change
-    document.getElementById("deliveryTime").addEventListener("change", calculateTotals)
 });

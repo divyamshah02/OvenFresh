@@ -58,11 +58,11 @@ async function InitializeCheckout(
     // Check if user is logged in
     await checkUserLoggedIn()
 
-    // Check URL parameters for pincode, delivery date, and timeslot
-    checkUrlParameters()
-
     // Initialize event listeners
     initializeEventListeners()
+
+    // Check URL parameters for pincode, delivery date, and timeslot
+    checkUrlParameters()
 
     // Load cart summary
     await loadCartSummary()
