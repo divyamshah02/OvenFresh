@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -42,6 +43,62 @@ class CheckoutViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         return render(request, 'checkout.html')
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseBadRequest
+import razorpay
+from django.conf import settings
+
+@csrf_exempt
+def payment_success_callback(request):
+    get_order_id = request.GET.get("razorpay_order_id")
+    if request.method == "POST":
+        payment_id = request.POST.get("razorpay_payment_id")
+        order_id = request.POST.get("razorpay_order_id")
+        signature = request.POST.get("razorpay_signature")
+
+        print(payment_id)
+        print(order_id)
+        print(signature)
+
+        # Optional: verify signature
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        params_dict = {
+            "razorpay_order_id": order_id,
+            "razorpay_payment_id": payment_id,
+            "razorpay_signature": signature
+        }
+
+        try:
+            client.utility.verify_payment_signature(params_dict)
+        except razorpay.errors.SignatureVerificationError:
+            return HttpResponseBadRequest("Invalid signature")
+
+        # ✅ Process your order update logic here
+        return redirect(f'/order-success?order_id={get_order_id}')  # Redirect to order success page
+    else:
+        return redirect(f'/order-success?order_id={get_order_id}')
+
+
+class OrderSuccessDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @csrf_exempt
+    def list(self, request):
+        return render(request, 'order-success.html')
+    
+    @csrf_exempt
+    def create(self, request):
+        return render(request, 'order-success.html')
+
+
+class OrderDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'order-detail.html')
 
 
 class AdminTemplateViewSet(viewsets.ViewSet):

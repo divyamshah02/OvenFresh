@@ -11,6 +11,9 @@ router.register(r'product-detail', ProductDetailViewSet, basename='product-detai
 router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'checkout', CheckoutViewSet, basename='checkout')
 
+router.register(r'order-success', OrderSuccessDetailViewSet, basename='order-success')
+router.register(r'order-detail', OrderDetailViewSet, basename='order-detail')
+
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')
@@ -20,4 +23,5 @@ router.register(r'admin-timeslot', AdminTimeslotViewSet, basename='admin-timeslo
 
 urlpatterns = [
     path('', include(router.urls)),
+    path("payment-success-callback/", payment_success_callback, name="payment-success-callback"),
 ]

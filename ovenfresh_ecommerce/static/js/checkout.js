@@ -14,6 +14,7 @@ let userData = null
 let userAddresses = []
 let isLoggedIn = false
 let userDataAdded = false
+let currentPaymentData = null
 
 // Delivery data
 let pincodeTimeslots = []
@@ -961,17 +962,33 @@ function showPaymentOverview(orderData) {
   `
 
   // Store payment data for processing
-  window.currentPaymentData = orderData
+  currentPaymentData = orderData
 }
 
 function processRazorpayPayment() {
   // In a real implementation, you would initialize Razorpay here
   // For now, we'll simulate payment success
-  showNotification("Payment processed successfully!", "success")
+  // const data = {'razorpay_order_id': 'order_QfQvm5k2jPuZNW', 'razorpay_key_id': 'rzp_test_XDwYWE4licPDpu', 'amount': 100000, 'currency': 'INR', 'callback_url': 'https://www.dynamiclabz.net/', 'order_receipt': 'order_rcpt_27dfaf715d'}
+  const data = currentPaymentData
+  const options = {
+      key: data.razorpay_key_id,
+      amount: data.total_amount,
+      currency: 'INR',
+      name: "OvenFresh",
+      description: "Order Payment",
+      order_id: data.payment_id,
+      callback_url: `http://127.0.0.1:8000/payment-success-callback/?razorpay_order_id=${data.order_id}`,
+      notes: {
+          order_receipt: data.order_id
+      },
+      theme: {
+          color: "#F37254"
+      }
+  };
 
-  setTimeout(() => {
-    window.location.href = `/order-confirmation/${window.currentPaymentData.order_id}/`
-  }, 2000)
+  const rzp = new Razorpay(options);
+  rzp.open();
+
 }
 
 function showCODSuccessModal(orderId) {

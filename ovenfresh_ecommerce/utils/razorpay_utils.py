@@ -13,10 +13,13 @@ def create_razorpay_order(order_id, amount, currency="INR"):
     """
     try:
         data = {
-            "amount": int(amount * 100),  # Convert to paise
+            "amount": amount,  # Already Converted to paise
             "currency": currency,
             "receipt": order_id,
-            "payment_capture": 1  # Auto-capture payment
+            "payment_capture": 1,  # Auto-capture payment
+            "notes": {
+                "type": "ecommerce"
+            }
         }
         return client.order.create(data=data)
     except Exception as e:
