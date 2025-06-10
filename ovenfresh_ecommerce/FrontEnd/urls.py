@@ -14,6 +14,8 @@ router.register(r'checkout', CheckoutViewSet, basename='checkout')
 router.register(r'order-success', OrderSuccessDetailViewSet, basename='order-success')
 router.register(r'order-detail', OrderDetailViewSet, basename='order-detail')
 
+router.register(r'account', AccountViewSet, basename='account')
+
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')

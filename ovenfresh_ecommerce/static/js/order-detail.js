@@ -73,7 +73,7 @@ function populateOrderDetails() {
 
   // Order status
   updateOrderStatus(orderData.status)
-  updateOrderTimeline(orderData.status)
+  // updateOrderTimeline(orderData.status)
 
   // Show payment section if payment is pending
   if (!orderData.payment_received && orderData.payment_method === "razorpay") {

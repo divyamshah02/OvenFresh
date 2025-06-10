@@ -101,6 +101,13 @@ class OrderDetailViewSet(viewsets.ViewSet):
         return render(request, 'order-detail.html')
 
 
+class AccountViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'account.html')
+
+
 class AdminTemplateViewSet(viewsets.ViewSet):
 
     @handle_exceptions

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        {% include 'nav.html' %}
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Account Header -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="display-4 fw-bold">My Account</h1>
+                        <p class="lead">Manage your profile and orders</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end">
+                                <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Account Content -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Account Sidebar -->
+                    <div class="col-lg-3 mb-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action active" data-section="profile">
+                                        <i class="fas fa-user me-3"></i>Profile
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="orders">
+                                        <i class="fas fa-shopping-bag me-3"></i>My Orders
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="addresses">
+                                        <i class="fas fa-map-marker-alt me-3"></i>Addresses
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="settings">
+                                        <i class="fas fa-cog me-3"></i>Settings
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action text-danger" onclick="logout()">
+                                        <i class="fas fa-sign-out-alt me-3"></i>Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Menu Toggle -->
+                        <button class="btn of-btn-primary d-lg-none w-100 mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#accountSidebar">
+                            <i class="fas fa-bars me-2"></i>Account Menu
+                        </button>
+                    </div>
+
+                    <!-- Account Content -->
+                    <div class="col-lg-9">
+                        <!-- Profile Section -->
+                        <div id="profile-section" class="account-section">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-user me-2 of-text-primary"></i>
+                                        Profile Information
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="profile-form">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="firstName" class="form-label">First Name *</label>
+                                                <input type="text" class="form-control" id="firstName" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="lastName" class="form-label">Last Name *</label>
+                                                <input type="text" class="form-control" id="lastName" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="email" class="form-label">Email Address *</label>
+                                                <input type="email" class="form-control" id="email" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="phone" class="form-label">Phone Number *</label>
+                                                <input type="tel" class="form-control" id="phone" required disabled>
+                                                <small class="text-muted">Phone number cannot be changed</small>
+                                            </div>
+                                            <!-- <div class="col-12">
+                                                <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                                <input type="date" class="form-control" id="dateOfBirth">
+                                            </div> -->
+                                            <div class="col-12">
+                                                <button type="submit" class="btn of-btn-primary">
+                                                    <i class="fas fa-save me-2"></i>Update Profile
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Orders Section -->
+                        <div id="orders-section" class="account-section" style="display: none;">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-shopping-bag me-2 of-text-primary"></i>
+                                                My Orders
+                                            </h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <select class="form-select form-select-sm" id="orderFilter">
+                                                <option value="">All Orders</option>
+                                                <option value="placed">Placed</option>
+                                                <option value="confirmed">Confirmed</option>
+                                                <option value="preparing">Preparing</option>
+                                                <option value="out_for_delivery">Out for Delivery</option>
+                                                <option value="delivered">Delivered</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="orders-list">
+                                        <!-- Orders will be populated here -->
+                                    </div>
+                                    <div id="orders-pagination" class="d-flex justify-content-center mt-4">
+                                        <!-- Pagination will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Addresses Section -->
+                        <div id="addresses-section" class="account-section" style="display: none;">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <h5 class="mb-0">
+                                                <i class="fas fa-map-marker-alt me-2 of-text-primary"></i>
+                                                Saved Addresses
+                                            </h5>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn of-btn-primary btn-sm" onclick="showAddAddressModal()">
+                                                <i class="fas fa-plus me-2"></i>Add Address
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="addresses-list" class="row g-3">
+                                        <!-- Addresses will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Section -->
+                        <div id="settings-section" class="account-section" style="display: none;">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cog me-2 of-text-primary"></i>
+                                        Account Settings
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Change Password -->
+                                    <div class="mb-4">
+                                        <h6 class="mb-3">Change Password</h6>
+                                        <form id="password-form">
+                                            <div class="row g-3">
+                                                <div class="col-12">
+                                                    <label for="currentPassword" class="form-label">Current Password *</label>
+                                                    <input type="password" class="form-control" id="currentPassword" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="newPassword" class="form-label">New Password *</label>
+                                                    <input type="password" class="form-control" id="newPassword" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn of-btn-primary">
+                                                        <i class="fas fa-key me-2"></i>Change Password
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <hr>
+
+                                    <!-- Notification Preferences -->
+                                    <div class="mb-4">
+                                        <h6 class="mb-3">Notification Preferences</h6>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                            <label class="form-check-label" for="emailNotifications">
+                                                Email notifications for order updates
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
+                                            <label class="form-check-label" for="smsNotifications">
+                                                SMS notifications for order updates
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="promotionalEmails">
+                                            <label class="form-check-label" for="promotionalEmails">
+                                                Promotional emails and offers
+                                            </label>
+                                        </div>
+                                        <button class="btn of-btn-outline-primary" onclick="updateNotificationPreferences()">
+                                            <i class="fas fa-bell me-2"></i>Update Preferences
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Address Modal -->
+        <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="address-form">
+                            <input type="hidden" id="addressId">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="addressName" class="form-label">Address Name *</label>
+                                    <input type="text" class="form-control" id="addressName" placeholder="Home, Office, etc." required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="addressLine" class="form-label">Address *</label>
+                                    <input type="text" class="form-control" id="addressLine" placeholder="Street address" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="addressCity" class="form-label">City *</label>
+                                    <select class="form-select" id="addressCity" required>
+                                        <option value="">Select City</option>
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Thane">Thane</option>
+                                        <option value="Navi-mumbai">Navi Mumbai</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="addressPincode" class="form-label">Pincode *</label>
+                                    <input type="text" class="form-control" id="addressPincode" required>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="isDefaultAddress">
+                                        <label class="form-check-label" for="isDefaultAddress">
+                                            Set as default address
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn of-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn of-btn-primary" onclick="saveAddress()">Save Address</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="footer-info">
+                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
+                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
+                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
+                                with on time delivery.</p>
+                            <div class="social-links mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html">Contact Us</a></li>
+                                <li><a href="#about">Register Complaint</a></li>
+                                <li><a href="shop.html">Track your Order</a></li>
+                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
+                                <li><a href="shop.html">About Us</a></li>
+                                <li><a href="#contact">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Cakes</a></li>
+                                <li><a href="#">Gifting</a></li>
+                                <li><a href="#">Flowers</a></li>
+                                <li><a href="#">Chocolates</a></li>
+                                <li><a href="#">Cookies</a></li>
+                                <li><a href="#">Blog</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Contact Us</h5>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
+                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
+                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Newsletter</h5>
+                            <p>Don't miss our future updates! Get Subscribed Today!</p>
+                            <input type="text" class="form-control" name="" id="" placeholder="Email">
+                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-4 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">FAQ</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/account.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        InitializeAccount(
+            csrfToken,
+            "/user-api/profile-api/",
+            "/user-api/profile-api/",
+            "/user-api/change-password-api/",
+            "/order-api/all-my-orders-api/",
+            "/user-api/address-api/",
+            "/user-api/address-api/",
+            "/user-api/address-api/",
+            "/user-api/address-api/",
+            "/user-api/logout-api/"
+        );
+        toggle_loader();
+    </script>
+
+    <style>
+        .account-section {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .list-group-item-action:hover {
+            background-color: rgba(var(--of-primary-color-rgb), 0.1);
+        }
+
+        .list-group-item-action.active {
+            background-color: var(--of-primary-color);
+            border-color: var(--of-primary-color);
+        }
+
+        .order-card {
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .address-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .address-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        @media (max-width: 991.98px) {
+            .account-sidebar {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+
+</body>
+
+</html>

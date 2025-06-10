@@ -124,6 +124,7 @@
                                         <div class="col-md-6">
                                             <label for="pincode" class="form-label">Pincode *</label>
                                             <input type="text" class="form-control" id="pincode" required>
+                                            <small class="text-danger" id="deliver-not-available" style="display: none;"><b><u>Sorry, delivery not available in your area.</u></b></small>
                                         </div>
                                     
                                         <div class="col-12">
@@ -258,7 +259,7 @@
                     
                     <div class="col-lg-4">
                         <!-- Order Summary -->
-                        <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+                        <div class="card border-0 shadow-sm">
                             <div class="card-header bg-white border-bottom">
                                 <h5 class="mb-0">Order Summary</h5>
                             </div>
@@ -404,7 +405,7 @@
             "/user-api/otp-api/",
             "/order-api/place-order-api/",
             "/user-api/update-user-api/",
-            "/user-api/add-address-api/",
+            "/user-api/address-api/",
         );
         toggle_loader();
     </script>

@@ -1,17 +1,23 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderItemSerializer
+
 from django.conf import settings
-from utils.decorators import *
+from django.core.paginator import Paginator
 from django.utils.crypto import get_random_string
+
+from .models import *
+from .serializers import *
+
 from Cart.models import *
 from Cart.serializers import *
 from Product.models import *
-from UserDetail.models import User
+from UserDetail.models import *
+
 import datetime
-from utils.razorpay_utils import create_razorpay_order, verify_payment_signature, fetch_payment_status
 import razorpay
+
+from utils.razorpay_utils import *
+from utils.decorators import *
 
 
 class OLDOrderViewSet(viewsets.ViewSet):
@@ -584,7 +590,7 @@ class PaymentStatusCheckViewSet(viewsets.ViewSet):
 
 class OrderDetailViewSet(viewsets.ViewSet):
     
-    # @handle_exceptions
+    @handle_exceptions
     # @check_authentication(required_role="customer")
     def list(self, request):
         """
@@ -714,7 +720,62 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 "data": None, 
                 "error": str(e)
             }, status=500)
+
+
+class OrderListViewSet(viewsets.ViewSet):
     
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def list(self, request):
+        """
+        Get user orders with pagination and filtering
+        """
+        user_id = request.user.user_id
+        
+        # Get query parameters
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        status_filter = request.GET.get('status', '')
+        
+        
+        # Build query
+        orders_query = Order.objects.filter(user_id=user_id).order_by('-created_at')
+        
+        # Apply status filter if provided
+        if status_filter:
+            orders_query = orders_query.filter(status=status_filter)
+        
+        # Paginate results
+        paginator = Paginator(orders_query, limit)
+        orders_page = paginator.get_page(page)
+        
+        # Format orders data
+        orders_data = []
+        for order in orders_page:
+            orders_data.append({
+                'order_id': order.order_id,
+                'status': order.status,
+                'total_amount': str(order.total_amount),
+                'payment_method': order.payment_method,
+                'is_cod': order.is_cod,
+                'payment_received': order.payment_received,
+                'delivery_date': order.delivery_date,
+                'created_at': order.created_at,
+            })
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "orders": orders_data,
+                "current_page": page,
+                "total_pages": paginator.num_pages,
+                "total_orders": paginator.count
+            },
+            "error": None
+        }, status=200)
+
 
 class KitchenNoteViewSet(viewsets.ViewSet):
 

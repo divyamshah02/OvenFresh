@@ -61,11 +61,11 @@ async function InitializeCheckout(
     // Initialize event listeners
     initializeEventListeners()
 
-    // Check URL parameters for pincode, delivery date, and timeslot
-    checkUrlParameters()
-
     // Load cart summary
     await loadCartSummary()
+    
+    // Check URL parameters for pincode, delivery date, and timeslot
+    checkUrlParameters()
 
     hideLoading()
   } catch (error) {
@@ -245,6 +245,7 @@ function populateAddressFields(address) {
   document.getElementById("addressName").value = address.address_name || ""
   document.getElementById("city").value = address.city || ""
   document.getElementById("pincode").value = address.pincode || ""
+  checkPincode();
 }
 
 function clearAddressFields() {
@@ -520,9 +521,11 @@ async function checkPincode(pincodeValue = null) {
         showNotification("Delivery available in your area!", "success")
         pincodeTimeslots = result.data.availability_data || []
         todayPincodeTimeslots = result.data.today_availability_data || []
+        document.getElementById("deliver-not-available").style.display = "none";   
         updateTimeslots()
       } else {
         showNotification("Sorry, delivery not available in your area.", "error")
+        document.getElementById("deliver-not-available").style.display = "";
         clearTimeslots()
       }
     } else {
@@ -1019,7 +1022,7 @@ function showCODSuccessModal(orderId) {
 
   // Redirect after 3 seconds
   setTimeout(() => {
-    window.location.href = `/order-confirmation/${orderId}/`
+    window.location.href = `/order-detail/?order_id=${orderId}`
   }, 3000)
 }
 
