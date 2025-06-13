@@ -22,6 +22,8 @@ router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-ad
 router.register(r'admin-category', AdminManageCategoryViewSet, basename='admin-category')
 router.register(r'admin-pincodes', AdminPincodeViewSet, basename='admin-pincodes')
 router.register(r'admin-timeslot', AdminTimeslotViewSet, basename='admin-timeslot')
+router.register(r'admin-all-orders', AdminAllOrdersViewSet, basename='admin-all-orders')
+router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -155,3 +155,19 @@ class AdminTimeslotViewSet(viewsets.ViewSet):
     def list(self, request):
         return render(request, 'admin/admin_timeslots_manager.html')
 
+
+class AdminAllOrdersViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_all_orders.html')
+
+
+class AdminOrderDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_order_detail.html')
+

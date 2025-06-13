@@ -34,6 +34,7 @@ class User(AbstractUser):
     user_id = models.CharField(max_length=12, unique=True)
     contact_number = models.CharField(max_length=15)
     alternate_phone = models.CharField(max_length=15, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

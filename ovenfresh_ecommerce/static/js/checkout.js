@@ -599,7 +599,9 @@ async function loadCartSummary() {
     const [success, result] = await callApi("GET", cart_list_url)
     if (success && result.success) {
       cartItems = result.data.cart_items || []
-      console.log("Cart items loaded:", cartItems)
+      if (cartItems.length === 0) {
+        window.location.href = "/cart/";
+      }      
       renderCheckoutItems()
       calculateTotals()
     } else {

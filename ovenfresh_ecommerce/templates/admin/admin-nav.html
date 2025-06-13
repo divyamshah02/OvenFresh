@@ -15,13 +15,30 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="#products-section" data-section="products">
-                    <i class="fas fa-box me-2"></i>
+                <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#products-submenu" role="button" aria-expanded="false" aria-controls="products-submenu">
+                    <i class="fas fa-cogs me-2"></i>
                     Products
                 </a>
+                <ul class="collapse list-unstyled ps-3" id="products-submenu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin-products-list' %}">All Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin-add-product-list' %}">Add Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin-category-list' %}">Category</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin-pincodes-list' %}">Pincodes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin-timeslot-list' %}">Timeslots</a>
+                    </li>                    
+                </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#orders-section" data-section="orders">
+                <a class="nav-link" href="{% url 'admin-all-orders-list' %}" data-section="orders">
                     <i class="fas fa-shopping-cart me-2"></i>
                     Orders
                 </a>
