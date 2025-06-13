@@ -36,13 +36,12 @@
 
 <body>
 
-    <div id="loader" class="loader-container p-2">
+    <div id="loader" class="loader-container p-2" style="display: none;">
         <div class="loader"></div>
     </div>
 
     <div class="blur" id="main-content">
         <!-- ##### ##### Start Nav Section ##### ##### -->
-        <!-- Topbar -->
         <div class="topbar text-center d-none d-md-block">
             <div class="container">
                 Celebrate Occasions with Mumbai's best Online Gift Store.
@@ -55,7 +54,7 @@
 
                 <!-- Logo -->
                 <a href="index.html">
-                    <img src="/static/img/logo.png" alt="">
+                    <img src="https://via.placeholder.com/150x50?text=OvenFresh" alt="OvenFresh Logo">
                 </a>
 
                 <!-- Search Center -->
@@ -70,7 +69,7 @@
                 <div class="d-flex align-items-center">
                     <a href="cart.html" class="icon-btn me-2" aria-label="Cart">
                         <i class="bi bi-cart"></i>
-                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">3</span>
                     </a>
                     <button class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
                             class="bi bi-person-circle"></i></button>
@@ -90,89 +89,16 @@
             class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
             <div class="container position-relative">
                 <ul class="nav justify-content-center">
-                    <!-- Cakes with Mega Menu -->
-                    <li class="nav-item position-static dropdown-mega">
-                        <a class="nav-link" href="#">Cakes</a>
-                        <div class="mega-menu d-none">
-                            <div class="container py-4">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <p>Theme Cakes</p>
-                                        <p>Rosette Cakes</p>
-                                        <p>Bento Cakes</p>
-                                        <p>Numeric Cakes</p>
-                                        <p>Fault Line Cakes</p>
-                                        <p>Fresh Fruit Cakes</p>
-                                        <p>Classic Cakes</p>
-                                        <p>Dutch Truffle Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>Gourmet Cakes</p>
-                                        <p>Tea Cakes</p>
-                                        <p>Pinata Cakes</p>
-                                        <p>Butter Cream Cakes</p>
-                                        <p>Chocolate Cakes</p>
-                                        <p>Cheese Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>99% Gold Cakes</p>
-                                        <p>Fusion Cakes</p>
-                                        <p>Red Velvet Cakes</p>
-                                        <p>Two Tier Cakes</p>
-                                        <p>Photo Cakes</p>
-                                        <p>Pastry</p>
-                                        <p>Geode Cakes</p>
-                                        <p>Alphabet Cakes</p>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <p>Trending Bomb Cakes</p>
-                                        <p>Heart Shape Cakes</p>
-                                        <p>Pull Me Up Cakes</p>
-                                        <p>Butterscotch Cakes</p>
-                                        <p>Fresh Flower Cakes</p>
-                                        <p>Low Frosting Cakes</p>
-                                        <p>Overloaded Cakes</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-
-                    <!-- Other Menu Items -->
-                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Mobile Offcanvas Menu -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
                 </ul>
             </div>
         </div>
 
-        <!-- ##### ##### End Nav Section ##### ##### -->
         <!-- Checkout Header -->
         <section class="py-5 bg-light">
             <div class="container">
@@ -456,14 +382,14 @@
                     
                     <div class="col-lg-4">
                         <!-- Order Summary -->
-                        <div class="card border-0 shadow-sm">
+                        <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
                             <div class="card-header bg-white border-bottom">
                                 <h5 class="mb-0">Order Summary</h5>
                             </div>
                             <div class="card-body">
                                 <div id="checkout-items">
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" alt="Chocolate Truffle Cake" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="https://via.placeholder.com/60x60" alt="Chocolate Truffle Cake" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">Chocolate Truffle Cake</h6>
                                             <small class="text-muted">Qty: 1</small>
@@ -473,7 +399,7 @@
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" alt="Red Velvet Cake" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="https://via.placeholder.com/60x60" alt="Red Velvet Cake" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">Red Velvet Cake</h6>
                                             <small class="text-muted">Qty: 1</small>
@@ -483,7 +409,7 @@
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Chocolate Box" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <img src="https://via.placeholder.com/60x60" alt="Chocolate Box" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">Assorted Chocolate Box</h6>
                                             <small class="text-muted">Qty: 1</small>
@@ -533,7 +459,7 @@
                 <div class="row g-4">
                     <div class="col-lg-3">
                         <div class="footer-info">
-                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
+                            <img src="https://via.placeholder.com/150x50?text=OvenFresh" alt="OvenFresh Logo">
                             <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
                                 on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
                                 with on time delivery.</p>
@@ -549,12 +475,12 @@
                         <div class="footer-links">
                             <h5 class="mb-4">Useful Links</h5>
                             <ul class="list-unstyled">
-                                <li><a href="index.html">Contact Us</a></li>
-                                <li><a href="#about">Register Complaint</a></li>
-                                <li><a href="shop.html">Track your Order</a></li>
-                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
-                                <li><a href="shop.html">About Us</a></li>
-                                <li><a href="#contact">FAQ</a></li>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Register Complaint</a></li>
+                                <li><a href="#">Track your Order</a></li>
+                                <li><a href="#">Refund and Cancellation Policy</a></li>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">FAQ</a></li>
                             </ul>
                         </div>
                     </div>
@@ -606,7 +532,7 @@
 
     </div>
 
-        <!-- Success Modal -->
+    <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -631,12 +557,9 @@
     <!-- Import Wow Animation JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
 
-    <script src="/static/js/loader.js"></script>
-
     <script>
         // Simple demo functionality without API calls
         document.addEventListener('DOMContentLoaded', function() {
-            toggle_loader()
             // Toggle billing address section
             const differentBillingCheckbox = document.getElementById('differentBillingAddress');
             const billingSection = document.getElementById('billing-address-section');
@@ -712,6 +635,59 @@
         });
     </script>
 
+    <style>
+        .payment-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .payment-option:hover {
+            border-color: var(--of-primary-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .payment-option input[type="radio"]:checked + label {
+            color: var(--of-primary-color);
+        }
+
+        .payment-option:has(input[type="radio"]:checked) {
+            border-color: var(--of-primary-color);
+            background-color: rgba(var(--of-primary-color-rgb), 0.05);
+        }
+
+        .border-dashed {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #dee2e6;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: #333;
+            position: relative;
+        }
+        
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            color: #333;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background-color: var(--of-primary-color);
+            color: white;
+        }
+    </style>
 </body>
 
 </html>
