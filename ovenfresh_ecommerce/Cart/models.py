@@ -6,6 +6,7 @@ class Cart(models.Model):
     cart_id = models.CharField(max_length=100, unique=True)
     session_id = models.CharField(max_length=255, null=True, blank=True)
     user_id = models.CharField(max_length=100, null=True, blank=True)
+    active_cart = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

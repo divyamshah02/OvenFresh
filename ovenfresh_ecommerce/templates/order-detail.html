@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        {% include 'nav.html' %}
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Order Header -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="display-4 fw-bold">Order Details</h1>
+                        <p class="lead" id="order-subtitle">Order #<span id="order-number">Loading...</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end">
+                                <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'shop-list' %}">Shop</a></li>
+                                <li class="breadcrumb-item"><a href="#" id="orders-link">My Orders</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Order Status Timeline -->
+        <!-- <section class="py-4 border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <div class="order-timeline d-flex align-items-center" id="order-timeline">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Order Content -->
+        <section class="pb-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Order Information -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-receipt me-2 of-text-primary"></i>
+                                            Order Information
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <span class="badge fs-6 px-3 py-2" id="order-status-badge">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <h6>Order Details</h6>
+                                        <p class="mb-1"><strong>Order ID:</strong> <span id="order-id">-</span></p>
+                                        <p class="mb-1"><strong>Order Date:</strong> <span id="order-date">-</span></p>
+                                        <p class="mb-1"><strong>Delivery Date:</strong> <span id="delivery-date">-</span></p>
+                                        <p class="mb-0"><strong>Time Slot:</strong> <span id="delivery-time">-</span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Payment Information</h6>
+                                        <p class="mb-1"><strong>Payment Method:</strong> <span id="payment-method">-</span></p>
+                                        <p class="mb-1"><strong>Payment Status:</strong> <span id="payment-status">-</span></p>
+                                        <p class="mb-0"><strong>Total Amount:</strong> <span id="total-amount">-</span></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Payment Button (Hidden by default) -->
+                                <div class="text-center mt-4" id="payment-section" style="display: none;">
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Payment is pending for this order. Please complete the payment to proceed.
+                                    </div>
+                                    <button class="btn of-btn-primary btn-lg" id="pay-now-btn">
+                                        <i class="fas fa-credit-card me-2"></i>
+                                        Pay Now - ₹<span id="pay-amount">0</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-shopping-bag me-2 of-text-primary"></i>
+                                    Order Items
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="order-items-container">
+                                    <!-- Order items will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Address -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-map-marker-alt me-2 of-text-primary"></i>
+                                    Delivery Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <h6>Shipping Address</h6>
+                                        <div id="shipping-address">
+                                            <!-- Shipping address will be populated here -->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="billing-address-section" style="display: none;">
+                                        <h6>Billing Address</h6>
+                                        <div id="billing-address">
+                                            <!-- Billing address will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3" id="special-instructions-section" style="display: none;">
+                                    <h6>Special Instructions</h6>
+                                    <p class="text-muted mb-0" id="special-instructions">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Actions -->
+                        <div class="card border-0 shadow-sm mb-4" id="order-actions-section">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-cogs me-2 of-text-primary"></i>
+                                    Order Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <button class="btn of-btn-outline-primary w-100" id="track-order-btn">
+                                            <i class="fas fa-truck me-2"></i>
+                                            Track Order
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn of-btn-outline-secondary w-100" id="download-invoice-btn">
+                                            <i class="fas fa-download me-2"></i>
+                                            Download Invoice
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn of-btn-outline-danger w-100" id="cancel-order-btn" style="display: none;">
+                                            <i class="fas fa-times me-2"></i>
+                                            Cancel Order
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Order Summary -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span id="summary-subtotal">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Delivery Charges:</span>
+                                    <span id="summary-delivery">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax:</span>
+                                    <span id="summary-tax">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2" id="discount-row" style="display: none;">
+                                    <span>Discount:</span>
+                                    <span class="text-success" id="summary-discount">-₹0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Total:</strong>
+                                    <strong id="summary-total">₹0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Customer Support -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-headset fa-2x of-text-primary mb-3"></i>
+                                <h6>Need Help?</h6>
+                                <p class="small text-muted mb-3">Contact our customer support for any queries</p>
+                                <button class="btn of-btn-outline-primary btn-sm">
+                                    <i class="fas fa-phone me-2"></i>
+                                    Contact Support
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reorder -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-redo fa-2x of-text-primary mb-3"></i>
+                                <h6>Loved this order?</h6>
+                                <p class="small text-muted mb-3">Reorder the same items with one click</p>
+                                <button class="btn of-btn-primary btn-sm" id="reorder-btn">
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    Reorder Items
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="footer-info">
+                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
+                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
+                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
+                                with on time delivery.</p>
+                            <div class="social-links mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html">Contact Us</a></li>
+                                <li><a href="#about">Register Complaint</a></li>
+                                <li><a href="shop.html">Track your Order</a></li>
+                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
+                                <li><a href="shop.html">About Us</a></li>
+                                <li><a href="#contact">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Cakes</a></li>
+                                <li><a href="#">Gifting</a></li>
+                                <li><a href="#">Flowers</a></li>
+                                <li><a href="#">Chocolates</a></li>
+                                <li><a href="#">Cookies</a></li>
+                                <li><a href="#">Blog</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Contact Us</h5>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
+                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
+                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Newsletter</h5>
+                            <p>Don't miss our future updates! Get Subscribed Today!</p>
+                            <input type="text" class="form-control" name="" id="" placeholder="Email">
+                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-4 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">FAQ</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/order-detail.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search)
+        const orderId = urlParams.get("order_id")
+        const csrfToken = "{{ csrf_token }}";
+
+        InitializeOrderDetail(
+            csrfToken,
+            orderId,
+            "/order-api/order-detail-api/",
+            "/order-api/cancel-order/",
+            "/order-api/reorder/"
+        );
+        toggle_loader();
+    </script>
+
+    <style>
+        .order-timeline {
+            max-width: 600px;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+        }
+
+        .timeline-step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-step.completed .timeline-step-icon {
+            background-color: var(--of-primary-color);
+            color: white;
+        }
+
+        .timeline-step.active .timeline-step-icon {
+            background-color: var(--of-primary-color);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-step-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .timeline-step.completed .timeline-step-label,
+        .timeline-step.active .timeline-step-label {
+            color: var(--of-primary-color);
+            font-weight: 600;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .timeline-step.completed .timeline-line {
+            background-color: var(--of-primary-color);
+        }
+
+        .timeline-step:last-child .timeline-line {
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--of-primary-color-rgb), 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(var(--of-primary-color-rgb), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--of-primary-color-rgb), 0);
+            }
+        }
+
+        .order-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .badge.bg-success {
+            background-color: #28a745 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        .badge.bg-info {
+            background-color: #17a2b8 !important;
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+
+        @media (max-width: 768px) {
+            .order-timeline {
+                flex-direction: column;
+                max-width: 200px;
+            }
+            
+            .timeline-line {
+                top: 50%;
+                left: 25px;
+                right: auto;
+                bottom: -50%;
+                width: 2px;
+                height: auto;
+            }
+            
+            .timeline-step {
+                flex-direction: row;
+                text-align: left;
+                margin-bottom: 2rem;
+            }
+            
+            .timeline-step-icon {
+                margin-right: 1rem;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+
+</html>

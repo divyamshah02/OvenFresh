@@ -1,0 +1,130 @@
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                Celebrate Occasions with Mumbai's best Online Gift Store.
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <!-- <a class="navbar-brand fw-bold" href="#">LOGO</a> -->
+                <img src="/static/img/logo.png" alt="">
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <!-- <input class="form-control me-2 rounded-5 border-3 border-black navbar-search-input"
+                        type="search" placeholder="Search..." aria-label="Search">
+                    <button class="btn of-btn-primary rounded-5" type="submit"><i class="bi bi-search"></i></button> -->
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center">
+                    <a href="{% url 'cart-list' %}" class="icon-btn me-2" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <a href="{% url 'account-list' %}" class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                            class="bi bi-person-circle"></i></a>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <!-- Cakes with Mega Menu -->
+                    <li class="nav-item position-static dropdown-mega">
+                        <a class="nav-link" href="#">Cakes</a>
+                        <div class="mega-menu d-none">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p>Theme Cakes</p>
+                                        <p>Rosette Cakes</p>
+                                        <p>Bento Cakes</p>
+                                        <p>Numeric Cakes</p>
+                                        <p>Fault Line Cakes</p>
+                                        <p>Fresh Fruit Cakes</p>
+                                        <p>Classic Cakes</p>
+                                        <p>Dutch Truffle Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Gourmet Cakes</p>
+                                        <p>Tea Cakes</p>
+                                        <p>Pinata Cakes</p>
+                                        <p>Butter Cream Cakes</p>
+                                        <p>Chocolate Cakes</p>
+                                        <p>Cheese Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>99% Gold Cakes</p>
+                                        <p>Fusion Cakes</p>
+                                        <p>Red Velvet Cakes</p>
+                                        <p>Two Tier Cakes</p>
+                                        <p>Photo Cakes</p>
+                                        <p>Pastry</p>
+                                        <p>Geode Cakes</p>
+                                        <p>Alphabet Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Trending Bomb Cakes</p>
+                                        <p>Heart Shape Cakes</p>
+                                        <p>Pull Me Up Cakes</p>
+                                        <p>Butterscotch Cakes</p>
+                                        <p>Fresh Flower Cakes</p>
+                                        <p>Low Frosting Cakes</p>
+                                        <p>Overloaded Cakes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Other Menu Items -->
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>

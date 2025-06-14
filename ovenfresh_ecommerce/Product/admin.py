@@ -52,12 +52,12 @@ class ReviewsAdmin(admin.ModelAdmin):
 class PincodeAdmin(admin.ModelAdmin):
     list_display = ['id', 'pincode', 'area_name', 'created_at']
     search_fields = ['pincode', 'area_name']
-    list_filter = ['created_at']
+    list_filter = ['area_name']
 
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ['id', 'start_time', 'end_time', 'time_slot_title', 'is_active', 'created_at']
+    list_display = ['id', 'time_slot_title', 'start_time', 'end_time', 'delivery_charges', 'is_active', 'created_at']
     list_filter = ['is_active', 'created_at']
     search_fields = ['time_slot_title']
 

@@ -1,24 +1,28 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    OrderViewSet,
-    ConfirmOrderViewSet,
-    PaymentStatusCheckViewSet,
-    KitchenNoteViewSet,
-    AssignDeliveryPartnerViewSet,
-    DeliveryStatusViewSet,
-    CODApprovalViewSet,
-)
-
+from .views import *
 router = DefaultRouter()
-router.register(r'order', OrderViewSet, basename='order')
-router.register(r'confirm_order', ConfirmOrderViewSet, basename='confirm-order')
+router.register(r'place-order-api', OrderViewSet, basename='place-order-api')
+router.register(r'confirm-order-api', ConfirmOrderViewSet, basename='confirm-order-api')
 router.register(r'payment_status_check', PaymentStatusCheckViewSet, basename='payment-status-check')
+
+router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-api')
+router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')
+
+router.register(r'admin-all-orders-api', AdminOrderListViewSet, basename='admin-all-orders-api')
+router.register(r'admin-order-briefe-api', AdminOrderBriefeViewSet, basename='admin-order-briefe-api')
+router.register(r'admin-orders-export-api', AdminExportOrdersViewSet, basename='admin-orders-export-api')
+
+router.register(r'admin-order-detail-api', AdminOrderDetailViewSet, basename='admin-order-detail-api')
+router.register(r'admin-delivery-persons-api', AdminDeliveryPeronsViewSet, basename='admin-delivery-persons-api')
+router.register(r'admin-update-order-status-api', AdminUpdateOrderStatusViewSet, basename='admin-update-order-status-api')
+router.register(r'admin-assign-delivery-api', AdminAssignDeliveryPartnerViewSet, basename='admin-assign-delivery-api')
+
 router.register(r'kitchen_note', KitchenNoteViewSet, basename='kitchen-note')
 router.register(r'assign_delivery_partner', AssignDeliveryPartnerViewSet, basename='assign-delivery-partner')
 router.register(r'delivery_status', DeliveryStatusViewSet, basename='delivery-status')
 router.register(r'cod_approval', CODApprovalViewSet, basename='cod-approval')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls)),    
 ]

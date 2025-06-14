@@ -18,57 +18,62 @@ def generate_unique_cart_id():
 class CartViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    @check_authentication
     def list(self, request):
         cart_id = request.query_params.get('cart_id')
-        session_id = request.query_params.get('session_id')
-        user_id = request.query_params.get('user_id')
 
-        if not cart_id and not session_id and not user_id:
-            return Response({
-                "success": False,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": None,
-                "error": "Missing cart_id, session_id or user_id"
-            }, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user if request.user.is_authenticated else None
+        # session_id = request.session.session_key
+        session_id = request.session.get('session_token')
+
+        # if not cart_id and not session_id and not user_id:
+        #     return Response({
+        #         "success": False,
+        #         "user_not_logged_in": False,
+        #         "user_unauthorized": False,
+        #         "data": None,
+        #         "error": "Missing cart_id, session_id or user_id"
+        #     }, status=status.HTTP_400_BAD_REQUEST)
 
         cart = None
         if cart_id:
             cart = Cart.objects.filter(cart_id=cart_id).first()
-        elif user_id:
-            cart = Cart.objects.filter(user_id=user_id, status="open").first()
+        elif user:
+            cart = Cart.objects.filter(user_id=user.user_id, active_cart=True).first()
         elif session_id:
-            cart = Cart.objects.filter(session_id=session_id, status="open").first()
+            cart = Cart.objects.filter(session_id=session_id, active_cart=True).first()
 
-        if not cart:
+        if cart:
+            items = CartItem.objects.filter(cart_id=cart.cart_id)
+            serializer = CartItemSerializer(items, many=True)
+
             return Response({
-                "success": False,
+                "success": True,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
-                "data": None,
-                "error": "Cart not found"
-            }, status=status.HTTP_404_NOT_FOUND)
-
-        items = CartItem.objects.filter(cart_id=cart.cart_id)
-        serializer = CartItemSerializer(items, many=True)
+                "data": {
+                    "cart_id": cart.cart_id,
+                    "cart_items": serializer.data
+                },
+                "error": None
+            }, status=status.HTTP_200_OK)
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {
-                "cart_id": cart.cart_id,
-                "items": serializer.data
-            },
-            "error": None
+            "data": {"cart_items": []},
+            "error": "Cart not found"
         }, status=status.HTTP_200_OK)
 
-    @handle_exceptions
-    @check_authentication
+    # @handle_exceptions
     def create(self, request):
-        session_id = request.data.get('session_id')
-        user_id = request.data.get('user_id')
+        user = request.user if request.user.is_authenticated else None
+        
+        # session_id = request.session.session_key
+        if request.session.get('session_token') is None:
+            request.session['session_token'] = request.COOKIES.get('csrftoken')
+        session_id = request.session.get('session_token')
+        
         product_id = request.data.get('product_id')
         product_variation_id = request.data.get('product_variation_id')
         quantity = request.data.get('quantity', 1)
@@ -76,28 +81,42 @@ class CartViewSet(viewsets.ViewSet):
         if not product_id or not product_variation_id:
             return Response({
                 "success": False,
-                "user_not_logged_in": False,
+                "user_not_logged_in": not bool(user),
                 "user_unauthorized": False,
                 "data": None,
                 "error": "Missing product_id or product_variation_id"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        cart = None
-        if user_id:
-            cart = Cart.objects.filter(user_id=user_id, status="open").first()
-        elif session_id:
-            cart = Cart.objects.filter(session_id=session_id, status="open").first()
+        # Determine cart owner: user or session
+        if user:
+            # Get or create cart for logged-in user
+            cart = Cart.objects.filter(user_id=user.user_id, active_cart=True).first()
+            if not cart:
+                cart_id = generate_unique_cart_id()
+                cart = Cart.objects.create(
+                    cart_id=cart_id,
+                    user_id=user.user_id
+                )
+        else:
+            # Not logged in, session_id is required
+            if not session_id:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": True,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Session ID is required for guests"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            cart = Cart.objects.filter(session_id=session_id, active_cart=True).first()
+            if not cart:
+                cart_id = generate_unique_cart_id()
+                cart = Cart.objects.create(
+                    cart_id=cart_id,
+                    session_id=session_id
+                )
 
-        if not cart:
-            cart_id = generate_unique_cart_id()
-            cart = Cart.objects.create(
-                cart_id=cart_id,
-                user_id=user_id,
-                session_id=session_id,
-                status='open'
-            )
-
-        # Check if item already exists in cart
+        # Check if product already in cart, then update quantity, else create new cart item
         existing_item = CartItem.objects.filter(
             cart_id=cart.cart_id,
             product_id=product_id,
@@ -117,21 +136,18 @@ class CartViewSet(viewsets.ViewSet):
 
         return Response({
             "success": True,
-            "user_not_logged_in": False,
+            "user_not_logged_in": not bool(user),
             "user_unauthorized": False,
             "data": {"cart_id": cart.cart_id},
             "error": None
         }, status=status.HTTP_201_CREATED)
 
     @handle_exceptions
-    @check_authentication
-    def update(self, request):
-        cart_id = request.data.get('cart_id')
-        product_id = request.data.get('product_id')
-        product_variation_id = request.data.get('product_variation_id')
+    def update(self, request, pk):
+        cart_item_id = pk
         quantity = request.data.get('quantity')
 
-        if not all([cart_id, product_id, product_variation_id, quantity]):
+        if not all([cart_item_id, quantity]):
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
@@ -141,9 +157,7 @@ class CartViewSet(viewsets.ViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         item = CartItem.objects.filter(
-            cart_id=cart_id,
-            product_id=product_id,
-            product_variation_id=product_variation_id
+            id=cart_item_id            
         ).first()
 
         if not item:
@@ -167,13 +181,10 @@ class CartViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    @check_authentication
-    def delete(self, request):
-        cart_id = request.data.get('cart_id')
-        product_id = request.data.get('product_id')
-        product_variation_id = request.data.get('product_variation_id')
+    def delete(self, request, pk):
+        cart_item_id = pk
 
-        if not all([cart_id, product_id, product_variation_id]):
+        if not cart_item_id:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
@@ -182,11 +193,7 @@ class CartViewSet(viewsets.ViewSet):
                 "error": "Missing required fields"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        item = CartItem.objects.filter(
-            cart_id=cart_id,
-            product_id=product_id,
-            product_variation_id=product_variation_id
-        ).first()
+        item = CartItem.objects.filter(id=cart_item_id).first()
 
         if not item:
             return Response({
@@ -207,39 +214,49 @@ class CartViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
 
-    @handle_exceptions
-    @check_authentication
-    def transfer(self, request):
-        session_id = request.data.get('session_id')
-        user_id = request.data.get('user_id')
 
-        if not session_id or not user_id:
+class CartTransferViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role=None)
+    def create(self, request):
+        user = request.user
+        # session_id = request.session.session_key  # get session id from request
+        session_id = request.session.get('session_token')
+
+        if not session_id:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": "Missing session_id or user_id"
+                "error": "No session ID available"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        cart = Cart.objects.filter(session_id=session_id, status="open").first()
-        if not cart:
+        guest_cart = Cart.objects.get(session_id=session_id, active_cart=True)
+        if not guest_cart:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": "Cart not found for session"
+                "error": "No open cart found for this session"
             }, status=status.HTTP_404_NOT_FOUND)
 
-        cart.user_id = user_id
-        cart.session_id = None
-        cart.save()
+        user_cart = Cart.objects.get(user_id=user.user_id, active_cart=True)
+        if user_cart:
+            user_cart.active_cart = False
+            user_cart.save()
+        
+        guest_cart.user_id = user.user_id
+        guest_cart.session_id = None
+        guest_cart.active_cart = True
+        guest_cart.save()
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"cart_id": cart.cart_id, "message": "Cart transferred"},
+            "data": {"cart_id": guest_cart.cart_id},
             "error": None
         }, status=status.HTTP_200_OK)

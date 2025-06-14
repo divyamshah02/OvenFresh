@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product - E-commerce Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky">
+          <div class="brand-container mb-4 p-3">
+            <h2 class="brand-name">ShopAdmin</h2>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="products.html">
+                <i class="fas fa-box me-2"></i>
+                Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="add-product.html">
+                <i class="fas fa-plus-circle me-2"></i>
+                Add Product
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="categories.html">
+                <i class="fas fa-tags me-2"></i>
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="orders.html">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="users.html">
+                <i class="fas fa-users me-2"></i>
+                Users
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="h2">Add New Product</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Product Content -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <form id="addProductForm">
+              <div class="row mb-4">
+                <div class="col-md-8">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="mb-0">Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="productName" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="productDescription" rows="4" required></textarea>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="productSKU" class="form-label">SKU <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="productSKU" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="productBarcode" class="form-label">Barcode (ISBN, UPC, GTIN, etc.)</label>
+                          <input type="text" class="form-control" id="productBarcode">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card mt-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Pricing</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="productPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="productPrice" step="0.01" required>
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="comparePrice" class="form-label">Compare at Price</label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="comparePrice" step="0.01">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label for="costPerItem" class="form-label">Cost per Item</label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="costPerItem" step="0.01">
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label for="taxClass" class="form-label">Tax Class</label>
+                          <select class="form-select" id="taxClass">
+                            <option value="standard">Standard</option>
+                            <option value="reduced">Reduced Rate</option>
+                            <option value="zero">Zero Rate</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                      <h5 class="mb-0">Variations</h5>
+                      <button type="button" class="btn btn-sm btn-primary" id="addVariationBtn">
+                        <i class="fas fa-plus me-1"></i> Add Variation
+                      </button>
+                    </div>
+                    <div class="card-body">
+                      <div id="variationsContainer">
+                        <div class="variation-item border rounded p-3 mb-3">
+                          <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Variation #1</h6>
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-variation">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6 mb-3">
+                              <label class="form-label">Attribute</label>
+                              <select class="form-select variation-attribute">
+                                <option value="color">Color</option>
+                                <option value="size">Size</option>
+                                <option value="material">Material</option>
+                                <option value="style">Style</option>
+                              </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                              <label class="form-label">Value</label>
+                              <input type="text" class="form-control variation-value" placeholder="e.g. Red, XL, Cotton">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-4 mb-3">
+                              <label class="form-label">Price Adjustment</label>
+                              <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control variation-price" step="0.01" value="0.00">
+                              </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                              <label class="form-label">Stock</label>
+                              <input type="number" class="form-control variation-stock" value="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                              <label class="form-label">SKU</label>
+                              <input type="text" class="form-control variation-sku" placeholder="Variation SKU">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card mt-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Delivery Options</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label class="form-label">Available Pincodes</label>
+                        <select class="form-select" id="pincodeSelector" multiple>
+                          <option value="110001">110001 - New Delhi</option>
+                          <option value="400001">400001 - Mumbai</option>
+                          <option value="700001">700001 - Kolkata</option>
+                          <option value="600001">600001 - Chennai</option>
+                          <option value="500001">500001 - Hyderabad</option>
+                          <option value="380001">380001 - Ahmedabad</option>
+                          <option value="560001">560001 - Bangalore</option>
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple pincodes</small>
+                      </div>
+                      
+                      <div class="mb-3">
+                        <label class="form-label">Delivery Time Slots</label>
+                        <div class="time-slots-container">
+                          <div class="time-slot-item d-flex align-items-center mb-2">
+                            <input type="text" class="form-control time-picker me-2" placeholder="Start Time">
+                            <span class="mx-2">to</span>
+                            <input type="text" class="form-control time-picker me-2" placeholder="End Time">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-time-slot">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTimeSlotBtn">
+                          <i class="fas fa-plus me-1"></i> Add Time Slot
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Status</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label for="productStatus" class="form-label">Product Status</label>
+                        <select class="form-select" id="productStatus">
+                          <option value="active">Active</option>
+                          <option value="draft">Draft</option>
+                          <option value="archived">Archived</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="publishDate" class="form-label">Publish Date</label>
+                        <input type="text" class="form-control date-picker" id="publishDate" placeholder="Select date">
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Organization</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                        <select class="form-select" id="productCategory" required>
+                          <option value="">Select Category</option>
+                          <option value="1">Electronics</option>
+                          <option value="2">Clothing</option>
+                          <option value="3">Home & Kitchen</option>
+                          <option value="4">Beauty & Personal Care</option>
+                          <option value="5">Sports & Outdoors</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="productSubcategory" class="form-label">Subcategory</label>
+                        <select class="form-select" id="productSubcategory">
+                          <option value="">Select Subcategory</option>
+                          <!-- Dynamic options will be loaded based on category -->
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label for="productTags" class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="productTags" placeholder="Enter tags separated by commas">
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Product Media</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <label class="form-label">Product Images</label>
+                        <div class="dropzone-container border rounded p-3 text-center">
+                          <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                          <p class="mb-2">Drag & drop product images here</p>
+                          <p class="small text-muted mb-2">or</p>
+                          <button type="button" class="btn btn-sm btn-outline-primary">Browse Files</button>
+                          <input type="file" id="productImages" multiple class="d-none">
+                        </div>
+                        <small class="form-text text-muted">You can upload up to 5 images. First image will be used as the product thumbnail.</small>
+                      </div>
+                      <div class="image-preview-container d-flex flex-wrap mt-3">
+                        <!-- Image previews will be displayed here -->
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Inventory</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="mb-3">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="trackInventory" checked>
+                          <label class="form-check-label" for="trackInventory">Track Inventory</label>
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="stockQuantity" value="0" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="lowStockThreshold" class="form-label">Low Stock Threshold</label>
+                        <input type="number" class="form-control" id="lowStockThreshold" value="5">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Product</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="scripts.js"></script>
+  <script>
+    // Initialize date and time pickers
+    flatpickr(".date-picker", {
+      enableTime: false,
+      dateFormat: "Y-m-d",
+    });
+    
+    flatpickr(".time-picker", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true
+    });
+    
+    // Add variation button
+    document.getElementById('addVariationBtn').addEventListener('click', function() {
+      const variationsContainer = document.getElementById('variationsContainer');
+      const variationCount = variationsContainer.querySelectorAll('.variation-item').length + 1;
+      
+      const newVariation = document.createElement('div');
+      newVariation.className = 'variation-item border rounded p-3 mb-3';
+      newVariation.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">Variation #${variationCount}</h6>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-variation">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Attribute</label>
+            <select class="form-select variation-attribute">
+              <option value="color">Color</option>
+              <option value="size">Size</option>
+              <option value="material">Material</option>
+              <option value="style">Style</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Value</label>
+            <input type="text" class="form-control variation-value" placeholder="e.g. Red, XL, Cotton">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Price Adjustment</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control variation-price" step="0.01" value="0.00">
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Stock</label>
+            <input type="number" class="form-control variation-stock" value="0">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">SKU</label>
+            <input type="text" class="form-control variation-sku" placeholder="Variation SKU">
+          </div>
+        </div>
+      `;
+      
+      variationsContainer.appendChild(newVariation);
+      
+      // Add event listener to the new remove button
+      newVariation.querySelector('.remove-variation').addEventListener('click', function() {
+        this.closest('.variation-item').remove();
+      });
+    });
+    
+    // Remove variation button event delegation
+    document.getElementById('variationsContainer').addEventListener('click', function(e) {
+      if (e.target.closest('.remove-variation')) {
+        e.target.closest('.variation-item').remove();
+      }
+    });
+    
+    // Add time slot button
+    document.getElementById('addTimeSlotBtn').addEventListener('click', function() {
+      const timeSlotContainer = document.querySelector('.time-slots-container');
+      
+      const newTimeSlot = document.createElement('div');
+      newTimeSlot.className = 'time-slot-item d-flex align-items-center mb-2';
+      newTimeSlot.innerHTML = `
+        <input type="text" class="form-control time-picker me-2" placeholder="Start Time">
+        <span class="mx-2">to</span>
+        <input type="text" class="form-control time-picker me-2" placeholder="End Time">
+        <button type="button" class="btn btn-sm btn-outline-danger remove-time-slot">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      timeSlotContainer.appendChild(newTimeSlot);
+      
+      // Initialize the new time pickers
+      flatpickr(newTimeSlot.querySelectorAll('.time-picker'), {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true
+      });
+    });
+    
+    // Remove time slot button event delegation
+    document.querySelector('.time-slots-container').addEventListener('click', function(e) {
+      if (e.target.closest('.remove-time-slot')) {
+        e.target.closest('.time-slot-item').remove();
+      }
+    });
+    
+    // Category change event to update subcategories
+    document.getElementById('productCategory').addEventListener('change', function() {
+      const categoryId = this.value;
+      const subcategorySelect = document.getElementById('productSubcategory');
+      
+      // Clear current options
+      subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+      
+      if (categoryId) {
+        // Add subcategories based on selected category
+        const subcategories = {
+          '1': [
+            { id: '101', name: 'Smartphones' },
+            { id: '102', name: 'Laptops' },
+            { id: '103', name: 'Audio Devices' },
+            { id: '104', name: 'Wearables' }
+          ],
+          '2': [
+            { id: '201', name: 'Men\'s Clothing' },
+            { id: '202', name: 'Women\'s Clothing' },
+            { id: '203', name: 'Kids\' Clothing' },
+            { id: '204', name: 'Accessories' }
+          ],
+          '3': [
+            { id: '301', name: 'Kitchen Appliances' },
+            { id: '302', name: 'Furniture' },
+            { id: '303', name: 'Bedding' },
+            { id: '304', name: 'Decor' }
+          ],
+          '4': [
+            { id: '401', name: 'Skincare' },
+            { id: '402', name: 'Haircare' },
+            { id: '403', name: 'Makeup' },
+            { id: '404', name: 'Fragrances' }
+          ],
+          '5': [
+            { id: '501', name: 'Fitness Equipment' },
+            { id: '502', name: 'Outdoor Recreation' },
+            { id: '503', name: 'Sports Apparel' },
+            { id: '504', name: 'Team Sports' }
+          ]
+        };
+        
+        if (subcategories[categoryId]) {
+          subcategories[categoryId].forEach(subcategory => {
+            const option = document.createElement('option');
+            option.value = subcategory.id;
+            option.textContent = subcategory.name;
+            subcategorySelect.appendChild(option);
+          });
+        }
+      }
+    });
+    
+    // Form submission
+    document.getElementById('addProductForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Here you would normally collect all the form data and submit it to your backend
+      alert('Product saved successfully!');
+    });
+  </script>
+</body>
+</html>

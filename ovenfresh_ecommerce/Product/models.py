@@ -66,6 +66,9 @@ class Reviews(models.Model):
 class Pincode(models.Model):
     pincode = models.IntegerField(unique=True)  # 6-digit
     area_name = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
+    delivery_charge = models.JSONField(default=dict, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -77,6 +80,7 @@ class TimeSlot(models.Model):
     start_time = models.CharField(max_length=10)
     end_time = models.CharField(max_length=10)
     time_slot_title = models.CharField(max_length=100)
+    delivery_charges = models.CharField(max_length=20, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
 

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                Celebrate Occasions with Mumbai's best Online Gift Store.
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <a href="index.html">
+                    <img src="static/img/logo.png" alt="">
+                </a>
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center">
+                    <a href="cart.html" class="icon-btn me-2" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <button class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                            class="bi bi-person-circle"></i></button>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <!-- Cakes with Mega Menu -->
+                    <li class="nav-item position-static dropdown-mega">
+                        <a class="nav-link" href="#">Cakes</a>
+                        <div class="mega-menu d-none">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p>Theme Cakes</p>
+                                        <p>Rosette Cakes</p>
+                                        <p>Bento Cakes</p>
+                                        <p>Numeric Cakes</p>
+                                        <p>Fault Line Cakes</p>
+                                        <p>Fresh Fruit Cakes</p>
+                                        <p>Classic Cakes</p>
+                                        <p>Dutch Truffle Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Gourmet Cakes</p>
+                                        <p>Tea Cakes</p>
+                                        <p>Pinata Cakes</p>
+                                        <p>Butter Cream Cakes</p>
+                                        <p>Chocolate Cakes</p>
+                                        <p>Cheese Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>99% Gold Cakes</p>
+                                        <p>Fusion Cakes</p>
+                                        <p>Red Velvet Cakes</p>
+                                        <p>Two Tier Cakes</p>
+                                        <p>Photo Cakes</p>
+                                        <p>Pastry</p>
+                                        <p>Geode Cakes</p>
+                                        <p>Alphabet Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Trending Bomb Cakes</p>
+                                        <p>Heart Shape Cakes</p>
+                                        <p>Pull Me Up Cakes</p>
+                                        <p>Butterscotch Cakes</p>
+                                        <p>Fresh Flower Cakes</p>
+                                        <p>Low Frosting Cakes</p>
+                                        <p>Overloaded Cakes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Other Menu Items -->
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Shop Header -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="display-4 fw-bold">Our Shop</h1>
+                        <p class="lead">Discover our delicious collection of cakes, chocolates, and gifts</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end">
+                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters and Sort -->
+        <section class="py-4 border-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center gap-3">
+                            <label for="categoryFilter" class="form-label mb-0">Category:</label>
+                            <select class="form-select" id="categoryFilter" style="width: auto;">
+                                <option value="">All Categories</option>
+                                <option value="cakes">Cakes</option>
+                                <option value="chocolates">Chocolates</option>
+                                <option value="gifts">Gift Hampers</option>
+                                <option value="pastries">Pastries</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-md-end gap-3">
+                            <label for="sortBy" class="form-label mb-0">Sort by:</label>
+                            <select class="form-select" id="sortBy" style="width: auto;">
+                                <option value="featured">Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="name">Name</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row g-4" id="products-grid">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+                
+                <!-- Load More Button -->
+                <div class="text-center mt-5">
+                    <button class="btn of-btn-primary rounded-pill px-4" id="load-more">Load More Products</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="footer-info">
+                            <img src="static/img/ovenfresh-logo-min.webp" alt="">
+                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
+                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
+                                with on time delivery.</p>
+                            <div class="social-links mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html">Contact Us</a></li>
+                                <li><a href="#about">Register Complaint</a></li>
+                                <li><a href="shop.html">Track your Order</a></li>
+                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
+                                <li><a href="shop.html">About Us</a></li>
+                                <li><a href="#contact">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Cakes</a></li>
+                                <li><a href="#">Gifting</a></li>
+                                <li><a href="#">Flowers</a></li>
+                                <li><a href="#">Chocolates</a></li>
+                                <li><a href="#">Cookies</a></li>
+                                <li><a href="#">Blog</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Contact Us</h5>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
+                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
+                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Newsletter</h5>
+                            <p>Don't miss our future updates! Get Subscribed Today!</p>
+                            <input type="text" class="form-control" name="" id="" placeholder="Email">
+                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-4 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">FAQ</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="static/js/loader.js"></script>
+
+    <script>
+        // Sample products data
+        const products = [
+            {
+                id: 1,
+                name: "Chocolate Truffle Cake",
+                price: 35.99,
+                category: "cakes",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
+                badge: "Hot Selling",
+                badgeClass: "bg-danger",
+                rating: 4.5,
+                reviews: 42
+            },
+            {
+                id: 2,
+                name: "Luxury Chocolate Box",
+                price: 29.99,
+                category: "chocolates",
+                image: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                rating: 5,
+                reviews: 56
+            },
+            {
+                id: 3,
+                name: "Red Velvet Cake",
+                price: 32.99,
+                category: "cakes",
+                image: "https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg",
+                badge: "New",
+                badgeClass: "bg-success",
+                rating: 4,
+                reviews: 38
+            },
+            {
+                id: 4,
+                name: "Deluxe Gift Hamper",
+                price: 79.99,
+                category: "gifts",
+                image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80",
+                rating: 4.5,
+                reviews: 27
+            },
+            {
+                id: 5,
+                name: "Fresh Fruit Pastries",
+                price: 18.99,
+                category: "pastries",
+                image: "https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                rating: 4.2,
+                reviews: 23
+            },
+            {
+                id: 6,
+                name: "Birthday Special Cake",
+                price: 45.99,
+                category: "cakes",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
+                badge: "Popular",
+                badgeClass: "bg-warning",
+                rating: 4.8,
+                reviews: 65
+            },
+            {
+                id: 7,
+                name: "Artisan Chocolate Collection",
+                price: 55.99,
+                category: "chocolates",
+                image: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                rating: 4.7,
+                reviews: 34
+            },
+            {
+                id: 8,
+                name: "Wedding Cake Special",
+                price: 120.99,
+                category: "cakes",
+                image: "https://www.shutterstock.com/image-photo/beautiful-wedding-cake-champagne-glasses-260nw-2337005657.jpg",
+                badge: "Premium",
+                badgeClass: "bg-primary",
+                rating: 4.9,
+                reviews: 18
+            }
+        ];
+
+        let displayedProducts = 0;
+        const productsPerPage = 8;
+        let filteredProducts = [...products];
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartCount() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: 1
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            alert('Product added to cart!');
+        }
+
+        function createProductCard(product) {
+            const stars = Array.from({length: 5}, (_, i) => {
+                if (i < Math.floor(product.rating)) {
+                    return '<i class="fas fa-star"></i>';
+                } else if (i < product.rating) {
+                    return '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    return '<i class="far fa-star"></i>';
+                }
+            }).join('');
+
+            const badge = product.badge ? 
+                `<span class="badge ${product.badgeClass} position-absolute top-0 end-0 mt-2 me-2">${product.badge}</span>` : '';
+
+            return `
+                <div class="col-md-6 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            ${badge}
+                            <img src="${product.image}" alt="${product.name}" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action" onclick="addToCart(${product.id})"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>${product.name}</h5>
+                            <div class="product-rating mb-2">
+                                ${stars}
+                                <span class="ms-2">(${product.reviews})</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">₹${product.price.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadProducts() {
+            const grid = document.getElementById('products-grid');
+            const productsToShow = filteredProducts.slice(0, displayedProducts + productsPerPage);
+            
+            grid.innerHTML = productsToShow.map(product => createProductCard(product)).join('');
+            displayedProducts = productsToShow.length;
+
+            // Hide load more button if all products are displayed
+            const loadMoreBtn = document.getElementById('load-more');
+            if (displayedProducts >= filteredProducts.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            // Filter by category
+            filteredProducts = category ? products.filter(p => p.category === category) : [...products];
+
+            // Sort products
+            switch(sortBy) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name':
+                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                default:
+                    // Keep original order for featured
+                    break;
+            }
+
+            displayedProducts = 0;
+            loadProducts();
+        }
+
+        // Event listeners
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('sortBy').addEventListener('change', filterProducts);
+        document.getElementById('load-more').addEventListener('click', loadProducts);
+
+        window.onload = function () {
+            toggle_loader();
+            updateCartCount();
+            loadProducts();
+        };
+
+        window.addEventListener('scroll', function () {
+            const menuBar = document.querySelector('.main-menu');
+            const scrollTrigger = 95;
+
+            if (window.scrollY >= scrollTrigger) {
+                menuBar.classList.add('fixed-top');
+            } else {
+                menuBar.classList.remove('fixed-top');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

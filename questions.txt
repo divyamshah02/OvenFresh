@@ -1,0 +1,6 @@
+-> how to set gst and taxes? every product will ghave different tax amt or a default value.
+
+-> for same day delivery counter will we add a last ordering time for every product or it will be default for every products
+
+
+7-8:30

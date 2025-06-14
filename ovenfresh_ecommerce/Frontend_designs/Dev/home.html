@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OvenFresh - Mumbai's Best Online Cake Shop</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>🎂 Celebrate Occasions with Mumbai's best Online Gift Store</span>
+                    <div class="d-flex gap-3">
+                        <span><i class="fas fa-phone me-1"></i> +91 9876543210</span>
+                        <span><i class="fas fa-envelope me-1"></i> info@ovenfresh.in</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom sticky-top">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <a href="index.html" class="navbar-brand">
+                    <img src="static/img/logo.png" alt="OvenFresh Logo" class="img-fluid">
+                </a>
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search for cakes, gifts & more...">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center gap-2">
+                    <a href="cart.html" class="icon-btn position-relative" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <a href="account.html" class="icon-btn d-none d-md-block" aria-label="Account">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div class="bg-light border-bottom py-2 text-center main-menu d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <!-- Cakes with Mega Menu -->
+                    <li class="nav-item position-static dropdown-mega">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-birthday-cake me-2"></i>Cakes
+                        </a>
+                        <div class="mega-menu d-none">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <h6 class="of-text-primary mb-3">Special Cakes</h6>
+                                        <p><i class="fas fa-star me-2 of-text-accent"></i>Theme Cakes</p>
+                                        <p><i class="fas fa-rose me-2 of-text-accent"></i>Rosette Cakes</p>
+                                        <p><i class="fas fa-square me-2 of-text-accent"></i>Bento Cakes</p>
+                                        <p><i class="fas fa-hashtag me-2 of-text-accent"></i>Numeric Cakes</p>
+                                        <p><i class="fas fa-layer-group me-2 of-text-accent"></i>Fault Line Cakes</p>
+                                        <p><i class="fas fa-apple-alt me-2 of-text-accent"></i>Fresh Fruit Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="of-text-primary mb-3">Premium Collection</h6>
+                                        <p><i class="fas fa-crown me-2 of-text-accent"></i>Gourmet Cakes</p>
+                                        <p><i class="fas fa-coffee me-2 of-text-accent"></i>Tea Cakes</p>
+                                        <p><i class="fas fa-surprise me-2 of-text-accent"></i>Pinata Cakes</p>
+                                        <p><i class="fas fa-palette me-2 of-text-accent"></i>Butter Cream Cakes</p>
+                                        <p><i class="fas fa-cookie-bite me-2 of-text-accent"></i>Chocolate Cakes</p>
+                                        <p><i class="fas fa-cheese me-2 of-text-accent"></i>Cheese Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="of-text-primary mb-3">Luxury Range</h6>
+                                        <p><i class="fas fa-gem me-2 of-text-accent"></i>99% Gold Cakes</p>
+                                        <p><i class="fas fa-fire me-2 of-text-accent"></i>Fusion Cakes</p>
+                                        <p><i class="fas fa-heart me-2 of-text-accent"></i>Red Velvet Cakes</p>
+                                        <p><i class="fas fa-layer-group me-2 of-text-accent"></i>Two Tier Cakes</p>
+                                        <p><i class="fas fa-camera me-2 of-text-accent"></i>Photo Cakes</p>
+                                        <p><i class="fas fa-cut me-2 of-text-accent"></i>Pastry</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <h6 class="of-text-primary mb-3">Trending Now</h6>
+                                        <p><i class="fas fa-bomb me-2 of-text-accent"></i>Trending Bomb Cakes</p>
+                                        <p><i class="fas fa-heart me-2 of-text-accent"></i>Heart Shape Cakes</p>
+                                        <p><i class="fas fa-arrow-up me-2 of-text-accent"></i>Pull Me Up Cakes</p>
+                                        <p><i class="fas fa-candy-cane me-2 of-text-accent"></i>Butterscotch Cakes</p>
+                                        <p><i class="fas fa-seedling me-2 of-text-accent"></i>Fresh Flower Cakes</p>
+                                        <p><i class="fas fa-layer-group me-2 of-text-accent"></i>Overloaded Cakes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Other Menu Items -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-gift me-2"></i>Gifting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-seedling me-2"></i>Flowers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-ice-cream me-2"></i>Desserts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-candy-cane me-2"></i>Chocolates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-building me-2"></i>Corporate Gifting
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header of-bg-gradient text-white">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">
+                    <i class="fas fa-bars me-2"></i>Menu
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-birthday-cake me-3"></i>Cakes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-gift me-3"></i>Gifting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-seedling me-3"></i>Flowers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-ice-cream me-3"></i>Desserts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-candy-cane me-3"></i>Chocolates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">
+                            <i class="fas fa-building me-3"></i>Corporate Gifting
+                        </a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="d-flex flex-column gap-2">
+                    <a href="account.html" class="btn of-btn-outline-primary btn-rounded">
+                        <i class="fas fa-user me-2"></i>My Account
+                    </a>
+                    <a href="cart.html" class="btn of-btn-primary btn-rounded">
+                        <i class="fas fa-shopping-cart me-2"></i>Cart (<span id="mobile-cart-count">0</span>)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center min-vh-75">
+                    <div class="col-lg-6 hero-content animate-fade-left">
+                        <div class="badge of-bg-accent text-white mb-3 px-3 py-2 rounded-pill">
+                            <i class="fas fa-star me-2"></i>Mumbai's #1 Cake Shop
+                        </div>
+                        <h1 class="display-3 fw-bold mb-4">
+                            Sweet Moments,<br>
+                            <span class="of-text-accent">Delivered Fresh</span>
+                        </h1>
+                        <p class="lead mb-4 of-text-primary">
+                            Experience the magic of freshly baked cakes, artisanal chocolates, and beautiful flowers 
+                            delivered right to your doorstep. Making every celebration memorable since 2010.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <a href="shop.html" class="btn of-btn-primary btn-lg btn-rounded px-4">
+                                <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                            </a>
+                            <a href="#featured" class="btn of-btn-outline-primary btn-lg btn-rounded px-4">
+                                <i class="fas fa-eye me-2"></i>Explore Collection
+                            </a>
+                        </div>
+                        <div class="row g-4 mt-3">
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <h3 class="of-text-primary mb-1">50K+</h3>
+                                    <small class="text-muted">Happy Customers</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <h3 class="of-text-primary mb-1">15+</h3>
+                                    <small class="text-muted">Years Experience</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <h3 class="of-text-primary mb-1">24/7</h3>
+                                    <small class="text-muted">Delivery Service</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 animate-fade-right">
+                        <div class="position-relative">
+                            <div class="hero-image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                     alt="Delicious Cake" class="img-fluid rounded-4 shadow-strong">
+                            </div>
+                            <!-- Floating Elements -->
+                            <div class="position-absolute top-0 end-0 translate-middle">
+                                <div class="glass-effect rounded-circle p-3 text-center" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-heart of-text-accent fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 translate-middle">
+                                <div class="glass-effect rounded-4 p-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-star of-text-accent"></i>
+                                        <span class="fw-bold">4.9/5</span>
+                                        <small class="text-muted">Rating</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-5 of-bg-cream">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-3 col-6">
+                        <div class="feature-item text-center h-100">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-shipping-fast fa-2x of-text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Free Delivery</h6>
+                            <p class="text-muted small mb-0">On orders above ₹500</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="feature-item text-center h-100">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-clock fa-2x of-text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Same Day Delivery</h6>
+                            <p class="text-muted small mb-0">Order before 6 PM</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="feature-item text-center h-100">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-leaf fa-2x of-text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Fresh & Natural</h6>
+                            <p class="text-muted small mb-0">100% fresh ingredients</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="feature-item text-center h-100">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-award fa-2x of-text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Quality Assured</h6>
+                            <p class="text-muted small mb-0">Premium quality guarantee</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section id="featured" class="py-5">
+            <div class="container">
+                <div class="text-center mb-5 animate-fade-up">
+                    <div class="badge of-bg-accent text-white mb-3 px-3 py-2 rounded-pill">
+                        <i class="fas fa-fire me-2"></i>Trending Now
+                    </div>
+                    <h2 class="display-5 fw-bold mb-3">Featured Products</h2>
+                    <p class="lead of-text-primary">Discover our most loved cakes and treats</p>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Product 1 -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card modern-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                     alt="Chocolate Truffle Cake" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                </div>
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge bg-danger">Hot</span>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h6 class="mb-2">Chocolate Truffle Cake</h6>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-2 text-muted small">(42)</span>
+                                </div>
+                                <div class="product-price d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="price">₹899</span>
+                                        <span class="original-price ms-2">₹1199</span>
+                                    </div>
+                                    <button class="btn of-btn-primary btn-sm rounded-pill">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card modern-card">
+                            <div class="product-img">
+                                <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" 
+                                     alt="Red Velvet Cake" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                </div>
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge bg-success">New</span>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h6 class="mb-2">Red Velvet Cake</h6>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2 text-muted small">(38)</span>
+                                </div>
+                                <div class="product-price d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="price">₹799</span>
+                                    </div>
+                                    <button class="btn of-btn-primary btn-sm rounded-pill">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card modern-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" 
+                                     alt="Chocolate Box" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h6 class="mb-2">Luxury Chocolate Box</h6>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-2 text-muted small">(56)</span>
+                                </div>
+                                <div class="product-price d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="price">₹699</span>
+                                    </div>
+                                    <button class="btn of-btn-primary btn-sm rounded-pill">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product 4 -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card modern-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" 
+                                     alt="Gift Hamper" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action" title="Add to Wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn-product-action" title="Add to Cart">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                </div>
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge of-bg-accent">Premium</span>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h6 class="mb-2">Deluxe Gift Hamper</h6>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-2 text-muted small">(27)</span>
+                                </div>
+                                <div class="product-price d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <span class="price">₹1999</span>
+                                        <span class="original-price ms-2">₹2499</span>
+                                    </div>
+                                    <button class="btn of-btn-primary btn-sm rounded-pill">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="shop.html" class="btn of-btn-outline-primary btn-lg btn-rounded px-5">
+                        <i class="fas fa-arrow-right me-2"></i>View All Products
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="py-5 of-bg-cream">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">Shop by Category</h2>
+                    <p class="lead of-text-primary">Find the perfect treat for every occasion</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="category-card modern-card text-center p-4 h-100">
+                            <div class="category-icon mb-3">
+                                <i class="fas fa-birthday-cake fa-3x of-text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Birthday Cakes</h5>
+                            <p class="text-muted mb-4">Make birthdays extra special with our custom birthday cakes</p>
+                            <a href="shop.html" class="btn of-btn-outline-primary btn-rounded">
+                                <i class="fas fa-arrow-right me-2"></i>Explore
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="category-card modern-card text-center p-4 h-100">
+                            <div class="category-icon mb-3">
+                                <i class="fas fa-heart fa-3x of-text-accent"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Anniversary Cakes</h5>
+                            <p class="text-muted mb-4">Celebrate love with our romantic anniversary collection</p>
+                            <a href="shop.html" class="btn of-btn-outline-primary btn-rounded">
+                                <i class="fas fa-arrow-right me-2"></i>Explore
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="category-card modern-card text-center p-4 h-100">
+                            <div class="category-icon mb-3">
+                                <i class="fas fa-gift fa-3x of-text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Gift Hampers</h5>
+                            <p class="text-muted mb-4">Curated gift hampers for every special occasion</p>
+                            <a href="shop.html" class="btn of-btn-outline-primary btn-rounded">
+                                <i class="fas fa-arrow-right me-2"></i>Explore
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-5">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <div class="badge of-bg-accent text-white mb-3 px-3 py-2 rounded-pill">
+                        <i class="fas fa-quote-left me-2"></i>Customer Love
+                    </div>
+                    <h2 class="display-5 fw-bold mb-3">What Our Customers Say</h2>
+                    <p class="lead of-text-primary">Real reviews from real customers</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="testimonial-card modern-card p-4 h-100">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/60x60/588157/ffffff?text=PS" 
+                                     alt="Customer" class="rounded-circle me-3" width="60" height="60">
+                                <div>
+                                    <h6 class="mb-1">Priya Sharma</h6>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">"Amazing quality and taste! The chocolate truffle cake was perfect for my daughter's birthday. Will definitely order again!"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="testimonial-card modern-card p-4 h-100">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/60x60/588157/ffffff?text=RK" 
+                                     alt="Customer" class="rounded-circle me-3" width="60" height="60">
+                                <div>
+                                    <h6 class="mb-1">Rajesh Kumar</h6>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">"Excellent service and on-time delivery. The red velvet cake was fresh and delicious. Highly recommended!"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="testimonial-card modern-card p-4 h-100">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/60x60/588157/ffffff?text=AD" 
+                                     alt="Customer" class="rounded-circle me-3" width="60" height="60">
+                                <div>
+                                    <h6 class="mb-1">Anita Desai</h6>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">"Best cake shop in Mumbai! The gift hamper was beautifully packaged and the chocolates were divine."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="py-5 of-bg-gradient text-white">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h3 class="fw-bold mb-3">Stay Updated with Sweet Deals!</h3>
+                        <p class="mb-4">Subscribe to our newsletter and get exclusive offers, new product updates, and sweet surprises delivered to your inbox.</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <form class="newsletter-form">
+                            <div class="input-group">
+                                <input type="email" class="form-control form-control-lg" placeholder="Enter your email address">
+                                <button class="btn btn-light btn-lg px-4" type="submit">
+                                    <i class="fas fa-paper-plane me-2"></i>Subscribe
+                                </button>
+                            </div>
+                            <small class="text-white-50 mt-2 d-block">
+                                <i class="fas fa-lock me-1"></i>We respect your privacy. Unsubscribe anytime.
+                            </small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-info">
+                            <img src="static/img/ovenfresh-logo-min.webp" alt="OvenFresh Logo" class="mb-3" style="height: 60px;">
+                            <p class="mb-4">For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely on for a wonderful experience. We deliver fresh, delicious cakes with love.</p>
+                            <div class="social-links">
+                                <a href="#" class="social-icon" title="Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="Pinterest">
+                                    <i class="fab fa-pinterest"></i>
+                                </a>
+                                <a href="#" class="social-icon" title="WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h6 class="mb-4 fw-bold">Quick Links</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html"><i class="fas fa-home me-2"></i>Home</a></li>
+                                <li><a href="shop.html"><i class="fas fa-shopping-bag me-2"></i>Shop</a></li>
+                                <li><a href="about.html"><i class="fas fa-info-circle me-2"></i>About Us</a></li>
+                                <li><a href="contact.html"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+                                <li><a href="account.html"><i class="fas fa-user me-2"></i>My Account</a></li>
+                                <li><a href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h6 class="mb-4 fw-bold">Categories</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="shop.html"><i class="fas fa-birthday-cake me-2"></i>Cakes</a></li>
+                                <li><a href="shop.html"><i class="fas fa-gift me-2"></i>Gifts</a></li>
+                                <li><a href="shop.html"><i class="fas fa-seedling me-2"></i>Flowers</a></li>
+                                <li><a href="shop.html"><i class="fas fa-candy-cane me-2"></i>Chocolates</a></li>
+                                <li><a href="shop.html"><i class="fas fa-ice-cream me-2"></i>Desserts</a></li>
+                                <li><a href="shop.html"><i class="fas fa-cookie-bite me-2"></i>Cookies</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="footer-contact">
+                            <h6 class="mb-4 fw-bold">Get in Touch</h6>
+                            <div class="contact-item d-flex align-items-center mb-3">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Address:</strong><br>
+                                    123 Cake Street, Bandra West<br>
+                                    Mumbai, Maharashtra 400050
+                                </div>
+                            </div>
+                            <div class="contact-item d-flex align-items-center mb-3">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <strong>Phone:</strong><br>
+                                    +91 9876543210<br>
+                                    +91 9876543211
+                                </div>
+                            </div>
+                            <div class="contact-item d-flex align-items-center mb-3">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <strong>Email:</strong><br>
+                                    info@ovenfresh.in<br>
+                                    support@ovenfresh.in
+                                </div>
+                            </div>
+                            <div class="contact-item d-flex align-items-center">
+                                <div class="contact-icon me-3">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <strong>Hours:</strong><br>
+                                    Mon-Sun: 8:00 AM - 10:00 PM
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-5 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved. Made with <i class="fas fa-heart of-text-accent"></i> in Mumbai</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="footer-links d-inline-flex gap-3">
+                            <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            <a href="#" class="text-decoration-none">Terms of Service</a>
+                            <a href="#" class="text-decoration-none">Cookie Policy</a>
+                            <a href="#" class="text-decoration-none">FAQ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="static/js/loader.js"></script>
+
+    <script>
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartCount() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+            const mobileCartCount = document.getElementById('mobile-cart-count');
+            if (mobileCartCount) {
+                mobileCartCount.textContent = cartCount;
+            }
+        }
+
+        // Initialize animations
+        function initAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all animated elements
+            document.querySelectorAll('.animate-fade-up, .animate-fade-left, .animate-fade-right').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+        }
+
+        // Newsletter form submission
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            if (email) {
+                alert('Thank you for subscribing! You will receive sweet deals in your inbox.');
+                this.reset();
+            }
+        });
+
+        // Product card interactions
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        window.onload = function () {
+            toggle_loader();
+            updateCartCount();
+            initAnimations();
+        };
+
+        window.addEventListener('scroll', function () {
+            const menuBar = document.querySelector('.main-menu');
+            const scrollTrigger = 95;
+
+            if (window.scrollY >= scrollTrigger) {
+                menuBar.classList.add('fixed-top');
+                menuBar.style.top = '76px'; // Account for navbar height
+            } else {
+                menuBar.classList.remove('fixed-top');
+                menuBar.style.top = 'auto';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

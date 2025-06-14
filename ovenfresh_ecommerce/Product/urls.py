@@ -9,6 +9,7 @@ router.register(r'category', CategoryViewSet, basename='category')
 router.register(r'sub-category', SubCategoryViewSet, basename='sub-category')
 
 router.register(r'product', ProductViewSet, basename='product')
+router.register(r'all-products', AllProductsViewSet, basename='all-products')
 router.register(r'product-variation', ProductVariationViewSet, basename='product-variation')
 router.register(r'availability-charges', AvailabilityChargesViewSet, basename='availability-charges')
 
@@ -16,6 +17,7 @@ router.register(r'pincode', PincodeViewSet, basename='pincode')
 router.register(r'timeslot', TimeSlotViewSet, basename='timeslot')
 router.register(r'pincode-timeslots', TimeSlotAndPincodeViewSet, basename='pincode-timeslots')
 
+router.register(r'check-pincode', CheckPincodeViewSet, basename='check-pincode')
 
 urlpatterns = [
     path('', include(router.urls)),

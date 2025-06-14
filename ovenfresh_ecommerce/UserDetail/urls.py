@@ -4,6 +4,17 @@ from .views import *
 
 
 router = DefaultRouter()
+
+router.register(r'otp-api', OtpAuthViewSet, basename='otp-api')
+router.register(r'update-user-api', UserDetailViewSet, basename='update-user-api')
+
+router.register(r'address-api', AddressViewSet, basename='address-api')
+
+router.register(r'is-user-logged-in-api', IsUserLoggedInViewSet, basename='is-user-logged-in-api')
+
+router.register(r'profile-api', UserProfileViewSet, basename='profile-api')
+
+
 router.register(r'user-api', UserViewSet, basename='user-api')
 
 router.register(r'login-api', LoginApiViewSet, basename='login-api')
@@ -13,8 +24,8 @@ router.register(r'get-all-user-api', UserListViewSet, basename='get-all-user-api
 
 router.register(r'address', AddressViewSet, basename='address')
 
-router.register(r'generate-otp', OTPApiViewSet, basename='generate-otp')
-router.register(r'validate-otp', OTPValidateApiViewSet, basename='validate-otp')
+# router.register(r'generate-otp', OTPApiViewSet, basename='generate-otp')
+# router.register(r'validate-otp', OTPValidateApiViewSet, basename='validate-otp')
 
 
 urlpatterns = [

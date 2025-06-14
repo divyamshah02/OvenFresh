@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories - E-commerce Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky">
+          <div class="brand-container mb-4 p-3">
+            <h2 class="brand-name">ShopAdmin</h2>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="products.html">
+                <i class="fas fa-box me-2"></i>
+                Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="add-product.html">
+                <i class="fas fa-plus-circle me-2"></i>
+                Add Product
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="categories.html">
+                <i class="fas fa-tags me-2"></i>
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="orders.html">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="users.html">
+                <i class="fas fa-users me-2"></i>
+                Users
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="h2">Categories</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <button type="button" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+              <i class="fas fa-plus me-1"></i> Add Category
+            </button>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Content -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Categories</h5>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                  <i class="fas fa-plus me-1"></i> Add
+                </button>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Electronics</h6>
+                      <small class="text-muted">124 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Clothing</h6>
+                      <small class="text-muted">98 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Home & Kitchen</h6>
+                      <small class="text-muted">76 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Beauty & Personal Care</h6>
+                      <small class="text-muted">45 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Sports & Outdoors</h6>
+                      <small class="text-muted">41 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Subcategories</h5>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">
+                  <i class="fas fa-plus me-1"></i> Add
+                </button>
+              </div>
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Smartphones</h6>
+                      <small class="text-muted">Parent: Electronics • 32 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Laptops</h6>
+                      <small class="text-muted">Parent: Electronics • 28 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Men's Clothing</h6>
+                      <small class="text-muted">Parent: Clothing • 45 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Women's Clothing</h6>
+                      <small class="text-muted">Parent: Clothing • 53 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Kitchen Appliances</h6>
+                      <small class="text-muted">Parent: Home & Kitchen • 34 products</small>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Category Hierarchy</h5>
+          </div>
+          <div class="card-body">
+            <div class="category-tree">
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-folder me-2"></i>
+                    <span class="fw-bold">Electronics</span>
+                  </div>
+                  <ul class="list-unstyled ms-4 mt-2">
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Smartphones</span>
+                      </div>
+                    </li>
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Laptops</span>
+                      </div>
+                    </li>
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Audio Devices</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Wearables</span>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li class="mb-3">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-folder me-2"></i>
+                    <span class="fw-bold">Clothing</span>
+                  </div>
+                  <ul class="list-unstyled ms-4 mt-2">
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Men's Clothing</span>
+                      </div>
+                    </li>
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Women's Clothing</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Kids' Clothing</span>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-folder me-2"></i>
+                    <span class="fw-bold">Home & Kitchen</span>
+                  </div>
+                  <ul class="list-unstyled ms-4 mt-2">
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Kitchen Appliances</span>
+                      </div>
+                    </li>
+                    <li class="mb-2">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Furniture</span>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-folder-open me-2"></i>
+                        <span>Decor</span>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addCategoryForm">
+            <div class="mb-3">
+              <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="categoryName" required>
+            </div>
+            <div class="mb-3">
+              <label for="categoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="categoryDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="categoryImage" class="form-label">Category Image</label>
+              <input type="file" class="form-control" id="categoryImage">
+            </div>
+            <div class="mb-3">
+              <label for="categoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="categoryStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Category</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Category Modal -->
+  <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editCategoryForm">
+            <div class="mb-3">
+              <label for="editCategoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editCategoryName" value="Electronics" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editCategoryDescription" rows="3">All electronic devices and accessories.</textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryImage" class="form-label">Category Image</label>
+              <input type="file" class="form-control" id="editCategoryImage">
+              <div class="mt-2">
+                <img src="https://via.placeholder.com/100" alt="Category Image" class="img-thumbnail" width="100">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="editCategoryStatus">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Subcategory Modal -->
+  <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSubcategoryModalLabel">Add Subcategory</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addSubcategoryForm">
+            <div class="mb-3">
+              <label for="parentCategory" class="form-label">Parent Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="parentCategory" required>
+                <option value="">Select Parent Category</option>
+                <option value="1">Electronics</option>
+                <option value="2">Clothing</option>
+                <option value="3">Home & Kitchen</option>
+                <option value="4">Beauty & Personal Care</option>
+                <option value="5">Sports & Outdoors</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryName" class="form-label">Subcategory Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="subcategoryName" required>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="subcategoryDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryImage" class="form-label">Subcategory Image</label>
+              <input type="file" class="form-control" id="subcategoryImage">
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="subcategoryStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Subcategory</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Subcategory Modal -->
+  <div class="modal fade" id="editSubcategoryModal" tabindex="-1" aria-labelledby="editSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSubcategoryModalLabel">Edit Subcategory</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editSubcategoryForm">
+            <div class="mb-3">
+              <label for="editParentCategory" class="form-label">Parent Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="editParentCategory" required>
+                <option value="1" selected>Electronics</option>
+                <option value="2">Clothing</option>
+                <option value="3">Home & Kitchen</option>
+                <option value="4">Beauty & Personal Care</option>
+                <option value="5">Sports & Outdoors</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryName" class="form-label">Subcategory Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editSubcategoryName" value="Smartphones" required>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editSubcategoryDescription" rows="3">Mobile phones and smartphone accessories.</textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryImage" class="form-label">Subcategory Image</label>
+              <input type="file" class="form-control" id="editSubcategoryImage">
+              <div class="mt-2">
+                <img src="https://via.placeholder.com/100" alt="Subcategory Image" class="img-thumbnail" width="100">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="editSubcategoryStatus">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>

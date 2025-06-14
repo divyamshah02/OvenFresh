@@ -3,103 +3,196 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Add Product - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - ShopAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+
 </head>
 
-<body>
-    <h2>Add New Product</h2>
+<body class="ovenfresh-theme">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% include 'admin/admin-nav.html' %}
 
-    <!-- Product Meta Info -->
-    <div>
-        <label>Product Title:</label>
-        <input type="text" id="productTitle" placeholder="Enter product title">
-    </div>
-    <div>
-        <label>Product Description:</label>
-        <textarea id="productDesc" placeholder="Enter description"></textarea>
-    </div>
-    <div>
-        <label>Product Photo URL:</label>
-        <input type="text" id="productPhoto" placeholder="Enter photo URL" value="https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png">
-    </div>
-    <div>
-        <label>Category:</label>
-        <select id="categorySelect">
-            <option disabled selected>-- Select Category --</option>
-        </select>
-    </div>
-    <div>
-        <label>Sub-Category:</label>
-        <select id="subCategorySelect">
-            <option disabled selected>-- Select Sub-Category --</option>
-        </select>
-    </div>
-    <div>
-        <button id="submitProductBtn">Create Product</button> remaining update
-    </div>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="h2">Add New Product</h1>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-    <hr>
+                <!-- Product Form Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Product Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="productTitle" class="form-label">Product Title</label>
+                                    <input type="text" class="form-control" id="productTitle" placeholder="Enter product title">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="productPhoto" class="form-label">Product Photo URL</label>
+                                    <input type="text" class="form-control" id="productPhoto" placeholder="Enter photo URL" value="https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productDesc" class="form-label">Product Description</label>
+                                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter description"></textarea>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="categorySelect" class="form-label">Category</label>
+                                    <select class="form-select" id="categorySelect">
+                                        <option disabled selected>-- Select Category --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="subCategorySelect" class="form-label">Sub-Category</label>
+                                    <select class="form-select" id="subCategorySelect">
+                                        <option disabled selected>-- Select Sub-Category --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" id="submitProductBtn" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Create Product
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-    <div id="existingVariationsContainer">
-        <h3>Existing Variations</h3>            
-    </div>
+                <!-- Existing Variations Container -->
+                <div id="existingVariationsContainer" class="mb-4"></div>
 
-    <hr>
+                <!-- Variation Section -->
+                <div id="variationSection" style="display:none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0" id="product_variation_heading">Add Product Variation</h5>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="weight" class="form-label">Weight</label>
+                                        <input type="text" class="form-control" id="weight" placeholder="e.g. 500g">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="actualPrice" class="form-label">Actual Price</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" class="form-control" id="actualPrice" placeholder="e.g. 1000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="discountedPrice" class="form-label">Discounted Price</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" class="form-control" id="discountedPrice" placeholder="e.g. 800">
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="productVariationId" value="">
+                            </form>
+                        </div>
+                    </div>
 
-
-    <!-- Section Appears Only After Product Created -->
-    <div id="variationSection" style="display:none;">
-        <h3>Add Product Variation</h3>
-        <div>
-            <label>Weight:</label>
-            <input type="text" id="weight" placeholder="e.g. 500g">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Variation Availability</h5>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#availabilityTools">
+                                <i class="fas fa-tools me-1"></i> Show Tools
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="collapse mb-4" id="availabilityTools">
+                                <div class="card card-body bg-light">
+                                    <h6 class="mb-3">Availability Tools</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <button onclick="selectAllTimeslots()" class="btn btn-outline-primary mb-2">
+                                                <i class="fas fa-check-square me-1"></i> Available on all timeslots & pincodes
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="input-group mb-2">
+                                                <input type="number" id="universalCharge" class="form-control" placeholder="Set All Charges">
+                                                <button onclick="applyUniversalCharge()" class="btn btn-outline-secondary">Apply to All</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="number" id="baseCharge" class="form-control" placeholder="Base">
+                                                <input type="number" id="stepCharge" class="form-control" placeholder="Step">
+                                                <button onclick="applyStepCharges()" class="btn btn-outline-secondary">Step Up Charges</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <select id="disableTimeslot" class="form-select">
+                                                    <option disabled selected>Select Timeslot to Disable</option>
+                                                </select>
+                                                <button onclick="disableTimeslotForAll()" class="btn btn-outline-danger">Disable Timeslot</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="pincodeAvailability" class="mb-3">
+                                <!-- JS will render checkboxes and charges -->
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" id="submitVariationBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-1"></i> Add Variation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        <div>
-            <label>Actual Price:</label>
-            <input type="number" id="actualPrice" placeholder="e.g. 1000">
-        </div>
-        <div>
-            <label>Discounted Price:</label>
-            <input type="number" id="discountedPrice" placeholder="e.g. 800">
-        </div>
-
-        <hr>
-
-
-        <!-- <h4>Bulk Tools</h4>
-        <div>
-            <input type="number" id="sameChargeInput" placeholder="Set same charge for all">
-            <button id="applySameChargeBtn">Apply</button>
-        </div>
-        <div>
-            <input type="number" id="stepStartInput" placeholder="Start value">
-            <input type="number" id="stepValueInput" placeholder="Step up by">
-            <button id="applyStepUpBtn">Apply Step-Up</button>
-        </div>
-        <div>
-            <label>Disable timeslot for all pincodes:</label>
-            <select id="disableTimeslotSelect">
-                <option disabled selected>Select timeslot to disable</option>
-            </select>
-            <button id="disableTimeslotBtn">Disable</button>
-        </div> -->
-
-        <h3>Variation Availability</h3>
-        <div id="pincodeAvailability">
-            <!-- JS will render checkboxes and charges -->
-        </div>
-
-        <div>
-            <button id="submitVariationBtn">Add Variation with Availability</button>
-        </div>
-
-        <hr>
-
     </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
 
     <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/scripts.js"></script>
     <script src="/static/js/admin/admin_add_product.js"></script>
+
 
     <script>
         const csrfToken = "{{ csrf_token }}";

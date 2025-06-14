@@ -19,5 +19,4 @@ class OrderItemAdmin(admin.ModelAdmin):
         'final_amount', 'payment_id'
     )
     list_filter = ('product_id', 'product_variation_id')
-    search_fields = ('order__order_id', 'product__name', 'product_variation__variation')
-    ordering = ('-order__created_at',)
+    search_fields = ('order_id', 'product_id', 'product_variation_id')

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product - Admin Panel</title>
+</head>
+
+<body>
+    <h2>Add New Product</h2>
+
+    <!-- Product Meta Info -->
+    <div>
+        <label>Product Title:</label>
+        <input type="text" id="productTitle" placeholder="Enter product title">
+    </div>
+    <div>
+        <label>Product Description:</label>
+        <textarea id="productDesc" placeholder="Enter description"></textarea>
+    </div>
+    <div>
+        <label>Product Photo URL:</label>
+        <input type="text" id="productPhoto" placeholder="Enter photo URL" value="https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png">
+    </div>
+    <div>
+        <label>Category:</label>
+        <select id="categorySelect">
+            <option disabled selected>-- Select Category --</option>
+        </select>
+    </div>
+    <div>
+        <label>Sub-Category:</label>
+        <select id="subCategorySelect">
+            <option disabled selected>-- Select Sub-Category --</option>
+        </select>
+    </div>
+    <div>
+        <button id="submitProductBtn">Create Product</button>
+    </div>
+
+    <hr>
+
+    <div id="existingVariationsContainer">
+        <!-- <h3>Existing Variations</h3> -->
+    </div>
+    
+
+
+
+    <!-- Section Appears Only After Product Created -->
+    <div id="variationSection" style="display:none;">
+        <h3 id="product_variation_heading">Add Product Variation</h3>
+        <div>
+            <label>Weight:</label>
+            <input type="text" id="weight" placeholder="e.g. 500g">
+        </div>
+        <div>
+            <label>Actual Price:</label>
+            <input type="number" id="actualPrice" placeholder="e.g. 1000">
+        </div>
+        <div>
+            <label>Discounted Price:</label>
+            <input type="number" id="discountedPrice" placeholder="e.g. 800">
+        </div>
+        <input type="hidden" id="productVariationId" value="">
+
+        <hr>
+
+        <h3>Variation Availability</h3>
+        <div id="pincodeAvailability">
+            <!-- JS will render checkboxes and charges -->
+        </div>
+
+        <div>
+            <button id="submitVariationBtn">Add Variation</button>
+        </div>
+
+        <hr>
+
+    </div>
+
+    <!-- JS -->
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/admin/admin_add_product.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        AdminAddProduct(
+            csrfToken,
+            "{% url 'category-list' %}",
+            "{% url 'sub-category-list' %}",
+            "{% url 'pincode-timeslots-list' %}",
+            "{% url 'product-list' %}",
+            "{% url 'product-variation-list' %}",
+            "{% url 'availability-charges-list' %}"
+        );
+    </script>
+</body>
+
+</html>

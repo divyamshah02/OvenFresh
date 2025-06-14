@@ -3,12 +3,18 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework import status
 
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
+from django.utils import timezone
+from django.contrib.auth.hashers import check_password, make_password
 
 from .serializers import *
 from .models import *
+from .utils import *
+
+from Order.models import *
 
 from datetime import datetime, timedelta
 import string
@@ -71,6 +77,532 @@ class TempViewSet(viewsets.ViewSet):
                         }, status=status.HTTP_201_CREATED)
 
 
+class OtpAuthViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def create(self, request):
+        """
+        API 1: Generate OTP
+        """
+        mobile = request.data.get("mobile")
+        if not mobile:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Mobile number is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        otp = generate_send_otp(contact_number=mobile)
+        otp_obj = OTPVerification.objects.create(
+            mobile=mobile,
+            otp=otp,
+            expires_at=timezone.now() + timedelta(minutes=5),
+            is_verified=False,
+            attempt_count=0
+        )
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"otp_id": otp_obj.id, "otp": otp},  # remove otp in production
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+    @handle_exceptions
+    def update(self, request, pk):
+        """
+        API 2: Verify OTP & Login/Register
+        """
+
+        otp_id = pk
+        otp = request.data.get("otp")
+        
+        if not otp_id or not otp:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "otp_id & otp are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            otp_obj = OTPVerification.objects.get(id=otp_id)
+        except OTPVerification.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Invalid OTP ID."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if otp_obj.is_verified:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"otp_verified": False, "message": "OTP already used."},
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        if otp_obj.expires_at < timezone.now():
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"otp_verified": False, "message": "OTP expired."},
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        if otp_obj.attempt_count >= 3:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"otp_verified": False, "message": "Maximum attempts reached."},
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        if otp_obj.otp != otp:
+            otp_obj.attempt_count += 1
+            otp_obj.save()
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"otp_verified": False, "message": "Incorrect OTP."},
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        # OTP is correct
+        otp_obj.is_verified = True
+        otp_obj.save()
+
+        user = User.objects.filter(contact_number=otp_obj.mobile).first()
+
+        if user:
+            user_details_filled = bool(user.first_name and user.last_name and user.email)
+        else:
+            user = User.objects.create(
+                contact_number=otp_obj.mobile,
+                role='customer'
+            )
+            user_details_filled = False
+
+        login(request, user)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "otp_verified": True,
+                "user_id": user.user_id,
+                "user_details": user_details_filled
+            },
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class IsUserLoggedInViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        """
+        API: Check User Logged In Status (check_user_loggedin_url)
+        GET /api/checkout/
+        """
+        if request.user.is_authenticated:
+            user = request.user
+            
+            # Get user addresses
+            addresses = []
+            addresses_obj = Address.objects.filter(user_id=user.user_id)
+
+            for address in addresses_obj:
+                addresses.append({
+                    "id": address.id,
+                    "address_line": address.address_line,
+                    "city": address.city,
+                    "state": address.state,
+                    "pincode": address.pincode,
+                    "address_name": address.address_name,
+                })
+            
+            user_data = {
+                "first_name": user.first_name or "",
+                "last_name": user.last_name or "",
+                "email": user.email or "",
+                "phone": user.contact_number or "",
+            }
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {
+                    "user": user_data,
+                    "addresses": addresses
+                },
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        else:
+            return Response({
+                "success": True,
+                "user_not_logged_in": True,
+                "user_unauthorized": False,
+                "data": None,
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+
+class UserDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def create(self, request):
+        """
+        API 3: Fill User Details after OTP verification
+        """
+        user = request.user
+
+        firstName = request.data.get('firstName')
+        lastName = request.data.get('lastName')
+        email = request.data.get('email')
+        address = request.data.get('address')
+        city = request.data.get('city')
+        alternate_phone = request.data.get('alternate_phone', "")
+        pincode = request.data.get('pincode')
+
+        user_obj = User.objects.get(user_id=user.user_id)
+        user_obj.first_name = firstName
+        user_obj.last_name = lastName
+        user_obj.email = email
+        user_obj.alternate_phone = alternate_phone
+        user_obj.save()
+
+        new_address = Address(
+            user_id=user.user_id,
+            address_line=address,
+            city=city,
+            state='Maharashtra',
+            pincode=pincode,
+            address_name=request.data.get('address_name', 'Home'),
+            is_default=True
+        )
+        new_address.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": "User details updated successfully.",
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class AddressViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def list(self, request):
+        """
+        Get user addresses
+        """
+        user_id = request.user.user_id
+        
+        try:
+            addresses = Address.objects.filter(user_id=user_id).order_by('-is_default', '-created_at')
+            
+            addresses_data = []
+            for address in addresses:
+                addresses_data.append({
+                    'id': address.id,
+                    'address_name': address.address_name,
+                    'address_line': address.address_line,
+                    'city': address.city,
+                    'pincode': address.pincode,
+                    'is_default': address.is_default,
+                    'created_at': address.created_at,
+                })
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"addresses": addresses_data},
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            logger.error(f"Error fetching addresses: {str(e)}")
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Error fetching addresses."
+            }, status=500)
+
+
+    @handle_exceptions
+    def create(self, request):
+        """
+        API 3: Fill User Details after OTP verification
+        """
+        user = request.user
+
+        address = request.data.get('address')
+        city = request.data.get('city')
+        pincode = request.data.get('pincode')
+        addressName = request.data.get('addressName')
+
+        new_address = Address(
+            user_id=user.user_id,
+            address_line=address,
+            city=city,
+            state='Maharashtra',
+            pincode=pincode,
+            address_name=addressName
+        )
+        new_address.save()
+
+
+        addresses = []
+        addresses_obj = Address.objects.filter(user_id=user.user_id)
+
+        for address in addresses_obj:
+            addresses.append({
+                "id": address.id,
+                "address_line": address.address_line,
+                "city": address.city,
+                "state": address.state,
+                "pincode": address.pincode,
+                "address_name": address.address_name,
+            })
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"addresses": addresses},
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def update(self, request, pk):
+        """
+        Update existing address
+        """
+        user_id = request.user.user_id
+        data = request.data
+        address_id = pk
+
+        address = Address.objects.get(id=address_id, user_id=user_id)
+        
+        # If this is set as default, remove default from other addresses
+        if data.get('is_default', False):
+            Address.objects.filter(user_id=user_id, is_default=True).exclude(id=address_id).update(is_default=False)
+        
+        # Update address fields
+        if 'address_name' in data:
+            address.address_name = data['address_name']
+        if 'address_line' in data:
+            address.address_line = data['address_line']
+        if 'city' in data:
+            address.city = data['city']
+        if 'pincode' in data:
+            address.pincode = data['pincode']
+        if 'is_default' in data:
+            address.is_default = data['is_default']
+        
+        address.save()
+        
+        # Return updated addresses list
+        addresses = Address.objects.filter(user_id=user_id).order_by('-is_default', '-created_at')
+        addresses_data = []
+        for addr in addresses:
+            addresses_data.append({
+                'id': addr.id,
+                'address_name': addr.address_name,
+                'address_line': addr.address_line,
+                'address_line2': addr.address_line2,
+                'city': addr.city,
+                'pincode': addr.pincode,
+                'is_default': addr.is_default,
+                'created_at': addr.created_at,
+            })
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "message": "Address updated successfully",
+                "addresses": addresses_data
+            },
+            "error": None
+        }, status=200)
+    
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def delete(self, request, pk):
+        """
+        Delete address
+        """
+        user_id = request.user.user_id
+        address_id = pk
+        
+        
+        address = Address.objects.get(id=address_id, user_id=user_id)
+        
+        # Check if this is the default address
+        was_default = address.is_default
+        
+        # Delete the address
+        address.delete()
+        
+        # If deleted address was default, set another address as default
+        if was_default:
+            remaining_addresses = Address.objects.filter(user_id=user_id)
+            if remaining_addresses.exists():
+                remaining_addresses.first().is_default = True
+                remaining_addresses.first().save()
+        
+        # Return updated addresses list
+        addresses = Address.objects.filter(user_id=user_id).order_by('-is_default', '-created_at')
+        addresses_data = []
+        for addr in addresses:
+            addresses_data.append({
+                'id': addr.id,
+                'address_name': addr.address_name,
+                'address_line': addr.address_line,
+                'address_line2': addr.address_line2,
+                'city': addr.city,
+                'pincode': addr.pincode,
+                'is_default': addr.is_default,
+                'created_at': addr.created_at,
+            })
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "message": "Address deleted successfully",
+                "addresses": addresses_data
+            },
+            "error": None
+        }, status=200)
+
+
+class UserProfileViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def list(self, request):
+        """
+        Get user profile information
+        """
+        user_id = request.user.user_id
+        
+        try:
+            user = User.objects.get(user_id=user_id)
+            
+            user_data = {
+                'user_id': user.user_id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'phone': user.contact_number,                
+                'created_at': user.created_at,
+            }
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"user": user_data},
+                "error": None
+            }, status=200)
+            
+        except User.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "User not found."
+            }, status=404)
+
+    @handle_exceptions
+    # @check_authentication(required_role="customer")
+    def update(self, request, pk=None):
+        """
+        Update user profile information
+        """
+        user_id = request.user.user_id
+        data = request.data
+        user_pk = pk
+        
+        try:
+            user = User.objects.get(user_id=user_id)
+            
+            # Update allowed fields
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'email' in data:
+                # Check if email is already taken by another user
+                if User.objects.filter(email=data['email']).exclude(user_id=user_id).exists():
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": "Email is already taken."
+                    }, status=400)
+                user.email = data['email']
+            if 'date_of_birth' in data:
+                user.date_of_birth = data['date_of_birth']
+            if 'email_notifications' in data:
+                user.email_notifications = data['email_notifications']
+            if 'sms_notifications' in data:
+                user.sms_notifications = data['sms_notifications']
+            if 'promotional_emails' in data:
+                user.promotional_emails = data['promotional_emails']
+            
+            user.save()
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Profile updated successfully"},
+                "error": None
+            }, status=200)
+            
+        except User.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "User not found."
+            }, status=404)
+
+
+
+
+
+
+#### NOT BEING USED ####
 class UserViewSet(viewsets.ViewSet):
     
     @handle_exceptions
@@ -198,7 +730,8 @@ class UserViewSet(viewsets.ViewSet):
                     "error": "User not found.."
                 }, status=status.HTTP_403_FORBIDDEN)
 
-        user_obj.name = request.data.get('name', user_obj.name)
+        user_obj.first_name = request.data.get('name', user_obj.first_name)
+        user_obj.last_name = request.data.get('name', user_obj.last_name)
         user_obj.contact_number = request.data.get('contact_number', user_obj.contact_number)
         user_obj.email = request.data.get('email', user_obj.email)
         user_obj.save()
@@ -342,84 +875,64 @@ class UserListViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
 
 
-class UserDetailViewSet(viewsets.ViewSet):
+# class UserDetailViewSet(viewsets.ViewSet):
     
-    @handle_exceptions
-    @check_authentication
-    def create(self, request):
-        custom_user = request.data.get('custom_user')
-        if not custom_user:
-            user_data = UserSerializer(request.user).data
+#     @handle_exceptions
+#     @check_authentication
+#     def create(self, request):
+#         custom_user = request.data.get('custom_user')
+#         if not custom_user:
+#             user_data = UserSerializer(request.user).data
         
-        else:
-            user_obj = User.objects.filter(user_id=custom_user).first()
-            user_data = UserSerializer(user_obj).data
+#         else:
+#             user_obj = User.objects.filter(user_id=custom_user).first()
+#             user_data = UserSerializer(user_obj).data
 
-        return Response(
-            {
-                "success": True,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": user_data,
-                "error": None
-            }, status=status.HTTP_200_OK
-        )
-
-
-class AddressViewSet(viewsets.ViewSet):
-    @handle_exceptions
-    @check_authentication
-    def list(self, request):
-        user_id = request.query_params.get('user_id')
-        if not user_id:
-            return Response({"success": False, "data": None, "error": "Missing user_id."}, status=status.HTTP_400_BAD_REQUEST)
-        addresses = Address.objects.filter(user__user_id=user_id)
-        return Response({"success": True, "data": AddressSerializer(addresses, many=True).data, "error": None}, status=status.HTTP_200_OK)
-
-    @handle_exceptions
-    @check_authentication
-    def create(self, request):
-        serializer = AddressSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"success": True, "data": serializer.data, "error": None}, status=status.HTTP_201_CREATED)
-        return Response({"success": False, "data": None, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(
+#             {
+#                 "success": True,
+#                 "user_not_logged_in": False,
+#                 "user_unauthorized": False,
+#                 "data": user_data,
+#                 "error": None
+#             }, status=status.HTTP_200_OK
+#         )
 
 
-class OTPApiViewSet(viewsets.ViewSet):
-    @handle_exceptions
-    def create(self, request):
-        user_id = request.data.get('user_id')
-        user = User.objects.filter(user_id=user_id).first()
-        if not user:
-            return Response({"success": False, "data": None, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+# class OTPApiViewSet(viewsets.ViewSet):
+#     @handle_exceptions
+#     def create(self, request):
+#         user_id = request.data.get('user_id')
+#         user = User.objects.filter(user_id=user_id).first()
+#         if not user:
+#             return Response({"success": False, "data": None, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        otp = random.randint(100000, 999999)
-        OTP.objects.create(user=user, otp=otp, tries_left=3, status='not_matched')
+#         otp = random.randint(100000, 999999)
+#         OTP.objects.create(user=user, otp=otp, tries_left=3, status='not_matched')
 
-        print(f"OTP for {user.name}: {otp}")
+#         print(f"OTP for {user.name}: {otp}")
 
-        return Response({"success": True, "data": {"otp": otp}, "error": None}, status=status.HTTP_200_OK)
+#         return Response({"success": True, "data": {"otp": otp}, "error": None}, status=status.HTTP_200_OK)
 
 
-class OTPValidateApiViewSet(viewsets.ViewSet):
-    @handle_exceptions
-    def create(self, request):
-        user_id = request.data.get('user_id')
-        otp = request.data.get('otp')
-        user = User.objects.filter(user_id=user_id).first()
+# class OTPValidateApiViewSet(viewsets.ViewSet):
+#     @handle_exceptions
+#     def create(self, request):
+#         user_id = request.data.get('user_id')
+#         otp = request.data.get('otp')
+#         user = User.objects.filter(user_id=user_id).first()
 
-        if not user:
-            return Response({"success": False, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+#         if not user:
+#             return Response({"success": False, "error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        otp_record = OTP.objects.filter(user=user, otp=otp, status="not_matched").first()
+#         otp_record = OTP.objects.filter(user=user, otp=otp, status="not_matched").first()
 
-        if not otp_record or otp_record.tries_left == 0:
-            return Response({"success": False, "error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
+#         if not otp_record or otp_record.tries_left == 0:
+#             return Response({"success": False, "error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
 
-        otp_record.status = "matched"
-        otp_record.save()
-        return Response({"success": True, "data": {"message": "OTP validated."}, "error": None}, status=status.HTTP_200_OK)
+#         otp_record.status = "matched"
+#         otp_record.save()
+#         return Response({"success": True, "data": {"message": "OTP validated."}, "error": None}, status=status.HTTP_200_OK)
 
 
 def login_to_account(request):

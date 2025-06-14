@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-commerce Admin UI Components</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ovenfresh-theme">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky">
+          <div class="brand-container mb-4 p-3 d-flex justify-content-between align-items-center">
+            <h2 class="brand-name">ShopAdmin</h2>
+            <button id="theme-toggle" class="btn btn-sm theme-toggle">
+              <i class="fas fa-sun"></i>
+            </button>
+          </div>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#dashboard-section">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#products-section">
+                <i class="fas fa-box me-2"></i>
+                Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#categories-section">
+                <i class="fas fa-tags me-2"></i>
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#orders-section">
+                <i class="fas fa-shopping-cart me-2"></i>
+                Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#customers-section">
+                <i class="fas fa-users me-2"></i>
+                Customers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#forms-section">
+                <i class="fas fa-edit me-2"></i>
+                Forms
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#ui-elements-section">
+                <i class="fas fa-palette me-2"></i>
+                UI Elements
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#modals-section">
+                <i class="fas fa-window-restore me-2"></i>
+                Modals
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <h1 class="h2">E-commerce Admin UI Components</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Welcome to the E-commerce Admin UI Components</h5>
+            <p class="card-text">This page contains all the essential UI elements for building an e-commerce admin portal. Use the sidebar to navigate between different component sections.</p>
+            <p class="card-text">Click the sun/moon icon in the sidebar to toggle between light and dark themes.</p>
+          </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="mb-5">
+          <h2 class="section-title mb-4">Dashboard</h2>
+          
+          <!-- Stats Cards -->
+          <div class="row mb-4">
+            <div class="col-md-3 mb-4">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="card-subtitle mb-1">Total Revenue</h6>
+                      <h3 class="card-title mb-0">$24,580</h3>
+                      <p class="small text-success mb-0"><i class="fas fa-arrow-up"></i> 12.5% increase</p>
+                    </div>
+                    <div class="icon-container">
+                      <i class="fas fa-dollar-sign"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="card-subtitle mb-1">Total Orders</h6>
+                      <h3 class="card-title mb-0">1,245</h3>
+                      <p class="small text-success mb-0"><i class="fas fa-arrow-up"></i> 8.3% increase</p>
+                    </div>
+                    <div class="icon-container">
+                      <i class="fas fa-shopping-bag"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="card-subtitle mb-1">Total Products</h6>
+                      <h3 class="card-title mb-0">384</h3>
+                      <p class="small text-success mb-0"><i class="fas fa-arrow-up"></i> 5.7% increase</p>
+                    </div>
+                    <div class="icon-container">
+                      <i class="fas fa-box"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4">
+              <div class="card stat-card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="card-subtitle mb-1">Total Customers</h6>
+                      <h3 class="card-title mb-0">2,567</h3>
+                      <p class="small text-success mb-0"><i class="fas fa-arrow-up"></i> 10.2% increase</p>
+                    </div>
+                    <div class="icon-container">
+                      <i class="fas fa-users"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="row mb-4">
+            <div class="col-md-8 mb-4">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Sales Overview</h5>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Weekly</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary active">Monthly</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Yearly</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <canvas id="salesChart" height="250"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Top Categories</h5>
+                </div>
+                <div class="card-body">
+                  <canvas id="categoryChart" height="250"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders & Top Products -->
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Recent Orders</h5>
+                  <a href="#orders-section" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Customer</th>
+                          <th>Status</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>#ORD-7652</td>
+                          <td>John Smith</td>
+                          <td><span class="badge bg-success">Delivered</span></td>
+                          <td>$125.99</td>
+                        </tr>
+                        <tr>
+                          <td>#ORD-7651</td>
+                          <td>Emma Wilson</td>
+                          <td><span class="badge bg-warning">Processing</span></td>
+                          <td>$245.50</td>
+                        </tr>
+                        <tr>
+                          <td>#ORD-7650</td>
+                          <td>Michael Brown</td>
+                          <td><span class="badge bg-info">Shipped</span></td>
+                          <td>$79.99</td>
+                        </tr>
+                        <tr>
+                          <td>#ORD-7649</td>
+                          <td>Sarah Johnson</td>
+                          <td><span class="badge bg-danger">Cancelled</span></td>
+                          <td>$189.00</td>
+                        </tr>
+                        <tr>
+                          <td>#ORD-7648</td>
+                          <td>David Lee</td>
+                          <td><span class="badge bg-success">Delivered</span></td>
+                          <td>$312.75</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Top Selling Products</h5>
+                  <a href="#products-section" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Price</th>
+                          <th>Sold</th>
+                          <th>Revenue</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Wireless Earbuds</td>
+                          <td>$89.99</td>
+                          <td>245</td>
+                          <td>$22,047.55</td>
+                        </tr>
+                        <tr>
+                          <td>Smart Watch</td>
+                          <td>$199.99</td>
+                          <td>187</td>
+                          <td>$37,398.13</td>
+                        </tr>
+                        <tr>
+                          <td>Bluetooth Speaker</td>
+                          <td>$59.99</td>
+                          <td>156</td>
+                          <td>$9,358.44</td>
+                        </tr>
+                        <tr>
+                          <td>Laptop Sleeve</td>
+                          <td>$29.99</td>
+                          <td>143</td>
+                          <td>$4,288.57</td>
+                        </tr>
+                        <tr>
+                          <td>Phone Charger</td>
+                          <td>$19.99</td>
+                          <td>132</td>
+                          <td>$2,638.68</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products-section" class="mb-5">
+          <h2 class="section-title mb-4">Products</h2>
+          
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Product Management</h5>
+              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="fas fa-plus me-1"></i> Add Product
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6 mb-2 mb-md-0">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search products...">
+                    <button class="btn btn-primary" type="button">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-md-end">
+                  <div class="btn-group me-2">
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="fas fa-sort me-1"></i> Sort
+                    </button>
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="fas fa-download me-1"></i> Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="selectAllProducts">
+                          <label class="form-check-label" for="selectAllProducts"></label>
+                        </div>
+                      </th>
+                      <th>Image</th>
+                      <th>Product Name</th>
+                      <th>SKU</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                      </td>
+                      <td>Wireless Earbuds</td>
+                      <td>SKU-001</td>
+                      <td>Electronics</td>
+                      <td>$89.99</td>
+                      <td>120</td>
+                      <td><span class="badge bg-success">In Stock</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                      </td>
+                      <td>Smart Watch</td>
+                      <td>SKU-002</td>
+                      <td>Electronics</td>
+                      <td>$199.99</td>
+                      <td>85</td>
+                      <td><span class="badge bg-success">In Stock</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail" width="50">
+                      </td>
+                      <td>Phone Charger</td>
+                      <td>SKU-005</td>
+                      <td>Accessories</td>
+                      <td>$19.99</td>
+                      <td>0</td>
+                      <td><span class="badge bg-danger">Out of Stock</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editProductModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <span>Showing 1 to 3 of 24 entries</span>
+                </div>
+                <nav>
+                  <ul class="pagination mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Variations Example -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Product Variations</h5>
+            </div>
+            <div class="card-body">
+              <div id="variationsContainer">
+                <div class="variation-item border rounded p-3 mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Variation #1</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-variation">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Attribute</label>
+                      <select class="form-select variation-attribute">
+                        <option value="color">Color</option>
+                        <option value="size">Size</option>
+                        <option value="material">Material</option>
+                        <option value="style">Style</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Value</label>
+                      <input type="text" class="form-control variation-value" placeholder="e.g. Red, XL, Cotton">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Price Adjustment</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control variation-price" step="0.01" value="0.00">
+                      </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Stock</label>
+                      <input type="number" class="form-control variation-stock" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">SKU</label>
+                      <input type="text" class="form-control variation-sku" placeholder="Variation SKU">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" id="addVariationBtn">
+                <i class="fas fa-plus me-1"></i> Add Variation
+              </button>
+            </div>
+          </div>
+
+          <!-- Delivery Options Example -->
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Delivery Options</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label class="form-label">Available Pincodes</label>
+                <select class="form-select" id="pincodeSelector" multiple>
+                  <option value="110001">110001 - New Delhi</option>
+                  <option value="400001">400001 - Mumbai</option>
+                  <option value="700001">700001 - Kolkata</option>
+                  <option value="600001">600001 - Chennai</option>
+                  <option value="500001">500001 - Hyderabad</option>
+                </select>
+                <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple pincodes</small>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Delivery Time Slots</label>
+                <div class="time-slots-container">
+                  <div class="time-slot-item d-flex align-items-center mb-2">
+                    <input type="text" class="form-control time-picker me-2" placeholder="Start Time">
+                    <span class="mx-2">to</span>
+                    <input type="text" class="form-control time-picker me-2" placeholder="End Time">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-time-slot">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTimeSlotBtn">
+                  <i class="fas fa-plus me-1"></i> Add Time Slot
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories-section" class="mb-5">
+          <h2 class="section-title mb-4">Categories</h2>
+          
+          <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Categories</h5>
+                  <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="fas fa-plus me-1"></i> Add
+                  </button>
+                </div>
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Electronics</h6>
+                        <small class="text-muted">124 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Clothing</h6>
+                        <small class="text-muted">98 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Home & Kitchen</h6>
+                        <small class="text-muted">76 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Subcategories</h5>
+                  <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubcategoryModal">
+                    <i class="fas fa-plus me-1"></i> Add
+                  </button>
+                </div>
+                <div class="card-body p-0">
+                  <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Smartphones</h6>
+                        <small class="text-muted">Parent: Electronics • 32 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Laptops</h6>
+                        <small class="text-muted">Parent: Electronics • 28 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1">Men's Clothing</h6>
+                        <small class="text-muted">Parent: Clothing • 45 products</small>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Category Hierarchy</h5>
+            </div>
+            <div class="card-body">
+              <div class="category-tree">
+                <ul class="list-unstyled">
+                  <li class="mb-3">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-folder me-2"></i>
+                      <span class="fw-bold">Electronics</span>
+                    </div>
+                    <ul class="list-unstyled ms-4 mt-2">
+                      <li class="mb-2">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-folder-open me-2"></i>
+                          <span>Smartphones</span>
+                        </div>
+                      </li>
+                      <li class="mb-2">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-folder-open me-2"></i>
+                          <span>Laptops</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-folder-open me-2"></i>
+                          <span>Audio Devices</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-folder me-2"></i>
+                      <span class="fw-bold">Clothing</span>
+                    </div>
+                    <ul class="list-unstyled ms-4 mt-2">
+                      <li class="mb-2">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-folder-open me-2"></i>
+                          <span>Men's Clothing</span>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-folder-open me-2"></i>
+                          <span>Women's Clothing</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orders-section" class="mb-5">
+          <h2 class="section-title mb-4">Orders</h2>
+          
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Order Management</h5>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6 mb-2 mb-md-0">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search orders...">
+                    <button class="btn btn-primary" type="button">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-md-end">
+                  <div class="btn-group me-2">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                      <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">All Orders</a></li>
+                      <li><a class="dropdown-item" href="#">Pending</a></li>
+                      <li><a class="dropdown-item" href="#">Processing</a></li>
+                      <li><a class="dropdown-item" href="#">Shipped</a></li>
+                      <li><a class="dropdown-item" href="#">Delivered</a></li>
+                      <li><a class="dropdown-item" href="#">Cancelled</a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group me-2">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                      <i class="fas fa-sort me-1"></i> Sort
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Newest First</a></li>
+                      <li><a class="dropdown-item" href="#">Oldest First</a></li>
+                      <li><a class="dropdown-item" href="#">Amount: High to Low</a></li>
+                      <li><a class="dropdown-item" href="#">Amount: Low to High</a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="fas fa-download me-1"></i> Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Date</th>
+                      <th>Items</th>
+                      <th>Total</th>
+                      <th>Payment</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a href="#" class="fw-bold" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#ORD-7652</a></td>
+                      <td>John Smith</td>
+                      <td>May 15, 2023</td>
+                      <td>3 items</td>
+                      <td>$125.99</td>
+                      <td><span class="badge bg-success">Paid</span></td>
+                      <td><span class="badge bg-success">Delivered</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Print Invoice</a></li>
+                            <li><a class="dropdown-item" href="#">Send Email</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#">Cancel Order</a></li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><a href="#" class="fw-bold" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#ORD-7651</a></td>
+                      <td>Emma Wilson</td>
+                      <td>May 14, 2023</td>
+                      <td>2 items</td>
+                      <td>$245.50</td>
+                      <td><span class="badge bg-success">Paid</span></td>
+                      <td><span class="badge bg-warning">Processing</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Print Invoice</a></li>
+                            <li><a class="dropdown-item" href="#">Send Email</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#">Cancel Order</a></li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><a href="#" class="fw-bold" data-bs-toggle="modal" data-bs-target="#orderDetailModal">#ORD-7650</a></td>
+                      <td>Michael Brown</td>
+                      <td>May 14, 2023</td>
+                      <td>1 item</td>
+                      <td>$79.99</td>
+                      <td><span class="badge bg-success">Paid</span></td>
+                      <td><span class="badge bg-info">Shipped</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#orderDetailModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Print Invoice</a></li>
+                            <li><a class="dropdown-item" href="#">Send Email</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#">Cancel Order</a></li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <span>Showing 1 to 3 of 42 entries</span>
+                </div>
+                <nav>
+                  <ul class="pagination mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Timeline Example -->
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Order Timeline Example</h5>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-marker bg-success">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="timeline-content">
+                    <h6 class="mb-0">Order Delivered</h6>
+                    <p class="small text-muted mb-0">May 18, 2023, 2:30 PM</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker bg-success">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="timeline-content">
+                    <h6 class="mb-0">Out for Delivery</h6>
+                    <p class="small text-muted mb-0">May 18, 2023, 9:15 AM</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker bg-success">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="timeline-content">
+                    <h6 class="mb-0">Shipped</h6>
+                    <p class="small text-muted mb-0">May 16, 2023, 11:20 AM</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker bg-success">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="timeline-content">
+                    <h6 class="mb-0">Processing</h6>
+                    <p class="small text-muted mb-0">May 15, 2023, 2:45 PM</p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-marker bg-success">
+                    <i class="fas fa-check"></i>
+                  </div>
+                  <div class="timeline-content">
+                    <h6 class="mb-0">Order Placed</h6>
+                    <p class="small text-muted mb-0">May 15, 2023, 10:45 AM</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Customers Section -->
+        <section id="customers-section" class="mb-5">
+          <h2 class="section-title mb-4">Customers</h2>
+          
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Customer Management</h5>
+              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-user-plus me-1"></i> Add Customer
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6 mb-2 mb-md-0">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search customers...">
+                    <button class="btn btn-primary" type="button">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-md-end">
+                  <div class="btn-group me-2">
+                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                      <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">All Customers</a></li>
+                      <li><a class="dropdown-item" href="#">Active</a></li>
+                      <li><a class="dropdown-item" href="#">Inactive</a></li>
+                      <li><a class="dropdown-item" href="#">New Customers</a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-outline-secondary">
+                      <i class="fas fa-download me-1"></i> Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="selectAllCustomers">
+                          <label class="form-check-label" for="selectAllCustomers"></label>
+                        </div>
+                      </th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Joined</th>
+                      <th>Orders</th>
+                      <th>Spent</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-container me-3">
+                            <div class="avatar">JS</div>
+                          </div>
+                          <div>
+                            <h6 class="mb-0">John Smith</h6>
+                            <small class="text-muted">john.smith@example.com</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>john.smith@example.com</td>
+                      <td>Jan 15, 2023</td>
+                      <td>8</td>
+                      <td>$1,245.75</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewUserModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-container me-3">
+                            <div class="avatar">EW</div>
+                          </div>
+                          <div>
+                            <h6 class="mb-0">Emma Wilson</h6>
+                            <small class="text-muted">emma.wilson@example.com</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>emma.wilson@example.com</td>
+                      <td>Feb 22, 2023</td>
+                      <td>5</td>
+                      <td>$875.50</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewUserModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-container me-3">
+                            <div class="avatar">MB</div>
+                          </div>
+                          <div>
+                            <h6 class="mb-0">Michael Brown</h6>
+                            <small class="text-muted">michael.brown@example.com</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>michael.brown@example.com</td>
+                      <td>Mar 10, 2023</td>
+                      <td>3</td>
+                      <td>$425.75</td>
+                      <td><span class="badge bg-success">Active</span></td>
+                      <td>
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewUserModal">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editUserModal">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <span>Showing 1 to 3 of 24 entries</span>
+                </div>
+                <nav>
+                  <ul class="pagination mb-0">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Forms Section -->
+        <section id="forms-section" class="mb-5">
+          <h2 class="section-title mb-4">Forms</h2>
+          
+          <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Basic Form Elements</h5>
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="mb-3">
+                      <label for="textInput" class="form-label">Text Input</label>
+                      <input type="text" class="form-control" id="textInput" placeholder="Enter text">
+                    </div>
+                    <div class="mb-3">
+                      <label for="emailInput" class="form-label">Email Input</label>
+                      <input type="email" class="form-control" id="emailInput" placeholder="Enter email">
+                    </div>
+                    <div class="mb-3">
+                      <label for="passwordInput" class="form-label">Password Input</label>
+                      <input type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+                    </div>
+                    <div class="mb-3">
+                      <label for="textareaInput" class="form-label">Textarea</label>
+                      <textarea class="form-control" id="textareaInput" rows="3" placeholder="Enter text"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="selectInput" class="form-label">Select</label>
+                      <select class="form-select" id="selectInput">
+                        <option selected>Select an option</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="multiSelectInput" class="form-label">Multiple Select</label>
+                      <select class="form-select" id="multiSelectInput" multiple>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                        <option value="5">Option 5</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Checkboxes</label>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="checkbox1">
+                        <label class="form-check-label" for="checkbox1">Checkbox 1</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="checkbox2">
+                        <label class="form-check-label" for="checkbox2">Checkbox 2</label>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Radio Buttons</label>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="radioGroup" id="radio1" checked>
+                        <label class="form-check-label" for="radio1">Radio 1</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="radioGroup" id="radio2">
+                        <label class="form-check-label" for="radio2">Radio 2</label>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Switch</label>
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="switch1" checked>
+                        <label class="form-check-label" for="switch1">Toggle switch</label>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="rangeInput" class="form-label">Range</label>
+                      <input type="range" class="form-range" id="rangeInput">
+                    </div>
+                    <div class="mb-3">
+                      <label for="fileInput" class="form-label">File Input</label>
+                      <input class="form-control" type="file" id="fileInput">
+                    </div>
+                    <div class="mb-3">
+                      <label for="colorInput" class="form-label">Color Picker</label>
+                      <input type="color" class="form-control form-control-color" id="colorInput" value="#7e57c2" title="Choose a color">
+                    </div>
+                    <div class="d-grid gap-2">
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Input Groups & Validation</h5>
+                </div>
+                <div class="card-body">
+                  <form class="needs-validation" novalidate>
+                    <div class="mb-3">
+                      <label for="validationCustom01" class="form-label">First name</label>
+                      <input type="text" class="form-control" id="validationCustom01" value="John" required>
+                      <div class="valid-feedback">
+                        Looks good!
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validationCustom02" class="form-label">Last name</label>
+                      <input type="text" class="form-control" id="validationCustom02" value="Smith" required>
+                      <div class="valid-feedback">
+                        Looks good!
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validationCustomUsername" class="form-label">Username</label>
+                      <div class="input-group has-validation">
+                        <span class="input-group-text" id="inputGroupPrepend">@</span>
+                        <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+                        <div class="invalid-feedback">
+                          Please choose a username.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validationCustom03" class="form-label">City</label>
+                      <input type="text" class="form-control" id="validationCustom03" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid city.
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validationCustom04" class="form-label">State</label>
+                      <select class="form-select" id="validationCustom04" required>
+                        <option selected disabled value="">Choose...</option>
+                        <option>New York</option>
+                        <option>California</option>
+                        <option>Texas</option>
+                        <option>Florida</option>
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select a valid state.
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="validationCustom05" class="form-label">Zip</label>
+                      <input type="text" class="form-control" id="validationCustom05" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                        <label class="form-check-label" for="invalidCheck">
+                          Agree to terms and conditions
+                        </label>
+                        <div class="invalid-feedback">
+                          You must agree before submitting.
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h6 class="mb-3 mt-4">Input Groups</h6>
+                    <div class="mb-3">
+                      <label for="priceInput" class="form-label">Price</label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="text" class="form-control" id="priceInput" aria-label="Amount (to the nearest dollar)">
+                        <span class="input-group-text">.00</span>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="websiteInput" class="form-label">Website</label>
+                      <div class="input-group">
+                        <span class="input-group-text">https://</span>
+                        <input type="text" class="form-control" id="websiteInput">
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="searchInput" class="form-label">Search</label>
+                      <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                        <button class="btn btn-primary" type="button">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="d-grid">
+                      <button class="btn btn-primary" type="submit">Submit form</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Product Form</h5>
+            </div>
+            <div class="card-body">
+              <form id="productForm">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Basic Information</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                          <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="productDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                          <textarea class="form-control" id="productDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="productSKU" class="form-label">SKU <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="productSKU" required>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="productBarcode" class="form-label">Barcode (ISBN, UPC, GTIN, etc.)</label>
+                            <input type="text" class="form-control" id="productBarcode">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Pricing</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="productPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="productPrice" step="0.01" required>
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="comparePrice" class="form-label">Compare at Price</label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="comparePrice" step="0.01">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label for="costPerItem" class="form-label">Cost per Item</label>
+                            <div class="input-group">
+                              <span class="input-group-text">$</span>
+                              <input type="number" class="form-control" id="costPerItem" step="0.01">
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <label for="taxClass" class="form-label">Tax Class</label>
+                            <select class="form-select" id="taxClass">
+                              <option value="standard">Standard</option>
+                              <option value="reduced">Reduced Rate</option>
+                              <option value="zero">Zero Rate</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4">
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Status</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productStatus" class="form-label">Product Status</label>
+                          <select class="form-select" id="productStatus">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="archived">Archived</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Organization</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <label for="productCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                          <select class="form-select" id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="1">Electronics</option>
+                            <option value="2">Clothing</option>
+                            <option value="3">Home & Kitchen</option>
+                            <option value="4">Beauty & Personal Care</option>
+                            <option value="5">Sports & Outdoors</option>
+                          </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="productTags" class="form-label">Tags</label>
+                          <input type="text" class="form-control" id="productTags" placeholder="Enter tags separated by commas">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card mb-3">
+                      <div class="card-header">
+                        <h6 class="mb-0">Inventory</h6>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="trackInventory" checked>
+                            <label class="form-check-label" for="trackInventory">Track Inventory</label>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                          <input type="number" class="form-control" id="stockQuantity" value="0" required>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="d-flex justify-content-end mt-3">
+                  <button type="button" class="btn btn-outline-secondary me-2">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- UI Elements Section -->
+        <section id="ui-elements-section" class="mb-5">
+          <h2 class="section-title mb-4">UI Elements</h2>
+          
+          <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Buttons</h5>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-3">Button Styles</h6>
+                  <div class="mb-3">
+                    <button type="button" class="btn btn-primary me-2 mb-2">Primary</button>
+                    <button type="button" class="btn btn-secondary me-2 mb-2">Secondary</button>
+                    <button type="button" class="btn btn-success me-2 mb-2">Success</button>
+                    <button type="button" class="btn btn-danger me-2 mb-2">Danger</button>
+                    <button type="button" class="btn btn-warning me-2 mb-2">Warning</button>
+                    <button type="button" class="btn btn-info me-2 mb-2">Info</button>
+                    <button type="button" class="btn btn-light me-2 mb-2">Light</button>
+                    <button type="button" class="btn btn-dark me-2 mb-2">Dark</button>
+                    <button type="button" class="btn btn-link me-2 mb-2">Link</button>
+                  </div>
+                  
+                  <h6 class="mb-3">Outline Buttons</h6>
+                  <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary me-2 mb-2">Primary</button>
+                    <button type="button" class="btn btn-outline-secondary me-2 mb-2">Secondary</button>
+                    <button type="button" class="btn btn-outline-success me-2 mb-2">Success</button>
+                    <button type="button" class="btn btn-outline-danger me-2 mb-2">Danger</button>
+                    <button type="button" class="btn btn-outline-warning me-2 mb-2">Warning</button>
+                    <button type="button" class="btn btn-outline-info me-2 mb-2">Info</button>
+                    <button type="button" class="btn btn-outline-dark me-2 mb-2">Dark</button>
+                  </div>
+                  
+                  <h6 class="mb-3">Button Sizes</h6>
+                  <div class="mb-3">
+                    <button type="button" class="btn btn-primary btn-lg me-2 mb-2">Large button</button>
+                    <button type="button" class="btn btn-primary me-2 mb-2">Default button</button>
+                    <button type="button" class="btn btn-primary btn-sm me-2 mb-2">Small button</button>
+                  </div>
+                  
+                  <h6 class="mb-3">Button with Icons</h6>
+                  <div class="mb-3">
+                    <button type="button" class="btn btn-primary me-2 mb-2">
+                      <i class="fas fa-save me-1"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-success me-2 mb-2">
+                      <i class="fas fa-check me-1"></i> Approve
+                    </button>
+                    <button type="button" class="btn btn-danger me-2 mb-2">
+                      <i class="fas fa-trash me-1"></i> Delete
+                    </button>
+                    <button type="button" class="btn btn-warning me-2 mb-2">
+                      <i class="fas fa-edit me-1"></i> Edit
+                    </button>
+                  </div>
+                  
+                  <h6 class="mb-3">Icon Buttons</h6>
+                  <div class="mb-3">
+                    <button type="button" class="btn btn-primary me-2 mb-2">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-success me-2 mb-2">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger me-2 mb-2">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <button type="button" class="btn btn-warning me-2 mb-2">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button type="button" class="btn btn-info me-2 mb-2">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                  
+                  <h6 class="mb-3">Button Groups</h6>
+                  <div class="mb-3">
+                    <div class="btn-group me-2 mb-2" role="group" aria-label="Basic example">
+                      <button type="button" class="btn btn-primary">Left</button>
+                      <button type="button" class="btn btn-primary">Middle</button>
+                      <button type="button" class="btn btn-primary">Right</button>
+                    </div>
+                    
+                    <div class="btn-group me-2 mb-2" role="group" aria-label="Basic mixed styles example">
+                      <button type="button" class="btn btn-danger">Left</button>
+                      <button type="button" class="btn btn-warning">Middle</button>
+                      <button type="button" class="btn btn-success">Right</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Badges & Alerts</h5>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-3">Badges</h6>
+                  <div class="mb-3">
+                    <span class="badge bg-primary me-2">Primary</span>
+                    <span class="badge bg-secondary me-2">Secondary</span>
+                    <span class="badge bg-success me-2">Success</span>
+                    <span class="badge bg-danger me-2">Danger</span>
+                    <span class="badge bg-warning text-dark me-2">Warning</span>
+                    <span class="badge bg-info text-dark me-2">Info</span>
+                    <span class="badge bg-light text-dark me-2">Light</span>
+                    <span class="badge bg-dark me-2">Dark</span>
+                  </div>
+                  
+                  <h6 class="mb-3">Pill Badges</h6>
+                  <div class="mb-3">
+                    <span class="badge rounded-pill bg-primary me-2">Primary</span>
+                    <span class="badge rounded-pill bg-secondary me-2">Secondary</span>
+                    <span class="badge rounded-pill bg-success me-2">Success</span>
+                    <span class="badge rounded-pill bg-danger me-2">Danger</span>
+                    <span class="badge rounded-pill bg-warning text-dark me-2">Warning</span>
+                    <span class="badge rounded-pill bg-info text-dark me-2">Info</span>
+                    <span class="badge rounded-pill bg-light text-dark me-2">Light</span>
+                    <span class="badge rounded-pill bg-dark me-2">Dark</span>
+                  </div>
+                  
+                  <h6 class="mb-3">Badges with Icons</h6>
+                  <div class="mb-3">
+                    <span class="badge bg-primary me-2"><i class="fas fa-check me-1"></i> Approved</span>
+                    <span class="badge bg-warning text-dark me-2"><i class="fas fa-clock me-1"></i> Pending</span>
+                    <span class="badge bg-danger me-2"><i class="fas fa-times me-1"></i> Rejected</span>
+                    <span class="badge bg-info text-dark me-2"><i class="fas fa-info-circle me-1"></i> Info</span>
+                  </div>
+                  
+                  <h6 class="mb-3">Alerts</h6>
+                  <div class="alert alert-primary mb-3" role="alert">
+                    <i class="fas fa-info-circle me-2"></i> A simple primary alert with an icon.
+                  </div>
+                  <div class="alert alert-success mb-3" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> A simple success alert with an icon.
+                  </div>
+                  <div class="alert alert-warning mb-3" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i> A simple warning alert with an icon.
+                  </div>
+                  <div class="alert alert-danger mb-3" role="alert">
+                    <i class="fas fa-times-circle me-2"></i> A simple danger alert with an icon.
+                  </div>
+                  
+                  <h6 class="mb-3">Alert with Dismiss Button</h6>
+                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  
+                  <h6 class="mb-3">Alert with Additional Content</h6>
+                  <div class="alert alert-info mb-3" role="alert">
+                    <h4 class="alert-heading">Well done!</h4>
+                    <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+                    <hr>
+                    <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Cards</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <div class="card">
+                        <div class="card-header">
+                          Featured
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">Special title treatment</h5>
+                          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                          2 days ago
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="card">
+                        <img src="https://via.placeholder.com/300x150" class="card-img-top" alt="Card image cap">
+                        <div class="card-body">
+                          <h5 class="card-title">Card title</h5>
+                          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                          <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Card with List Group</h6>
+                  <div class="card">
+                    <div class="card-header">
+                      Featured
+                    </div>
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">An item</li>
+                      <li class="list-group-item">A second item</li>
+                      <li class="list-group-item">A third item</li>
+                    </ul>
+                    <div class="card-body">
+                      <a href="#" class="card-link">Card link</a>
+                      <a href="#" class="card-link">Another link</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">Progress & Spinners</h5>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-3">Basic Progress</h6>
+                  <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Progress with Labels</h6>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Orders</span>
+                      <span>65%</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Revenue</span>
+                      <span>80%</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Customers</span>
+                      <span>45%</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Striped Progress</h6>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Animated Progress</h6>
+                  <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Spinners</h6>
+                  <div class="mb-3">
+                    <div class="spinner-border text-primary me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-secondary me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-success me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-danger me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-warning me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-border text-info me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Growing Spinners</h6>
+                  <div class="mb-3">
+                    <div class="spinner-grow text-primary me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-danger me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-warning me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-info me-2" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Tabs & Accordions</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <h6 class="mb-3">Tabs</h6>
+                  <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Home</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+                    </li>
+                  </ul>
+                  <div class="tab-content p-3 border border-top-0 rounded-bottom" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                      <p>This is some placeholder content for the Home tab. Here you might add some dashboard widgets, charts, or other content.</p>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                      <p>This is some placeholder content for the Profile tab. You might include user settings, preferences, or account details here.</p>
+                    </div>
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                      <p>This is some placeholder content for the Contact tab. You might include contact forms, messaging interfaces, or support information here.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                  <h6 class="mb-3">Pills</h6>
+                  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Home</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Profile</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Contact</button>
+                    </li>
+                  </ul>
+                  <div class="tab-content p-3 border rounded" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                      <p>This is some placeholder content for the Home pill. Here you might add some dashboard widgets, charts, or other content.</p>
+                    </div>
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                      <p>This is some placeholder content for the Profile pill. You might include user settings, preferences, or account details here.</p>
+                    </div>
+                    <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                      <p>This is some placeholder content for the Contact pill. You might include contact forms, messaging interfaces, or support information here.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <h6 class="mb-3">Accordions</h6>
+              <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Accordion Item #1
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Accordion Item #2
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Accordion Item #3
+                    </button>
+                  </h2>
+                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Modals Section -->
+        <section id="modals-section" class="mb-5">
+          <h2 class="section-title mb-4">Modals</h2>
+          
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Modal Examples</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
+                      Basic Modal
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formModal">
+                      Form Modal
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#largeModal">
+                      Large Modal
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmationModal">
+                      Confirmation Modal
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scrollableModal">
+                      Scrollable Modal
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#centeredModal">
+                      Vertically Centered
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Basic Modal -->
+  <div class="modal fade" id="basicModal" tabindex="-1" aria-labelledby="basicModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="basicModalLabel">Basic Modal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>This is a basic modal dialog. You can include any content here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Modal -->
+  <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="formModalLabel">Form Modal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Recipient:</label>
+              <input type="text" class="form-control" id="recipient-name">
+            </div>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Message:</label>
+              <textarea class="form-control" id="message-text" rows="5"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Send message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Large Modal -->
+  <div class="modal fade" id="largeModal" tabindex="-1" aria-labelledby="largeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="largeModalLabel">Large Modal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>This is a large modal dialog. It's wider than the default modal.</p>
+          <p>Use this for displaying more complex content or larger forms.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable Modal -->
+  <div class="modal fade" id="scrollableModal" tabindex="-1" aria-labelledby="scrollableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="scrollableModalLabel">Scrollable Modal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>This modal has a lot of content that will scroll within the modal.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vertically Centered Modal -->
+  <div class="modal fade" id="centeredModal" tabindex="-1" aria-labelledby="centeredModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="centeredModalLabel">Vertically Centered</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>This modal is vertically centered in the viewport.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="modalProductName" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductSKU" class="form-label">SKU <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="modalProductSKU" required>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="modalProductDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="modalProductDescription" rows="3"></textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="modalProductPrice" step="0.01" required>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                  <select class="form-select" id="modalProductCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="1">Electronics</option>
+                    <option value="2">Clothing</option>
+                    <option value="3">Home & Kitchen</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductStock" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" id="modalProductStock" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="modalProductStatus" class="form-label">Status</label>
+                  <select class="form-select" id="modalProductStatus">
+                    <option value="active">Active</option>
+                    <option value="draft">Draft</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="modalProductImage" class="form-label">Product Image</label>
+              <input class="form-control" type="file" id="modalProductImage">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Product</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="editModalProductName" value="Wireless Earbuds" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductSKU" class="form-label">SKU <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="editModalProductSKU" value="SKU-001" required>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editModalProductDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editModalProductDescription" rows="3">High-quality wireless earbuds with noise cancellation.</textarea>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="editModalProductPrice" value="89.99" step="0.01" required>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductCategory" class="form-label">Category <span class="text-danger">*</span></label>
+                  <select class="form-select" id="editModalProductCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="1" selected>Electronics</option>
+                    <option value="2">Clothing</option>
+                    <option value="3">Home & Kitchen</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductStock" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" id="editModalProductStock" value="120" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editModalProductStatus" class="form-label">Status</label>
+                  <select class="form-select" id="editModalProductStatus">
+                    <option value="active" selected>Active</option>
+                    <option value="draft">Draft</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editModalProductImage" class="form-label">Product Image</label>
+              <input class="form-control" type="file" id="editModalProductImage">
+              <div class="mt-2">
+                <img src="https://via.placeholder.com/100" alt="Product" class="img-thumbnail" width="100">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="categoryName" required>
+            </div>
+            <div class="mb-3">
+              <label for="categoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="categoryDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="categoryImage" class="form-label">Category Image</label>
+              <input type="file" class="form-control" id="categoryImage">
+            </div>
+            <div class="mb-3">
+              <label for="categoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="categoryStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Category</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Category Modal -->
+  <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="editCategoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editCategoryName" value="Electronics" required>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editCategoryDescription" rows="3">All electronic devices and accessories.</textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryImage" class="form-label">Category Image</label>
+              <input type="file" class="form-control" id="editCategoryImage">
+              <div class="mt-2">
+                <img src="https://via.placeholder.com/100" alt="Category Image" class="img-thumbnail" width="100">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editCategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="editCategoryStatus">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Subcategory Modal -->
+  <div class="modal fade" id="addSubcategoryModal" tabindex="-1" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSubcategoryModalLabel">Add Subcategory</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="parentCategory" class="form-label">Parent Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="parentCategory" required>
+                <option value="">Select Parent Category</option>
+                <option value="1">Electronics</option>
+                <option value="2">Clothing</option>
+                <option value="3">Home & Kitchen</option>
+                <option value="4">Beauty & Personal Care</option>
+                <option value="5">Sports & Outdoors</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryName" class="form-label">Subcategory Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="subcategoryName" required>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="subcategoryDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryImage" class="form-label">Subcategory Image</label>
+              <input type="file" class="form-control" id="subcategoryImage">
+            </div>
+            <div class="mb-3">
+              <label for="subcategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="subcategoryStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Subcategory</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Subcategory Modal -->
+  <div class="modal fade" id="editSubcategoryModal" tabindex="-1" aria-labelledby="editSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSubcategoryModalLabel">Edit Subcategory</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="editParentCategory" class="form-label">Parent Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="editParentCategory" required>
+                <option value="1" selected>Electronics</option>
+                <option value="2">Clothing</option>
+                <option value="3">Home & Kitchen</option>
+                <option value="4">Beauty & Personal Care</option>
+                <option value="5">Sports & Outdoors</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryName" class="form-label">Subcategory Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editSubcategoryName" value="Smartphones" required>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editSubcategoryDescription" rows="3">Mobile phones and smartphone accessories.</textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryImage" class="form-label">Subcategory Image</label>
+              <input type="file" class="form-control" id="editSubcategoryImage">
+              <div class="mt-2">
+                <img src="https://via.placeholder.com/100" alt="Subcategory Image" class="img-thumbnail" width="100">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editSubcategoryStatus" class="form-label">Status</label>
+              <select class="form-select" id="editSubcategoryStatus">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderDetailModalLabel">Order #ORD-7652</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h6 class="mb-0">Order Information</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <p class="mb-1"><strong>Order ID:</strong> #ORD-7652</p>
+                      <p class="mb-1"><strong>Date Placed:</strong> May 15, 2023, 10:45 AM</p>
+                      <p class="mb-1"><strong>Payment Method:</strong> Credit Card (Visa ending in 4242)</p>
+                      <p class="mb-0"><strong>Payment Status:</strong> <span class="badge bg-success">Paid</span></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="mb-1"><strong>Order Status:</strong> <span class="badge bg-success">Delivered</span></p>
+                      <p class="mb-1"><strong>Shipping Method:</strong> Standard Shipping</p>
+                      <p class="mb-1"><strong>Tracking Number:</strong> TRK123456789</p>
+                      <p class="mb-0"><strong>Delivery Date:</strong> May 18, 2023</p>
+                    </div>
+                  </div>
+                  
+                  <h6 class="mb-3">Order Items</h6>
+                  <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Price</th>
+                          <th>Quantity</th>
+                          <th class="text-end">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail me-3" width="50">
+                              <div>
+                                <h6 class="mb-0">Wireless Earbuds</h6>
+                                <small class="text-muted">SKU: SKU-001</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>$89.99</td>
+                          <td>1</td>
+                          <td class="text-end">$89.99</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <img src="https://via.placeholder.com/50" alt="Product" class="img-thumbnail me-3" width="50">
+                              <div>
+                                <h6 class="mb-0">Phone Charger</h6>
+                                <small class="text-muted">SKU: SKU-005</small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>$19.99</td>
+                          <td>1</td>
+                          <td class="text-end">$19.99</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                          <td class="text-end">$109.98</td>
+                        </tr>
+                        <tr>
+                          <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+                          <td class="text-end">$5.99</td>
+                        </tr>
+                        <tr>
+                          <td colspan="3" class="text-end"><strong>Tax:</strong></td>
+                          <td class="text-end">$10.02</td>
+                        </tr>
+                        <tr>
+                          <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                          <td class="text-end fw-bold">$125.99</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h6 class="mb-0">Customer Information</h6>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="avatar-container me-3">
+                      <div class="avatar">JS</div>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">John Smith</h6>
+                      <p class="mb-0 text-muted">Customer since Jan 2023</p>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <p class="mb-1"><i class="fas fa-envelope me-2"></i> john.smith@example.com</p>
+                    <p class="mb-0"><i class="fas fa-phone me-2"></i> (555) 123-4567</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h6 class="mb-0">Shipping Address</h6>
+                </div>
+                <div class="card-body">
+                  <address>
+                    <strong>John Smith</strong><br>
+                    123 Main Street<br>
+                    Apt 4B<br>
+                    New York, NY 10001<br>
+                    United States
+                  </address>
+                </div>
+              </div>
+              
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Billing Address</h6>
+                </div>
+                <div class="card-body">
+                  <address>
+                    <strong>John Smith</strong><br>
+                    123 Main Street<br>
+                    Apt 4B<br>
+                    New York, NY 10001<br>
+                    United States
+                  </address>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Print Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="firstName" required>
+            </div>
+            <div class="mb-3">
+              <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="lastName" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="tel" class="form-control" id="phone">
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+              <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+              <input type="password" class="form-control" id="confirmPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select class="form-select" id="role">
+                <option value="customer" selected>Customer</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View User Modal -->
+  <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewUserModalLabel">User Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+              <div class="text-center mb-4">
+                <div class="avatar-container mx-auto mb-3" style="width: 100px; height: 100px;">
+                  <div class="avatar">JS</div>
+                </div>
+                <h5 class="mb-1">John Smith</h5>
+                <p class="text-muted mb-2">Customer</p>
+                <p class="mb-0"><span class="badge bg-success">Active</span></p>
+              </div>
+              <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action active" data-bs-toggle="list" data-bs-target="#profile">Profile</a>
+                <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list" data-bs-target="#orders">Orders</a>
+                <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list" data-bs-target="#addresses">Addresses</a>
+                <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="list" data-bs-target="#activity">Activity Log</a>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="profile">
+                  <h6 class="mb-3">Contact Information</h6>
+                  <div class="mb-4">
+                    <p class="mb-1"><strong>Email:</strong> john.smith@example.com</p>
+                    <p class="mb-1"><strong>Phone:</strong> (555) 123-4567</p>
+                    <p class="mb-0"><strong>Member Since:</strong> Jan 15, 2023</p>
+                  </div>
+                  
+                  <h6 class="mb-3">Account Details</h6>
+                  <div class="mb-4">
+                    <p class="mb-1"><strong>User ID:</strong> USR-10001</p>
+                    <p class="mb-1"><strong>Last Login:</strong> May 15, 2023, 10:45 AM</p>
+                    <p class="mb-0"><strong>Account Status:</strong> Active</p>
+                  </div>
+                  
+                  <h6 class="mb-3">Additional Information</h6>
+                  <div>
+                    <p class="mb-1"><strong>Total Orders:</strong> 8</p>
+                    <p class="mb-1"><strong>Total Spent:</strong> $1,245.75</p>
+                    <p class="mb-0"><strong>Newsletter:</strong> Subscribed</p>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="orders">
+                  <h6 class="mb-3">Recent Orders</h6>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Date</th>
+                          <th>Total</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><a href="#" class="fw-bold">#ORD-7652</a></td>
+                          <td>May 15, 2023</td>
+                          <td>$125.99</td>
+                          <td><span class="badge bg-success">Delivered</span></td>
+                        </tr>
+                        <tr>
+                          <td><a href="#" class="fw-bold">#ORD-7623</a></td>
+                          <td>Apr 28, 2023</td>
+                          <td>$89.99</td>
+                          <td><span class="badge bg-success">Delivered</span></td>
+                        </tr>
+                        <tr>
+                          <td><a href="#" class="fw-bold">#ORD-7598</a></td>
+                          <td>Apr 10, 2023</td>
+                          <td>$245.50</td>
+                          <td><span class="badge bg-success">Delivered</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="addresses">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">Addresses</h6>
+                    <button class="btn btn-sm btn-outline-primary">Add Address</button>
+                  </div>
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Default Address</h6>
+                        <div class="badge bg-primary">Default</div>
+                      </div>
+                      <address class="mb-0">
+                        <strong>John Smith</strong><br>
+                        123 Main Street<br>
+                        Apt 4B<br>
+                        New York, NY 10001<br>
+                        United States
+                      </address>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-end">
+                      <button class="btn btn-sm btn-outline-secondary me-2">Edit</button>
+                      <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="activity">
+                  <h6 class="mb-3">Activity Log</h6>
+                  <div class="timeline">
+                    <div class="timeline-item">
+                      <div class="timeline-marker bg-primary"></div>
+                      <div class="timeline-content">
+                        <h6 class="mb-0">Placed Order #ORD-7652</h6>
+                        <p class="small text-muted mb-0">May 15, 2023, 10:45 AM</p>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-marker bg-success"></div>
+                      <div class="timeline-content">
+                        <h6 class="mb-0">Updated Profile Information</h6>
+                        <p class="small text-muted mb-0">May 10, 2023, 3:22 PM</p>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-marker bg-primary"></div>
+                      <div class="timeline-content">
+                        <h6 class="mb-0">Placed Order #ORD-7623</h6>
+                        <p class="small text-muted mb-0">Apr 28, 2023, 2:15 PM</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editUserModal">Edit User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="editFirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editFirstName" value="John" required>
+            </div>
+            <div class="mb-3">
+              <label for="editLastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editLastName" value="Smith" required>
+            </div>
+            <div class="mb-3">
+              <label for="editEmail" class="form-label">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="editEmail" value="john.smith@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="editPhone" class="form-label">Phone</label>
+              <input type="tel" class="form-control" id="editPhone" value="(555) 123-4567">
+            </div>
+            <div class="mb-3">
+              <label for="editRole" class="form-label">Role</label>
+              <select class="form-select" id="editRole">
+                <option value="customer" selected>Customer</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="editStatus" class="form-label">Status</label>
+              <select class="form-select" id="editStatus">
+                <option value="active" selected>Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="editNewsletter" checked>
+                <label class="form-check-label" for="editNewsletter">Subscribed to Newsletter</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="editPassword">
+              <small class="form-text text-muted">Leave blank to keep current password</small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>

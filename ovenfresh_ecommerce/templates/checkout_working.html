@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        {% include 'nav.html' %}
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Checkout Header -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h1 class="display-4 fw-bold">Checkout</h1>
+                        <p class="lead">Complete your order</p>
+                    </div>
+                    <div class="col-md-6">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-md-end">
+                                <li class="breadcrumb-item"><a href="{% url 'home-list' %}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'shop-list' %}">Shop</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'cart-list' %}">Cart</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout Progress -->
+        <section class="py-3 border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-center">
+                            <div class="checkout-progress d-flex align-items-center">
+                                <div class="step active">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Shipping</div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Payment</div>
+                                </div>
+                                <div class="step-line"></div>
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Review</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Checkout Content -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Checkout Form -->
+                        <form id="checkout-form">
+                            <!-- Shipping Information -->
+                            <div class="card border-0 shadow-sm mb-4" id="shipping-section">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-shipping-fast me-2 of-text-primary"></i>
+                                        Shipping Information
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="firstName" class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="firstName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="lastName" class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="lastName" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="email" class="form-label">Email Address *</label>
+                                            <input type="email" class="form-control" id="email" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="phone" class="form-label">Phone Number *</label>
+                                            <input type="tel" class="form-control" id="phone" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="phone" class="form-label">Alternate Phone Number</label>
+                                            <input type="tel" class="form-control" id="alternate_phone">
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="address" class="form-label">Address *</label>
+                                            <input type="text" class="form-control" id="address" placeholder="Street address" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="addressName" class="form-label">Address Type *</label>
+                                            <input type="text" class="form-control" id="addressName" placeholder="Home, work etc.." required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="city" class="form-label">City *</label>
+                                            <select class="form-select" id="city" required>
+                                                <option value="">Select City</option>
+                                                <option value="Mumbai">Mumbai</option>
+                                                <option value="Thane">Thane</option>
+                                                <option value="Navi-mumbai">Navi Mumbai</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="pincode" class="form-label">Pincode *</label>
+                                            <input type="text" class="form-control" id="pincode" required>
+                                        </div>
+                                    
+                                        <div class="col-12">
+                                            <label for="deliveryDate" class="form-label">Preferred Delivery Date *</label>
+                                            <input type="date" class="form-control" id="deliveryDate" required>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="deliveryTime" class="form-label">Preferred Delivery Time *</label>
+                                            <select class="form-select" id="deliveryTime" required>
+                                                <option value="">Select Time Slot</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="specialInstructions" class="form-label">Special Instructions</label>
+                                            <textarea class="form-control" id="specialInstructions" rows="3" placeholder="Any special delivery instructions..."></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-check">
+                                                <!-- form-switch -->
+                                                <input class="form-check-input" type="checkbox" id="sameBillingAddress">
+                                                <label class="form-check-label" for="sameBillingAddress">Different billing address?</label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn of-btn-primary rounded-pill" onclick="nextStep()">Continue to Payment</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Information -->
+                            <div class="card border-0 shadow-sm mb-4" id="payment-section" style="display: none;">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-credit-card me-2 of-text-primary"></i>
+                                        Payment Information
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label">Payment Method *</label>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit" checked>
+                                                        <label class="form-check-label" for="creditCard">
+                                                            <i class="fas fa-credit-card me-2"></i>Credit Card
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="debitCard" value="debit">
+                                                        <label class="form-check-label" for="debitCard">
+                                                            <i class="fas fa-credit-card me-2"></i>Debit Card
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="upi" value="upi">
+                                                        <label class="form-check-label" for="upi">
+                                                            <i class="fas fa-mobile-alt me-2"></i>UPI
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod">
+                                                        <label class="form-check-label" for="cod">
+                                                            <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="card-details">
+                                            <div class="col-12">
+                                                <label for="cardNumber" class="form-label">Card Number *</label>
+                                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="expiryDate" class="form-label">Expiry Date *</label>
+                                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="cvv" class="form-label">CVV *</label>
+                                                <input type="text" class="form-control" id="cvv" placeholder="123">
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="cardName" class="form-label">Name on Card *</label>
+                                                <input type="text" class="form-control" id="cardName" placeholder="John Doe">
+                                            </div>
+                                        </div>
+
+                                        <div id="upi-details" style="display: none;">
+                                            <div class="col-12">
+                                                <label for="upiId" class="form-label">UPI ID *</label>
+                                                <input type="text" class="form-control" id="upiId" placeholder="yourname@upi">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn of-btn-outline-primary rounded-pill" onclick="prevStep()">Back to Shipping</button>
+                                        <button type="button" class="btn of-btn-primary rounded-pill" onclick="nextStep()">Review Order</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Review -->
+                            <div class="card border-0 shadow-sm mb-4" id="review-section" style="display: none;">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-check-circle me-2 of-text-primary"></i>
+                                        Review Your Order
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="order-review-content">
+                                        <!-- Order review content will be populated here -->
+                                    </div>
+                                    <div class="form-check mb-4">
+                                        <input class="form-check-input" type="checkbox" id="termsAccept" required>
+                                        <label class="form-check-label" for="termsAccept">
+                                            I agree to the <a href="#" class="of-text-primary">Terms and Conditions</a> and <a href="#" class="of-text-primary">Privacy Policy</a>
+                                        </label>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn of-btn-outline-primary rounded-pill" onclick="prevStep()">Back to Payment</button>
+                                        <button type="submit" class="btn of-btn-primary rounded-pill">Place Order</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Order Summary -->
+                        <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+                            <div class="card-header bg-white border-bottom">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="checkout-items">
+                                    <!-- Order items will be populated here -->
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span id="checkout-subtotal">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Shipping:</span>
+                                    <span id="checkout-shipping">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tax:</span>
+                                    <span id="checkout-tax">₹0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Total:</strong>
+                                    <strong id="checkout-total">₹0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Info -->
+                        <div class="card border-0 shadow-sm mt-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-2x of-text-primary mb-3"></i>
+                                <h6>Secure Checkout</h6>
+                                <p class="small text-muted mb-0">Your payment information is encrypted and secure</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="footer-info">
+                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
+                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
+                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
+                                with on time delivery.</p>
+                            <div class="social-links mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html">Contact Us</a></li>
+                                <li><a href="#about">Register Complaint</a></li>
+                                <li><a href="shop.html">Track your Order</a></li>
+                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
+                                <li><a href="shop.html">About Us</a></li>
+                                <li><a href="#contact">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Cakes</a></li>
+                                <li><a href="#">Gifting</a></li>
+                                <li><a href="#">Flowers</a></li>
+                                <li><a href="#">Chocolates</a></li>
+                                <li><a href="#">Cookies</a></li>
+                                <li><a href="#">Blog</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Contact Us</h5>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
+                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
+                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Newsletter</h5>
+                            <p>Don't miss our future updates! Get Subscribed Today!</p>
+                            <input type="text" class="form-control" name="" id="" placeholder="Email">
+                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-4 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">FAQ</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/checkout.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        // {% comment %}// InitializeCheckout(
+        //     csrfToken,
+        //     "{% url 'check-user-loggedin' %}",
+        //     "{% url 'check-pincode-list' %}",
+        //     "{% url 'send-otp' %}",
+        //     "{% url 'verify-otp' %}",
+        //     "{% url 'place-order' %}"
+        // );
+        //{% endcomment %}
+        InitializeCheckout(
+            csrfToken,
+            "/cart-api/cart-api/",
+            "/cart-api/transfer-cart-api/",
+            "/user-api/is-user-logged-in-api/",
+            "/product-api/check-pincode/",
+            "/user-api/otp-api/",
+            "/user-api/otp-api/",
+            "/place_order/",
+            "/user-api/update-user-api/",
+            "/user-api/address-api/",
+        );
+        toggle_loader();
+
+    </script>
+
+    <style>
+        .checkout-progress {
+            max-width: 400px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background-color: var(--of-primary-color);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: var(--of-primary-color);
+            font-weight: 600;
+        }
+
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background-color: #e9ecef;
+            margin: 0 20px;
+            margin-top: 20px;
+        }
+
+        .border-dashed {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #dee2e6;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Wow Animation CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+</head>
+
+<body>
+
+    <div id="loader" class="loader-container p-2">
+        <div class="loader"></div>
+    </div>
+
+    <div class="blur" id="main-content">
+        <!-- ##### ##### Start Nav Section ##### ##### -->
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                Celebrate Occasions with Mumbai's best Online Gift Store.
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <a href="index.html">
+                    <img src="/static/img/logo.png" alt="">
+                </a>
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center">
+                    <a href="cart.html" class="icon-btn me-2" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <a href="account.html" class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                            class="bi bi-person-circle"></i></a>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div
+            class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <!-- Cakes with Mega Menu -->
+                    <li class="nav-item position-static dropdown-mega">
+                        <a class="nav-link" href="#">Cakes</a>
+                        <div class="mega-menu d-none">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p>Theme Cakes</p>
+                                        <p>Rosette Cakes</p>
+                                        <p>Bento Cakes</p>
+                                        <p>Numeric Cakes</p>
+                                        <p>Fault Line Cakes</p>
+                                        <p>Fresh Fruit Cakes</p>
+                                        <p>Classic Cakes</p>
+                                        <p>Dutch Truffle Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Gourmet Cakes</p>
+                                        <p>Tea Cakes</p>
+                                        <p>Pinata Cakes</p>
+                                        <p>Butter Cream Cakes</p>
+                                        <p>Chocolate Cakes</p>
+                                        <p>Cheese Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>99% Gold Cakes</p>
+                                        <p>Fusion Cakes</p>
+                                        <p>Red Velvet Cakes</p>
+                                        <p>Two Tier Cakes</p>
+                                        <p>Photo Cakes</p>
+                                        <p>Pastry</p>
+                                        <p>Geode Cakes</p>
+                                        <p>Alphabet Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Trending Bomb Cakes</p>
+                                        <p>Heart Shape Cakes</p>
+                                        <p>Pull Me Up Cakes</p>
+                                        <p>Butterscotch Cakes</p>
+                                        <p>Fresh Flower Cakes</p>
+                                        <p>Low Frosting Cakes</p>
+                                        <p>Overloaded Cakes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Other Menu Items -->
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="#">Cakes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ##### ##### End Nav Section ##### ##### -->
+
+        <!-- Breadcrumb -->
+        <section class="py-3 bg-light">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="#">Cakes</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Chocolate Truffle Cake</li>
+                    </ol>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Product Detail -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row g-5">
+                    <div class="col-lg-6">
+                        <!-- Product Images -->
+                        <div class="product-images">
+                            <div class="main-image mb-3">
+                                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                     alt="Chocolate Truffle Cake" class="img-fluid rounded-4 shadow" id="main-product-image">
+                            </div>
+                            <div class="thumbnail-images">
+                                <div class="row g-2">
+                                    <div class="col-3">
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                             alt="View 1" class="img-fluid rounded thumbnail-img active" onclick="changeMainImage(this.src)">
+                                    </div>
+                                    <div class="col-3">
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                             alt="View 2" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
+                                    </div>
+                                    <div class="col-3">
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                             alt="View 3" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
+                                    </div>
+                                    <div class="col-3">
+                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
+                                             alt="View 4" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <!-- Product Info -->
+                        <div class="product-info">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-danger me-2">Hot Selling</span>
+                                <span class="badge bg-success">In Stock</span>
+                            </div>
+                            
+                            <h1 class="product-title mb-3">Chocolate Truffle Cake</h1>
+                            
+                            <div class="product-rating mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="stars me-2">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="rating-text">(4.5 out of 5)</span>
+                                    <span class="review-count ms-2">42 reviews</span>
+                                </div>
+                            </div>
+                            
+                            <div class="product-price mb-4">
+                                <span class="current-price h2 of-text-primary">₹35.99</span>
+                                <span class="original-price text-muted text-decoration-line-through ms-2">₹45.99</span>
+                                <span class="discount-badge badge bg-warning ms-2">22% OFF</span>
+                            </div>
+                            
+                            <div class="product-description mb-4" style="display: none;">
+                                <p>Indulge in our rich and decadent Chocolate Truffle Cake, made with premium Belgian chocolate and fresh cream. This heavenly dessert features multiple layers of moist chocolate sponge cake filled with smooth chocolate truffle cream and topped with chocolate ganache.</p>
+                                
+                                <!-- <ul class="list-unstyled">
+                                    <li><i class="fas fa-check of-text-primary me-2"></i>Made with premium Belgian chocolate</li>
+                                    <li><i class="fas fa-check of-text-primary me-2"></i>Fresh cream and natural ingredients</li>
+                                    <li><i class="fas fa-check of-text-primary me-2"></i>Eggless option available</li>
+                                    <li><i class="fas fa-check of-text-primary me-2"></i>Same day delivery in Mumbai</li>
+                                </ul> -->
+                            </div>
+                            
+                            <!-- Product Options -->
+                            <div class="product-options mb-4">
+                                <div class="row g-3">
+                                    <!-- <div class="row align-items-center" style="min-height: 100px;">
+                                        <label for="pincode-check" class="form-label">Check Pincode:</label>
+                                        <div class="col-md-8">
+                                            <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-center">
+                                            <button class="btn of-btn-primary rounded-pill flex-fill mt-3 mt-md-0 text-nowrap" onclick="addToCart()">Check Pincode</button>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="col-6">
+                                        <label for="weight" class="form-label">Weight:</label>
+                                        <select class="form-select" id="weight">
+                                            <option value="500g">500g - ₹35.99</option>
+                                            <option value="1kg">1kg - ₹65.99</option>
+                                            <option value="1.5kg">1.5kg - ₹95.99</option>
+                                            <option value="2kg">2kg - ₹125.99</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">                                        
+                                        <label for="quantity" class="form-label">Quantity:</label>
+                                        <div class="quantity-selector">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(-1)">-</button>
+                                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="weight" class="form-label">Greeting Cards:</label>
+                                        <select class="form-select" id="weight">
+                                            <option value="Retirement Card">Retirement Card (₹ 100)</option>
+                                            <option value="Farewell Card">Farewell Card (₹ 100)</option>
+                                            <option value="Sorry Card">Sorry Card (₹ 100)</option>
+                                            <option value="Get Well Soon">Get Well Soon (₹ 100)</option>
+                                            <option value="Diwali Greeting Card">Diwali Greeting Card (₹ 100)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="pincode-check" class="form-label">Check Pincode:</label>
+                                        <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="w-100 btn btn-outline-secondary rounded-pill flex-fill" onclick="addToCart()">
+                                            Check Pincode
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row m-0 p-0 g-3" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
+                                        <input type="date" class="form-control" id="delivery-date">
+                                    </div>
+                                    <div class="col-md-6">                                        
+                                        <label for="timeslot" class="form-label">Time Slots:</label>
+                                        <select class="form-select" id="timeslot">
+                                            <option value="10:00 AM - 02:00 PM">10:00 AM - 02:00 PM</option>
+                                            <option value="12:00 PM - 04:00 PM">12:00 PM - 04:00 PM</option>
+                                            <option value="04:00 PM - 07:00 PM">04:00 PM - 07:00 PM</option>
+                                            <option value="07:00 PM - 10:00 PM (Evening Delivery: ₹80)">07:00 PM - 10:00 PM (Evening Delivery: ₹80)</option>
+                                            <option value="10:45 PM - 11:59 PM (Late Night Delivery: ₹100)">10:45 PM - 11:59 PM (Late Night Delivery: ₹100)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="message" class="form-label">Custom Message:</label>
+                                        <input type="text" class="form-control" id="message" placeholder="Happy Birthday!">
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <!-- Quantity and Add to Cart -->
+                            <div class="mb-4">
+                                <div class="row g-3 align-items-end">
+                                    <!-- <div class="col-md-3">
+                                        <label for="quantity" class="form-label">Quantity:</label>
+                                        <div class="quantity-selector">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(-1)">-</button>
+                                            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="changeQuantity(1)">+</button>
+                                        </div>
+                                    </div> -->
+                                    <div class="col-md-12">
+                                        <div class="d-grid gap-2 d-md-flex">
+                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="addToCart()">
+                                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                            </button>
+                                            <button class="btn of-btn-outline-primary rounded-pill">
+                                                <!-- <i class="fas fa-heart"></i> -->
+                                                Buy Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <!-- Product Features -->
+                        <div class="product-features">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-truck of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Free Delivery</h6>
+                                            <small class="text-muted">On orders above ₹500</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-clock of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Same Day Delivery</h6>
+                                            <small class="text-muted">Order before 6 PM</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-shield-alt of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Quality Guarantee</h6>
+                                            <small class="text-muted">100% fresh products</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-item d-flex align-items-center">
+                                        <i class="fas fa-undo of-text-primary me-3"></i>
+                                        <div>
+                                            <h6 class="mb-0">Easy Returns</h6>
+                                            <small class="text-muted">Hassle-free returns</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Details Tabs -->
+        <section class="pb-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab">Ingredients</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews (42)</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">Delivery Info</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content bg-white p-4 rounded-bottom shadow-sm" id="productTabsContent">
+                            <div class="tab-pane fade show active" id="description" role="tabpanel">
+                                <h5>Product Description</h5>
+                                <p>Our Chocolate Truffle Cake is a masterpiece of indulgence, crafted with the finest Belgian chocolate and premium ingredients. Each layer tells a story of rich flavors and smooth textures that melt in your mouth.</p>
+                                <p>This cake features:</p>
+                                <ul>
+                                    <li>Three layers of moist chocolate sponge cake</li>
+                                    <li>Rich chocolate truffle cream filling</li>
+                                    <li>Smooth chocolate ganache topping</li>
+                                    <li>Decorative chocolate shavings</li>
+                                    <li>Optional custom message writing</li>
+                                </ul>
+                                <p>Perfect for birthdays, anniversaries, celebrations, or any moment that calls for something special. Our expert bakers ensure each cake is made fresh to order with the highest quality standards.</p>
+                            </div>
+                            <div class="tab-pane fade" id="ingredients" role="tabpanel">
+                                <h5>Ingredients</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Main Ingredients:</h6>
+                                        <ul>
+                                            <li>Premium Belgian Chocolate</li>
+                                            <li>Fresh Cream</li>
+                                            <li>Refined Flour</li>
+                                            <li>Sugar</li>
+                                            <li>Butter</li>
+                                            <li>Vanilla Extract</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Allergen Information:</h6>
+                                        <ul>
+                                            <li>Contains: Milk, Gluten</li>
+                                            <li>May contain: Nuts, Soy</li>
+                                            <li>Eggless version available</li>
+                                        </ul>
+                                        <h6>Storage:</h6>
+                                        <ul>
+                                            <li>Store in refrigerator</li>
+                                            <li>Best consumed within 2 days</li>
+                                            <li>Bring to room temperature before serving</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                                <h5>Customer Reviews</h5>
+                                <div class="reviews-summary mb-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3 text-center">
+                                            <div class="rating-average">
+                                                <span class="h2">4.5</span>
+                                                <div class="stars">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                </div>
+                                                <p class="text-muted">Based on 42 reviews</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="rating-breakdown">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="me-2">5 stars</span>
+                                                    <div class="progress flex-grow-1 me-2">
+                                                        <div class="progress-bar of-bg-primary" style="width: 70%"></div>
+                                                    </div>
+                                                    <span>29</span>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="me-2">4 stars</span>
+                                                    <div class="progress flex-grow-1 me-2">
+                                                        <div class="progress-bar of-bg-primary" style="width: 20%"></div>
+                                                    </div>
+                                                    <span>8</span>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="me-2">3 stars</span>
+                                                    <div class="progress flex-grow-1 me-2">
+                                                        <div class="progress-bar of-bg-primary" style="width: 7%"></div>
+                                                    </div>
+                                                    <span>3</span>
+                                                </div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <span class="me-2">2 stars</span>
+                                                    <div class="progress flex-grow-1 me-2">
+                                                        <div class="progress-bar of-bg-primary" style="width: 2%"></div>
+                                                    </div>
+                                                    <span>1</span>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="me-2">1 star</span>
+                                                    <div class="progress flex-grow-1 me-2">
+                                                        <div class="progress-bar of-bg-primary" style="width: 2%"></div>
+                                                    </div>
+                                                    <span>1</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="reviews-list">
+                                    <div class="review-item border-bottom pb-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">Priya Sharma</h6>
+                                                <div class="stars small">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">2 days ago</small>
+                                        </div>
+                                        <p class="mb-0">Absolutely delicious! The chocolate truffle cake was perfect for my daughter's birthday. Rich, moist, and beautifully decorated. Will definitely order again!</p>
+                                    </div>
+                                    
+                                    <div class="review-item border-bottom pb-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">Rajesh Kumar</h6>
+                                                <div class="stars small">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="far fa-star"></i>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">1 week ago</small>
+                                        </div>
+                                        <p class="mb-0">Great taste and quality. Delivery was on time. The cake was fresh and everyone loved it at the party. Highly recommended!</p>
+                                    </div>
+                                    
+                                    <div class="review-item">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">Anita Desai</h6>
+                                                <div class="stars small">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">2 weeks ago</small>
+                                        </div>
+                                        <p class="mb-0">Best chocolate cake I've ever had! The truffle cream is heavenly. Perfect for special occasions. Thank you OvenFresh!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="delivery" role="tabpanel">
+                                <h5>Delivery Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Delivery Areas:</h6>
+                                        <ul>
+                                            <li>Mumbai (All areas)</li>
+                                            <li>Thane</li>
+                                            <li>Navi Mumbai</li>
+                                        </ul>
+                                        
+                                        <h6>Delivery Timings:</h6>
+                                        <ul>
+                                            <li>Same Day: Order before 6 PM</li>
+                                            <li>Regular: 10:00 AM - 9:00 PM</li>
+                                            <li>Midnight: 11:00 PM - 12:00 AM</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Delivery Charges:</h6>
+                                        <ul>
+                                            <li>Free delivery on orders above ₹500</li>
+                                            <li>Regular delivery: ₹5.99</li>
+                                            <li>Midnight delivery: ₹9.99</li>
+                                        </ul>
+                                        
+                                        <h6>Special Instructions:</h6>
+                                        <ul>
+                                            <li>Keep refrigerated upon delivery</li>
+                                            <li>Handle with care</li>
+                                            <li>Contact us for special delivery requests</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products -->
+        <section class="pb-5">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2>Related Products</h2>
+                    <p class="text-muted">You might also like these delicious treats</p>
+                </div>
+                <div class="row g-4">
+                    <!-- Related Product 1 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" alt="Red Velvet Cake" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Red Velvet Cake</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(38)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹32.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 2 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Chocolate Box" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Luxury Chocolate Box</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-2">(56)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹29.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 3 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Gift Hamper" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Deluxe Gift Hamper</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-2">(27)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹79.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 4 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Pastries" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Fresh Fruit Pastries</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(23)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹18.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <!-- Related Products -->
+        <section class="pb-5">
+            <div class="container">
+                <div class="section-title text-center mb-5">
+                    <h2>Recently Viewed Products</h2>
+                    <p class="text-muted">You might also like these delicious treats</p>
+                </div>
+                <div class="row g-4">
+                    <!-- Related Product 1 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://loveandcheesecake.com/cdn/shop/files/RedVelvetCheesecakecopy.jpg" alt="Red Velvet Cake" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Red Velvet Cake</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(38)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹32.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 2 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Chocolate Box" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Luxury Chocolate Box</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span class="ms-2">(56)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹29.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 3 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=765&q=80" alt="Gift Hamper" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Deluxe Gift Hamper</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span class="ms-2">(27)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹79.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related Product 4 -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-img">
+                                <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="Pastries" class="img-fluid">
+                                <div class="product-actions">
+                                    <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                    <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <h5>Fresh Fruit Pastries</h5>
+                                <div class="product-rating mb-2">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span class="ms-2">(23)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price">₹18.99</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Footer -->
+        <footer id="contact" class="pt-5 pb-3">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="footer-info">
+                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
+                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
+                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
+                                with on time delivery.</p>
+                            <div class="social-links mt-3">
+                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="index.html">Contact Us</a></li>
+                                <li><a href="#about">Register Complaint</a></li>
+                                <li><a href="shop.html">Track your Order</a></li>
+                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
+                                <li><a href="shop.html">About Us</a></li>
+                                <li><a href="#contact">FAQ</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5 class="mb-4">Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Cakes</a></li>
+                                <li><a href="#">Gifting</a></li>
+                                <li><a href="#">Flowers</a></li>
+                                <li><a href="#">Chocolates</a></li>
+                                <li><a href="#">Cookies</a></li>
+                                <li><a href="#">Blog</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Contact Us</h5>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
+                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
+                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="footer-contact">
+                            <h5 class="mb-4">Newsletter</h5>
+                            <p>Don't miss our future updates! Get Subscribed Today!</p>
+                            <input type="text" class="form-control" name="" id="" placeholder="Email">
+                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-4 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            <a href="#" class="me-3">Privacy Policy</a>
+                            <a href="#" class="me-3">Terms of Service</a>
+                            <a href="#">FAQ</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Import Wow Animation JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
+    <script src="/static/js/loader.js"></script>
+
+    <style>
+        .thumbnail-img {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .thumbnail-img.active,
+        .thumbnail-img:hover {
+            border-color: var(--of-primary-color);
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-selector button {
+            width: 40px;
+            height: 38px;
+            border-radius: 0;
+        }
+        
+        .quantity-selector button:first-child {
+            border-top-left-radius: 0.375rem;
+            border-bottom-left-radius: 0.375rem;
+        }
+        
+        .quantity-selector button:last-child {
+            border-top-right-radius: 0.375rem;
+            border-bottom-right-radius: 0.375rem;
+        }
+        
+        .quantity-selector input {
+            border-radius: 0;
+            border-left: 0;
+            border-right: 0;
+            width: 60px;
+        }
+        
+        .stars {
+            color: #ffc107;
+        }
+        
+        .progress {
+            height: 8px;
+        }
+    </style>
+
+    <script>
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartCount() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        function changeMainImage(src) {
+            document.getElementById('main-product-image').src = src;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-img').forEach(img => {
+                img.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function changeQuantity(change) {
+            const quantityInput = document.getElementById('quantity');
+            let currentQuantity = parseInt(quantityInput.value);
+            let newQuantity = currentQuantity + change;
+            
+            if (newQuantity >= 1 && newQuantity <= 10) {
+                quantityInput.value = newQuantity;
+            }
+        }
+
+        function addToCart() {
+            const product = {
+                id: 1,
+                name: "Chocolate Truffle Cake",
+                price: 35.99,
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
+                weight: document.getElementById('weight').value,
+                flavor: document.getElementById('flavor').value,
+                message: document.getElementById('message').value,
+                deliveryDate: document.getElementById('delivery-date').value,
+                quantity: parseInt(document.getElementById('quantity').value)
+            };
+
+            const existingItem = cart.find(item => 
+                item.id === product.id && 
+                item.weight === product.weight && 
+                item.flavor === product.flavor
+            );
+
+            if (existingItem) {
+                existingItem.quantity += product.quantity;
+            } else {
+                cart.push(product);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            
+            // Show success message
+            alert('Product added to cart successfully!');
+        }
+
+        // Set minimum delivery date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('delivery-date').min = tomorrow.toISOString().split('T')[0];
+
+        window.onload = function () {
+            toggle_loader();
+            updateCartCount();
+        };
+
+        window.addEventListener('scroll', function () {
+            const menuBar = document.querySelector('.main-menu');
+            const scrollTrigger = 95;
+
+            if (window.scrollY >= scrollTrigger) {
+                menuBar.classList.add('fixed-top');
+            } else {
+                menuBar.classList.remove('fixed-top');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
