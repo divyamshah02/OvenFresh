@@ -198,7 +198,7 @@ function initializeEventListeners() {
   // View full order button in quick view modal
   document.getElementById("viewFullOrderBtn").addEventListener("click", () => {
     if (currentQuickViewOrderId) {
-      window.location.href = `/admin/order-detail/?order_id=${currentQuickViewOrderId}`
+      window.location.href = `/admin-order-detail/?order_id=${currentQuickViewOrderId}`
     }
   })
 }
@@ -365,7 +365,7 @@ function renderOrders() {
                         <li><a class="dropdown-item" href="#" onclick="viewOrderQuick('${order.order_id}')">
                             <i class="fas fa-eye me-2"></i>Quick View
                         </a></li>
-                        <li><a class="dropdown-item" href="/admin/order-detail/?order_id=${order.order_id}">
+                        <li><a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
                             <i class="fas fa-edit me-2"></i>View Details
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -647,7 +647,7 @@ function printOrderKOT(orderId) {
   showToast("Printing KOT for order " + orderId, "info")
 
   // Redirect to the order detail page with a print parameter
-  window.open(`/admin/order-detail/?order_id=${orderId}&print_kot=true`, "_blank")
+  window.open(`/admin-order-detail/?order_id=${orderId}&print_kot=true`, "_blank")
 }
 
 function printBulkKOT() {

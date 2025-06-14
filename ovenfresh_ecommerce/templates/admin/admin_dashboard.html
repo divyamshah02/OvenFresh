@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ShopAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+
+<body class="ovenfresh-theme">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% include 'admin/admin-nav.html' %}
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="h2">Dashboard</h1>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-outline-secondary" id="refreshDashboard">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-calendar me-1"></i> <span id="dateRangeText">Last 7 Days</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-range="today">Today</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="yesterday">Yesterday</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="7days">Last 7 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="30days">Last 30 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="90days">Last 90 Days</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading dashboard data...</p>
+                </div>
+
+                <!-- Main Stats Cards -->
+                <div class="row mb-4" id="mainStatsContainer">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card gradient-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-black">
+                                        <h6 class="card-subtitle mb-1 text-black-50">Total Orders</h6>
+                                        <h3 class="card-title mb-0" id="totalOrders">0</h3>
+                                        <p class="small mb-0 text-black-75">
+                                            <span id="ordersChange">+0%</span> from last period
+                                        </p>
+                                    </div>
+                                    <div class="icon-container bg-white bg-opacity-20">
+                                        <i class="fas fa-shopping-cart text-black"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card gradient-success">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-black">
+                                        <h6 class="card-subtitle mb-1 text-black-50">Total Revenue</h6>
+                                        <h3 class="card-title mb-0" id="totalRevenue">₹0</h3>
+                                        <p class="small mb-0 text-black-75">
+                                            <span id="revenueChange">+0%</span> from last period
+                                        </p>
+                                    </div>
+                                    <div class="icon-container bg-white bg-opacity-20">
+                                        <i class="fas fa-rupee-sign text-black"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card gradient-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-black">
+                                        <h6 class="card-subtitle mb-1 text-black-50">Active Customers</h6>
+                                        <h3 class="card-title mb-0" id="activeCustomers">0</h3>
+                                        <p class="small mb-0 text-black-75">
+                                            <span id="customersChange">+0%</span> from last period
+                                        </p>
+                                    </div>
+                                    <div class="icon-container bg-white bg-opacity-20">
+                                        <i class="fas fa-users text-black"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card stat-card gradient-info">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-black">
+                                        <h6 class="card-subtitle mb-1 text-black-50">Products</h6>
+                                        <h3 class="card-title mb-0" id="totalProducts">0</h3>
+                                        <p class="small mb-0 text-black-75">
+                                            <span id="productsChange">+0</span> active products
+                                        </p>
+                                    </div>
+                                    <div class="icon-container bg-white bg-opacity-20">
+                                        <i class="fas fa-box text-black"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Stats -->
+                <div class="row mb-4">
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock text-warning mb-2"></i>
+                                <h5 class="mb-1" id="pendingOrders">0</h5>
+                                <small class="text-muted">Pending Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-truck text-primary mb-2"></i>
+                                <h5 class="mb-1" id="outForDelivery">0</h5>
+                                <small class="text-muted">Out for Delivery</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle text-success mb-2"></i>
+                                <h5 class="mb-1" id="deliveredOrders">0</h5>
+                                <small class="text-muted">Delivered</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-times-circle text-danger mb-2"></i>
+                                <h5 class="mb-1" id="cancelledOrders">0</h5>
+                                <small class="text-muted">Cancelled</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-money-bill text-success mb-2"></i>
+                                <h5 class="mb-1" id="codOrders">0</h5>
+                                <small class="text-muted">COD Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                        <div class="card stat-card-small">
+                            <div class="card-body text-center">
+                                <i class="fas fa-credit-card text-info mb-2"></i>
+                                <h5 class="mb-1" id="onlineOrders">0</h5>
+                                <small class="text-muted">Online Paid</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-4">
+                    <!-- Sales Chart -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Sales Overview</h5>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary active" data-chart-type="revenue">Revenue</button>
+                                    <button type="button" class="btn btn-outline-secondary" data-chart-type="orders">Orders</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="salesChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Status Pie Chart -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Order Status Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="orderStatusChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders and Top Products -->
+                <div class="row mb-4">
+                    <!-- Recent Orders -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Orders</h5>
+                                <a href="/admin/orders/" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Customer</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentOrdersTable">
+                                            <!-- Recent orders will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Products -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Products</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="topProductsList">
+                                    <!-- Top products will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Areas and Performance -->
+                <div class="row mb-4">
+                    <!-- Top Delivery Areas -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Top Delivery Areas</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="deliveryAreasChart" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Performance Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <div class="text-center">
+                                            <div class="progress-circle" data-percentage="0" id="deliverySuccessRate">
+                                                <span>0%</span>
+                                            </div>
+                                            <small class="text-muted mt-2 d-block">Delivery Success Rate</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <div class="text-center">
+                                            <div class="progress-circle" data-percentage="0" id="customerSatisfaction">
+                                                <span>0%</span>
+                                            </div>
+                                            <small class="text-muted mt-2 d-block">Customer Satisfaction</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="metric-item">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>Average Order Value</span>
+                                                <strong id="avgOrderValue">₹0</strong>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" id="avgOrderValueProgress" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="metric-item">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>Average Delivery Time</span>
+                                                <strong id="avgDeliveryTime">0 min</strong>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-info" id="avgDeliveryTimeProgress" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/orders/add/" class="btn btn-outline-primary w-100">
+                                            <i class="fas fa-plus mb-2 d-block"></i>
+                                            Add Order
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/products/add/" class="btn btn-outline-success w-100">
+                                            <i class="fas fa-box mb-2 d-block"></i>
+                                            Add Product
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/customers/" class="btn btn-outline-info w-100">
+                                            <i class="fas fa-users mb-2 d-block"></i>
+                                            Manage Customers
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/delivery/" class="btn btn-outline-warning w-100">
+                                            <i class="fas fa-truck mb-2 d-block"></i>
+                                            Delivery Management
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/reports/" class="btn btn-outline-secondary w-100">
+                                            <i class="fas fa-chart-bar mb-2 d-block"></i>
+                                            View Reports
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                        <a href="/admin/settings/" class="btn btn-outline-dark w-100">
+                                            <i class="fas fa-cog mb-2 d-block"></i>
+                                            Settings
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/scripts.js"></script>
+    <script src="/static/js/admin/admin_dashboard.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        AdminDashboard(
+            csrfToken,
+            "{% url 'dashboard-stats-list' %}",
+            "{% url 'dashboard-charts-list' %}",
+            "{% url 'recent-orders-list' %}",
+            "{% url 'top-products-list' %}",
+        );
+    </script>
+</body>
+
+</html>

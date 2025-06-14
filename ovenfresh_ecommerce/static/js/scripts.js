@@ -491,12 +491,12 @@ window.ShopAdminTheme = {
 };
 
 // ===== CONSOLE WELCOME MESSAGE =====
-console.log(`
-🎨 ShopAdmin Theme Library Loaded
-📱 Current Theme: ${currentTheme}
-🔧 Available Methods: ShopAdminTheme.*
-⌨️  Keyboard Shortcuts:
-   • Ctrl/Cmd + T: Toggle Theme
-   • Ctrl/Cmd + K: Search (placeholder)
-   • Escape: Close modals/sidebar
-`);
+// console.log(`
+// 🎨 ShopAdmin Theme Library Loaded
+// 📱 Current Theme: ${currentTheme}
+// 🔧 Available Methods: ShopAdminTheme.*
+// ⌨️  Keyboard Shortcuts:
+//    • Ctrl/Cmd + T: Toggle Theme
+//    • Ctrl/Cmd + K: Search (placeholder)
+//    • Escape: Close modals/sidebar
+// `);

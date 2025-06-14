@@ -1,4 +1,5 @@
 import calendar
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -9,19 +10,12 @@ from django.db.models.functions import (
     TruncMonth, TruncWeek, TruncDay, TruncQuarter, TruncYear, Concat
 )
 from django.db.models import Prefetch
-from datetime import datetime, timedelta
-from Order.models import Order, OrderItem
-from Product.models import Category, Pincode, Product, ProductVariation, Reviews, SubCategory, TimeSlot
-from UserDetail.models import User
-from utils.decorators import handle_exceptions, check_authentication
-from .serializers import (
-    SalesAnalyticsSerializer,
-    TopProductSerializer,
-    CustomerAnalyticsSerializer,
-    DeliveryAnalyticsSerializer,
-    TimeSlotAnalyticsSerializer,
-    PincodeAnalyticsSerializer
-)
+from datetime import *
+from Order.models import *
+from Product.models import *
+from UserDetail.models import *
+from utils.decorators import *
+from .serializers import *
 
 
 class AnalyticsViewSet(viewsets.ViewSet):
@@ -984,3 +978,487 @@ class PincodeAnalyticsViewSet(viewsets.ViewSet):
             "data": response_data,
             "error": None
         })
+
+
+class DashboardStatsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for dashboard statistics
+    """
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get dashboard statistics"""
+        try:
+            range_type = request.query_params.get('range', '7days')
+            start_date, end_date = self.get_date_range(range_type)
+            
+            # Get previous period for comparison
+            period_length = end_date - start_date
+            prev_start_date = start_date - period_length
+            prev_end_date = start_date
+            
+            # Current period stats
+            current_orders = Order.objects.filter(
+                created_at__range=[start_date, end_date]
+            )
+            
+            # Previous period stats
+            previous_orders = Order.objects.filter(
+                created_at__range=[prev_start_date, prev_end_date]
+            )
+            
+            # Calculate main metrics
+            total_orders = current_orders.count()
+            prev_total_orders = previous_orders.count()
+            
+            total_revenue = float(current_orders.aggregate(
+                total=Sum('total_amount')
+            )['total'] or 0)
+            prev_total_revenue = float(previous_orders.aggregate(
+                total=Sum('total_amount')
+            )['total'] or 0)
+            
+            # Active customers (customers who placed orders in current period)
+            active_customers = current_orders.values('user_id').distinct().count()
+            prev_active_customers = previous_orders.values('user_id').distinct().count()
+            
+            # Total products
+            total_products = Product.objects.filter(is_active=True).count()
+            active_products = Product.objects.filter(is_active=True).count()
+            
+            # Calculate percentage changes
+            orders_change = self.calculate_percentage_change(total_orders, prev_total_orders)
+            revenue_change = self.calculate_percentage_change(total_revenue, prev_total_revenue)
+            customers_change = self.calculate_percentage_change(active_customers, prev_active_customers)
+            
+            # Order status counts
+            status_counts = current_orders.values('status').annotate(count=Count('status'))
+            status_dict = {item['status']: item['count'] for item in status_counts}
+            
+            # Payment method counts
+            payment_counts = current_orders.values('payment_method').annotate(count=Count('payment_method'))
+            payment_dict = {item['payment_method']: item['count'] for item in payment_counts}
+            
+            # Performance metrics
+            delivered_orders = current_orders.filter(status='delivered')
+            delivery_success_rate = round(
+                (delivered_orders.count() / total_orders * 100) if total_orders > 0 else 0
+            )
+            
+            # Average order value
+            avg_order_value = round(total_revenue / total_orders if total_orders > 0 else 0)
+            
+            # Mock customer satisfaction (you can implement actual rating system)
+            customer_satisfaction = 85  # Placeholder
+            
+            # Mock average delivery time (you can calculate from actual delivery data)
+            avg_delivery_time = 45  # Placeholder in minutes
+            
+            data = {
+                'total_orders': total_orders,
+                'total_revenue': total_revenue,
+                'active_customers': active_customers,
+                'total_products': total_products,
+                'active_products': active_products,
+                
+                'orders_change': orders_change,
+                'revenue_change': revenue_change,
+                'customers_change': customers_change,
+                
+                'pending_orders': status_dict.get('placed', 0) + status_dict.get('confirmed', 0),
+                'out_for_delivery': status_dict.get('out_for_delivery', 0),
+                'delivered_orders': status_dict.get('delivered', 0),
+                'cancelled_orders': status_dict.get('cancelled', 0),
+                'cod_orders': payment_dict.get('cod', 0),
+                'online_orders': payment_dict.get('razorpay', 0),
+                
+                'delivery_success_rate': delivery_success_rate,
+                'customer_satisfaction': customer_satisfaction,
+                'avg_order_value': avg_order_value,
+                'avg_delivery_time': avg_delivery_time,
+            }
+            
+            return Response({
+                'success': True,
+                'data': data,
+                'error': None
+            })
+            
+        except Exception as e:
+            return Response({
+                'success': False,
+                'data': None,
+                'error': str(e)
+            }, status=500)
+    
+    def get_date_range(self, range_type):
+        """Get date range based on range type"""
+        now = timezone.now()
+        
+        if range_type == 'today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = now
+        elif range_type == 'yesterday':
+            yesterday = now - timedelta(days=1)
+            start_date = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = yesterday.replace(hour=23, minute=59, second=59, microsecond=999999)
+        elif range_type == '7days':
+            start_date = now - timedelta(days=7)
+            end_date = now
+        elif range_type == '30days':
+            start_date = now - timedelta(days=30)
+            end_date = now
+        elif range_type == '90days':
+            start_date = now - timedelta(days=90)
+            end_date = now
+        else:
+            # Default to last 7 days
+            start_date = now - timedelta(days=7)
+            end_date = now
+            
+        return start_date, end_date
+    
+    def calculate_percentage_change(self, current, previous):
+        """Calculate percentage change between two values"""
+        if previous == 0:
+            return 100 if current > 0 else 0
+        return round(((current - previous) / previous) * 100, 1)
+
+
+class DashboardChartsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for dashboard chart data
+    """
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get chart data for dashboard"""
+        try:
+            range_type = request.query_params.get('range', '7days')
+            start_date, end_date = self.get_date_range(range_type)
+            
+            # Sales data for line chart
+            sales_data = self.get_sales_chart_data(start_date, end_date, range_type)
+            
+            # Order status data for pie chart
+            order_status_data = self.get_order_status_chart_data(start_date, end_date)
+            
+            # Delivery areas data for bar chart
+            delivery_areas_data = self.get_delivery_areas_chart_data(start_date, end_date)
+            
+            data = {
+                'sales_data': sales_data,
+                'order_status_data': order_status_data,
+                'delivery_areas_data': delivery_areas_data
+            }
+            
+            return Response({
+                'success': True,
+                'data': data,
+                'error': None
+            })
+            
+        except Exception as e:
+            return Response({
+                'success': False,
+                'data': None,
+                'error': str(e)
+            }, status=500)
+    
+    def get_date_range(self, range_type):
+        """Get date range based on range type"""
+        now = timezone.now()
+        
+        if range_type == 'today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = now
+        elif range_type == 'yesterday':
+            yesterday = now - timedelta(days=1)
+            start_date = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = yesterday.replace(hour=23, minute=59, second=59, microsecond=999999)
+        elif range_type == '7days':
+            start_date = now - timedelta(days=7)
+            end_date = now
+        elif range_type == '30days':
+            start_date = now - timedelta(days=30)
+            end_date = now
+        elif range_type == '90days':
+            start_date = now - timedelta(days=90)
+            end_date = now
+        else:
+            start_date = now - timedelta(days=7)
+            end_date = now
+            
+        return start_date, end_date
+    
+    def get_sales_chart_data(self, start_date, end_date, range_type):
+        """Generate sales chart data"""
+        if range_type in ['today', 'yesterday']:
+            interval = 'hour'
+            date_format = '%H:00'
+        elif range_type == '7days':
+            interval = 'day'
+            date_format = '%m/%d'
+        else:
+            interval = 'day'
+            date_format = '%m/%d'
+        
+        labels = []
+        revenue_data = []
+        orders_data = []
+        
+        current = start_date
+        while current <= end_date:
+            if interval == 'hour':
+                next_period = current + timedelta(hours=1)
+                label = current.strftime(date_format)
+            else:
+                next_period = current + timedelta(days=1)
+                label = current.strftime(date_format)
+            
+            period_orders = Order.objects.filter(
+                created_at__gte=current,
+                created_at__lt=next_period
+            )
+            
+            labels.append(label)
+            revenue_data.append(float(period_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0))
+            orders_data.append(period_orders.count())
+            
+            current = next_period
+        
+        return {
+            'labels': labels,
+            'revenue': revenue_data,
+            'orders': orders_data
+        }
+    
+    def get_order_status_chart_data(self, start_date, end_date):
+        """Generate order status chart data"""
+        status_counts = Order.objects.filter(
+            created_at__range=[start_date, end_date]
+        ).values('status').annotate(count=Count('status'))
+        
+        status_labels = {
+            'placed': 'Placed',
+            'confirmed': 'Confirmed',
+            'preparing': 'Preparing',
+            'ready': 'Ready',
+            'out_for_delivery': 'Out for Delivery',
+            'delivered': 'Delivered',
+            'cancelled': 'Cancelled'
+        }
+        
+        labels = []
+        values = []
+        
+        for item in status_counts:
+            labels.append(status_labels.get(item['status'], item['status']))
+            values.append(item['count'])
+        
+        return {
+            'labels': labels,
+            'values': values
+        }
+    
+    def get_delivery_areas_chart_data(self, start_date, end_date):
+        """Generate delivery areas chart data"""
+        areas_data = Order.objects.filter(
+            created_at__range=[start_date, end_date]
+        ).values('pincode_id').annotate(
+            count=Count('order_id')
+        ).order_by('-count')[:10]
+        
+        labels = []
+        values = []
+        
+        for area in areas_data:
+            labels.append(f"Area {area['pincode_id']}")
+            values.append(area['count'])
+        
+        return {
+            'labels': labels,
+            'values': values
+        }
+
+
+class RecentOrdersViewSet(viewsets.ViewSet):
+    """
+    ViewSet for recent orders data
+    """
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get recent orders for dashboard"""
+        try:
+            limit = int(request.query_params.get('limit', 10))
+            recent_orders = Order.objects.select_related().order_by('-created_at')[:limit]
+            
+            orders_data = []
+            for order in recent_orders:
+                orders_data.append({
+                    'order_id': order.order_id,
+                    'customer_name': f"{order.first_name} {order.last_name}",
+                    'phone': order.phone,
+                    'total_amount': float(order.total_amount),
+                    'status': order.status,
+                    'payment_method': order.payment_method,
+                    'created_at': order.created_at.isoformat(),
+                })
+            
+            return Response({
+                'success': True,
+                'data': {'orders': orders_data},
+                'error': None
+            })
+            
+        except Exception as e:
+            return Response({
+                'success': False,
+                'data': None,
+                'error': str(e)
+            }, status=500)
+
+
+class TopProductsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for top products data
+    """
+    # @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get top products for dashboard"""
+        
+        range_type = request.query_params.get('range', '7days')
+        limit = int(request.query_params.get('limit', 5))
+        start_date, end_date = self.get_date_range(range_type)
+        
+        # Get top products by order count and revenue
+        top_products = OrderItem.objects.filter(
+            created_at__range=[start_date, end_date]
+        ).values(
+            'product_id'
+        ).annotate(
+            orders_count=Count('order_id', distinct=True),
+            total_quantity=Sum('quantity'),
+            revenue=Sum('final_amount')
+        ).order_by('-revenue')[:limit]
+        
+        products_data = []
+        max_revenue = max([p['revenue'] for p in top_products]) if top_products else 1
+        
+        for product in top_products:
+            try:
+                product_name = f"Product {product['product_id']}"  # Placeholder
+                # product_obj = Product.objects.get(id=product['product_id'])
+                # product_name = product_obj.name
+            except:
+                product_name = f"Product {product['product_id']}"
+            
+            products_data.append({
+                'product_id': product['product_id'],
+                'name': product_name,
+                'orders_count': product['orders_count'],
+                'total_quantity': product['total_quantity'],
+                'revenue': float(product['revenue']),
+                # 'percentage': round((float(product['revenue']) / max_revenue) * 100)
+                'percentage': 100
+            })
+        
+        return Response({
+            'success': True,
+            'data': {'products': products_data},
+            'error': None
+        })
+
+    
+    def get_date_range(self, range_type):
+        """Get date range based on range type"""
+        now = timezone.now()
+        
+        if range_type == 'today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = now
+        elif range_type == 'yesterday':
+            yesterday = now - timedelta(days=1)
+            start_date = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = yesterday.replace(hour=23, minute=59, second=59, microsecond=999999)
+        elif range_type == '7days':
+            start_date = now - timedelta(days=7)
+            end_date = now
+        elif range_type == '30days':
+            start_date = now - timedelta(days=30)
+            end_date = now
+        elif range_type == '90days':
+            start_date = now - timedelta(days=90)
+            end_date = now
+        else:
+            start_date = now - timedelta(days=7)
+            end_date = now
+            
+        return start_date, end_date
+
+
+class DashboardNotificationsViewSet(viewsets.ViewSet):
+    """
+    ViewSet for dashboard notifications
+    """
+    
+    def list(self, request):
+        """Get dashboard notifications"""
+        try:
+            # Get low stock alerts
+            low_stock_products = Product.objects.filter(
+                stock_quantity__lt=10,  # Assuming you have stock_quantity field
+                is_active=True
+            ).count()
+            
+            # Get pending orders
+            pending_orders = Order.objects.filter(
+                status__in=['placed', 'confirmed']
+            ).count()
+            
+            # Get orders requiring attention (old pending orders)
+            old_pending = Order.objects.filter(
+                status__in=['placed', 'confirmed'],
+                created_at__lt=timezone.now() - timedelta(hours=2)
+            ).count()
+            
+            notifications = []
+            
+            if low_stock_products > 0:
+                notifications.append({
+                    'type': 'warning',
+                    'title': 'Low Stock Alert',
+                    'message': f'{low_stock_products} products are running low on stock',
+                    'action_url': '/admin/products/?filter=low_stock'
+                })
+            
+            if old_pending > 0:
+                notifications.append({
+                    'type': 'danger',
+                    'title': 'Pending Orders',
+                    'message': f'{old_pending} orders are pending for more than 2 hours',
+                    'action_url': '/admin/orders/?status=pending'
+                })
+            
+            if pending_orders > 0:
+                notifications.append({
+                    'type': 'info',
+                    'title': 'New Orders',
+                    'message': f'{pending_orders} orders need processing',
+                    'action_url': '/admin/orders/?status=placed'
+                })
+            
+            return Response({
+                'success': True,
+                'data': {'notifications': notifications},
+                'error': None
+            })
+            
+        except Exception as e:
+            return Response({
+                'success': False,
+                'data': None,
+                'error': str(e)
+            }, status=500)

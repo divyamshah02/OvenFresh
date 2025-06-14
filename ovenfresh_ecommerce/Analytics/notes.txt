@@ -1,0 +1,7 @@
+pincode wise XXXX
+area wise
+timeslot wise
+categroy wise
+subcategroy wise
+product wise
+product variation wise

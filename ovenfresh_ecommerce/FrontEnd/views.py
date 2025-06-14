@@ -116,6 +116,14 @@ class AdminTemplateViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_template.html')
 
 
+class AdminDashboardViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_dashboard.html')
+
+
 class AdminAllProductViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -171,3 +179,10 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
     def list(self, request):
         return render(request, 'admin/admin_order_detail.html')
 
+
+class AdminPincodeOrderDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_pincode_orders.html')
