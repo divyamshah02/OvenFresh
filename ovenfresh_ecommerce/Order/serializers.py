@@ -7,18 +7,7 @@ from Product.models import TimeSlot
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = [
-            "order_item_id",
-            "order_id",
-            "product_id",
-            "product_variation_id",
-            "quantity",
-            "amount",
-            "discount",
-            "final_amount",
-            "payment_id",
-            "item_note",
-        ]
+        fields = "__all__"
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -26,22 +15,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = [
-            "order_id",
-            "user_id",
-            "pincode_id",
-            "timeslot_id",
-            "delivery_address",
-            "total_amount",
-            "payment_method",
-            "payment_received",
-            "is_cod",
-            "order_note",
-            "status",
-            "payment_id",
-            "created_at",
-            "items"
-        ]
+        fields = "__all__"
 
     def get_items(self, obj):
         order_items = OrderItem.objects.filter(order_id=obj.order_id)

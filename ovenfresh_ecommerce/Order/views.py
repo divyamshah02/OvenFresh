@@ -720,7 +720,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         paginated_orders = orders_query[start:en]
         
         # Annotate with order items count
-        paginated_orders = paginated_orders.annotate(order_items_count=Count('orderitem'))
+        # paginated_orders = paginated_orders.annotate(order_items_count=Count('orderitem'))
         
         # Serialize orders
         serialized_orders = OrderSerializer(paginated_orders, many=True).data

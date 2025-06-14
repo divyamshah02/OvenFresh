@@ -206,9 +206,8 @@ function initializeEventListeners() {
 async function loadTimeslots() {
   try {
     const [success, result] = await callApi("GET", timeslots_url)
-
     if (success && result.success) {
-      timeslotsData = result.data.timeslots || []
+      timeslotsData = result.data || []
       populateTimeslotsDropdown()
     } else {
       console.error("Error loading timeslots:", result.error)
@@ -231,8 +230,8 @@ function populateTimeslotsDropdown() {
   // Add timeslots to dropdown
   timeslotsData.forEach((timeslot) => {
     const option = document.createElement("option")
-    option.value = timeslot.timeslot_id
-    option.textContent = timeslot.name
+    option.value = timeslot.id
+    option.textContent = timeslot.time_slot_title
     timeslotSelect.appendChild(option)
   })
 }
