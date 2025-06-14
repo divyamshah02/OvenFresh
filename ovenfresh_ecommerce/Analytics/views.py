@@ -8,6 +8,7 @@ from django.db.models import (
 from django.db.models.functions import (
     TruncMonth, TruncWeek, TruncDay, TruncQuarter, TruncYear, Concat
 )
+from django.db.models import Prefetch
 from datetime import datetime, timedelta
 from Order.models import Order, OrderItem
 from Product.models import Category, Pincode, Product, ProductVariation, Reviews, SubCategory, TimeSlot
@@ -342,12 +343,13 @@ class AnalyticsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'], url_path='pincodes')
     @handle_exceptions
-    @check_authentication(required_role='admin')
+    # @check_authentication(required_role='admin')
     def pincode_analytics(self, request):
         # Get all pincodes with orders
         pincodes = Pincode.objects.filter(
             pincode__in=Order.objects.values_list('pincode_id', flat=True).distinct()
         )
+        # pincodes = Pincode.objects.all() 
 
         # Prefetch all timeslots for efficiency
         timeslots = TimeSlot.objects.in_bulk(field_name='id')
@@ -367,23 +369,6 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 # Serialize order fields
                 order_dict = {field.name: getattr(order, field.name) for field in order._meta.fields}
 
-                # Get timeslot details
-                try:
-                    timeslot_id = int(order.timeslot_id)
-                    timeslot = timeslots.get(timeslot_id)
-                    if timeslot:
-                        timeslot_details[timeslot_id] = {
-                            'timeslot_id': timeslot_id,
-                            'title': timeslot.time_slot_title,
-                            'start_time': timeslot.start_time,
-                            'end_time': timeslot.end_time,
-                            'delivery_charges': pincode.delivery_charge.get(str(timeslot_id)).get("charges")
-                        }
-                except (ValueError, TypeError):
-                    timeslot_details[order.timeslot_id] = {
-                        'error': 'Invalid timeslot ID format'
-                    }
-
                 order_data.append(order_dict)
 
             # Serialize pincode data
@@ -395,8 +380,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 'delivery_charge': pincode.delivery_charge,
                 'is_active': pincode.is_active,
                 'created_at': pincode.created_at,
-                'orders': order_data,
-                'timeslot_details': timeslot_details
+                'orders': order_data
             }
 
             response_data.append(pincode_data)
@@ -767,6 +751,233 @@ class AnalyticsViewSet(viewsets.ViewSet):
                 'orders': timeslot_orders,
                 'availability_charges': availability_data
             })
+        
+        return Response({
+            "success": True,
+            "data": response_data,
+            "error": None
+        })
+
+
+    # @action(detail=False, methods=['get'], url_path='timeslots')
+    # @handle_exceptions
+    # @check_authentication(required_role='admin')
+    # def product_analytics(self, request):
+    #     # Get all timeslots
+    #     products = Product.objects.all()
+        
+    #     # Prefetch related data for efficiency
+    #     all_variations = ProductVariation.objects.in_bulk(field_name='product_variation_id')
+    #     all_pincodes = Pincode.objects.all()
+        
+    #     response_data = []
+        
+    #     for timeslot in timeslots:
+    #         # Get orders for this timeslot
+    #         orders = Order.objects.filter(timeslot_id=str(timeslot.id))
+    #         timeslot_orders = []
+            
+    #         for order in orders:
+    #             # Get order items for this order
+    #             order_items = OrderItem.objects.filter(order_id=order.order_id)
+    #             order_item_data = []
+                
+    #             for order_item in order_items:
+    #                 # Get product details
+    #                 try:
+    #                     product_id = int(order_item.product_id)
+    #                     product = all_products.get(product_id)
+    #                     if product:
+    #                         product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
+                            
+    #                         # Get product variations
+    #                         variations = [v for v in all_variations.values() if v.product_id == product_id]
+    #                         variation_data = []
+                            
+    #                         for variation in variations:
+    #                             variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
+    #                             variation_data.append(variation_dict)
+                            
+    #                         # Get reviews for this product
+    #                         reviews = Reviews.objects.filter(product_id=product_id)
+    #                         review_data = []
+                            
+    #                         for review in reviews:
+    #                             review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
+    #                             review_data.append(review_dict)
+    #                     else:
+    #                         product_dict = {}
+    #                         variation_data = []
+    #                         review_data = []
+    #                 except (ValueError, TypeError):
+    #                     product_dict = {}
+    #                     variation_data = []
+    #                     review_data = []
+                    
+    #                 # Serialize order item
+    #                 order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
+                    
+    #                 order_item_data.append({
+    #                     'order_item': order_item_dict,
+    #                     'product': product_dict,
+    #                     'variations': variation_data,
+    #                     'reviews': review_data
+    #                 })
+                
+    #             # Serialize order
+    #             order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
+                
+    #             timeslot_orders.append({
+    #                 'order': order_dict,
+    #                 'order_items': order_item_data
+    #             })
+            
+    #         # Serialize timeslot
+    #         timeslot_dict = {field.name: getattr(timeslot, field.name) for field in TimeSlot._meta.fields}
+
+    #         availability_data = []
+            
+    #         for pincode in all_pincodes:
+    #             delivery_data = pincode.delivery_charge.get(str(timeslot.id))
+    #             if delivery_data:
+    #                 availability_data.append({
+    #                     'pincode': pincode.pincode,
+    #                     'area_name': pincode.area_name,
+    #                     'city': pincode.city,
+    #                     'state': pincode.state,
+    #                     'timeslot_charge': delivery_data.get('charges', 0),
+    #                     'timeslot_available': delivery_data.get('available', False)
+    #                 })
+            
+    #         response_data.append({
+    #             'timeslot': timeslot_dict,
+    #             'orders': timeslot_orders,
+    #             'availability_charges': availability_data
+    #         })
+        
+    #     return Response({
+    #         "success": True,
+    #         "data": response_data,
+    #         "error": None
+    #     })
+
+
+class PincodeAnalyticsViewSet(viewsets.ViewSet):
+    """
+    Pincode Analytics with custom order format (includes all pincodes)
+    """
+    @handle_exceptions
+    def list(self, request):
+        # Get all orders
+        orders = Order.objects.all()
+        
+        # Get all order items in bulk
+        order_items = OrderItem.objects.all()
+        order_items_map = {}
+        for item in order_items:
+            order_items_map.setdefault(item.order_id, []).append(item)
+        
+        # Get all product IDs
+        product_ids = set()
+        variation_ids = set()
+        for items in order_items_map.values():
+            for item in items:
+                try:
+                    product_ids.add(int(item.product_id))
+                    variation_ids.add(int(item.product_variation_id))
+                except ValueError:
+                    pass
+        
+        # Get products in bulk
+        products = Product.objects.filter(product_id__in=product_ids).in_bulk(field_name='product_id')
+        variations = ProductVariation.objects.filter(
+            product_variation_id__in=variation_ids
+        ).in_bulk(field_name='product_variation_id')
+        
+        # Get timeslots in bulk
+        timeslots = TimeSlot.objects.in_bulk(field_name='id')
+        
+        # Group orders by pincode
+        orders_by_pincode = {}
+        for order in orders:
+            pincode = order.pincode_id
+            orders_by_pincode.setdefault(pincode, []).append(order)
+        
+        # Get ALL pincodes
+        pincodes = Pincode.objects.all()
+        
+        response_data = []
+        
+        for pincode in pincodes:
+            pincode_str = str(pincode.pincode)
+            pincode_orders = orders_by_pincode.get(pincode_str, [])
+            formatted_orders = []
+            
+            for order in pincode_orders:
+                # Format timeslot
+                try:
+                    timeslot_id = int(order.timeslot_id)
+                    timeslot = timeslots.get(timeslot_id)
+                    timeslot_time = f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
+                except (ValueError, TypeError, AttributeError):
+                    timeslot_time = "Unknown Timeslot"
+                
+                # Format dates
+                delivery_date = order.delivery_date.strftime("%d-%m-%Y")
+                order_date = order.created_at.strftime("%d, %B %Y - %H:%M")
+                
+                # Get order items
+                order_items = order_items_map.get(order.order_id, [])
+                formatted_items = []
+                
+                for item in order_items:
+                    try:
+                        product_id = int(item.product_id)
+                        product = products.get(product_id)
+                        title = product.title if product else "Unknown Product"
+                    except (ValueError, TypeError):
+                        title = "Unknown Product"
+                        
+                    weight_variation = ""
+                    try:
+                        variation_id = int(item.product_variation_id)
+                        variation = variations.get(variation_id)
+                        if variation:
+                            weight_variation = variation.weight_variation
+                    except (ValueError, TypeError):
+                        pass
+                    
+                    formatted_items.append({
+                        "title": title,
+                        "quantity": item.quantity,
+                        "price": float(item.final_amount),
+                        "weight_variation": weight_variation
+                    })
+                
+                formatted_orders.append({
+                    "order_id": order.order_id,
+                    "user_id": order.user_id,
+                    "pincode_id": order.pincode_id,
+                    "timeslot_time": timeslot_time,
+                    "first_name": order.first_name,
+                    "last_name": order.last_name,
+                    "delivery_date": delivery_date,
+                    "order_date": order_date,
+                    "order_items": formatted_items
+                })
+            
+            pincode_data = {
+                "pincode": pincode.pincode,
+                "area_name": pincode.area_name,
+                "city": pincode.city,
+                "state": pincode.state,
+                "delivery_charge": pincode.delivery_charge,
+                "is_active": pincode.is_active,
+                "created_at": pincode.created_at,
+                "orders": formatted_orders
+            }
+            
+            response_data.append(pincode_data)
         
         return Response({
             "success": True,
