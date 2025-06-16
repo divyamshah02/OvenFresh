@@ -27,7 +27,7 @@ from utils.decorators import *
 
 class OrderViewSet(viewsets.ViewSet):
     
-    @handle_exceptions
+    # @handle_exceptions
     @check_authentication()
     def create(self, request):
         """
@@ -99,7 +99,7 @@ class OrderViewSet(viewsets.ViewSet):
         delivery_charge = delivery_details.get("charges", 0)
         amount = sum(float(float(item['price']) * float(item['quantity'])) for item in cart_items)
         tax_amount = amount * 0.18  # Assuming 18% tax
-        total_amount = delivery_charge + amount + tax_amount
+        total_amount = float(delivery_charge) + float(amount) + float(tax_amount)
         
         # Format delivery address
         delivery_address = f"{data['address']}, {data['city']}, {data['pincode']}"
@@ -921,12 +921,14 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
             for item in order_items:
                 # You'll need to get product details from your Product model
                 # This is a placeholder - adjust according to your Product model
+                product_data = Product.objects.filter(product_id=item.product_id).first()
+                product_variation_data = ProductVariation.objects.filter(product_variation_id=item.product_variation_id).first()
                 items_data.append({
                     'product_id': item.product_id,
-                    'product_name': f"Product {item.product_id}",  # Replace with actual product name
-                    'product_image': "/static/img/placeholder.jpg",  # Replace with actual image
+                    'product_name': f"{product_data.title}",  # Replace with actual product name
+                    'product_image': f"{product_data.photos[0]}",  # Replace with actual image
                     'variation_id': item.product_variation_id,
-                    'variation_name': f"Variation {item.product_variation_id}",  # Replace with actual variation name
+                    'variation_name': f"{product_variation_data.weight_variation}",  # Replace with actual variation name
                     'quantity': item.quantity,
                     'amount': float(item.amount),
                     'discount': float(item.discount),

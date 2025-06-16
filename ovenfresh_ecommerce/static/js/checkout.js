@@ -19,7 +19,7 @@ let currentPaymentData = null
 // Delivery data
 let pincodeTimeslots = []
 let todayPincodeTimeslots = []
-let selectedAddress = null
+let selectedAddress = "new"
 let selectedTimeslot = null
 
 // OTP verification
@@ -109,10 +109,10 @@ async function checkUserLoggedIn() {
   }
 }
 
-async function transferCart() {
+async function transferCart(old_session_id) {
   showLoading()
   try {
-    const [success, result] = await callApi("POST", transfer_cart_url, {}, csrf_token)
+    const [success, result] = await callApi("POST", transfer_cart_url, {session_id: old_session_id}, csrf_token)
     console.log(result)
     if (success && result.success) {
       return true
@@ -443,7 +443,7 @@ async function verifyOtp() {
 
         userDataAdded = result.data.user_details
         csrf_token = getCSRFToken()
-        await transferCart()
+        await transferCart(result.data.old_session_id)
 
         window.location.reload()
       } else {
@@ -742,7 +742,7 @@ async function updateUserData() {
     const [success, result] = await callApi("POST", add_user_data_url, bodyData, csrf_token)
     console.log(result)
     if (success && result.success) {
-      showNotification("Update user data.")
+      showNotification("User data updated.")
     } else {
       throw new Error(result.error || "Failed to add data")
     }
@@ -808,6 +808,7 @@ async function continueToPayment() {
 
   if (!userDataAdded) {
     await updateUserData()
+    await checkUserLoggedIn()
   }
 
   if (selectedAddress === "new") {

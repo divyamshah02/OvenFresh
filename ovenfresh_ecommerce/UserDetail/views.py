@@ -193,7 +193,10 @@ class OtpAuthViewSet(viewsets.ViewSet):
             )
             user_details_filled = False
 
+        old_session_id = request.session.get('session_token')
+
         login(request, user)
+        new_session_id = request.session.get('session_token')
 
         return Response({
             "success": True,
@@ -202,7 +205,8 @@ class OtpAuthViewSet(viewsets.ViewSet):
             "data": {
                 "otp_verified": True,
                 "user_id": user.user_id,
-                "user_details": user_details_filled
+                "user_details": user_details_filled,
+                "old_session_id": old_session_id
             },
             "error": None
         }, status=status.HTTP_200_OK)

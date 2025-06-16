@@ -448,7 +448,7 @@ function generateKOTPDF() {
 
   // Customer details
   doc.text("Customer Details:", 20, 70)
-  doc.text(`${orderData.first_name} ${orderData.last_name}`, 20, 85)
+  doc.text(`Name: ${orderData.first_name} ${orderData.last_name}`, 20, 85)
   doc.text(`Phone: ${orderData.phone}`, 20, 95)
 
   // Delivery details
