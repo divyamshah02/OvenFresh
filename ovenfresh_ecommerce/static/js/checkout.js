@@ -273,14 +273,20 @@ function showGuestCheckoutForm() {
 
   // Add verify button next to phone field
   const phoneParent = phoneInput.parentElement
-  phoneParent.classList.add("position-relative")
-
+  phoneParent.className = "col-8 col-md-10"
+  // phoneParent.classList.add("position-relative")
+  const verifyButtonParent = document.createElement("div")
+  verifyButtonParent.className = "col-4 col-md-2"
   const verifyButton = document.createElement("button")
   verifyButton.type = "button"
-  verifyButton.className = "btn btn-sm of-btn-outline-primary position-absolute end-0 top-0 mt-4 me-2"
+  verifyButton.className = "btn btn-sm of-btn-outline-primary end-0 top-0 mt-4 me-2 w-md-100"
   verifyButton.textContent = "Verify"
   verifyButton.onclick = showSendOtpModal
-  phoneParent.appendChild(verifyButton)
+  verifyButtonParent.appendChild(verifyButton)
+  // phoneParent.appendChild(verifyButtonParent)
+  phoneParent.parentNode.insertBefore(verifyButtonParent, phoneParent.nextSibling);
+
+  phoneParent.ex
 }
 
 function showSendOtpModal() {
@@ -603,6 +609,7 @@ async function loadCartSummary() {
         window.location.href = "/cart/";
       }      
       renderCheckoutItems()
+      updateCartCount()
       calculateTotals()
     } else {
       console.error("Failed to fetch cart items:", result)
@@ -1028,6 +1035,25 @@ function showCODSuccessModal(orderId) {
   }, 3000)
 }
 
+function updateCartCount() {
+    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
+}
+
+async function updateCartCountFromAPI() {
+    try {
+        const [success, result] = await callApi("GET", cart_list_url);
+        if (success && result.success) {
+            cartItems = result.data.cart_items || [];
+            updateCartCount();
+        }
+    } catch (error) {
+        console.error("Error updating cart count:", error);
+    }
+}
 // Utility functions
 function formatDate(dateString) {
   const date = new Date(dateString)

@@ -336,9 +336,24 @@ class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
-        category_id = request.query_params.get('category_id')
-        if category_id:
-            product_obj = Product.objects.filter(category_id=category_id)
+        category = request.query_params.get('category')
+        subcategory = request.query_params.get('sub_category')
+
+        if subcategory:
+            subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
+            sub_category_id = subcategory_data.sub_category_id
+            if sub_category_id:                
+                product_obj = Product.objects.filter(sub_category_id=sub_category_id)
+            else:
+                product_obj = Product.objects.all()
+
+        elif category:
+            category_data = Category.objects.filter(title__icontains=category).first()
+            category_id = category_data.category_id
+            if category_id:                
+                product_obj = Product.objects.filter(category_id=category_id)
+            else:
+                product_obj = Product.objects.all()
 
         else:
             product_obj = Product.objects.all()

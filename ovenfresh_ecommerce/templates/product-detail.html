@@ -228,10 +228,10 @@
                                     </div> -->
                                     <div class="col-md-12">
                                         <div class="d-grid gap-2 d-md-flex">
-                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="addToCart()">
+                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="AddToCart()">
                                                 <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                             </button>
-                                            <button class="btn of-btn-outline-primary rounded-pill">
+                                            <button class="btn of-btn-outline-primary rounded-pill" onclick="buyNow()">
                                                 <!-- <i class="fas fa-heart"></i> -->
                                                 Buy Now
                                             </button>
@@ -767,95 +767,17 @@
     </style>
 
     <script>
-        // Cart functionality
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cart-count').textContent = cartCount;
-        }
-
-        function changeMainImage(src) {
-            document.getElementById('main-product-image').src = src;
-            
-            // Update active thumbnail
-            document.querySelectorAll('.thumbnail-img').forEach(img => {
-                img.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        function changeQuantity(change) {
-            const quantityInput = document.getElementById('quantity');
-            let currentQuantity = parseInt(quantityInput.value);
-            let newQuantity = currentQuantity + change;
-            
-            if (newQuantity >= 1 && newQuantity <= 10) {
-                quantityInput.value = newQuantity;
-            }
-        }
-
-        function addToCart() {
-            const product = {
-                id: 1,
-                name: "Chocolate Truffle Cake",
-                price: 35.99,
-                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
-                weight: document.getElementById('weight').value,
-                flavor: document.getElementById('flavor').value,
-                message: document.getElementById('message').value,
-                deliveryDate: document.getElementById('delivery-date').value,
-                quantity: parseInt(document.getElementById('quantity').value)
-            };
-
-            const existingItem = cart.find(item => 
-                item.id === product.id && 
-                item.weight === product.weight && 
-                item.flavor === product.flavor
+        window.onload = async function () {
+            const csrfToken = "{{ csrf_token }}";
+            await InitializeProductDetail(
+                csrfToken,
+                "{% url 'product-list' %}",
+                "{% url 'check-pincode-list' %}",
+                "{% url 'cart-api-list' %}",
+                "{% url 'checkout-list' %}"
             );
-
-            if (existingItem) {
-                existingItem.quantity += product.quantity;
-            } else {
-                cart.push(product);
-            }
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            
-            // Show success message
-            alert('Product added to cart successfully!');
-        }
-
-        // Set minimum delivery date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('delivery-date').min = tomorrow.toISOString().split('T')[0];
-
-        window.onload = function () {
             toggle_loader();
-            updateCartCount();
-        };
-
-        window.addEventListener('scroll', function () {
-            const menuBar = document.querySelector('.main-menu');
-            const scrollTrigger = 95;
-
-            if (window.scrollY >= scrollTrigger) {
-                menuBar.classList.add('fixed-top');
-            } else {
-                menuBar.classList.remove('fixed-top');
-            }
-        });
-    </script>
-    
-    <script>
-        const csrfToken = "{{ csrf_token }}";
-        InitializeProductDetail(
-            csrfToken,
-            "{% url 'product-list' %}",
-            "{% url 'check-pincode-list' %}"
-        );
+        }
     </script>
 </body>
 

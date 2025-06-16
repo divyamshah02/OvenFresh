@@ -1,5 +1,7 @@
 let product_detail_url = null;
 let pincode_check_url = null;
+let cart_list_url = null;
+let checkout_url = null;
 let csrf_token = null;
 
 // Current product data
@@ -9,16 +11,20 @@ let selectedVariation = null;
 let availableTimeslots = [];
 let pincodeTimeslots = [];
 let todayPincodeTimeslots = [];
-
+let cartItems = [];
 
 async function InitializeProductDetail(
     csrfTokenParam,
     productDetailUrlParam,
-    pincodeCheckUrlParam
+    pincodeCheckUrlParam,
+    cartListUrlParam,
+    checkoutUrlParam
 ) {
     csrf_token = csrfTokenParam;
     product_detail_url = productDetailUrlParam;
     pincode_check_url = pincodeCheckUrlParam;
+    cart_list_url = cartListUrlParam;
+    checkout_url = checkoutUrlParam;
 
     // Get product ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -537,7 +543,7 @@ function checkIfTodaySelected() {
     }
 }
 
-async function addToCart() {
+async function addToCart_old() {
     if (!selectedVariation) {
         showNotification("Please select a product variation.", "warning");
         return;
@@ -573,7 +579,75 @@ async function addToCart() {
     }
 }
 
+async function AddToCart() {
+
+    let product_id = selectedVariation.product_id
+    let product_variation_id = selectedVariation.product_variation_id
+    let qty = parseInt(document.getElementById('quantity').value) || 1;
+
+    if (!product_variation_id || qty < 1) {
+        showNotification("Invalid product or quantity.", "error");
+        return false;
+    }
+
+    try {
+        const bodyData = {
+            product_id: product_id,
+            product_variation_id: product_variation_id,
+            qty: qty
+        };
+
+        const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token);
+        if (success && result.success) {
+            showNotification("Item added to cart!", "success");
+            // Refresh cart if we're on cart page
+            if (document.getElementById('cart-items')) {
+                await GenerateCart(csrf_token, cart_list_url, pincode_check_url);
+            } else {
+                // Just update cart count if we're on other pages
+                updateCartCountFromAPI();
+            }
+            return true;
+        } else {
+            showNotification(result.error || "Failed to add item to cart.", "error");
+            console.error(result);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+        showNotification("Error adding item to cart.", "error");
+        return false;
+    }
+}
+
 async function buyNow() {
+    const deliveryDate = document.getElementById("delivery-date").value;
+    const deliveryTime = document.getElementById("timeslot").value;
+    const pincode = document.getElementById("pincode-check").value;
+
+    await AddToCart();
+
+    // if (!deliveryDate) {
+    //     showNotification("Please select a delivery date.", "warning");
+    //     return;
+    // }
+
+    // if (!deliveryTime) {
+    //     showNotification("Please select a delivery time slot.", "warning");
+    //     return;
+    // }
+
+    // Prepare checkout data
+    const checkoutData = {
+        delivery_date: deliveryDate,
+        delivery_time: deliveryTime,
+        pincode: pincode,
+    };
+
+    const checkoutUrl = `${checkout_url}?` + toQueryString(checkoutData);
+
+    window.location.href = checkoutUrl;
+
     const success = await addToCart();
     if (success) {
         window.location.href = 'cart.html';
@@ -682,30 +756,31 @@ function showNotification(message, type = "info") {
 }
 
 async function updateCartCountFromAPI() {
-    // This function should be implemented to update cart count
-    // You can import this from cart.js or implement it here
-    if (typeof cart_list_url !== 'undefined' && cart_list_url) {
-        try {
-            const [success, result] = await callApi("GET", cart_list_url);
-            if (success && result.success) {
-                const cartItems = result.data.cart_items || [];
-                const cartCount = cartItems.reduce((total, item) => total + parseInt(item.qty), 0);
-                const cartCountElement = document.getElementById('cart-count');
-                if (cartCountElement) {
-                    cartCountElement.textContent = cartCount;
-                }
-            }
-        } catch (error) {
-            console.error("Error updating cart count:", error);
+    try {
+        const [success, result] = await callApi("GET", cart_list_url);
+        if (success && result.success) {
+            cartItems = result.data.cart_items || [];
+            updateCartCount();
         }
+    } catch (error) {
+        console.error("Error updating cart count:", error);
     }
 }
 
-// Make functions globally available
-window.changeMainImage = changeMainImage;
-window.changeQuantity = changeQuantity;
-window.addToCart = addToCart;
-window.buyNow = buyNow;
-window.checkPincode = checkPincode;
-window.quickAddToCart = quickAddToCart;
-window.addToWishlist = addToWishlist;
+function updateCartCount() {
+    console.log(cartItems);
+    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
+}
+
+// // Make functions globally available
+// window.changeMainImage = changeMainImage;
+// window.changeQuantity = changeQuantity;
+// window.addToCart = addToCart;
+// window.buyNow = buyNow;
+// window.checkPincode = checkPincode;
+// window.quickAddToCart = quickAddToCart;
+// window.addToWishlist = addToWishlist;

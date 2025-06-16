@@ -12,7 +12,6 @@ let cartItems = [];
 let selectedTimeslot = null
 
 
-
 // Promo codes configuration
 const promoCodes = {
     'welcome10': { discount: 0.10, description: '10% off' },
@@ -28,9 +27,7 @@ async function GenerateCart(csrfTokenParam, cartListUrlParam, pincodeCheckUrlPar
     csrf_token = csrfTokenParam;
     cart_list_url = cartListUrlParam;
     cart_delete_url = cartListUrlParam;
-    if (checkoutUrlParam) {
-        checkout_url = checkoutUrlParam;        
-    }
+    checkout_url = checkoutUrlParam;
     pincode_check_url = pincodeCheckUrlParam;
 
     try {
@@ -124,7 +121,6 @@ function showEmptyCart() {
 }
 
 function updateCartCount() {
-    console.log(cartItems);
     const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
     const cartCountElement = document.getElementById('cart-count');
     if (cartCountElement) {
@@ -295,8 +291,6 @@ function showNotification(message, type = "info") {
         }
     }, 5000);
 }
-
-
 
 async function checkPincode(pincodeValue = null) {
   const pincode = pincodeValue || document.getElementById("pincode-check").value.trim()
