@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'Product',
     'Analytics',
     'FrontEnd',
+    'Cms'
 ]
 
 MIDDLEWARE = [

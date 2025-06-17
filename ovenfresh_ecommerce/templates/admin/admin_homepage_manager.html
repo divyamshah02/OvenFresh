@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Manager - Admin Panel</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+
+    <!-- Import FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+
+    <style>
+        .section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .content-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+        }
+
+        .content-item:hover {
+            background: #e9ecef;
+        }
+
+        .btn-add-content {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-add-content:hover {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: white;
+        }
+
+        .preview-image {
+            max-width: 100px;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .drag-handle {
+            cursor: move;
+            color: #6c757d;
+        }
+
+        .drag-handle:hover {
+            color: #495057;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+
+<body class="ovenfresh-theme">
+    <div id="loader" class="loader-container">
+        <div class="loader"></div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-header">
+                    <h4>OvenFresh Admin</h4>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="/admin/dashboard/"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="/admin/orders/"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li><a href="/admin/products/"><i class="fas fa-box"></i> Products</a></li>
+                    <li><a href="/admin/homepage/" class="active"><i class="fas fa-home"></i> Homepage</a></li>
+                    <li><a href="/admin/customers/"><i class="fas fa-users"></i> Customers</a></li>
+                    <li><a href="/admin/delivery/"><i class="fas fa-truck"></i> Delivery</a></li>
+                    <li><a href="/admin/reports/"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                </ul>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="h2">Homepage Manager</h1>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-success" onclick="previewHomepage()">
+                                <i class="fas fa-eye me-1"></i> Preview Homepage
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="refreshAllSections()">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh All
+                            </button>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Homepage Sections -->
+                <div class="container-fluid">
+                    
+                    <!-- Hero Banners Section -->
+                    <div class="section-card" id="hero-banners-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#hero-banners-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-images me-2"></i>
+                                    <span>Hero Banners</span>
+                                    <span class="badge bg-light text-dark ms-2" id="hero-banners-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addHeroBanner()">
+                                        <i class="fas fa-plus"></i> Add Banner
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse show" id="hero-banners-content">
+                            <div class="section-content" id="hero-banners-list">
+                                <!-- Hero banners will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Policy Section -->
+                    <div class="section-card" id="delivery-policy-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#delivery-policy-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-truck me-2"></i>
+                                    <span>Delivery Policy</span>
+                                    <span class="badge bg-light text-dark ms-2" id="delivery-policy-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addDeliveryPolicy()">
+                                        <i class="fas fa-plus"></i> Add Policy
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="delivery-policy-content">
+                            <div class="section-content" id="delivery-policy-list">
+                                <!-- Delivery policies will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories Section -->
+                    <div class="section-card" id="categories-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#categories-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-th-large me-2"></i>
+                                    <span>Homepage Categories</span>
+                                    <span class="badge bg-light text-dark ms-2" id="categories-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addCategory()">
+                                        <i class="fas fa-plus"></i> Add Category
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="categories-content">
+                            <div class="section-content" id="categories-list">
+                                <!-- Categories will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Videos Section -->
+                    <div class="section-card" id="videos-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#videos-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-video me-2"></i>
+                                    <span>Video Content</span>
+                                    <span class="badge bg-light text-dark ms-2" id="videos-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addVideo()">
+                                        <i class="fas fa-plus"></i> Add Video
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="videos-content">
+                            <div class="section-content" id="videos-list">
+                                <!-- Videos will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features Section -->
+                    <div class="section-card" id="features-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#features-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-star me-2"></i>
+                                    <span>Features</span>
+                                    <span class="badge bg-light text-dark ms-2" id="features-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addFeature()">
+                                        <i class="fas fa-plus"></i> Add Feature
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="features-content">
+                            <div class="section-content" id="features-list">
+                                <!-- Features will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="section-card" id="about-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#about-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span>About Section</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="editAboutSection()">
+                                        <i class="fas fa-edit"></i> Edit About
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="about-content">
+                            <div class="section-content" id="about-details">
+                                <!-- About section will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Sections -->
+                    <div class="section-card" id="product-sections-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#product-sections-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-box me-2"></i>
+                                    <span>Product Sections</span>
+                                    <span class="badge bg-light text-dark ms-2" id="product-sections-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addProductSection()">
+                                        <i class="fas fa-plus"></i> Add Section
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="product-sections-content">
+                            <div class="section-content" id="product-sections-list">
+                                <!-- Product sections will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Logos Section -->
+                    <div class="section-card" id="client-logos-section">
+                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#client-logos-content">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-building me-2"></i>
+                                    <span>Client Logos</span>
+                                    <span class="badge bg-light text-dark ms-2" id="client-logos-count">0</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-add-content me-2" onclick="addClientLogo()">
+                                        <i class="fas fa-plus"></i> Add Logo
+                                    </button>
+                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="client-logos-content">
+                            <div class="section-content" id="client-logos-list">
+                                <!-- Client logos will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals will be added here dynamically -->
+    <div id="modal-container"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/admin/admin_homepage_manager.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        
+        InitializeHomepageManager(
+            csrfToken,
+            "/cms-api/hero-banners/",
+            "/cms-api/delivery-policy/",
+            "/cms-api/homepage-categories/",
+            "/cms-api/video-content/",
+            "/cms-api/features/",
+            "/cms-api/about-section/",
+            "/cms-api/product-sections/",
+            "/cms-api/client-logos/",
+            "/cms-api/footer-content/"
+        );
+        toggle_loader();
+    </script>
+</body>
+
+</html>

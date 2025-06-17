@@ -123,6 +123,13 @@ class AdminDashboardViewSet(viewsets.ViewSet):
     def list(self, request):
         return render(request, 'admin/admin_dashboard.html')
 
+class AdminCmsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_homepage_manager.html')
+
 
 class AdminAllProductViewSet(viewsets.ViewSet):
 

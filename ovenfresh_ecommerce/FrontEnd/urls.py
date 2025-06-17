@@ -18,6 +18,7 @@ router.register(r'account', AccountViewSet, basename='account')
 
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
 router.register(r'admin-dashboard', AdminDashboardViewSet, basename='admin-dashboard')
+router.register(r'admin-cms', AdminCmsViewSet, basename='admin-cms')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')
 router.register(r'admin-category', AdminManageCategoryViewSet, basename='admin-category')
