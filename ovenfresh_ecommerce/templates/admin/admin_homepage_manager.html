@@ -4,128 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage Manager - Admin Panel</title>
-
-    <!-- Import BootStrap CSS Library -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Import Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
-
-    <!-- Import FontAwesome -->
+    <title>Homepage Manager - ShopAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="/static/css/admin/styles.css">
-    <link rel="stylesheet" href="/static/css/loader.css">
-
-    <style>
-        .section-card {
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .section-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .section-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px 10px 0 0;
-            cursor: pointer;
-        }
-
-        .section-content {
-            padding: 20px;
-        }
-
-        .content-item {
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background: #f8f9fa;
-        }
-
-        .content-item:hover {
-            background: #e9ecef;
-        }
-
-        .btn-add-content {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border: none;
-            color: white;
-        }
-
-        .btn-add-content:hover {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: white;
-        }
-
-        .preview-image {
-            max-width: 100px;
-            max-height: 60px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .status-badge {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .drag-handle {
-            cursor: move;
-            color: #6c757d;
-        }
-
-        .drag-handle:hover {
-            color: #495057;
-        }
-
-        .collapse-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .collapsed .collapse-icon {
-            transform: rotate(-90deg);
-        }
-    </style>
 </head>
 
 <body class="ovenfresh-theme">
-    <div id="loader" class="loader-container">
-        <div class="loader"></div>
-    </div>
-
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="sidebar-header">
-                    <h4>OvenFresh Admin</h4>
-                </div>
-                <ul class="sidebar-menu">
-                    <li><a href="/admin/dashboard/"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="/admin/orders/"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-                    <li><a href="/admin/products/"><i class="fas fa-box"></i> Products</a></li>
-                    <li><a href="/admin/homepage/" class="active"><i class="fas fa-home"></i> Homepage</a></li>
-                    <li><a href="/admin/customers/"><i class="fas fa-users"></i> Customers</a></li>
-                    <li><a href="/admin/delivery/"><i class="fas fa-truck"></i> Delivery</a></li>
-                    <li><a href="/admin/reports/"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                </ul>
-            </nav>
-
+            {% include 'admin/admin-nav.html' %}
+            
             <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <!-- Header -->
@@ -141,7 +32,7 @@
                             <button type="button" class="btn btn-success" onclick="previewHomepage()">
                                 <i class="fas fa-eye me-1"></i> Preview Homepage
                             </button>
-                            <button type="button" class="btn btn-primary" onclick="refreshAllSections()">
+                            <button type="button" class="btn btn-outline-secondary" onclick="refreshAllSections()">
                                 <i class="fas fa-sync-alt me-1"></i> Refresh All
                             </button>
                         </div>
@@ -159,195 +50,320 @@
                     </div>
                 </div>
 
-                <!-- Homepage Sections -->
-                <div class="container-fluid">
-                    
-                    <!-- Hero Banners Section -->
-                    <div class="section-card" id="hero-banners-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#hero-banners-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-images me-2"></i>
-                                    <span>Hero Banners</span>
-                                    <span class="badge bg-light text-dark ms-2" id="hero-banners-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addHeroBanner()">
-                                        <i class="fas fa-plus"></i> Add Banner
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Hero Banners</h6>
+                                        <h3 class="card-title mb-0" id="totalBanners">0</h3>
+                                        <p class="small text-muted mb-0">Active banners</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-images"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Product Sections</h6>
+                                        <h3 class="card-title mb-0" id="totalProductSections">0</h3>
+                                        <p class="small text-success mb-0">Active sections</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Categories</h6>
+                                        <h3 class="card-title mb-0" id="totalCategories">0</h3>
+                                        <p class="small text-warning mb-0">Featured categories</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-th-large"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Total Content</h6>
+                                        <h3 class="card-title mb-0" id="totalContent">0</h3>
+                                        <p class="small text-info mb-0">All sections</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading homepage content...</p>
+                </div>
+
+                <!-- Homepage Sections -->
+                <div class="container-fluid" id="homepageSections" style="display: none;">
+                    
+                    <!-- Hero Banners Section -->
+                    <div class="card mb-4" id="hero-banners-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-images me-2 text-primary"></i>
+                                <h5 class="mb-0">Hero Banners</h5>
+                                <span class="badge bg-primary ms-2" id="hero-banners-count">0</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-primary" onclick="addHeroBanner()">
+                                    <i class="fas fa-plus me-1"></i> Add Banner
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#hero-banners-content">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="collapse show" id="hero-banners-content">
-                            <div class="section-content" id="hero-banners-list">
-                                <!-- Hero banners will be loaded here -->
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Preview</th>
+                                                <th>Title</th>
+                                                <th>Description</th>
+                                                <th>Order</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="hero-banners-list">
+                                            <!-- Hero banners will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Delivery Policy Section -->
-                    <div class="section-card" id="delivery-policy-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#delivery-policy-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-truck me-2"></i>
-                                    <span>Delivery Policy</span>
-                                    <span class="badge bg-light text-dark ms-2" id="delivery-policy-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addDeliveryPolicy()">
-                                        <i class="fas fa-plus"></i> Add Policy
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
+                    <div class="card mb-4" id="delivery-policy-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-truck me-2 text-success"></i>
+                                <h5 class="mb-0">Delivery Policy</h5>
+                                <span class="badge bg-success ms-2" id="delivery-policy-count">0</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-success" onclick="addDeliveryPolicy()">
+                                    <i class="fas fa-plus me-1"></i> Add Policy
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#delivery-policy-content">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="collapse" id="delivery-policy-content">
-                            <div class="section-content" id="delivery-policy-list">
-                                <!-- Delivery policies will be loaded here -->
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Icon</th>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Countdown</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="delivery-policy-list">
+                                            <!-- Delivery policies will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Categories Section -->
-                    <div class="section-card" id="categories-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#categories-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-th-large me-2"></i>
-                                    <span>Homepage Categories</span>
-                                    <span class="badge bg-light text-dark ms-2" id="categories-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addCategory()">
-                                        <i class="fas fa-plus"></i> Add Category
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
+                    <div class="card mb-4" id="categories-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-th-large me-2 text-warning"></i>
+                                <h5 class="mb-0">Homepage Categories</h5>
+                                <span class="badge bg-warning ms-2" id="categories-count">0</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-warning" onclick="addCategory()">
+                                    <i class="fas fa-plus me-1"></i> Add Category
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#categories-content">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="collapse" id="categories-content">
-                            <div class="section-content" id="categories-list">
-                                <!-- Categories will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Videos Section -->
-                    <div class="section-card" id="videos-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#videos-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-video me-2"></i>
-                                    <span>Video Content</span>
-                                    <span class="badge bg-light text-dark ms-2" id="videos-count">0</span>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Preview</th>
+                                                <th>Title</th>
+                                                <th>Description</th>
+                                                <th>Order</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="categories-list">
+                                            <!-- Categories will be loaded here -->
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addVideo()">
-                                        <i class="fas fa-plus"></i> Add Video
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="collapse" id="videos-content">
-                            <div class="section-content" id="videos-list">
-                                <!-- Videos will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Features Section -->
-                    <div class="section-card" id="features-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#features-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-star me-2"></i>
-                                    <span>Features</span>
-                                    <span class="badge bg-light text-dark ms-2" id="features-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addFeature()">
-                                        <i class="fas fa-plus"></i> Add Feature
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="collapse" id="features-content">
-                            <div class="section-content" id="features-list">
-                                <!-- Features will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- About Section -->
-                    <div class="section-card" id="about-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#about-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <span>About Section</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="editAboutSection()">
-                                        <i class="fas fa-edit"></i> Edit About
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="collapse" id="about-content">
-                            <div class="section-content" id="about-details">
-                                <!-- About section will be loaded here -->
                             </div>
                         </div>
                     </div>
 
                     <!-- Product Sections -->
-                    <div class="section-card" id="product-sections-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#product-sections-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-box me-2"></i>
-                                    <span>Product Sections</span>
-                                    <span class="badge bg-light text-dark ms-2" id="product-sections-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addProductSection()">
-                                        <i class="fas fa-plus"></i> Add Section
-                                    </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
-                                </div>
+                    <div class="card mb-4" id="product-sections-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-box me-2 text-info"></i>
+                                <h5 class="mb-0">Product Sections</h5>
+                                <span class="badge bg-info ms-2" id="product-sections-count">0</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-info" onclick="addProductSection()">
+                                    <i class="fas fa-plus me-1"></i> Add Section
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#product-sections-content">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="collapse" id="product-sections-content">
-                            <div class="section-content" id="product-sections-list">
-                                <!-- Product sections will be loaded here -->
+                        <div class="collapse show" id="product-sections-content">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Section</th>
+                                                <th>Type</th>
+                                                <th>Category</th>
+                                                <th>Products</th>
+                                                <th>Order</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="product-sections-list">
+                                            <!-- Product sections will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Client Logos Section -->
-                    <div class="section-card" id="client-logos-section">
-                        <div class="section-header" data-bs-toggle="collapse" data-bs-target="#client-logos-content">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-building me-2"></i>
-                                    <span>Client Logos</span>
-                                    <span class="badge bg-light text-dark ms-2" id="client-logos-count">0</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-add-content me-2" onclick="addClientLogo()">
-                                        <i class="fas fa-plus"></i> Add Logo
+                    <!-- Other Sections (Videos, Features, About, Client Logos) -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Videos Section -->
+                            <div class="card mb-4" id="videos-section">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-video me-2 text-danger"></i>
+                                        <h6 class="mb-0">Video Content</h6>
+                                        <span class="badge bg-danger ms-2" id="videos-count">0</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-danger" onclick="addVideo()">
+                                        <i class="fas fa-plus"></i>
                                     </button>
-                                    <i class="fas fa-chevron-down collapse-icon"></i>
+                                </div>
+                                <div class="card-body">
+                                    <div id="videos-list">
+                                        <!-- Videos will be loaded here -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="collapse" id="client-logos-content">
-                            <div class="section-content" id="client-logos-list">
+                        <div class="col-md-6">
+                            <!-- Features Section -->
+                            <div class="card mb-4" id="features-section">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-star me-2 text-warning"></i>
+                                        <h6 class="mb-0">Features</h6>
+                                        <span class="badge bg-warning ms-2" id="features-count">0</span>
+                                    </div>
+                                    <button class="btn btn-sm btn-warning" onclick="addFeature()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div id="features-list">
+                                        <!-- Features will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="card mb-4" id="about-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-2 text-secondary"></i>
+                                <h5 class="mb-0">About Section</h5>
+                            </div>
+                            <button class="btn btn-sm btn-secondary" onclick="editAboutSection()">
+                                <i class="fas fa-edit me-1"></i> Edit About
+                            </button>
+                        </div>
+                        <div class="card-body" id="about-details">
+                            <!-- About section will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Client Logos Section -->
+                    <div class="card mb-4" id="client-logos-section">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-building me-2 text-dark"></i>
+                                <h5 class="mb-0">Client Logos</h5>
+                                <span class="badge bg-dark ms-2" id="client-logos-count">0</span>
+                            </div>
+                            <button class="btn btn-sm btn-dark" onclick="addClientLogo()">
+                                <i class="fas fa-plus me-1"></i> Add Logo
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="client-logos-list">
                                 <!-- Client logos will be loaded here -->
                             </div>
                         </div>
@@ -365,9 +381,10 @@
     <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/scripts.js"></script>
     <script src="/static/js/admin/admin_homepage_manager.js"></script>
 
     <script>
@@ -383,9 +400,11 @@
             "/cms-api/about-section/",
             "/cms-api/product-sections/",
             "/cms-api/client-logos/",
-            "/cms-api/footer-content/"
+            "/cms-api/footer-content/",
+            "/product-api/category/",
+            "/product-api/sub-category/",
+            "/product-api/all-products/"
         );
-        toggle_loader();
     </script>
 </body>
 

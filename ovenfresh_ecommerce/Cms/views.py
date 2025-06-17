@@ -1,12 +1,33 @@
 from rest_framework import viewsets, status
-from django.shortcuts import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
+from django.shortcuts import HttpResponse
+from django.db.models import Q
 from .models import *
 from .serializers import *
-from .migrate_data import start_migrations_personl
 
-from utils.decorators import *
+from .migrate_data import *
+from .clear_data import *
+# Decorator functions (assuming these exist in your project)
+def handle_exceptions(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            return Response({"success": False, "error": str(e)}, status=500)
+    return wrapper
+
+def check_authentication(required_role=None):
+    def decorator(func):
+        def wrapper(self, request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return Response({"success": False, "user_not_logged_in": True, "error": "Authentication required"}, status=401)
+            if required_role and getattr(request.user, 'role', None) != required_role:
+                return Response({"success": False, "user_unauthorized": True, "error": "Unauthorized"}, status=403)
+            return func(self, request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 class HeroBannerViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -82,6 +103,165 @@ class HeroBannerViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": "Banner not found"
             }, status=404)
+
+class ProductSectionViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def list(self, request):
+        """Get all active product sections"""
+        sections = ProductSection.objects.filter(is_active=True)
+        serializer = ProductSectionSerializer(sections, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data,
+            "error": None
+        })
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """Create new product section"""
+        serializer = ProductSectionSerializer(data=request.data)
+        if serializer.is_valid():
+            section = serializer.save()
+            
+            # If custom selection, add selected products
+            if section.section_type == 'custom' and 'selected_products' in request.data:
+                for product_id in request.data['selected_products']:
+                    ProductSectionItem.objects.create(
+                        section=section,
+                        product_id=product_id,
+                        is_active=True
+                    )
+            
+            return Response({
+                "success": True,
+                "data": ProductSectionSerializer(section).data,
+                "error": None
+            }, status=201)
+        return Response({
+            "success": False,
+            "data": None,
+            "error": serializer.errors
+        }, status=400)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update product section"""
+        try:
+            section = ProductSection.objects.get(pk=pk)
+            serializer = ProductSectionSerializer(section, data=request.data, partial=True)
+            if serializer.is_valid():
+                section = serializer.save()
+                
+                # Update selected products for custom sections
+                if section.section_type == 'custom' and 'selected_products' in request.data:
+                    # Clear existing items
+                    section.items.all().delete()
+                    # Add new items
+                    for product_id in request.data['selected_products']:
+                        ProductSectionItem.objects.create(
+                            section=section,
+                            product_id=product_id,
+                            is_active=True
+                        )
+                
+                return Response({
+                    "success": True,
+                    "data": ProductSectionSerializer(section).data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except ProductSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Section not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete product section"""
+        try:
+            section = ProductSection.objects.get(pk=pk)
+            section.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except ProductSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Section not found"
+            }, status=404)
+
+class CategoryViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def list(self, request):
+        """Get all active categories"""
+        categories = Category.objects.filter(is_active=True)
+        serializer = CategorySerializer(categories, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data,
+            "error": None
+        })
+
+class SubCategoryViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def list(self, request):
+        """Get subcategories, optionally filtered by category"""
+        category_id = request.query_params.get('category_id')
+        subcategories = SubCategory.objects.filter(is_active=True)
+        
+        if category_id:
+            subcategories = subcategories.filter(category_id=category_id)
+        
+        serializer = SubCategorySerializer(subcategories, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data,
+            "error": None
+        })
+
+class ProductViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    def list(self, request):
+        """Get products, optionally filtered by category/subcategory"""
+        category_id = request.query_params.get('category_id')
+        subcategory_id = request.query_params.get('subcategory_id')
+        search = request.query_params.get('search')
+        
+        products = Product.objects.filter(is_active=True)
+        
+        if category_id:
+            products = products.filter(category_id=category_id)
+        
+        if subcategory_id:
+            products = products.filter(subcategory_id=subcategory_id)
+        
+        if search:
+            products = products.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search)
+            )
+        
+        # Limit results for performance
+        products = products[:50]
+        
+        serializer = ProductSerializer(products, many=True)
+        return Response({
+            "success": True,
+            "data": serializer.data,
+            "error": None
+        })
 
 class DeliveryPolicyViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -291,36 +471,6 @@ class AboutSectionViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
-class ProductSectionViewSet(viewsets.ViewSet):
-    @handle_exceptions
-    def list(self, request):
-        """Get all active product sections"""
-        sections = ProductSection.objects.filter(is_active=True)
-        serializer = ProductSectionSerializer(sections, many=True)
-        return Response({
-            "success": True,
-            "data": serializer.data,
-            "error": None
-        })
-
-    @handle_exceptions
-    @check_authentication(required_role="admin")
-    def create(self, request):
-        """Create new product section"""
-        serializer = ProductSectionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "success": True,
-                "data": serializer.data,
-                "error": None
-            }, status=201)
-        return Response({
-            "success": False,
-            "data": None,
-            "error": serializer.errors
-        }, status=400)
-
 class ClientLogoViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -383,4 +533,5 @@ class FooterContentViewSet(viewsets.ViewSet):
 
 def test(request):
     start_migrations_personl()
+    # clear_data()
     return HttpResponse('hello workd')

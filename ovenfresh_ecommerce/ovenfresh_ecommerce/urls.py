@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('django-admin/', admin.site.urls),
     # path('favicon.ico', RedirectView.as_view(url='/static/assets/img/logo.ico')),
 
     path('', include('FrontEnd.urls')),

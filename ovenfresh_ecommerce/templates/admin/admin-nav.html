@@ -8,8 +8,8 @@
             </button>
         </div>
         <ul class="nav flex-column mx-2">
-            <li class="nav-item">
-                <a class="nav-link" href="#dashboard-section" data-section="dashboard">
+            <li class="nav-item" onclick="window.location=`{% url 'admin-dashboard-list' %}`" style="cursor: pointer;">
+                <a class="nav-link" data-section="dashboard">
                     <i class="fas fa-tachometer-alt me-2"></i>
                     Dashboard
                 </a>
@@ -37,8 +37,8 @@
                     </li>                    
                 </ul>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'admin-all-orders-list' %}" data-section="orders">
+            <li class="nav-item" onclick="window.location=`{% url 'admin-all-orders-list' %}`" style="cursor: pointer;">
+                <a class="nav-link" data-section="orders">
                     <i class="fas fa-shopping-cart me-2"></i>
                     Orders
                 </a>

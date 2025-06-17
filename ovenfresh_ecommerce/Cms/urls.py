@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
 
-# Create router and register ViewSets
+# Create router and register viewsets
 router = DefaultRouter()
 router.register(r'hero-banners', HeroBannerViewSet, basename='hero-banners')
 router.register(r'delivery-policy', DeliveryPolicyViewSet, basename='delivery-policy')
@@ -14,8 +14,13 @@ router.register(r'product-sections', ProductSectionViewSet, basename='product-se
 router.register(r'client-logos', ClientLogoViewSet, basename='client-logos')
 router.register(r'footer-content', FooterContentViewSet, basename='footer-content')
 
+# Product management APIs
+router.register(r'categories', CategoryViewSet, basename='categories')
+router.register(r'subcategories', SubCategoryViewSet, basename='subcategories')
+router.register(r'products', ProductViewSet, basename='products')
+
 urlpatterns = [
-    # API URLs
     path('', include(router.urls)),
     path('test/', test, name="test")
+
 ]

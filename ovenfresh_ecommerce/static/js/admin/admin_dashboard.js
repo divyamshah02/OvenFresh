@@ -11,7 +11,7 @@ let orderStatusChart = null
 let deliveryAreasChart = null
 
 // Current date range
-let currentDateRange = "7days"
+let currentDateRange = "today"
 
 async function AdminDashboard(
   csrfTokenParam,

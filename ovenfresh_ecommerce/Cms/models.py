@@ -120,13 +120,34 @@ class AboutFeature(models.Model):
         return self.title
 
 class ProductSection(models.Model):
+    SECTION_TYPES = [
+        ('featured', 'Featured Products'),
+        ('bestsellers', 'Best Sellers'),
+        ('new_arrivals', 'New Arrivals'),
+        ('trending', 'Trending Now'),
+        ('category_based', 'Category Based'),
+        ('custom', 'Custom Selection'),
+    ]
+    
     title = models.CharField(max_length=200)
     subtitle = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    section_type = models.CharField(max_length=50, default="featured")  # featured, bestsellers, trending, etc.
+    section_type = models.CharField(max_length=50, choices=SECTION_TYPES, default="featured")
+    
+    # Category-based selection
+    category_id = models.CharField(max_length=50, blank=True, null=True, help_text="Category ID for category-based sections")
+    subcategory_id = models.CharField(max_length=50, blank=True, null=True, help_text="Subcategory ID for more specific filtering")
+    
+    # Display settings
+    max_products = models.PositiveIntegerField(default=8, help_text="Maximum number of products to display")
+    show_price = models.BooleanField(default=True)
+    show_rating = models.BooleanField(default=True)
+    show_add_to_cart = models.BooleanField(default=True)
+    
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['order', '-created_at']
@@ -139,9 +160,14 @@ class ProductSectionItem(models.Model):
     product_id = models.CharField(max_length=50)  # Reference to your actual product
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['order']
+        unique_together = ['section', 'product_id']
+
+    def __str__(self):
+        return f"{self.section.title} - Product {self.product_id}"
 
 class ClientLogo(models.Model):
     company_name = models.CharField(max_length=100)
