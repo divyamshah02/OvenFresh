@@ -356,49 +356,48 @@ class AddressViewSet(viewsets.ViewSet):
     @handle_exceptions
     def create(self, request):
         """
-        API 3: Fill User Details after OTP verification
+        Add new address
         """
         user = request.user
 
-        address = request.data.get('address')
+        address_name = request.data.get('address_name')
+        address_line = request.data.get('address_line')
         city = request.data.get('city')
         pincode = request.data.get('pincode')
-        addressName = request.data.get('addressName')
+        is_default = request.data.get('is_default', False)
 
-        new_address = Address(
+        if not all([address_name, address_line, city, pincode]):
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "All fields are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # If this is set as default, remove default from other addresses
+        if is_default:
+            Address.objects.filter(user_id=user.user_id, is_default=True).update(is_default=False)
+
+        new_address = Address.objects.create(
             user_id=user.user_id,
-            address_line=address,
+            address_name=address_name,
+            address_line=address_line,
             city=city,
             state='Maharashtra',
             pincode=pincode,
-            address_name=addressName
+            is_default=is_default
         )
-        new_address.save()
-
-
-        addresses = []
-        addresses_obj = Address.objects.filter(user_id=user.user_id)
-
-        for address in addresses_obj:
-            addresses.append({
-                "id": address.id,
-                "address_line": address.address_line,
-                "city": address.city,
-                "state": address.state,
-                "pincode": address.pincode,
-                "address_name": address.address_name,
-            })
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"addresses": addresses},
+            "data": {"message": "Address added successfully", "address_id": new_address.id},
             "error": None
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
 
     @handle_exceptions
-    # @check_authentication(required_role="customer")
     def update(self, request, pk):
         """
         Update existing address
@@ -407,7 +406,16 @@ class AddressViewSet(viewsets.ViewSet):
         data = request.data
         address_id = pk
 
-        address = Address.objects.get(id=address_id, user_id=user_id)
+        try:
+            address = Address.objects.get(id=address_id, user_id=user_id)
+        except Address.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Address not found."
+            }, status=status.HTTP_404_NOT_FOUND)
         
         # If this is set as default, remove default from other addresses
         if data.get('is_default', False):
@@ -427,34 +435,15 @@ class AddressViewSet(viewsets.ViewSet):
         
         address.save()
         
-        # Return updated addresses list
-        addresses = Address.objects.filter(user_id=user_id).order_by('-is_default', '-created_at')
-        addresses_data = []
-        for addr in addresses:
-            addresses_data.append({
-                'id': addr.id,
-                'address_name': addr.address_name,
-                'address_line': addr.address_line,
-                'address_line2': addr.address_line2,
-                'city': addr.city,
-                'pincode': addr.pincode,
-                'is_default': addr.is_default,
-                'created_at': addr.created_at,
-            })
-        
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {
-                "message": "Address updated successfully",
-                "addresses": addresses_data
-            },
+            "data": {"message": "Address updated successfully"},
             "error": None
-        }, status=200)
+        }, status=status.HTTP_200_OK)
     
     @handle_exceptions
-    # @check_authentication(required_role="customer")
     def delete(self, request, pk):
         """
         Delete address
@@ -462,8 +451,16 @@ class AddressViewSet(viewsets.ViewSet):
         user_id = request.user.user_id
         address_id = pk
         
-        
-        address = Address.objects.get(id=address_id, user_id=user_id)
+        try:
+            address = Address.objects.get(id=address_id, user_id=user_id)
+        except Address.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Address not found."
+            }, status=status.HTTP_404_NOT_FOUND)
         
         # Check if this is the default address
         was_default = address.is_default
@@ -475,34 +472,17 @@ class AddressViewSet(viewsets.ViewSet):
         if was_default:
             remaining_addresses = Address.objects.filter(user_id=user_id)
             if remaining_addresses.exists():
-                remaining_addresses.first().is_default = True
-                remaining_addresses.first().save()
-        
-        # Return updated addresses list
-        addresses = Address.objects.filter(user_id=user_id).order_by('-is_default', '-created_at')
-        addresses_data = []
-        for addr in addresses:
-            addresses_data.append({
-                'id': addr.id,
-                'address_name': addr.address_name,
-                'address_line': addr.address_line,
-                'address_line2': addr.address_line2,
-                'city': addr.city,
-                'pincode': addr.pincode,
-                'is_default': addr.is_default,
-                'created_at': addr.created_at,
-            })
+                first_address = remaining_addresses.first()
+                first_address.is_default = True
+                first_address.save()
         
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {
-                "message": "Address deleted successfully",
-                "addresses": addresses_data
-            },
+            "data": {"message": "Address deleted successfully"},
             "error": None
-        }, status=200)
+        }, status=status.HTTP_200_OK)
 
 
 class UserProfileViewSet(viewsets.ViewSet):
@@ -850,10 +830,26 @@ class LoginApiViewSet(viewsets.ViewSet):
 class LogoutApiViewSet(viewsets.ViewSet):
     
     @handle_exceptions
+    def create(self, request):        
+        logout(request)
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"message": "Logged out successfully"},
+            "error": None
+        }, status=status.HTTP_200_OK)
+    
+    @handle_exceptions
     def list(self, request):        
         logout(request)
-        return HttpResponse('DONE') # keep this in development mode to check the logout functionality
-        return redirect('dashboard-list')
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"message": "Logged out successfully"},
+            "error": None
+        }, status=status.HTTP_200_OK)
 
 
 class UserListViewSet(viewsets.ViewSet):
@@ -958,4 +954,3 @@ def login_to_account(request):
         print(e)
         return HttpResponse('DONE')
         return redirect('dashboard-list')
-

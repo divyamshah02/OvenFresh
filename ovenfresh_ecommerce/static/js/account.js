@@ -42,6 +42,14 @@ async function InitializeAccount(
   try {
     showLoading()
 
+    // Check if user is logged in first
+    const loginCheck = await checkUserLoginStatus()
+    if (!loginCheck) {
+      hideLoading()
+      showOTPLoginModal()
+      return
+    }
+
     // Load user profile data
     await loadUserProfile()
 
@@ -57,6 +65,117 @@ async function InitializeAccount(
     showNotification("Error loading account data.", "error")
     hideLoading()
   }
+}
+
+// OTP Login Functions
+let currentOtpId = null
+
+async function checkUserLoginStatus() {
+  try {
+    const [success, result] = await callApi("GET", "/user-api/is-user-logged-in-api/")
+    return success && result.success && !result.user_not_logged_in
+  } catch (error) {
+    console.error("Error checking login status:", error)
+    return false
+  }
+}
+
+function showOTPLoginModal() {
+  const modal = new bootstrap.Modal(document.getElementById("otpLoginModal"))
+  modal.show()
+}
+
+async function sendOTP() {
+  const mobileNumber = document.getElementById("mobileNumber").value.trim()
+
+  if (!mobileNumber || mobileNumber.length !== 10 || !/^\d+$/.test(mobileNumber)) {
+    document.getElementById("mobileNumber").classList.add("is-invalid")
+    document.getElementById("mobileError").textContent = "Please enter a valid 10-digit mobile number"
+    return
+  }
+
+  document.getElementById("mobileNumber").classList.remove("is-invalid")
+  document.getElementById("sendOtpLoader").style.display = "inline-block"
+  document.getElementById("sendOtpText").textContent = "Sending..."
+
+  try {
+    const [success, result] = await callApi(
+      "POST",
+      "/user-api/otp-api/",
+      {
+        mobile: mobileNumber,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      currentOtpId = result.data.otp_id
+      document.getElementById("displayMobile").textContent = mobileNumber
+      document.getElementById("mobile-input-section").style.display = "none"
+      document.getElementById("otp-input-section").style.display = "block"
+      showNotification("OTP sent successfully!", "success")
+    } else {
+      throw new Error(result.error || "Failed to send OTP")
+    }
+  } catch (error) {
+    console.error("Error sending OTP:", error)
+    showNotification("Error sending OTP. Please try again.", "error")
+  } finally {
+    document.getElementById("sendOtpLoader").style.display = "none"
+    document.getElementById("sendOtpText").textContent = "Send OTP"
+  }
+}
+
+async function verifyOTP() {
+  const otpCode = document.getElementById("otpCode").value.trim()
+
+  if (!otpCode || otpCode.length !== 6 || !/^\d+$/.test(otpCode)) {
+    document.getElementById("otpCode").classList.add("is-invalid")
+    document.getElementById("otpError").textContent = "Please enter a valid 6-digit OTP"
+    return
+  }
+
+  document.getElementById("otpCode").classList.remove("is-invalid")
+  document.getElementById("verifyOtpLoader").style.display = "inline-block"
+  document.getElementById("verifyOtpText").textContent = "Verifying..."
+
+  try {
+    const [success, result] = await callApi(
+      "PUT",
+      `/user-api/otp-api/${currentOtpId}/`,
+      {
+        otp: otpCode,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success && result.data.otp_verified) {
+      showNotification("Login successful!", "success")
+
+      // Close modal and reload page
+      bootstrap.Modal.getInstance(document.getElementById("otpLoginModal")).hide()
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+    } else {
+      const message = result.data?.message || "Invalid OTP"
+      document.getElementById("otpCode").classList.add("is-invalid")
+      document.getElementById("otpError").textContent = message
+    }
+  } catch (error) {
+    console.error("Error verifying OTP:", error)
+    showNotification("Error verifying OTP. Please try again.", "error")
+  } finally {
+    document.getElementById("verifyOtpLoader").style.display = "none"
+    document.getElementById("verifyOtpText").textContent = "Verify OTP"
+  }
+}
+
+function goBackToMobile() {
+  document.getElementById("otp-input-section").style.display = "none"
+  document.getElementById("mobile-input-section").style.display = "block"
+  document.getElementById("otpCode").value = ""
+  document.getElementById("otpCode").classList.remove("is-invalid")
 }
 
 async function loadUserProfile() {
@@ -156,15 +275,6 @@ function renderOrders() {
             <a href="/order-detail/?order_id=${order.order_id}" class="btn of-btn-outline-primary btn-sm">
               <i class="fas fa-eye me-1"></i>View Details
             </a>
-            ${
-              order.status === "placed" || order.status === "confirmed"
-                ? `
-              <button class="btn btn-outline-danger btn-sm ms-2" onclick="cancelOrder('${order.order_id}')">
-                <i class="fas fa-times me-1"></i>Cancel
-              </button>
-            `
-                : ""
-            }
           </div>
         </div>
       </div>
@@ -298,10 +408,10 @@ function initializeEventListeners() {
   })
 
   // Password form submission
-  document.getElementById("password-form").addEventListener("submit", async (e) => {
-    e.preventDefault()
-    await changePassword()
-  })
+  // document.getElementById("password-form").addEventListener("submit", async (e) => {
+  //   e.preventDefault()
+  //   await changePassword()
+  // })
 
   // Order filter change
   document.getElementById("orderFilter").addEventListener("change", (e) => {
@@ -353,7 +463,12 @@ async function updateProfile() {
       email: document.getElementById("email").value,
     }
 
-    const [success, result] = await callApi("PUT", `${update_profile_url}${document.getElementById("firstName").value}/`, profileData, csrf_token)
+    const [success, result] = await callApi(
+      "PUT",
+      `${update_profile_url}${document.getElementById("firstName").value}/`,
+      profileData,
+      csrf_token,
+    )
 
     if (success && result.success) {
       showNotification("Profile updated successfully!", "success")
@@ -527,60 +642,6 @@ async function setDefaultAddress(addressId) {
   }
 }
 
-async function cancelOrder(orderId) {
-  if (!confirm("Are you sure you want to cancel this order?")) {
-    return
-  }
-
-  try {
-    showLoading()
-
-    const [success, result] = await callApi(
-      "POST",
-      `/order-api/cancel-order/${orderId}/`,
-      { reason: "Customer requested cancellation" },
-      csrf_token,
-    )
-
-    if (success && result.success) {
-      showNotification("Order cancelled successfully!", "success")
-      await loadUserOrders(currentPage, document.getElementById("orderFilter").value)
-    } else {
-      throw new Error(result.error || "Failed to cancel order")
-    }
-  } catch (error) {
-    console.error("Error cancelling order:", error)
-    showNotification("Error cancelling order. Please try again.", "error")
-  } finally {
-    hideLoading()
-  }
-}
-
-async function updateNotificationPreferences() {
-  try {
-    showLoading()
-
-    const preferences = {
-      email_notifications: document.getElementById("emailNotifications").checked,
-      sms_notifications: document.getElementById("smsNotifications").checked,
-      promotional_emails: document.getElementById("promotionalEmails").checked,
-    }
-
-    const [success, result] = await callApi("PUT", update_profile_url, preferences, csrf_token)
-
-    if (success && result.success) {
-      showNotification("Notification preferences updated successfully!", "success")
-    } else {
-      throw new Error(result.error || "Failed to update preferences")
-    }
-  } catch (error) {
-    console.error("Error updating preferences:", error)
-    showNotification("Error updating preferences. Please try again.", "error")
-  } finally {
-    hideLoading()
-  }
-}
-
 async function logout() {
   if (!confirm("Are you sure you want to logout?")) {
     return
@@ -591,17 +652,17 @@ async function logout() {
 
     const [success, result] = await callApi("POST", logout_url, {}, csrf_token)
 
-    if (success && result.success) {
-      showNotification("Logged out successfully!", "success")
-      setTimeout(() => {
-        window.location.href = "/"
-      }, 1000)
-    } else {
-      throw new Error(result.error || "Failed to logout")
-    }
+    // Always redirect to home page regardless of API response
+    showNotification("Logged out successfully!", "success")
+    setTimeout(() => {
+      window.location.href = "/"
+    }, 1000)
   } catch (error) {
     console.error("Error logging out:", error)
-    showNotification("Error logging out. Please try again.", "error")
+    // Still redirect even if API fails
+    setTimeout(() => {
+      window.location.href = "/"
+    }, 1000)
   } finally {
     hideLoading()
   }
