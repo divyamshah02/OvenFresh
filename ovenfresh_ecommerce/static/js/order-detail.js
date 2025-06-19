@@ -1,8 +1,7 @@
 let csrf_token = null
 let order_id = null
 let order_detail_url = null
-let cancel_order_url = null
-let reorder_url = null
+
 
 // Order data
 let orderData = null
@@ -10,15 +9,11 @@ let orderData = null
 async function InitializeOrderDetail(
   csrfTokenParam,
   orderIdParam,
-  orderDetailUrlParam,
-  cancelOrderUrlParam,
-  reorderUrlParam,
+  orderDetailUrlParam
 ) {
   csrf_token = csrfTokenParam
   order_id = orderIdParam
   order_detail_url = orderDetailUrlParam
-  cancel_order_url = cancelOrderUrlParam
-  reorder_url = reorderUrlParam
 
   try {
     showLoading()
@@ -91,7 +86,7 @@ function populateOrderDetails() {
   populateOrderSummary()
 
   // Show/hide action buttons based on order status
-  updateActionButtons()
+  // updateActionButtons()
 }
 
 function updateOrderStatus(status) {
@@ -237,30 +232,28 @@ function populateOrderSummary() {
   }
 }
 
-function updateActionButtons() {
-  const cancelBtn = document.getElementById("cancel-order-btn")
+// function updateActionButtons() {
+//   const cancelBtn = document.getElementById("cancel-order-btn")
 
-  // Show cancel button only for certain statuses
-  if (["placed", "confirmed"].includes(orderData.status)) {
-    cancelBtn.style.display = "block"
-  }
-}
+//   // Show cancel button only for certain statuses
+//   if (["placed", "confirmed"].includes(orderData.status)) {
+//     cancelBtn.style.display = "block"
+//   }
+// }
 
 function initializeEventListeners() {
   // Pay now button
   document.getElementById("pay-now-btn").addEventListener("click", processPayment)
 
   // Track order button
-  document.getElementById("track-order-btn").addEventListener("click", trackOrder)
+  // document.getElementById("track-order-btn").addEventListener("click", trackOrder)
 
   // Download invoice button
   document.getElementById("download-invoice-btn").addEventListener("click", downloadInvoice)
 
   // Cancel order button
-  document.getElementById("cancel-order-btn").addEventListener("click", showCancelOrderModal)
+  // document.getElementById("cancel-order-btn").addEventListener("click", showCancelOrderModal)
 
-  // Reorder button
-  document.getElementById("reorder-btn").addEventListener("click", reorderItems)
 }
 
 async function processPayment() {
@@ -311,107 +304,84 @@ async function processPayment() {
   }
 }
 
-function trackOrder() {
-  // Implement order tracking functionality
-  showNotification("Order tracking feature coming soon!", "info")
-}
+// function trackOrder() {
+//   // Implement order tracking functionality
+//   showNotification("Order tracking feature coming soon!", "info")
+// }
 
 function downloadInvoice() {
   // Implement invoice download functionality
   showNotification("Invoice download feature coming soon!", "info")
 }
 
-function showCancelOrderModal() {
-  const modalHtml = `
-        <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to cancel this order?</p>
-                        <div class="mb-3">
-                            <label for="cancelReason" class="form-label">Reason for cancellation (Optional)</label>
-                            <textarea class="form-control" id="cancelReason" rows="3" placeholder="Please provide a reason..."></textarea>
-                        </div>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            This action cannot be undone. If payment was made, refund will be processed within 5-7 business days.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn of-btn-outline-secondary" data-bs-dismiss="modal">Keep Order</button>
-                        <button type="button" class="btn of-btn-danger" onclick="cancelOrder()">Cancel Order</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
+// function showCancelOrderModal() {
+//   const modalHtml = `
+//         <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+//             <div class="modal-dialog modal-dialog-centered">
+//                 <div class="modal-content">
+//                     <div class="modal-header">
+//                         <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+//                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+//                     </div>
+//                     <div class="modal-body">
+//                         <p>Are you sure you want to cancel this order?</p>
+//                         <div class="mb-3">
+//                             <label for="cancelReason" class="form-label">Reason for cancellation (Optional)</label>
+//                             <textarea class="form-control" id="cancelReason" rows="3" placeholder="Please provide a reason..."></textarea>
+//                         </div>
+//                         <div class="alert alert-warning">
+//                             <i class="fas fa-exclamation-triangle me-2"></i>
+//                             This action cannot be undone. If payment was made, refund will be processed within 5-7 business days.
+//                         </div>
+//                     </div>
+//                     <div class="modal-footer">
+//                         <button type="button" class="btn of-btn-outline-secondary" data-bs-dismiss="modal">Keep Order</button>
+//                         <button type="button" class="btn of-btn-danger" onclick="cancelOrder()">Cancel Order</button>
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     `
 
-  document.body.insertAdjacentHTML("beforeend", modalHtml)
-  const modal = new bootstrap.Modal(document.getElementById("cancelOrderModal"))
-  modal.show()
+//   document.body.insertAdjacentHTML("beforeend", modalHtml)
+//   const modal = new bootstrap.Modal(document.getElementById("cancelOrderModal"))
+//   modal.show()
 
-  document.getElementById("cancelOrderModal").addEventListener("hidden.bs.modal", function () {
-    this.remove()
-  })
-}
+//   document.getElementById("cancelOrderModal").addEventListener("hidden.bs.modal", function () {
+//     this.remove()
+//   })
+// }
 
-async function cancelOrder() {
-  const reason = document.getElementById("cancelReason").value.trim()
+// async function cancelOrder() {
+//   const reason = document.getElementById("cancelReason").value.trim()
 
-  try {
-    showLoading()
+//   try {
+//     showLoading()
 
-    const [success, result] = await callApi(
-      "POST",
-      `${cancel_order_url}${order_id}/`,
-      {
-        reason: reason,
-      },
-      csrf_token,
-    )
+//     const [success, result] = await callApi(
+//       "POST",
+//       `${cancel_order_url}${order_id}/`,
+//       {
+//         reason: reason,
+//       },
+//       csrf_token,
+//     )
 
-    if (success && result.success) {
-      showNotification("Order cancelled successfully!", "success")
-      bootstrap.Modal.getInstance(document.getElementById("cancelOrderModal")).hide()
-      // Reload order details
-      await loadOrderDetails()
-    } else {
-      throw new Error(result.error || "Failed to cancel order")
-    }
-  } catch (error) {
-    console.error("Error cancelling order:", error)
-    showNotification("Error cancelling order. Please try again.", "error")
-  } finally {
-    hideLoading()
-  }
-}
-
-async function reorderItems() {
-  try {
-    showLoading()
-
-    const [success, result] = await callApi("POST", `${reorder_url}${order_id}/`, {}, csrf_token)
-
-    if (success && result.success) {
-      showNotification("Items added to cart successfully!", "success")
-      // Redirect to cart page
-      setTimeout(() => {
-        window.location.href = "/cart/"
-      }, 1500)
-    } else {
-      throw new Error(result.error || "Failed to reorder items")
-    }
-  } catch (error) {
-    console.error("Error reordering items:", error)
-    showNotification("Error adding items to cart. Please try again.", "error")
-  } finally {
-    hideLoading()
-  }
-}
+//     if (success && result.success) {
+//       showNotification("Order cancelled successfully!", "success")
+//       bootstrap.Modal.getInstance(document.getElementById("cancelOrderModal")).hide()
+//       // Reload order details
+//       await loadOrderDetails()
+//     } else {
+//       throw new Error(result.error || "Failed to cancel order")
+//     }
+//   } catch (error) {
+//     console.error("Error cancelling order:", error)
+//     showNotification("Error cancelling order. Please try again.", "error")
+//   } finally {
+//     hideLoading()
+//   }
+// }
 
 // Utility functions
 function formatDate(dateString) {
