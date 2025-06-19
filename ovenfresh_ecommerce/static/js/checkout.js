@@ -682,9 +682,9 @@ function calculateTotals() {
   showOrderSummaryLoader()
 
   const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const tax = subtotal * 0.18 // 18% tax
   const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
   const discount = couponDiscount || 0
+  const tax = (subtotal - discount) * 0.18 // 18% tax
   const total = subtotal + shipping + tax - discount
 
   updateOrderSummary(subtotal, shipping, tax, total, discount)
@@ -878,12 +878,13 @@ function removeCoupon() {
     document.getElementById("couponCode").value = ""
     document.getElementById("couponCode").disabled = false
     document.getElementById("apply-coupon-btn").style.display = "inline-block"
+    document.getElementById("discount-row").style.display = "none"
+    document.getElementById("checkout-discount").textContent = `-₹0.00`
 
     hideCouponMessages()
     calculateTotals()
 
     showNotification("Coupon removed successfully.", "success")
-
   } catch (error) {
     console.error("Error removing coupon:", error)
     showNotification("Error removing coupon. Please try again.", "error")
@@ -1019,7 +1020,7 @@ async function continueToPayment() {
     // Get payment method
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
 
-    // Prepare order data
+    // Prepare order data with coupon information
     currentOrderData = {
       shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
       different_billing_address: document.getElementById("differentBillingAddress").checked,
@@ -1035,7 +1036,9 @@ async function continueToPayment() {
       delivery_date: document.getElementById("deliveryDate").value,
       timeslot_id: document.getElementById("deliveryTime").value,
       special_instructions: document.getElementById("specialInstructions").value,
-      coupon_code: appliedCoupon ? appliedCoupon.code : null,
+      // Add coupon data
+      coupon_code: appliedCoupon ? appliedCoupon.coupon_code : null,
+      coupon_discount: couponDiscount || 0,
     }
 
     // Call place order API
@@ -1181,6 +1184,7 @@ function showPaymentOverview(orderData) {
         <p class="mb-1">Order ID: ${orderData.order_id}</p>
         <p class="mb-1">Payment ID: ${orderData.payment_id}</p>
         <p class="mb-0">Amount: ₹${orderData.total_amount}</p>
+        ${appliedCoupon ? `<p class="mb-0 text-success">Coupon: ${appliedCoupon.coupon_code} (-₹${couponDiscount.toFixed(2)})</p>` : ""}
       </div>
     </div>
   `
@@ -1225,6 +1229,7 @@ function showCODSuccessModal(orderId) {
             <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
             <h3>Order Placed Successfully!</h3>
             <p class="lead">Your order #${orderId} has been placed successfully.</p>
+            ${appliedCoupon ? `<p class="text-success">Coupon ${appliedCoupon.code} applied! You saved ₹${couponDiscount.toFixed(2)}</p>` : ""}
             <p class="text-muted">You will be redirected shortly...</p>
             <div class="spinner-border text-primary mt-3" role="status">
               <span class="visually-hidden">Loading...</span>

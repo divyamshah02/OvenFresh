@@ -74,6 +74,11 @@ class Order(models.Model):
     # Order details
     status = models.CharField(max_length=30, default="not_placed")  # e.g., not_placed, placed, preparing, delivered
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal_amount = models.CharField(max_length=255)
+    tax_amount = models.CharField(max_length=255)
+    discount_amount = models.CharField(max_length=255)
+    coupon_code = models.CharField(max_length=255)
+    coupon_discount = models.CharField(max_length=255)
     
     # Payment details
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)  # Payment gateway ID

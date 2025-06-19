@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, F
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 
 from .models import *
 from .serializers import *
@@ -31,7 +32,7 @@ class OrderViewSet(viewsets.ViewSet):
     @check_authentication()
     def create(self, request):
         """
-        Place order from cart (status = not_placed)
+        Place order from cart with coupon support
         """
         user_id = request.user.user_id
         data = request.data
@@ -97,9 +98,59 @@ class OrderViewSet(viewsets.ViewSet):
             }, status=400)
 
         delivery_charge = delivery_details.get("charges", 0)
-        amount = sum(float(float(item['price']) * float(item['quantity'])) for item in cart_items)
-        tax_amount = amount * 0.18  # Assuming 18% tax
-        total_amount = float(delivery_charge) + float(amount) + float(tax_amount)
+        subtotal = sum(float(float(item['price']) * float(item['quantity'])) for item in cart_items)
+
+        # Handle coupon discount
+        coupon_discount = 0
+        applied_coupon = None
+        coupon_code = data.get("coupon_code")
+
+        if coupon_code:
+            try:
+                coupon = Coupon.objects.get(
+                    coupon_code=coupon_code,
+                    is_active=True,
+                    valid_from__lte=timezone.now(),
+                    valid_until__gte=timezone.now()
+                )
+                
+                # Validate minimum order amount
+                if subtotal >= coupon.minimum_order_amount:
+                    # Calculate discount
+                    if coupon.discount_type == 'percentage':
+                        coupon_discount = min(
+                            (subtotal * float(coupon.discount_value) / 100),
+                            coupon.maximum_discount_amount or float('inf')
+                        )
+                    else:  # fixed amount
+                        coupon_discount = min(coupon.discount_value, subtotal)
+                    
+                    applied_coupon = coupon
+                    
+                    # Update coupon usage
+                    coupon.usage_count += 1
+                    coupon.save()
+                else:
+                    return Response({
+                        "success": False, 
+                        "user_not_logged_in": False, 
+                        "user_unauthorized": False, 
+                        "data": None, 
+                        "error": f"Minimum order amount for this coupon is ₹{coupon.minimum_order_amount}"
+                    }, status=400)
+                    
+            except Coupon.DoesNotExist:
+                return Response({
+                    "success": False, 
+                    "user_not_logged_in": False, 
+                    "user_unauthorized": False, 
+                    "data": None, 
+                    "error": "Invalid or expired coupon code."
+                }, status=400)
+
+        tax_amount = (float(subtotal) - float(coupon_discount)) * 0.18  # Assuming 18% tax
+        # Calculate final total
+        total_amount = float(delivery_charge) + float(subtotal) + float(tax_amount) - float(coupon_discount)
         
         # Format delivery address
         delivery_address = f"{data['address']}, {data['city']}, {data['pincode']}"
@@ -109,7 +160,7 @@ class OrderViewSet(viewsets.ViewSet):
         order = Order.objects.create(
             order_id=order_id,
             user_id=user_id,
-            pincode_id=data["pincode"],  # Using pincode directly
+            pincode_id=data["pincode"],
             timeslot_id=data["timeslot_id"],
             
             # Customer details
@@ -128,13 +179,20 @@ class OrderViewSet(viewsets.ViewSet):
             different_billing_address=data.get("different_billing_address", False),
             
             # Order details
-            status = "placed" if data["payment_method"] == "cod" else "not_placed",
+            status="placed" if data["payment_method"] == "cod" else "not_placed",
             total_amount=str(total_amount),
+            subtotal_amount=str(subtotal),
+            tax_amount=str(tax_amount),
+            discount_amount=str(coupon_discount),
+            
+            # Coupon details
+            coupon_code=coupon_code,
+            coupon_discount=str(coupon_discount),
             
             # Payment details
             payment_method=data["payment_method"],
             is_cod=(data["payment_method"] == "cod"),
-            payment_received=False,  # For COD, mark as not received
+            payment_received=False,
             
             # Other details
             special_instructions=data.get("special_instructions", ""),
@@ -155,23 +213,37 @@ class OrderViewSet(viewsets.ViewSet):
 
         # Create order items
         for item in cart_items:
-            discount = 0
+            item_discount = 0
+            # Apply proportional coupon discount to each item
+            if coupon_discount > 0:
+                item_total = float(item['price']) * float(item['quantity'])
+                item_discount = (item_total / subtotal) * coupon_discount
+            
             OrderItem.objects.create(
                 order_id=order.order_id,
                 product_id=item['product_id'],
                 product_variation_id=item['product_variation_id'],
                 quantity=item['quantity'],
                 amount=float(item['price']),
-                discount=discount,
-                final_amount=(float(item['price']) * float(item['quantity'])) - discount,
+                discount=item_discount,
+                final_amount=(float(item['price']) * float(item['quantity'])) - item_discount,
             )
 
         # Clear the cart after order is placed
         cart_obj.delete()
 
         # Handle payment method
-        response_data = {"order_id": order.order_id}
-        paisa_amount = float(total_amount)*100
+        response_data = {
+            "order_id": order.order_id,
+            "total_amount": total_amount,
+            "subtotal": subtotal,
+            "tax_amount": tax_amount,
+            "delivery_charge": delivery_charge,
+            "discount_amount": coupon_discount,
+            "coupon_applied": applied_coupon.coupon_code if applied_coupon else None
+        }
+        
+        paisa_amount = float(total_amount) * 100
         if not order.is_cod:
             razorpay_order = create_razorpay_order(
                 order_id=order.order_id,
@@ -179,14 +251,12 @@ class OrderViewSet(viewsets.ViewSet):
             )
 
             if razorpay_order:
-                # Update order with Razorpay ID
-                # order.razorpay_order_id = razorpay_order['id']
                 order.razorpay_order_id = razorpay_order['id']
                 order.save()
 
                 response_data.update({
                     "payment_id": razorpay_order['id'],
-                    "total_amount": paisa_amount,
+                    # "total_amount": paisa_amount,
                     "razorpay_key_id": settings.RAZORPAY_KEY_ID,
                 })
 
@@ -208,7 +278,7 @@ class OrderViewSet(viewsets.ViewSet):
 class ConfirmOrderViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    # @check_authentication(required_role="customer")
+    @check_authentication()
     def create(self, request):
         """
         Verify payment status with Razorpay and update order
@@ -298,9 +368,9 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
                 
                 # Check order status
                 if razorpay_order['status'] == 'paid':
-                    # Payment is successful, update order
+                    #Payment is successful, update order
                     order.payment_received = True
-                    order.status = 'placed'  # or whatever status indicates confirmed payment
+                    order.status = 'placed'
                     
                     if payment_id:
                         order.razorpay_payment_id = payment_id
@@ -448,7 +518,7 @@ class PaymentStatusCheckViewSet(viewsets.ViewSet):
 class OrderDetailViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    # @check_authentication(required_role="customer")
+    @check_authentication()
     def list(self, request):
         """
         Get order details by order ID
@@ -483,7 +553,6 @@ class OrderDetailViewSet(viewsets.ViewSet):
                     item_data = {
                         "product_id": item.product_id,
                         "product_name": product.title,
-                        # "product_image": product.product_image_url if hasattr(product, 'product_image_url') else "/placeholder.svg?height=80&width=80",
                         "product_image": product.photos[0],
                         "variation_id": item.product_variation_id,
                         "variation_name": variation.weight_variation if variation else None,
@@ -506,15 +575,10 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 pass
             
             # Calculate summary amounts
-            subtotal = sum(float(item.final_amount) for item in order_items)
-            # delivery_charges = 0  # You can calculate this based on your logic
-
-            pincode_data = Pincode.objects.filter(pincode=order.pincode_id).first()
-            delivery_details = pincode_data.delivery_charge.get(str(order.timeslot_id), None)
-            delivery_charges = delivery_details.get("charges", 0)
-
-            tax_amount = subtotal * 0.18  # 18% tax
-            discount_amount = 0  # You can calculate this based on your logic
+            subtotal = float(order.subtotal_amount) if hasattr(order, 'subtotal_amount') and order.subtotal_amount else sum(float(item.final_amount) for item in order_items)
+            delivery_charges = float(order.delivery_charge) if order.delivery_charge else 0
+            tax_amount = float(order.tax_amount) if hasattr(order, 'tax_amount') and order.tax_amount else subtotal * 0.18
+            discount_amount = float(getattr(order, 'discount_amount', 0)) if hasattr(order, 'discount_amount') else 0
             
             # Prepare order data
             order_data = {
@@ -549,9 +613,14 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 
                 # Order amounts
                 "total_amount": str(order.total_amount),
+                "subtotal": str(subtotal),
                 "delivery_charges": str(delivery_charges),
                 "tax_amount": str(tax_amount),
                 "discount_amount": str(discount_amount),
+                
+                # Coupon details
+                "coupon_code": getattr(order, 'coupon_code', None),
+                "coupon_discount": str(getattr(order, 'coupon_discount', 0)),
                 
                 # Other details
                 "special_instructions": getattr(order, 'special_instructions', None),
@@ -582,7 +651,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
 class OrderListViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    # @check_authentication(required_role="customer")
+    @check_authentication()
     def list(self, request):
         """
         Get user orders with pagination and filtering
@@ -618,6 +687,8 @@ class OrderListViewSet(viewsets.ViewSet):
                 'payment_received': order.payment_received,
                 'delivery_date': order.delivery_date,
                 'created_at': order.created_at,
+                'coupon_code': getattr(order, 'coupon_code', None),
+                'discount_amount': str(getattr(order, 'discount_amount', 0)),
             })
         
         return Response({
@@ -719,9 +790,6 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         en = start + per_page
         paginated_orders = orders_query[start:en]
         
-        # Annotate with order items count
-        # paginated_orders = paginated_orders.annotate(order_items_count=Count('orderitem'))
-        
         # Serialize orders
         serialized_orders = OrderSerializer(paginated_orders, many=True).data
         
@@ -811,7 +879,7 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
             writer.writerow([
                 'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date', 
                 'Delivery Date', 'Timeslot', 'Status', 'Payment Method', 
-                'Payment Status', 'Total Amount', 'Items'
+                'Payment Status', 'Total Amount', 'Discount Amount', 'Coupon Code', 'Items'
             ])
             
             for order in orders_query:
@@ -827,6 +895,8 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
                     order.payment_method,
                     'Paid' if order.payment_received else 'Pending',
                     order.total_amount,
+                    getattr(order, 'discount_amount', 0),
+                    getattr(order, 'coupon_code', ''),
                     order.orderitem_set.count()
                 ])
             
@@ -841,7 +911,7 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
             headers = [
                 'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date', 
                 'Delivery Date', 'Timeslot', 'Status', 'Payment Method', 
-                'Payment Status', 'Total Amount', 'Items'
+                'Payment Status', 'Total Amount', 'Discount Amount', 'Coupon Code', 'Items'
             ]
             
             for col, header in enumerate(headers):
@@ -860,7 +930,9 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
                 worksheet.write(row, 8, order.payment_method)
                 worksheet.write(row, 9, 'Paid' if order.payment_received else 'Pending')
                 worksheet.write(row, 10, float(order.total_amount))
-                worksheet.write(row, 11, order.orderitem_set.count())
+                worksheet.write(row, 11, float(getattr(order, 'discount_amount', 0)))
+                worksheet.write(row, 12, getattr(order, 'coupon_code', ''))
+                worksheet.write(row, 13, order.orderitem_set.count())
             
             workbook.close()
             output.seek(0)
@@ -895,9 +967,10 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
             order_items = OrderItem.objects.filter(order_id=order_id)
             
             # Calculate totals
-            subtotal = sum(float(item.final_amount) for item in order_items)
-            tax_amount = subtotal * 0.18  # 18% tax
-            delivery_charge = 0  # You can calculate this based on timeslot
+            subtotal = float(getattr(order, 'subtotal_amount', 0)) if hasattr(order, 'subtotal_amount') and order.subtotal_amount else sum(float(item.final_amount) for item in order_items)
+            tax_amount = float(getattr(order, 'tax_amount', 0)) if hasattr(order, 'tax_amount') and order.tax_amount else subtotal * 0.18
+            delivery_charge = float(order.delivery_charge) if order.delivery_charge else 0
+            discount_amount = float(getattr(order, 'discount_amount', 0)) if hasattr(order, 'discount_amount') and order.discount_amount else 0
             
             # Get delivery person name if assigned
             delivery_partner_name = None
@@ -919,16 +992,14 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
             # Prepare order items data
             items_data = []
             for item in order_items:
-                # You'll need to get product details from your Product model
-                # This is a placeholder - adjust according to your Product model
                 product_data = Product.objects.filter(product_id=item.product_id).first()
                 product_variation_data = ProductVariation.objects.filter(product_variation_id=item.product_variation_id).first()
                 items_data.append({
                     'product_id': item.product_id,
-                    'product_name': f"{product_data.title}",  # Replace with actual product name
-                    'product_image': f"{product_data.photos[0]}",  # Replace with actual image
+                    'product_name': f"{product_data.title}",
+                    'product_image': f"{product_data.photos[0]}",
                     'variation_id': item.product_variation_id,
-                    'variation_name': f"{product_variation_data.weight_variation}",  # Replace with actual variation name
+                    'variation_name': f"{product_variation_data.weight_variation}",
                     'quantity': item.quantity,
                     'amount': float(item.amount),
                     'discount': float(item.discount),
@@ -964,6 +1035,11 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'subtotal': subtotal,
                 'tax_amount': tax_amount,
                 'delivery_charge': delivery_charge,
+                'discount_amount': discount_amount,
+                
+                # Coupon details
+                'coupon_code': getattr(order, 'coupon_code', None),
+                'coupon_discount': float(getattr(order, 'coupon_discount', 0)),
                 
                 # Special instructions
                 'special_instructions': order.special_instructions or "",
@@ -1014,9 +1090,7 @@ class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
                     'name': f"{person.first_name} {person.last_name}",
                     'phone': person.contact_number,
                     'email': person.email,
-                    # 'is_available': person.is_available,
                     'is_available': person.is_active,
-                    # 'current_orders_count': person.current_orders_count if hasattr(person, 'current_orders_count') else 0
                 })
 
             return Response({
@@ -1066,8 +1140,6 @@ class AdminUpdateOrderStatusViewSet(viewsets.ViewSet):
             
             order.save()
             
-            # You can add logic here to send notifications, update delivery person status, etc.
-            
             return Response({
                 "success": True,
                 "data": {
@@ -1093,7 +1165,7 @@ class AdminUpdateOrderStatusViewSet(viewsets.ViewSet):
 
 class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
 
-    # @handle_exceptions
+    @handle_exceptions
     @check_authentication(required_role="admin")
     def create(self, request):
         """
@@ -1119,10 +1191,6 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
             # Assign delivery person
             order.assigned_delivery_partner_id = delivery_person_id
             order.save()
-            
-            # Update delivery person status (optional)
-            # delivery_person.is_available = False
-            # delivery_person.save()
             
             return Response({
                 "success": True,
