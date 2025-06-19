@@ -55,8 +55,19 @@
                                     <input type="text" class="form-control" id="productTitle" placeholder="Enter product title">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="productPhoto" class="form-label">Product Photo URL</label>
-                                    <input type="text" class="form-control" id="productPhoto" placeholder="Enter photo URL" value="https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png">
+                                    <label for="productPhotos" class="form-label">Product Photos</label>
+                                    <div class="p-4 text-center border rounded" id="photoUploadBox"
+                                        onclick="document.getElementById('productPhotoInput').click()"
+                                        style="cursor: pointer; background-color: #f8f9fa; border: 2px dashed #dee2e6;">
+                                        <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted" id="photoUploadIcon"></i>
+                                        <p class="mb-0 text-muted" id="photoUploadText">Click to upload product images</p>
+                                        <p class="mb-0 small text-muted">Recommended aspect ratio: 1:1 (square)</p>
+                                        <p class="mb-0 small text-success" id="photoUploadFileText" style="display: none;"></p>
+                                        <input type="file" id="productPhotoInput" hidden multiple accept="image/*">
+                                    </div>
+                                    <div id="photoPreviewContainer" class="mt-3" style="display: none;">
+                                        <div class="row" id="photoPreviewGrid"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -67,13 +78,13 @@
                                 <div class="col-md-6">
                                     <label for="categorySelect" class="form-label">Category</label>
                                     <select class="form-select" id="categorySelect">
-                                        <option disabled selected>-- Select Category --</option>
+                                        <option value="">-- Select Category --</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="subCategorySelect" class="form-label">Sub-Category</label>
                                     <select class="form-select" id="subCategorySelect">
-                                        <option disabled selected>-- Select Sub-Category --</option>
+                                        <option value="">-- Select Sub-Category --</option>
                                     </select>
                                 </div>
                             </div>
@@ -192,7 +203,6 @@
     <script src="/static/js/api_caller.js"></script>
     <script src="/static/js/scripts.js"></script>
     <script src="/static/js/admin/admin_add_product.js"></script>
-
 
     <script>
         const csrfToken = "{{ csrf_token }}";

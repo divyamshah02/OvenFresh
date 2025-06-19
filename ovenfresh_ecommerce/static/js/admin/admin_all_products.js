@@ -4,6 +4,8 @@ let products_url = null
 let categories_url = null
 let variations_url = null
 
+let category__id = null
+
 let currentPage = 1
 const itemsPerPage = 10
 let totalItems = 0
@@ -389,7 +391,6 @@ function handleFilterChange() {
 
   // If category changed, update subcategory options and reset subcategory filter
   if (newCategory !== currentFilters.category) {
-    console.log('hresrheshshrshresehr')
     populateSubCategoryFilter(newCategory)
     document.getElementById("subCategoryFilter").value = ""    
   }
@@ -494,7 +495,6 @@ async function viewProduct(productId) {
 }
 
 function showProductDetails(product) {
-  console.log(product)
   const modal = new bootstrap.Modal(document.getElementById("productDetailsModal"))
   const modalBody = document.getElementById("productDetailsBody")
 
@@ -793,15 +793,14 @@ function getToastIcon(type) {
 function populateSubCategoryFilter(categoryId) {
   const subCategoryFilter = document.getElementById("subCategoryFilter")
   subCategoryFilter.innerHTML = '<option value="">All Sub Categories</option>'
+  categoryId = Number(categoryId)
 
-  console.log(categoryId)
   if (!categoryId) {
     subCategoryFilter.disabled = true
     return
   }
 
   const selectedCategory = allCategories.find((cat) => cat.category_id === categoryId)
-  console.log(selectedCategory)
   if (selectedCategory && selectedCategory.subcategories) {
     subCategoryFilter.disabled = false
     selectedCategory.subcategories.forEach((subCategory) => {

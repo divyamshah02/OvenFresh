@@ -8,10 +8,12 @@ from .models import *
 from .serializers import *
 
 from utils.decorators import *
+from utils.handle_s3_bucket import upload_file_to_s3
 
 import random
 import string
 from datetime import datetime
+import os
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -198,11 +200,10 @@ class ProductViewSet(viewsets.ViewSet):
 
             title = data.get("title")
             description = data.get("description")
-            photos = data.get("photos", [])
             category_id = data.get("category_id")
             sub_category_id = data.get("sub_category_id")
 
-            if not title or not photos or not category_id:
+            if not title or not category_id:
                 return Response({
                     "success": False,
                     "user_not_logged_in": False,
@@ -211,13 +212,59 @@ class ProductViewSet(viewsets.ViewSet):
                     "error": "Missing required fields."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+            # Handle image uploads
+            image_urls = []
+            ind = 0
+            while True:
+                if f'images[{ind}]' in request.FILES:
+                    uploaded_file = request.FILES[f'images[{ind}]']
+                    
+                    # Validate file type
+                    allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+                    file_extension = uploaded_file.name.split('.')[-1].lower()
+                    
+                    if file_extension not in allowed_extensions:
+                        return Response({
+                            "success": False,
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,
+                            "data": None,
+                            "error": f"Invalid file type: {uploaded_file.name}. Only JPG, PNG, and WebP are allowed."
+                        }, status=status.HTTP_400_BAD_REQUEST)
+                    
+                    # Upload to S3
+                    try:
+                        file_url = upload_file_to_s3(uploaded_file, folder="products")
+                        image_urls.append(file_url)
+                    except Exception as e:
+                        return Response({
+                            "success": False,
+                            "user_not_logged_in": False,
+                            "user_unauthorized": False,
+                            "data": None,
+                            "error": f"Failed to upload image: {str(e)}"
+                        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    
+                    ind += 1
+                else:
+                    break
+
+            if not image_urls:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "At least one product image is required."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
             product_id = self.generate_product_id()
 
             new_product = Product(
                 product_id=product_id,
                 title=title,
                 description=description,
-                photos=photos,
+                photos=image_urls,
                 category_id=category_id,
                 sub_category_id=sub_category_id,
                 created_at=timezone.now()
@@ -229,7 +276,8 @@ class ProductViewSet(viewsets.ViewSet):
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": {
-                    "product_id": product_id
+                    "product_id": product_id,
+                    "image_urls": image_urls
                 },
                 "error": None
             }, status=status.HTTP_201_CREATED)
@@ -291,11 +339,10 @@ class ProductViewSet(viewsets.ViewSet):
 
         title = data.get("title")
         description = data.get("description")
-        photos = data.get("photos", [])
         category_id = data.get("category_id")
         sub_category_id = data.get("sub_category_id")
 
-        if not product_id or not title or not photos or not category_id:
+        if not product_id or not title or not category_id:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
@@ -303,7 +350,6 @@ class ProductViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": "Missing required fields."
             }, status=status.HTTP_400_BAD_REQUEST)
-
 
         product_obj = Product.objects.filter(product_id=product_id).first()
 
@@ -316,11 +362,53 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": "Product not found."
             }, status=status.HTTP_404_NOT_FOUND)
 
+        # Handle new image uploads
+        new_image_urls = []
+        ind = 0
+        while True:
+            if f'images[{ind}]' in request.FILES:
+                uploaded_file = request.FILES[f'images[{ind}]']
+                
+                # Validate file type
+                allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+                file_extension = uploaded_file.name.split('.')[-1].lower()
+                
+                if file_extension not in allowed_extensions:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Invalid file type: {uploaded_file.name}. Only JPG, PNG, and WebP are allowed."
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Upload to S3
+                try:
+                    file_url = upload_file_to_s3(uploaded_file, folder="products")
+                    new_image_urls.append(file_url)
+                except Exception as e:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Failed to upload image: {str(e)}"
+                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+                ind += 1
+            else:
+                break
+
+        # Update product fields
         product_obj.title = title
         product_obj.description = description
-        product_obj.photos = photos
         product_obj.category_id = category_id
         product_obj.sub_category_id = sub_category_id
+
+        # If new images are uploaded, add them to existing photos
+        if new_image_urls:
+            existing_photos = product_obj.photos if product_obj.photos else []
+            product_obj.photos = existing_photos + new_image_urls
 
         product_obj.save()
 
@@ -328,7 +416,10 @@ class ProductViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": "Product updated",
+            "data": {
+                "message": "Product updated successfully",
+                "new_images": new_image_urls
+            },
             "error": None
         }, status=status.HTTP_200_OK)
 
