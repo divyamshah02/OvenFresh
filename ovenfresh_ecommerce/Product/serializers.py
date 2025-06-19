@@ -7,7 +7,8 @@ from .models import (
     Reviews,
     Pincode,
     TimeSlot,
-    AvailabilityCharges
+    AvailabilityCharges,
+    Coupon
 )
 
 
@@ -170,3 +171,24 @@ class AvailabilityChargesSerializer(serializers.ModelSerializer):
             'pincode_id', 'timeslot_data',
             'delivery_charges', 'is_available', 'created_at'
         ]
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = [
+            'id', 'coupon_code', 'discount_type', 'discount_value',
+            'minimum_order_amount', 'maximum_discount_amount',
+            'usage_limit', 'usage_count', 'valid_from', 'valid_until',
+            'is_active', 'created_at'
+        ]
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['is_valid'] = instance.is_valid()
+        return representation
+
+
+class CouponApplicationSerializer(serializers.Serializer):
+    coupon_code = serializers.CharField(max_length=50)
+    order_amount = serializers.DecimalField(max_digits=10, decimal_places=2)

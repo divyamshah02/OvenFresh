@@ -953,3 +953,227 @@ class CheckPincodeViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
 
+
+class NewCheckPincodeViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        pincode = request.query_params.get('pincode')
+
+        pincode_data = Pincode.objects.filter(pincode=pincode, is_active=True).first()
+        if not pincode_data:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"is_deliverable": False},
+                "error": f"Pincode with {pincode} does not exist."
+            }, status=status.HTTP_200_OK)
+
+        availability_data = []
+        today_availability_data = []
+        timeslots_data = pincode_data.delivery_charge
+
+        # Use timezone-aware current time
+        now = timezone.localtime().time()
+        
+        for timeslot in timeslots_data.keys():
+            timeslot_detail = TimeSlot.objects.filter(id=timeslot, is_active=True).first()
+            if not timeslot_detail:
+                continue
+
+            if isinstance(timeslot_detail.start_time, str):
+                try:
+                    start_time_obj = datetime.strptime(timeslot_detail.start_time, "%H:%M").time()
+                except ValueError:
+                    continue
+            else:
+                start_time_obj = timeslot_detail.start_time
+
+        # Only include timeslots that start after current time
+        temp_timeslot_dict = {
+            "timeslot_id": timeslot,
+            "timeslot_name": timeslot_detail.time_slot_title,     
+            "start_time": timeslot_detail.start_time,
+            "end_time": timeslot_detail.end_time,
+            "delivery_charge": timeslots_data[timeslot]['charges'],
+            "available": timeslots_data[timeslot]['available'],
+        }
+        availability_data.append(temp_timeslot_dict)
+        
+        # For today's availability, add buffer time (e.g., 2 hours)
+        current_time_with_buffer = (timezone.localtime() + timezone.timedelta(hours=2)).time()
+        if start_time_obj > current_time_with_buffer:                
+            today_availability_data.append(temp_timeslot_dict)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"is_deliverable": bool(availability_data), "availability_data": availability_data, "today_availability_data": today_availability_data},
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class CouponViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get all coupons for admin"""
+        coupons = Coupon.objects.all().order_by('-created_at')
+        serializer = CouponSerializer(coupons, many=True)
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": serializer.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def create(self, request):
+        """Create new coupon"""
+        serializer = CouponSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": serializer.data,
+                "error": None
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response({
+            "success": False,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": None,
+            "error": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        """Update coupon"""
+        try:
+            coupon = Coupon.objects.get(id=pk)
+        except Coupon.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Coupon not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CouponSerializer(coupon, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": serializer.data,
+                "error": None
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            "success": False,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": None,
+            "error": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def destroy(self, request, pk):
+        """Delete coupon"""
+        try:
+            coupon = Coupon.objects.get(id=pk)
+            coupon.delete()
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Coupon deleted successfully"},
+                "error": None
+            }, status=status.HTTP_200_OK)
+        except Coupon.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Coupon not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+class ApplyCouponViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def create(self, request):
+        """Apply coupon to order"""
+        serializer = CouponApplicationSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        coupon_code = serializer.validated_data['coupon_code']
+        order_amount = serializer.validated_data['order_amount']
+        
+        try:
+            coupon = Coupon.objects.get(coupon_code__iexact=coupon_code)
+        except Coupon.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Invalid coupon code"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not coupon.is_valid():
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Coupon is expired or not active"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if order_amount < coupon.minimum_order_amount:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": f"Minimum order amount should be ₹{coupon.minimum_order_amount}"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        discount_amount = coupon.calculate_discount(order_amount)
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "coupon": CouponSerializer(coupon).data,
+                "discount_amount": discount_amount,
+                "final_amount": order_amount - discount_amount
+            },
+            "error": None
+        }, status=status.HTTP_200_OK)

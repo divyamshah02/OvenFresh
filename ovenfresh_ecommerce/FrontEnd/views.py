@@ -171,6 +171,14 @@ class AdminTimeslotViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_timeslots_manager.html')
 
 
+class AdminCouponViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_coupon_manager.html')
+
+
 class AdminAllOrdersViewSet(viewsets.ViewSet):
 
     @handle_exceptions

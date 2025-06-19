@@ -300,7 +300,7 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
                 if razorpay_order['status'] == 'paid':
                     # Payment is successful, update order
                     order.payment_received = True
-                    order.status = 'confirmed'  # or whatever status indicates confirmed payment
+                    order.status = 'placed'  # or whatever status indicates confirmed payment
                     
                     if payment_id:
                         order.razorpay_payment_id = payment_id

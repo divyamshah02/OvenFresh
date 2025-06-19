@@ -19,6 +19,10 @@ router.register(r'pincode-timeslots', TimeSlotAndPincodeViewSet, basename='pinco
 
 router.register(r'check-pincode', CheckPincodeViewSet, basename='check-pincode')
 
+# Coupon URLs
+router.register(r'coupons', CouponViewSet, basename='coupons')
+router.register(r'apply-coupon', ApplyCouponViewSet, basename='apply-coupon')
+
 urlpatterns = [
     path('', include(router.urls)),
 ]
