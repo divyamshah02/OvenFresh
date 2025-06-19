@@ -1,19 +1,20 @@
 let csrf_token = null
 let pincodes_url = null
 let timeslots_url = null
-let pincode_timeslots_url = null
 
 let extra = null
 let currentPage = 1
-const itemsPerPage = 10
+const itemsPerPage = 25
 let totalItems = 0
 let currentFilters = {
   search: "",
   status: "",
   state: "",
+  area_name: "",
   sortBy: "created_desc",
 }
 
+let total_active_pincodes = 0
 let allPincodes = []
 let allTimeslots = []
 let selectedPincodes = []
@@ -23,13 +24,11 @@ let editingPincode = null
 async function AdminPincodeManager(
   csrf_token_param,
   pincodes_url_param,
-  timeslots_url_param,
-  pincode_timeslots_url_param,
+  timeslots_url_param
 ) {
   csrf_token = csrf_token_param
   pincodes_url = pincodes_url_param
   timeslots_url = timeslots_url_param
-  pincode_timeslots_url = pincode_timeslots_url_param
 
   // Initialize theme
   initializeTheme()
@@ -72,6 +71,7 @@ function initializeEventListeners() {
   // Filter changes
   document.getElementById("statusFilter").addEventListener("change", handleFilterChange)
   document.getElementById("stateFilter").addEventListener("change", handleFilterChange)
+  document.getElementById("areaFilter").addEventListener("input", handleAreaFilterChange)
   document.getElementById("sortBy").addEventListener("change", handleFilterChange)
 
   // Clear filters
@@ -89,21 +89,12 @@ function initializeEventListeners() {
   // Bulk delete
   document.getElementById("bulkDeleteBtn").addEventListener("click", handleBulkDelete)
 
-  // Export/Import buttons
-  document.getElementById("exportCsvBtn").addEventListener("click", () => exportData("csv"))
-  document.getElementById("importCsvBtn").addEventListener("click", () => {
-    const modal = new bootstrap.Modal(document.getElementById("importCsvModal"))
-    modal.show()
-  })
-
   // Save pincode
   document.getElementById("savePincodeBtn").addEventListener("click", savePincode)
 
   // Delete confirmation
   document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete)
 
-  // Import CSV
-  document.getElementById("importCsvConfirmBtn").addEventListener("click", importCsv)
   document.getElementById("downloadSampleBtn").addEventListener("click", downloadSampleCsv)
 
   // Add timeslot
@@ -155,6 +146,9 @@ function populateTimeslotsInModal() {
 async function loadPincodes() {
   showLoading()
 
+  // console.log("Loading pincodes with filters:", currentFilters)
+  // console.log("Current page:", currentPage)
+
   try {
     // Build query parameters
     const params = new URLSearchParams({
@@ -163,11 +157,32 @@ async function loadPincodes() {
       ...currentFilters,
     })
 
+    // console.log("API URL:", `${pincodes_url}?${params}`)
     const [success, result] = await callApi("GET", `${pincodes_url}?${params}`)
 
+    // console.log("API Response:", result)
+
     if (success && result.success) {
-      allPincodes = result.data.pincodes || result.data
-      totalItems = result.data.total || allPincodes.length
+      // Handle both paginated and non-paginated responses
+      if (result.data.pincodes) {
+        // Paginated response
+        allPincodes = result.data.pincodes
+        totalItems = result.data.total || result.data.pincodes.length
+        total_active_pincodes = result.data.total_active_pincodes || result.data.pincodes.length
+        // console.log("Paginated response - Total items:", totalItems)
+      } else if (Array.isArray(result.data)) {
+        // Non-paginated response - implement client-side pagination
+        const allData = result.data
+        totalItems = allData.length
+        const startIndex = (currentPage - 1) * itemsPerPage
+        const endIndex = startIndex + itemsPerPage
+        allPincodes = allData.slice(startIndex, endIndex)
+        // console.log("Non-paginated response - Total items:", totalItems)
+      } else {
+        allPincodes = []
+        totalItems = 0
+        // console.log("Empty or invalid response")
+      }
 
       renderPincodesTable()
       renderPagination()
@@ -175,7 +190,8 @@ async function loadPincodes() {
       updateSelectedCount()
       populateStateFilter()
     } else {
-      showToast("error", "Error", "Failed to load pincodes")
+      console.error("API Error:", result)
+      showToast("error", "Error", result.error || "Failed to load pincodes")
       showEmptyState()
     }
   } catch (error) {
@@ -263,18 +279,13 @@ function createPincodeRow(pincode) {
 
 function getStatusBadge(status) {
   const statusConfig = {
+    true: { class: "bg-success", text: "Active" },
+    false: { class: "bg-secondary", text: "Inactive" },
     active: { class: "bg-success", text: "Active" },
     inactive: { class: "bg-secondary", text: "Inactive" },
   }
-  
-  let config = null
-  
-  if (status) {
-    config = statusConfig["active"]
-  }
-  else {
-    config = statusConfig["inactive"]
-  }
+
+  const config = statusConfig[status] || statusConfig[false]
   return `<span class="badge ${config.class}">${config.text}</span>`
 }
 
@@ -290,7 +301,9 @@ function renderPagination() {
   const paginationInfo = document.getElementById("paginationInfo")
   const paginationContainer = document.getElementById("paginationContainer")
 
-  if (totalItems === 0) {
+  // console.log("Rendering pagination - Total items:", totalItems, "Total pages:", totalPages)
+
+  if (totalItems === 0 || totalPages <= 1) {
     paginationContainer.style.display = "none"
     return
   }
@@ -330,35 +343,69 @@ function renderPagination() {
 }
 
 function changePage(page) {
-  if (page < 1 || page > Math.ceil(totalItems / itemsPerPage)) return
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  // console.log("Changing to page:", page, "Total pages:", totalPages)
+
+  if (page < 1 || page > totalPages) {
+    // console.log("Invalid page number")
+    return
+  }
+
   currentPage = page
   loadPincodes()
 }
 
 function handleSearch() {
-  currentFilters.search = document.getElementById("searchInput").value.trim()
+  const searchValue = document.getElementById("searchInput").value.trim()
+  // console.log("Search value:", searchValue)
+  currentFilters.search = searchValue
   currentPage = 1
   loadPincodes()
 }
 
 function handleFilterChange() {
-  currentFilters.status = document.getElementById("statusFilter").value
+  const statusValue = document.getElementById("statusFilter").value
+
+  // Convert status filter to match backend expectations
+  let statusFilter = ""
+  if (statusValue === "active") {
+    statusFilter = "true"
+  } else if (statusValue === "inactive") {
+    statusFilter = "false"
+  }
+
+  currentFilters.status = statusFilter
   currentFilters.state = document.getElementById("stateFilter").value
   currentFilters.sortBy = document.getElementById("sortBy").value
   currentPage = 1
   loadPincodes()
 }
 
+function handleAreaFilterChange() {
+  const areaValue = document.getElementById("areaFilter").value.trim()
+  // console.log("Area filter value:", areaValue)
+  currentFilters.area_name = areaValue
+  currentPage = 1
+
+  // Debounce the API call to avoid too many requests
+  clearTimeout(window.areaFilterTimeout)
+  window.areaFilterTimeout = setTimeout(() => {
+    loadPincodes()
+  }, 500)
+}
+
 function clearFilters() {
   document.getElementById("searchInput").value = ""
   document.getElementById("statusFilter").value = ""
   document.getElementById("stateFilter").value = ""
+  document.getElementById("areaFilter").value = ""
   document.getElementById("sortBy").value = "created_desc"
 
   currentFilters = {
     search: "",
     status: "",
     state: "",
+    area_name: "",
     sortBy: "created_desc",
   }
 
@@ -408,10 +455,10 @@ function updateSelectedCount() {
 }
 
 function updateStats() {
-  // Calculate stats
-  const totalPincodes = allPincodes.length
-  const activePincodes = allPincodes.filter((p) => (p.is_active) === true).length
-  const inactivePincodes = allPincodes.filter((p) => (p.is_active) === false).length
+  // Calculate stats from current data
+  const totalPincodes = totalItems || allPincodes.length
+  const activePincodes = total_active_pincodes || allPincodes.filter((p) => p.is_active === true || p.is_active === "true").length
+  const inactivePincodes = allPincodes.filter((p) => p.is_active === false || p.is_active === "false").length
   const totalTimeslots = allTimeslots.length
 
   // Update DOM
@@ -433,7 +480,7 @@ function editPincode(pincodeId) {
   if (!pincode) return
 
   editingPincode = pincode
-  console.log(pincode);
+  // console.log(pincode)
 
   // Populate form
   document.getElementById("pincodeId").value = pincode.id
@@ -445,17 +492,16 @@ function editPincode(pincodeId) {
   // Update modal title
   document.getElementById("pincodeModalTitle").textContent = "Edit Pincode"
 
-  extra = pincode.delivery_charge;
+  extra = pincode.delivery_charge
 
   for (const i of Object.keys(extra)) {
-      console.log(i);
-      console.log(extra[i]);
-      const checkbox = document.getElementById(`timeslot_${i}`)
-      if (checkbox) {
-        checkbox.checked = extra[i]['available'];
-        document.getElementById(`timeslot_delivery_charge_${i}`).value = extra[i]['charges'];
-      }
-
+    // console.log(i)
+    // console.log(extra[i])
+    const checkbox = document.getElementById(`timeslot_${i}`)
+    if (checkbox) {
+      checkbox.checked = extra[i]["available"]
+      document.getElementById(`timeslot_delivery_charge_${i}`).value = extra[i]["charges"]
+    }
   }
   // Check associated timeslots
   // if (pincode.delivery_charge) {
@@ -548,7 +594,7 @@ async function savePincode() {
 
   const pincodeData = {
     pincode: document.getElementById("pincode").value,
-    area: document.getElementById("areaName").value,
+    area_name: document.getElementById("areaName").value,
     city: document.getElementById("city").value,
     state: document.getElementById("state").value,
     is_active: document.getElementById("pincodeStatus").value,
@@ -558,17 +604,16 @@ async function savePincode() {
   const selectedTimeslots = {}
   allTimeslots.forEach((timeslot) => {
     const checkbox = document.getElementById(`timeslot_${timeslot.id}`)
-    let temp_dict = {}
+    const temp_dict = {}
     if (checkbox && checkbox.checked) {
       // selectedTimeslots.push(timeslot.id)
-      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value;
-      temp_dict.available = true;
+      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value
+      temp_dict.available = true
+    } else {
+      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value
+      temp_dict.available = false
     }
-    else {
-      temp_dict.charges = document.getElementById(`timeslot_delivery_charge_${timeslot.id}`).value;
-      temp_dict.available = false;
-    }
-    selectedTimeslots[`${timeslot.id}`] = temp_dict;
+    selectedTimeslots[`${timeslot.id}`] = temp_dict
   })
 
   pincodeData.delivery_charge = selectedTimeslots
@@ -696,61 +741,6 @@ function downloadSampleCsv() {
 
   downloadCSV(sampleData, "sample_pincodes.csv")
   showToast("success", "Downloaded", "Sample CSV file downloaded")
-}
-
-async function importCsv() {
-  const fileInput = document.getElementById("csvFile")
-  const file = fileInput.files[0]
-
-  if (!file) {
-    showToast("warning", "No File", "Please select a CSV file")
-    return
-  }
-
-  try {
-    showLoading("Importing pincodes...")
-
-    const text = await file.text()
-    const lines = text.split("\n")
-    const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, ""))
-
-    const pincodes = []
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim()
-      if (!line) continue
-
-      const values = line.split(",").map((v) => v.trim().replace(/"/g, ""))
-      const pincode = {}
-
-      headers.forEach((header, index) => {
-        pincode[header.toLowerCase().replace(" ", "_")] = values[index] || ""
-      })
-
-      if (pincode.pincode) {
-        pincodes.push(pincode)
-      }
-    }
-
-    // Import pincodes
-    let successCount = 0
-    for (const pincodeData of pincodes) {
-      try {
-        const [success] = await callApi("POST", pincodes_url, pincodeData, csrf_token)
-        if (success) successCount++
-      } catch (error) {
-        console.error("Error importing pincode:", error)
-      }
-    }
-
-    showToast("success", "Import Complete", `${successCount} of ${pincodes.length} pincodes imported successfully`)
-    bootstrap.Modal.getInstance(document.getElementById("importCsvModal")).hide()
-    loadPincodes()
-  } catch (error) {
-    console.error("Error importing CSV:", error)
-    showToast("error", "Import Failed", "Failed to import CSV file")
-  } finally {
-    hideLoading()
-  }
 }
 
 function openTimeslotsManager() {
@@ -925,7 +915,7 @@ function showLoading(message = "Loading...") {
 function hideLoading() {
   const loadingEl = document.getElementById("globalLoading")
   if (loadingEl) {
-    loadingEl.remove();
+    loadingEl.remove()
   }
 }
 
@@ -992,4 +982,3 @@ function getToastIcon(type) {
   }
   return iconMap[type] || "fas fa-info-circle"
 }
-

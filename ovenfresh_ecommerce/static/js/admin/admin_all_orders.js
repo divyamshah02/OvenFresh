@@ -357,42 +357,45 @@ function renderOrders() {
                 </span>
             </td>
             <td>
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Actions
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" onclick="viewOrderQuick('${order.order_id}')">
-                            <i class="fas fa-eye me-2"></i>Quick View
-                        </a></li>
-                        <li><a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
+                <a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
                             <i class="fas fa-edit me-2"></i>View Details
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="printOrderKOT('${order.order_id}')">
-                            <i class="fas fa-print me-2"></i>Print KOT
-                        </a></li>
-                        ${
-                          order.status !== "delivered" && order.status !== "cancelled"
-                            ? `
-                        <li><a class="dropdown-item" href="#" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
-                            <i class="fas fa-check-circle me-2"></i>Mark as Delivered
-                        </a></li>`
-                            : ""
-                        }
-                        ${
-                          order.status !== "cancelled"
-                            ? `
-                        <li><a class="dropdown-item text-danger" href="#" onclick="updateOrderStatus('${order.order_id}', 'cancelled')">
-                            <i class="fas fa-times-circle me-2"></i>Cancel Order
-                        </a></li>`
-                            : ""
-                        }
-                    </ul>
-                </div>
+                        </a>
             </td>
         `
 
+      //   <div class="dropdown">
+      //     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      //         Actions
+      //     </button>
+      //     <ul class="dropdown-menu dropdown-menu-end">
+      //         <li><a class="dropdown-item" href="#" onclick="viewOrderQuick('${order.order_id}')">
+      //             <i class="fas fa-eye me-2"></i>Quick View
+      //         </a></li>
+      //         <li><a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
+      //             <i class="fas fa-edit me-2"></i>View Details
+      //         </a></li>
+      //         <li><hr class="dropdown-divider"></li>
+      //         <li><a class="dropdown-item" href="#" onclick="printOrderKOT('${order.order_id}')">
+      //             <i class="fas fa-print me-2"></i>Print KOT
+      //         </a></li>
+      //         ${
+      //           order.status !== "delivered" && order.status !== "cancelled"
+      //             ? `
+      //         <li><a class="dropdown-item" href="#" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
+      //             <i class="fas fa-check-circle me-2"></i>Mark as Delivered
+      //         </a></li>`
+      //             : ""
+      //         }
+      //         ${
+      //           order.status !== "cancelled"
+      //             ? `
+      //         <li><a class="dropdown-item text-danger" href="#" onclick="updateOrderStatus('${order.order_id}', 'cancelled')">
+      //             <i class="fas fa-times-circle me-2"></i>Cancel Order
+      //         </a></li>`
+      //             : ""
+      //         }
+      //     </ul>
+      // </div>
     tableBody.appendChild(row)
   })
 

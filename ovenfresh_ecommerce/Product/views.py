@@ -978,18 +978,84 @@ class PincodeViewSet(viewsets.ViewSet):
     # @check_authentication
     @handle_exceptions
     def list(self, request):
+        # Get filter parameters
+        search = request.query_params.get('search', '')
+        status_param = request.query_params.get('status', '')
+        state = request.query_params.get('state', '')
+        area_name = request.query_params.get('area_name', '')
+        sort_by = request.query_params.get('sortBy', 'created_desc')
+        page = int(request.query_params.get('page', 1))
+        limit = int(request.query_params.get('limit', 10))
+
+        # Start with all pincodes
         pincodes = Pincode.objects.all()
-        serializer = PincodeSerializer(pincodes, many=True)
+
+        # Apply search filter
+        if search:
+            pincodes = pincodes.filter(
+                Q(pincode__icontains=search) |
+                Q(area_name__icontains=search) |
+                Q(city__icontains=search) |
+                Q(state__icontains=search)
+            )
+
+        # Apply status filter
+        if status_param:
+            if status_param.lower() == 'true':
+                pincodes = pincodes.filter(is_active=True)
+            elif status_param.lower() == 'false':
+                pincodes = pincodes.filter(is_active=False)
+
+        # Apply state filter
+        if state:
+            pincodes = pincodes.filter(state__icontains=state)
+
+        if area_name:
+            pincodes = pincodes.filter(area_name__icontains=area_name)
+
+        # Apply sorting
+        if sort_by == 'created_desc':
+            pincodes = pincodes.order_by('-created_at')
+        elif sort_by == 'created_asc':
+            pincodes = pincodes.order_by('created_at')
+        elif sort_by == 'pincode_asc':
+            pincodes = pincodes.order_by('pincode')
+        elif sort_by == 'pincode_desc':
+            pincodes = pincodes.order_by('-pincode')
+        elif sort_by == 'area_asc':
+            pincodes = pincodes.order_by('area_name')
+        elif sort_by == 'area_desc':
+            pincodes = pincodes.order_by('-area_name')
+
+        # Get total count before pagination
+        total_count = pincodes.count()
+        total_active_pincodes = pincodes.filter(is_active=True).count()
+
+        # Apply pagination
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_pincodes = pincodes[start:end]
+
+        # Serialize pincodes
+        serializer = PincodeSerializer(paginated_pincodes, many=True)
+
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": serializer.data,
+            "data": {
+                "pincodes": serializer.data,
+                "total": total_count,
+                "total_active_pincodes": total_active_pincodes,
+                "page": page,
+                "limit": limit,
+                "total_pages": (total_count + limit - 1) // limit
+            },
             "error": None
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    @check_authentication(required_role='admin')
+    # @check_authentication(required_role='admin')
     def create(self, request):
         is_multiple = request.data.get("is_multiple", False)
         timeslot_charge_dict = request.data.get('timeslot_charge_dict')
@@ -1041,7 +1107,7 @@ class PincodeViewSet(viewsets.ViewSet):
 
         else:
             pincode_code = request.data.get("pincode")
-            area = request.data.get("area")
+            area = request.data.get("area_name")
             city = request.data.get("city")
             state = request.data.get("state")
 
