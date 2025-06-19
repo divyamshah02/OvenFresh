@@ -548,7 +548,7 @@ async function savePincode() {
 
   const pincodeData = {
     pincode: document.getElementById("pincode").value,
-    area_name: document.getElementById("areaName").value,
+    area: document.getElementById("areaName").value,
     city: document.getElementById("city").value,
     state: document.getElementById("state").value,
     is_active: document.getElementById("pincodeStatus").value,

@@ -97,6 +97,19 @@
                     </div>
                 </div>
 
+                <!-- Existing Images Section -->
+                <div id="existingImagesContainer" class="card mb-4" style="display: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Existing Product Images</h5>
+                        <small class="text-muted">Click delete to remove images</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="existingImagesGrid">
+                            <!-- Existing images will be populated here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Existing Variations Container -->
                 <div id="existingVariationsContainer" class="mb-4"></div>
 
@@ -130,17 +143,31 @@
                                 </div>
                                 <input type="hidden" id="productVariationId" value="">
                             </form>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" id="submitVariationBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-1"></i> Add Variation
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4">
+                    <div class="card mb-4" id="availabilityCard">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Variation Availability</h5>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#availabilityTools">
-                                <i class="fas fa-tools me-1"></i> Show Tools
-                            </button>
+                            <div>
+                                <span class="badge bg-info me-2" id="pincodeStatusBadge">Loading...</span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#availabilityTools">
+                                    <i class="fas fa-tools me-1"></i> Show Tools
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
+                            <div id="pincodeDisabledMessage" class="alert alert-info" style="display: none;">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Pincode-based availability is currently disabled.</strong> 
+                                All products will be available everywhere with standard delivery charges.
+                            </div>
+                            
                             <div class="collapse mb-4" id="availabilityTools">
                                 <div class="card card-body bg-light">
                                     <h6 class="mb-3">Availability Tools</h6>
@@ -181,13 +208,7 @@
                             
                             <div id="pincodeAvailability" class="mb-3">
                                 <!-- JS will render checkboxes and charges -->
-                            </div>
-                            
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" id="submitVariationBtn" class="btn btn-primary">
-                                    <i class="fas fa-plus-circle me-1"></i> Add Variation
-                                </button>
-                            </div>
+                            </div>                            
                         </div>
                     </div>
                 </div>

@@ -14,6 +14,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+# Feature Flags
+ENABLE_PINCODE_LOGIC = False  # Set to True to enable pincode-based availability
+
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 # X_FRAME_OPTIONS = 'ALLOWALL'
 # CORS_ALLOW_ALL_ORIGINS = True  # allow fetch/ajax from anywhere

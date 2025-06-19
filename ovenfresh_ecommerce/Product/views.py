@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.db.models import Q
+from django.conf import settings
 
 from django.utils import timezone
 
@@ -8,7 +10,7 @@ from .models import *
 from .serializers import *
 
 from utils.decorators import *
-from utils.handle_s3_bucket import upload_file_to_s3
+from utils.handle_s3_bucket import upload_file_to_s3, delete_file_from_s3
 
 import random
 import string
@@ -86,6 +88,32 @@ class CategoryViewSet(viewsets.ViewSet):
         
         update_category.title = title        
         update_category.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"category_id": category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
+
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def delete(self, request, pk):
+        category_id = pk
+
+        delete_category = Category.objects.filter(category_id=category_id).first()
+        if not delete_category:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Category not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+      
+        delete_category.delete()
 
         return Response({
             "success": True,
@@ -182,6 +210,31 @@ class SubCategoryViewSet(viewsets.ViewSet):
             "data": {"sub_category_id": sub_category_id},
             "error": None
         }, status=status.HTTP_201_CREATED)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def delete(self, request, pk):
+        sub_category_id = pk
+
+        delete_sub_category = SubCategory.objects.filter(sub_category_id=sub_category_id).first()
+        if not delete_sub_category:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "SubCategory not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+      
+        delete_sub_category.delete()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {"sub_category_id": sub_category_id},
+            "error": None
+            }, status=status.HTTP_201_CREATED)
 
     def generate_sub_category_id(self):
         while True:
@@ -423,6 +476,82 @@ class ProductViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_200_OK)
 
+    @action(detail=True, methods=['delete'], url_path='delete-image')
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def delete_image(self, request, pk=None):
+        """Delete a specific image from product"""
+        product_id = pk
+        image_url = request.data.get('image_url')
+        
+        if not image_url:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Image URL is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        product_obj = Product.objects.filter(product_id=product_id).first()
+        if not product_obj:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if image exists in product photos
+        if not product_obj.photos or image_url not in product_obj.photos:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Image not found in product."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if this is the last image
+        if len(product_obj.photos) <= 1:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Cannot delete the last image. Product must have at least one image."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Delete from S3
+            delete_file_from_s3(image_url)
+            
+            # Remove from product photos list
+            updated_photos = [photo for photo in product_obj.photos if photo != image_url]
+            product_obj.photos = updated_photos
+            product_obj.save()
+
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {
+                    "message": "Image deleted successfully",
+                    "remaining_images": updated_photos
+                },
+                "error": None
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": f"Failed to delete image: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class AllProductsViewSet(viewsets.ViewSet):
 
@@ -577,7 +706,6 @@ class ProductVariationViewSet(viewsets.ViewSet):
         discounted_price = request.data.get("discounted_price")
         is_vartied = request.data.get("is_vartied", True)
         weight_variation = request.data.get("weight_variation")
-        availability_data = request.data.get("availability_data", [])
 
         if not product_id or not actual_price or not discounted_price:
             return Response({
@@ -601,16 +729,19 @@ class ProductVariationViewSet(viewsets.ViewSet):
         )
         new_variation.save()
 
-        for item in availability_data:
-            AvailabilityCharges.objects.create(
-                product_id=product_id,
-                product_variation_id=product_variation_id,
-                pincode_id=item["pincode_id"],
-                timeslot_data=item["timeslot_data"],
-                delivery_charges=item.get("delivery_charges", 0),
-                is_available=item.get("is_available", True),
-                created_at=timezone.now()
-            )
+        # Only handle availability data if pincode logic is enabled
+        if getattr(settings, 'ENABLE_PINCODE_LOGIC', False):
+            availability_data = request.data.get("availability_data", [])
+            for item in availability_data:
+                AvailabilityCharges.objects.create(
+                    product_id=product_id,
+                    product_variation_id=product_variation_id,
+                    pincode_id=item["pincode_id"],
+                    timeslot_data=item["timeslot_data"],
+                    delivery_charges=item.get("delivery_charges", 0),
+                    is_available=item.get("is_available", True),
+                    created_at=timezone.now()
+                )
 
         return Response({
             "success": True,
@@ -679,7 +810,6 @@ class ProductVariationViewSet(viewsets.ViewSet):
         discounted_price = request.data.get("discounted_price")
         is_vartied = request.data.get("is_vartied", True)
         weight_variation = request.data.get("weight_variation")
-        availability_data = request.data.get("availability_data", [])
 
         if not product_variation_id or not product_id or not actual_price or not discounted_price:
             return Response({
@@ -704,7 +834,6 @@ class ProductVariationViewSet(viewsets.ViewSet):
         product_variation_obj.discounted_price = discounted_price
         product_variation_obj.is_vartied = is_vartied
         product_variation_obj.weight_variation = weight_variation
-        product_variation_obj.availability_data = availability_data
 
         product_variation_obj.save()
 
@@ -712,7 +841,7 @@ class ProductVariationViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": "Product updated",
+            "data": "Product variation updated successfully",
             "error": None
         }, status=status.HTTP_200_OK)
 
@@ -721,6 +850,16 @@ class AvailabilityChargesViewSet(viewsets.ViewSet):
     @handle_exceptions
     @check_authentication(required_role='admin')
     def create(self, request):
+        # Skip if pincode logic is disabled
+        if not getattr(settings, 'ENABLE_PINCODE_LOGIC', False):
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": "Pincode logic is currently disabled",
+                "error": None
+            }, status=status.HTTP_200_OK)
+
         availability_data = request.data.get("availability_data")
         product_id = request.data.get('product_id')
         product_variation_id = request.data.get('product_variation_id')
@@ -753,9 +892,18 @@ class AvailabilityChargesViewSet(viewsets.ViewSet):
             "error": None
         }, status=status.HTTP_201_CREATED)
 
-    # @handle_exceptions
     @check_authentication(required_role='admin')
     def update(self, request, pk=None):
+        # Skip if pincode logic is disabled
+        if not getattr(settings, 'ENABLE_PINCODE_LOGIC', False):
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": "Pincode logic is currently disabled",
+                "error": None
+            }, status=status.HTTP_200_OK)
+
         availability_data = request.data.get("availability_data")
         product_id = request.data.get('product_id')
         product_variation_id = request.data.get('product_variation_id')
@@ -784,7 +932,7 @@ class AvailabilityChargesViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": f"All {len(availability_data)} rows added",
+            "data": f"All {len(availability_data)} rows updated",
             "error": None
         }, status=status.HTTP_201_CREATED)
 
@@ -801,13 +949,17 @@ class TimeSlotAndPincodeViewSet(viewsets.ViewSet):
             timeslot_serializer = TimeSlotSerializer(timeslots, many=True)
             pincode_serializer = PincodeSerializer(pincodes, many=True)
 
+            pincode_enabled = getattr(settings, 'ENABLE_PINCODE_LOGIC', False)
+            
             return Response({
                 "success": True,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": {
                     "timeslots": timeslot_serializer.data,
-                    "pincodes": pincode_serializer.data
+                    "pincodes": pincode_serializer.data,
+                    "pincode_logic_enabled": pincode_enabled
+                    
                 },
                 "error": None
             }, status=status.HTTP_200_OK)
@@ -837,7 +989,7 @@ class PincodeViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
     @handle_exceptions
-    # @check_authentication(required_role='admin')
+    @check_authentication(required_role='admin')
     def create(self, request):
         is_multiple = request.data.get("is_multiple", False)
         timeslot_charge_dict = request.data.get('timeslot_charge_dict')
@@ -957,6 +1109,32 @@ class PincodeViewSet(viewsets.ViewSet):
         pincode_data.is_active = is_active
 
         pincode_data.save()
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": None,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def delete(self, request, pk):
+        pincode_id = pk
+
+        pincode_data = Pincode.objects.filter(id=pincode_id).first()
+        if not pincode_data:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": f"Pincode with id {pincode_id} doesnot exists."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        pincode_data.delete()
 
         return Response({
             "success": True,

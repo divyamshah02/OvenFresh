@@ -6,6 +6,9 @@ let add_product_url = null
 let add_product_variation_url = null
 let availability_charges_url = null
 
+let existingProductImages = []
+let pincodeLogicEnabled = false
+
 let pincodes = []
 let timeslots = []
 let product_id = null
@@ -19,9 +22,9 @@ if (urlParams.get("product_id")) {
 }
 
 function reloadWithParam(key, value) {
-    const url = new URL(window.location.href);
-    url.searchParams.set(key, value); // add or update param
-    window.location.href = url.toString(); // reload with updated URL
+  const url = new URL(window.location.href)
+  url.searchParams.set(key, value) // add or update param
+  window.location.href = url.toString() // reload with updated URL
 }
 
 async function AdminAddProduct(
@@ -55,7 +58,7 @@ async function AdminAddProduct(
     showLoading("Creating product...")
     if (!product_id) {
       await createProductMeta() // creates product and sets product_id
-    reloadWithParam('product_id', product_id);
+      reloadWithParam("product_id", product_id)
     } else {
       await createProductMeta(true) // updates product
     }
@@ -269,10 +272,13 @@ async function loadProductData() {
       }, 100)
     }
 
+    // Display existing images
+    if (Res.data.photos && Res.data.photos.length > 0) {
+      displayExistingImages(Res.data.photos)
+    }
+
     // Handle existing photos - show them as uploaded
     if (Res.data.photos && Res.data.photos.length > 0) {
-      // For existing products, we'll show the current photos but won't add them to selectedProductImages
-      // since they're already uploaded
       const uploadText = document.getElementById("photoUploadText")
       const fileText = document.getElementById("photoUploadFileText")
       const uploadIcon = document.getElementById("photoUploadIcon")
@@ -327,7 +333,22 @@ function handleCategoryChange(event) {
 
 async function loadPincodesAndTimeslots() {
   const [success, result] = await callApi("GET", pincode_timeslots_url)
+
   if (success && result.success) {
+    // Check if pincode logic is enabled (you can get this from API response or set manually)
+    const pincodeEnabled = result.data.pincode_logic_enabled !== false // Default to true if not specified
+    updatePincodeStatusUI(pincodeEnabled)
+
+    if (!pincodeEnabled) {
+      showToast(
+        "info",
+        "Info",
+        "Pincode-based availability is currently disabled. All products will be available everywhere.",
+      )
+      return
+    }
+
+    // Original pincode loading logic
     pincodes = result.data.pincodes
     timeslots = result.data.timeslots
 
@@ -550,45 +571,49 @@ async function createVariationWithAvailability() {
 
   const product_variation_id = varRes.data.product_variation_id
 
-  // 2. Prepare and send availability data separately
-  const availability_data = []
+  // 2. Only handle availability data if pincode logic is enabled
+  if (pincodeLogicEnabled) {
+    const availability_data = []
 
-  pincodes.forEach((pincode) => {
-    const timeslot_data = {}
-    timeslots.forEach((slot) => {
-      const checkbox = document.getElementById(`pincode_${pincode.id}_slot_${slot.id}`)
-      const chargeInput = document.getElementById(`charge_${pincode.id}_${slot.id}`)
+    pincodes.forEach((pincode) => {
+      const timeslot_data = {}
+      timeslots.forEach((slot) => {
+        const checkbox = document.getElementById(`pincode_${pincode.id}_slot_${slot.id}`)
+        const chargeInput = document.getElementById(`charge_${pincode.id}_${slot.id}`)
 
-      if (checkbox) {
-        timeslot_data[slot.id] = {
-          available: checkbox.checked,
-          charge: chargeInput.value || "50",
+        if (checkbox) {
+          timeslot_data[slot.id] = {
+            available: checkbox.checked,
+            charge: chargeInput.value || "50",
+          }
         }
+      })
+
+      if (Object.keys(timeslot_data).length > 0) {
+        availability_data.push({
+          product_id,
+          product_variation_id,
+          pincode_id: pincode.id,
+          timeslot_data,
+          delivery_charges: "50",
+          is_available: true,
+        })
       }
     })
 
-    if (Object.keys(timeslot_data).length > 0) {
-      availability_data.push({
-        product_id,
-        product_variation_id,
-        pincode_id: pincode.id,
-        timeslot_data,
-        delivery_charges: "50",
-        is_available: true,
-      })
+    const availabilityPayload = {
+      availability_data,
+      product_id,
+      product_variation_id,
     }
-  })
 
-  const availabilityPayload = {
-    availability_data,
-    product_id,
-    product_variation_id,
-  }
-
-  const [availSuccess, availRes] = await callApi("POST", availability_charges_url, availabilityPayload, csrf_token)
-  if (!availSuccess || !availRes.success) {
-    showToast("error", "Error", "Failed to set availability")
-    return
+    const [availSuccess, availRes] = await callApi("POST", availability_charges_url, availabilityPayload, csrf_token)
+    if (!availSuccess || !availRes.success) {
+      showToast("error", "Error", "Failed to set availability")
+      return
+    }
+  } else {
+    showToast("info", "Info", "Variation created without pincode restrictions - available everywhere!")
   }
 
   showToast("success", "Success", "Variation and availability added successfully!")
@@ -927,5 +952,129 @@ function hideLoading() {
   if (loadingEl) {
     // loadingEl.style.display = "none"
     loadingEl.remove()
+  }
+}
+
+// Function to display existing images with delete buttons
+function displayExistingImages(images) {
+  existingProductImages = images || []
+
+  const existingImagesContainer = document.getElementById("existingImagesContainer")
+  const existingImagesGrid = document.getElementById("existingImagesGrid")
+
+  if (existingProductImages.length === 0) {
+    existingImagesContainer.style.display = "none"
+    return
+  }
+
+  existingImagesGrid.innerHTML = ""
+
+  existingProductImages.forEach((imageUrl, index) => {
+    const col = document.createElement("div")
+    col.className = "col-md-3 mb-3"
+
+    const card = document.createElement("div")
+    card.className = "card h-100"
+
+    const img = document.createElement("img")
+    img.src = imageUrl
+    img.className = "card-img-top"
+    img.style.height = "120px"
+    img.style.objectFit = "cover"
+    img.onerror = () => {
+      img.src = "/placeholder.svg?height=120&width=120&text=Image+Not+Found"
+    }
+
+    const cardBody = document.createElement("div")
+    cardBody.className = "card-body p-2 d-flex flex-column"
+
+    const fileName = document.createElement("small")
+    fileName.className = "text-muted mb-2 flex-grow-1"
+    fileName.textContent = `Image ${index + 1}`
+
+    const deleteBtn = document.createElement("button")
+    deleteBtn.className = "btn btn-sm btn-danger"
+    deleteBtn.innerHTML = '<i class="fas fa-trash me-1"></i> Delete'
+    deleteBtn.onclick = () => deleteExistingImage(imageUrl, index)
+
+    // Prevent deletion if it's the last image
+    if (existingProductImages.length === 1) {
+      deleteBtn.disabled = true
+      deleteBtn.title = "Cannot delete the last image"
+      deleteBtn.innerHTML = '<i class="fas fa-lock me-1"></i> Last Image'
+    }
+
+    cardBody.appendChild(fileName)
+    cardBody.appendChild(deleteBtn)
+
+    card.appendChild(img)
+    card.appendChild(cardBody)
+    col.appendChild(card)
+    existingImagesGrid.appendChild(col)
+  })
+
+  existingImagesContainer.style.display = "block"
+}
+
+// Function to delete existing image
+async function deleteExistingImage(imageUrl, index) {
+  if (existingProductImages.length === 1) {
+    showToast("warning", "Cannot Delete", "Products must have at least one image")
+    return
+  }
+
+  if (!confirm("Are you sure you want to delete this image? This action cannot be undone.")) {
+    return
+  }
+
+  showLoading("Deleting image...")
+
+  try {
+    const [success, result] = await callApi(
+      "DELETE",
+      `${add_product_url}${product_id}/delete-image/`,
+      { image_url: imageUrl },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      // Remove from local array
+      existingProductImages.splice(index, 1)
+
+      // Refresh display
+      displayExistingImages(existingProductImages)
+
+      showToast("success", "Success", "Image deleted successfully")
+    } else {
+      showToast("error", "Error", result.error || "Failed to delete image")
+    }
+  } catch (error) {
+    console.error("Delete image error:", error)
+    showToast("error", "Error", "Failed to delete image")
+  } finally {
+    hideLoading()
+  }
+}
+
+// Function to update pincode status UI
+function updatePincodeStatusUI(enabled) {
+  pincodeLogicEnabled = enabled
+  const statusBadge = document.getElementById("pincodeStatusBadge")
+  const disabledMessage = document.getElementById("pincodeDisabledMessage")
+  const availabilityTools = document.getElementById("availabilityTools")
+  const pincodeAvailability = document.getElementById("pincodeAvailability")
+
+  if (enabled) {
+    statusBadge.textContent = "Pincode Logic: Enabled"
+    statusBadge.className = "badge bg-success me-2"
+    disabledMessage.style.display = "none"
+    availabilityTools.style.display = "block"
+    pincodeAvailability.style.display = "block"
+  } else {
+    statusBadge.textContent = "Pincode Logic: Disabled"
+    statusBadge.className = "badge bg-warning me-2"
+    disabledMessage.style.display = "block"
+    availabilityTools.style.display = "none"
+    pincodeAvailability.style.display = "none"
   }
 }
