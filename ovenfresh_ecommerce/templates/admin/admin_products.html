@@ -139,6 +139,12 @@
                                 </select>
                             </div>
                             <div class="col-md-2 mb-3">
+                                <label for="subCategoryFilter" class="form-label">Sub Category</label>
+                                <select class="form-select" id="subCategoryFilter" disabled>
+                                    <option value="">All Sub Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3">
                                 <label for="statusFilter" class="form-label">Status</label>
                                 <select class="form-select" id="statusFilter">
                                     <option value="">All Status</option>
@@ -209,6 +215,7 @@
                                         </th>
                                         <th>Product</th>
                                         <th>Category</th>
+                                        <th>Sub Category</th>
                                         <th>Variations</th>
                                         <th>Price Range</th>
                                         <th>Status</th>
@@ -305,7 +312,7 @@
         const csrfToken = "{{ csrf_token }}";
         AdminAllProducts(
             csrfToken,
-            "{% url 'all-products-list' %}",
+            "{% url 'all-admin-products-list' %}",
             "{% url 'product-list' %}",
             "{% url 'category-list' %}",
             "{% url 'product-variation-list' %}"

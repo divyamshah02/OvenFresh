@@ -10,6 +10,7 @@ let totalItems = 0
 let currentFilters = {
   search: "",
   category: "",
+  sub_category: "",
   status: "",
   sortBy: "created_desc",
 }
@@ -72,6 +73,7 @@ function initializeEventListeners() {
 
   // Filter changes
   document.getElementById("categoryFilter").addEventListener("change", handleFilterChange)
+  document.getElementById("subCategoryFilter").addEventListener("change", handleFilterChange)
   document.getElementById("statusFilter").addEventListener("change", handleFilterChange)
   document.getElementById("sortBy").addEventListener("change", handleFilterChange)
 
@@ -135,6 +137,7 @@ async function loadProducts() {
       limit: itemsPerPage,
       search: currentFilters.search,
       category: currentFilters.category,
+      sub_category: currentFilters.sub_category,
       status: currentFilters.status,
       sortBy: currentFilters.sortBy,
     })
@@ -212,6 +215,9 @@ function createProductRow(product) {
         </td>
         <td>
             <span class="badge bg-light text-dark">${categoryName}</span>
+        </td>
+        <td>
+            <span class="badge bg-info text-light">${product.sub_category_name || "None"}</span>
         </td>
         <td>
             <span class="badge bg-info">${variationsCount} variations</span>
@@ -379,7 +385,17 @@ function handleSearch() {
 }
 
 function handleFilterChange() {
-  currentFilters.category = document.getElementById("categoryFilter").value
+  const newCategory = document.getElementById("categoryFilter").value
+
+  // If category changed, update subcategory options and reset subcategory filter
+  if (newCategory !== currentFilters.category) {
+    console.log('hresrheshshrshresehr')
+    populateSubCategoryFilter(newCategory)
+    document.getElementById("subCategoryFilter").value = ""    
+  }
+
+  currentFilters.category = newCategory
+  currentFilters.sub_category = document.getElementById("subCategoryFilter").value
   currentFilters.status = document.getElementById("statusFilter").value
   currentFilters.sortBy = document.getElementById("sortBy").value
   currentPage = 1
@@ -389,12 +405,15 @@ function handleFilterChange() {
 function clearFilters() {
   document.getElementById("searchInput").value = ""
   document.getElementById("categoryFilter").value = ""
+  document.getElementById("subCategoryFilter").value = ""
+  document.getElementById("subCategoryFilter").disabled = true
   document.getElementById("statusFilter").value = ""
   document.getElementById("sortBy").value = "created_desc"
 
   currentFilters = {
     search: "",
     category: "",
+    sub_category: "",
     status: "",
     sortBy: "created_desc",
   }
@@ -769,6 +788,31 @@ function getToastIcon(type) {
     info: "fas fa-info-circle",
   }
   return iconMap[type] || "fas fa-info-circle"
+}
+
+function populateSubCategoryFilter(categoryId) {
+  const subCategoryFilter = document.getElementById("subCategoryFilter")
+  subCategoryFilter.innerHTML = '<option value="">All Sub Categories</option>'
+
+  console.log(categoryId)
+  if (!categoryId) {
+    subCategoryFilter.disabled = true
+    return
+  }
+
+  const selectedCategory = allCategories.find((cat) => cat.category_id === categoryId)
+  console.log(selectedCategory)
+  if (selectedCategory && selectedCategory.subcategories) {
+    subCategoryFilter.disabled = false
+    selectedCategory.subcategories.forEach((subCategory) => {
+      const option = document.createElement("option")
+      option.value = subCategory.sub_category_id
+      option.textContent = subCategory.title
+      subCategoryFilter.appendChild(option)
+    })
+  } else {
+    subCategoryFilter.disabled = true
+  }
 }
 
 // Global loading function - Removed duplicate definition

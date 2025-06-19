@@ -337,6 +337,43 @@ class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+        category = request.query_params.get('category')
+        subcategory = request.query_params.get('sub_category')
+
+        if subcategory:
+            subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
+            sub_category_id = subcategory_data.sub_category_id
+            if sub_category_id:                
+                product_obj = Product.objects.filter(sub_category_id=sub_category_id)
+            else:
+                product_obj = Product.objects.all()
+
+        elif category:
+            category_data = Category.objects.filter(title__icontains=category).first()
+            category_id = category_data.category_id
+            if category_id:                
+                product_obj = Product.objects.filter(category_id=category_id)
+            else:
+                product_obj = Product.objects.all()
+
+        else:
+            product_obj = Product.objects.all()
+
+        product_data = AllProductSerializer(product_obj, many=True)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": product_data.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class AllProductsAdminViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
         # Get filter parameters
         search = request.query_params.get('search', '')
         category = request.query_params.get('category', '')
@@ -359,6 +396,11 @@ class AllProductsViewSet(viewsets.ViewSet):
         # Apply category filter
         if category:
             product_obj = product_obj.filter(category_id=category)
+
+        # Apply subcategory filter
+        sub_category = request.query_params.get('sub_category', '')
+        if sub_category:
+            product_obj = product_obj.filter(sub_category_id=sub_category)
 
         # Apply status filter
         if status_param:

@@ -13,6 +13,8 @@ router.register(r'all-products', AllProductsViewSet, basename='all-products')
 router.register(r'product-variation', ProductVariationViewSet, basename='product-variation')
 router.register(r'availability-charges', AvailabilityChargesViewSet, basename='availability-charges')
 
+router.register(r'all-admin-products', AllProductsAdminViewSet, basename='all-admin-products')
+
 router.register(r'pincode', PincodeViewSet, basename='pincode')
 router.register(r'timeslot', TimeSlotViewSet, basename='timeslot')
 router.register(r'pincode-timeslots', TimeSlotAndPincodeViewSet, basename='pincode-timeslots')
