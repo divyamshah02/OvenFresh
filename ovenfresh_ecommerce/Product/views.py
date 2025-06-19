@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django.db.models import Q
 
 from django.utils import timezone
 
@@ -178,7 +179,7 @@ class SubCategoryViewSet(viewsets.ViewSet):
             "user_unauthorized": False,
             "data": {"sub_category_id": sub_category_id},
             "error": None
-            }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_201_CREATED)
 
     def generate_sub_category_id(self):
         while True:
@@ -336,37 +337,101 @@ class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
-        category = request.query_params.get('category')
-        subcategory = request.query_params.get('sub_category')
+        # Get filter parameters
+        search = request.query_params.get('search', '')
+        category = request.query_params.get('category', '')
+        status_param = request.query_params.get('status', '')
+        sort_by = request.query_params.get('sortBy', 'created_desc')
+        page = int(request.query_params.get('page', 1))
+        limit = int(request.query_params.get('limit', 10))
 
-        if subcategory:
-            subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
-            sub_category_id = subcategory_data.sub_category_id
-            if sub_category_id:                
-                product_obj = Product.objects.filter(sub_category_id=sub_category_id)
-            else:
-                product_obj = Product.objects.all()
+        # Start with all products
+        product_obj = Product.objects.all()
 
-        elif category:
-            category_data = Category.objects.filter(title__icontains=category).first()
-            category_id = category_data.category_id
-            if category_id:                
-                product_obj = Product.objects.filter(category_id=category_id)
-            else:
-                product_obj = Product.objects.all()
+        # Apply search filter
+        if search:
+            product_obj = product_obj.filter(
+                Q(title__icontains=search) |
+                Q(product_id__icontains=search) |
+                Q(description__icontains=search)
+            )
 
-        else:
-            product_obj = Product.objects.all()
+        # Apply category filter
+        if category:
+            product_obj = product_obj.filter(category_id=category)
 
-        product_data = AllProductSerializer(product_obj, many=True)
+        # Apply status filter
+        if status_param:
+            if status_param == 'active':
+                product_obj = product_obj.filter(is_active=True)
+            elif status_param == 'inactive':
+                product_obj = product_obj.filter(is_active=False)
+
+        # Apply sorting
+        if sort_by == 'created_desc':
+            product_obj = product_obj.order_by('-created_at')
+        elif sort_by == 'created_asc':
+            product_obj = product_obj.order_by('created_at')
+        elif sort_by == 'name_asc':
+            product_obj = product_obj.order_by('title')
+        elif sort_by == 'name_desc':
+            product_obj = product_obj.order_by('-title')
+
+        # Get total count
+        total_count = product_obj.count()
+
+        # Apply pagination
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_products = product_obj[start:end]
+
+        # Serialize products
+        product_data = AllProductSerializer(paginated_products, many=True)
 
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": product_data.data,
+            "data": {
+                "products": product_data.data,
+                "total": total_count,
+                "page": page,
+                "limit": limit,
+                "total_pages": (total_count + limit - 1) // limit
+            },
             "error": None
         }, status=status.HTTP_200_OK)
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def destroy(self, request, pk=None):
+        """
+        Soft delete product by marking it as inactive
+        """
+        try:
+            product = Product.objects.get(product_id=pk)
+            product.is_active = False
+            product.save()
+            
+            # Also deactivate all variations
+            ProductVariation.objects.filter(product_id=pk).update(is_active=False)
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Product deleted successfully"},
+                "error": None
+            }, status=status.HTTP_200_OK)
+            
+        except Product.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductVariationViewSet(viewsets.ViewSet):
