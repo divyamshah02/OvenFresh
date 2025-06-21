@@ -474,293 +474,190 @@ class AnalyticsViewSet(viewsets.ViewSet):
             "error": None
         })
 
-    @action(detail=False, methods=['get'], url_path='categories')
-    @handle_exceptions
-    @check_authentication(required_role='admin')
-    def category_analytics(self, request):
-        # Get all categories
-        categories = Category.objects.all()
+    # @action(detail=False, methods=['get'], url_path='categories')
+    # @handle_exceptions
+    # @check_authentication(required_role='admin')
+    # def category_analytics(self, request):
+    #     # Get all categories
+    #     categories = Category.objects.all()
         
-        # Prefetch related data for efficiency
-        # all_products = Product.objects.in_bulk(field_name='product_id')
-        all_order_items = OrderItem.objects.select_related('order').all()
+    #     # Prefetch related data for efficiency
+    #     # all_products = Product.objects.in_bulk(field_name='product_id')
+    #     all_order_items = OrderItem.objects.select_related('order').all()
         
-        response_data = []
+    #     response_data = []
         
-        for category in categories:
-            # Get products for this category
-            products = Product.objects.filter(category_id=category.category_id)
-            category_products = []
+    #     for category in categories:
+    #         # Get products for this category
+    #         products = Product.objects.filter(category_id=category.category_id)
+    #         category_products = []
             
-            for product in products:
-                # Get order items for this product
-                product_order_items = [oi for oi in all_order_items if oi.product_id == str(product.product_id)]
-                product_order_data = []
+    #         for product in products:
+    #             # Get order items for this product
+    #             product_order_items = [oi for oi in all_order_items if oi.product_id == str(product.product_id)]
+    #             product_order_data = []
                 
-                for order_item in product_order_items:
-                    # Get related order
-                    order = order_item.order
+    #             for order_item in product_order_items:
+    #                 # Get related order
+    #                 order = order_item.order
                     
-                    # Serialize order item
-                    order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
+    #                 # Serialize order item
+    #                 order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
                     
-                    # Serialize order
-                    order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
+    #                 # Serialize order
+    #                 order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
                     
-                    product_order_data.append({
-                        'order_item': order_item_dict,
-                        'order_details': order_dict
-                    })
+    #                 product_order_data.append({
+    #                     'order_item': order_item_dict,
+    #                     'order_details': order_dict
+    #                 })
                 
-                # Serialize product
-                product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
+    #             # Serialize product
+    #             product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
                 
-                # Add product variations
-                variations = ProductVariation.objects.filter(product_id=product.product_id)
-                variation_data = []
+    #             # Add product variations
+    #             variations = ProductVariation.objects.filter(product_id=product.product_id)
+    #             variation_data = []
                 
-                for variation in variations:
-                    variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
-                    variation_data.append(variation_dict)
+    #             for variation in variations:
+    #                 variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
+    #                 variation_data.append(variation_dict)
                 
-                # Add reviews
-                reviews = Reviews.objects.filter(product_id=product.product_id)
-                review_data = []
+    #             # Add reviews
+    #             reviews = Reviews.objects.filter(product_id=product.product_id)
+    #             review_data = []
                 
-                for review in reviews:
-                    review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
-                    review_data.append(review_dict)
+    #             for review in reviews:
+    #                 review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
+    #                 review_data.append(review_dict)
                 
-                category_products.append({
-                    'product': product_dict,
-                    'variations': variation_data,
-                    'reviews': review_data,
-                    'orders': product_order_data
-                })
+    #             category_products.append({
+    #                 'product': product_dict,
+    #                 'variations': variation_data,
+    #                 'reviews': review_data,
+    #                 'orders': product_order_data
+    #             })
             
-            # Serialize category
-            category_dict = {field.name: getattr(category, field.name) for field in Category._meta.fields}
+    #         # Serialize category
+    #         category_dict = {field.name: getattr(category, field.name) for field in Category._meta.fields}
 
-            # Add subcategories
-            subcategories = SubCategory.objects.filter(category_id=category.category_id)
-            subcategory_data = []
+    #         # Add subcategories
+    #         subcategories = SubCategory.objects.filter(category_id=category.category_id)
+    #         subcategory_data = []
 
-            for subcategory in subcategories:
-                sub_dict = {field.name: getattr(subcategory, field.name) for field in SubCategory._meta.fields}
-                subcategory_data.append(sub_dict)
+    #         for subcategory in subcategories:
+    #             sub_dict = {field.name: getattr(subcategory, field.name) for field in SubCategory._meta.fields}
+    #             subcategory_data.append(sub_dict)
 
-            response_data.append({
-                'category': category_dict,
-                'subcategories': subcategory_data,
-                'products': category_products
-            })
+    #         response_data.append({
+    #             'category': category_dict,
+    #             'subcategories': subcategory_data,
+    #             'products': category_products
+    #         })
         
-        return Response({
-            "success": True,
-            "data": response_data,
-            "error": None
-        })
+    #     return Response({
+    #         "success": True,
+    #         "data": response_data,
+    #         "error": None
+    #     })
 
 
-    @action(detail=False, methods=['get'], url_path='sub-categories')
-    @handle_exceptions
-    @check_authentication(required_role='admin')
-    def sub_category_analytics(self, request):
-        # Get all sub-categories
-        sub_categories = SubCategory.objects.all()
+    # @action(detail=False, methods=['get'], url_path='sub-categories')
+    # @handle_exceptions
+    # @check_authentication(required_role='admin')
+    # def sub_category_analytics(self, request):
+    #     # Get all sub-categories
+    #     sub_categories = SubCategory.objects.all()
         
-        # Prefetch related data for efficiency
-        all_order_items = OrderItem.objects.select_related('order').all()
+    #     # Prefetch related data for efficiency
+    #     all_order_items = OrderItem.objects.select_related('order').all()
         
-        response_data = []
+    #     response_data = []
         
-        for sub_category in sub_categories:
-            # Get products for this sub - category
-            products = Product.objects.filter(sub_category_id=sub_category.sub_category_id)
-            sub_category_products = []
+    #     for sub_category in sub_categories:
+    #         # Get products for this sub - category
+    #         products = Product.objects.filter(sub_category_id=sub_category.sub_category_id)
+    #         sub_category_products = []
             
-            for product in products:
-                # Get order items for this product
-                product_order_items = [oi for oi in all_order_items if oi.product_id == str(product.product_id)]
-                product_order_data = []
+    #         for product in products:
+    #             # Get order items for this product
+    #             product_order_items = [oi for oi in all_order_items if oi.product_id == str(product.product_id)]
+    #             product_order_data = []
                 
-                for order_item in product_order_items:
-                    # Get related order
-                    order = order_item.order
+    #             for order_item in product_order_items:
+    #                 # Get related order
+    #                 order = order_item.order
                     
-                    # Serialize order item
-                    order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
+    #                 # Serialize order item
+    #                 order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
                     
-                    # Serialize order
-                    order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
+    #                 # Serialize order
+    #                 order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
                     
-                    product_order_data.append({
-                        'order_item': order_item_dict,
-                        'order_details': order_dict
-                    })
+    #                 product_order_data.append({
+    #                     'order_item': order_item_dict,
+    #                     'order_details': order_dict
+    #                 })
                 
-                # Serialize product
-                product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
+    #             # Serialize product
+    #             product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
                 
-                # Add product variations
-                variations = ProductVariation.objects.filter(product_id=product.product_id)
-                variation_data = []
+    #             # Add product variations
+    #             variations = ProductVariation.objects.filter(product_id=product.product_id)
+    #             variation_data = []
                 
-                for variation in variations:
-                    variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
-                    variation_data.append(variation_dict)
+    #             for variation in variations:
+    #                 variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
+    #                 variation_data.append(variation_dict)
                 
-                # Add reviews
-                reviews = Reviews.objects.filter(product_id=product.product_id)
-                review_data = []
+    #             # Add reviews
+    #             reviews = Reviews.objects.filter(product_id=product.product_id)
+    #             review_data = []
                 
-                for review in reviews:
-                    review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
-                    review_data.append(review_dict)
+    #             for review in reviews:
+    #                 review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
+    #                 review_data.append(review_dict)
                 
-                sub_category_products.append({
-                    'product': product_dict,
-                    'variations': variation_data,
-                    'reviews': review_data,
-                    'orders': product_order_data
-                })
+    #             sub_category_products.append({
+    #                 'product': product_dict,
+    #                 'variations': variation_data,
+    #                 'reviews': review_data,
+    #                 'orders': product_order_data
+    #             })
             
-            # Serialize category
-            sub_category_dict = {field.name: getattr(sub_category, field.name) for field in SubCategory._meta.fields}
+    #         # Serialize category
+    #         sub_category_dict = {field.name: getattr(sub_category, field.name) for field in SubCategory._meta.fields}
 
-            # Add categories
-            categories = Category.objects.filter(category_id=sub_category.category_id)
-            category_data = []
+    #         # Add categories
+    #         categories = Category.objects.filter(category_id=sub_category.category_id)
+    #         category_data = []
 
-            for category in categories:
-                cat_dict = {field.name: getattr(category, field.name) for field in Category._meta.fields}
-                category_data.append(cat_dict)
+    #         for category in categories:
+    #             cat_dict = {field.name: getattr(category, field.name) for field in Category._meta.fields}
+    #             category_data.append(cat_dict)
 
-            response_data.append({
-                'subcategories': sub_category_dict,
-                'category': category_data,
-                'products': sub_category_products
-            })
+    #         response_data.append({
+    #             'subcategories': sub_category_dict,
+    #             'category': category_data,
+    #             'products': sub_category_products
+    #         })
         
-        return Response({
-            "success": True,
-            "data": response_data,
-            "error": None
-        })
-
-
-    @action(detail=False, methods=['get'], url_path='timeslots')
-    @handle_exceptions
-    @check_authentication(required_role='admin')
-    def timeslot_analytics(self, request):
-        # Get all timeslots
-        timeslots = TimeSlot.objects.all()
-        
-        # Prefetch related data for efficiency
-        all_products = Product.objects.in_bulk(field_name='product_id')
-        all_variations = ProductVariation.objects.in_bulk(field_name='product_variation_id')
-        all_pincodes = Pincode.objects.all()
-        
-        response_data = []
-        
-        for timeslot in timeslots:
-            # Get orders for this timeslot
-            orders = Order.objects.filter(timeslot_id=str(timeslot.id))
-            timeslot_orders = []
-            
-            for order in orders:
-                # Get order items for this order
-                order_items = OrderItem.objects.filter(order_id=order.order_id)
-                order_item_data = []
-                
-                for order_item in order_items:
-                    # Get product details
-                    try:
-                        product_id = int(order_item.product_id)
-                        product = all_products.get(product_id)
-                        if product:
-                            product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
-                            
-                            # Get product variations
-                            variations = [v for v in all_variations.values() if v.product_id == product_id]
-                            variation_data = []
-                            
-                            for variation in variations:
-                                variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
-                                variation_data.append(variation_dict)
-                            
-                            # Get reviews for this product
-                            reviews = Reviews.objects.filter(product_id=product_id)
-                            review_data = []
-                            
-                            for review in reviews:
-                                review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
-                                review_data.append(review_dict)
-                        else:
-                            product_dict = {}
-                            variation_data = []
-                            review_data = []
-                    except (ValueError, TypeError):
-                        product_dict = {}
-                        variation_data = []
-                        review_data = []
-                    
-                    # Serialize order item
-                    order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
-                    
-                    order_item_data.append({
-                        'order_item': order_item_dict,
-                        'product': product_dict,
-                        'variations': variation_data,
-                        'reviews': review_data
-                    })
-                
-                # Serialize order
-                order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
-                
-                timeslot_orders.append({
-                    'order': order_dict,
-                    'order_items': order_item_data
-                })
-            
-            # Serialize timeslot
-            timeslot_dict = {field.name: getattr(timeslot, field.name) for field in TimeSlot._meta.fields}
-
-            availability_data = []
-            
-            for pincode in all_pincodes:
-                delivery_data = pincode.delivery_charge.get(str(timeslot.id))
-                if delivery_data:
-                    availability_data.append({
-                        'pincode': pincode.pincode,
-                        'area_name': pincode.area_name,
-                        'city': pincode.city,
-                        'state': pincode.state,
-                        'timeslot_charge': delivery_data.get('charges', 0),
-                        'timeslot_available': delivery_data.get('available', False)
-                    })
-            
-            response_data.append({
-                'timeslot': timeslot_dict,
-                'orders': timeslot_orders,
-                'availability_charges': availability_data
-            })
-        
-        return Response({
-            "success": True,
-            "data": response_data,
-            "error": None
-        })
+    #     return Response({
+    #         "success": True,
+    #         "data": response_data,
+    #         "error": None
+    #     })
 
 
     # @action(detail=False, methods=['get'], url_path='timeslots')
     # @handle_exceptions
     # @check_authentication(required_role='admin')
-    # def product_analytics(self, request):
+    # def timeslot_analytics(self, request):
     #     # Get all timeslots
-    #     products = Product.objects.all()
+    #     timeslots = TimeSlot.objects.all()
         
     #     # Prefetch related data for efficiency
+    #     all_products = Product.objects.in_bulk(field_name='product_id')
     #     all_variations = ProductVariation.objects.in_bulk(field_name='product_variation_id')
     #     all_pincodes = Pincode.objects.all()
         
@@ -854,6 +751,109 @@ class AnalyticsViewSet(viewsets.ViewSet):
     #         "data": response_data,
     #         "error": None
     #     })
+
+
+    # @action(detail=False, methods=['get'], url_path='timeslots')
+    # @handle_exceptions
+    # @check_authentication(required_role='admin')
+    # def product_analytics(self, request):
+        # Get all timeslots
+        products = Product.objects.all()
+        
+        # Prefetch related data for efficiency
+        all_variations = ProductVariation.objects.in_bulk(field_name='product_variation_id')
+        all_pincodes = Pincode.objects.all()
+        
+        response_data = []
+        
+        for timeslot in timeslots:
+            # Get orders for this timeslot
+            orders = Order.objects.filter(timeslot_id=str(timeslot.id))
+            timeslot_orders = []
+            
+            for order in orders:
+                # Get order items for this order
+                order_items = OrderItem.objects.filter(order_id=order.order_id)
+                order_item_data = []
+                
+                for order_item in order_items:
+                    # Get product details
+                    try:
+                        product_id = int(order_item.product_id)
+                        product = all_products.get(product_id)
+                        if product:
+                            product_dict = {field.name: getattr(product, field.name) for field in Product._meta.fields}
+                            
+                            # Get product variations
+                            variations = [v for v in all_variations.values() if v.product_id == product_id]
+                            variation_data = []
+                            
+                            for variation in variations:
+                                variation_dict = {field.name: getattr(variation, field.name) for field in ProductVariation._meta.fields}
+                                variation_data.append(variation_dict)
+                            
+                            # Get reviews for this product
+                            reviews = Reviews.objects.filter(product_id=product_id)
+                            review_data = []
+                            
+                            for review in reviews:
+                                review_dict = {field.name: getattr(review, field.name) for field in Reviews._meta.fields}
+                                review_data.append(review_dict)
+                        else:
+                            product_dict = {}
+                            variation_data = []
+                            review_data = []
+                    except (ValueError, TypeError):
+                        product_dict = {}
+                        variation_data = []
+                        review_data = []
+                    
+                    # Serialize order item
+                    order_item_dict = {field.name: getattr(order_item, field.name) for field in OrderItem._meta.fields}
+                    
+                    order_item_data.append({
+                        'order_item': order_item_dict,
+                        'product': product_dict,
+                        'variations': variation_data,
+                        'reviews': review_data
+                    })
+                
+                # Serialize order
+                order_dict = {field.name: getattr(order, field.name) for field in Order._meta.fields}
+                
+                timeslot_orders.append({
+                    'order': order_dict,
+                    'order_items': order_item_data
+                })
+            
+            # Serialize timeslot
+            timeslot_dict = {field.name: getattr(timeslot, field.name) for field in TimeSlot._meta.fields}
+
+            availability_data = []
+            
+            for pincode in all_pincodes:
+                delivery_data = pincode.delivery_charge.get(str(timeslot.id))
+                if delivery_data:
+                    availability_data.append({
+                        'pincode': pincode.pincode,
+                        'area_name': pincode.area_name,
+                        'city': pincode.city,
+                        'state': pincode.state,
+                        'timeslot_charge': delivery_data.get('charges', 0),
+                        'timeslot_available': delivery_data.get('available', False)
+                    })
+            
+            response_data.append({
+                'timeslot': timeslot_dict,
+                'orders': timeslot_orders,
+                'availability_charges': availability_data
+            })
+        
+        return Response({
+            "success": True,
+            "data": response_data,
+            "error": None
+        })
 
 
 class PincodeAnalyticsViewSet(viewsets.ViewSet):
