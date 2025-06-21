@@ -26,10 +26,21 @@ router.register(r'admin-category', AdminManageCategoryViewSet, basename='admin-c
 router.register(r'admin-pincodes', AdminPincodeViewSet, basename='admin-pincodes')
 router.register(r'admin-timeslot', AdminTimeslotViewSet, basename='admin-timeslot')
 router.register(r'admin-coupon', AdminCouponViewSet, basename='admin-coupon')
+router.register(r'admin-delivery-person', AdminDeliverPersonViewSet, basename='admin-delivery-person')
 
 router.register(r'admin-all-orders', AdminAllOrdersViewSet, basename='admin-all-orders')
 router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 router.register(r'admin-pincode-order', AdminPincodeOrderDetailViewSet, basename='admin-pincode-order')
+
+
+
+router.register(r'delivery-login', DeliveryLoginViewSet, basename='delivery-login')
+router.register(r'delivery-dashobard', DeliveryDashboardViewSet, basename='delivery-dashobard')
+
+# # Delivery URLs
+# path('delivery/login/', DeliveryLoginViewSet.as_view({'get': 'list'}), name='delivery-login'),
+# path('delivery/dashboard/', DeliveryDashboardViewSet.as_view({'get': 'list'}), name='delivery-dashboard'),
+
 
 urlpatterns = [
     path('', include(router.urls)),

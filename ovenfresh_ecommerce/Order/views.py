@@ -28,7 +28,7 @@ from utils.decorators import *
 
 class OrderViewSet(viewsets.ViewSet):
     
-    # @handle_exceptions
+    @handle_exceptions
     @check_authentication()
     def create(self, request):
         """
@@ -273,6 +273,47 @@ class OrderViewSet(viewsets.ViewSet):
             order_id = get_random_string(10, allowed_chars='0123456789')
             if not Order.objects.filter(order_id=order_id).exists():
                 return order_id
+
+
+class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        """
+        Get all available delivery persons - Updated to filter by availability
+        """
+        try:
+            # Get only available delivery partners
+            delivery_persons = User.objects.filter(
+                is_active=True, 
+                role="delivery", 
+                is_available=True  # Only show available delivery persons
+            ).order_by('first_name')
+            
+            persons_data = []
+            for person in delivery_persons:
+                persons_data.append({
+                    'user_id': person.user_id,
+                    'name': f"{person.first_name} {person.last_name}",
+                    'phone': person.contact_number,
+                    'email': person.email,
+                    'is_available': person.is_available,
+                })
+
+            return Response({
+                "success": True,
+                "data": {
+                    "delivery_persons": persons_data
+                },
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
 
 
 class ConfirmOrderViewSet(viewsets.ViewSet):
@@ -1073,7 +1114,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
             }, status=500)
 
 
-class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
+class Old_AdminDeliveryPeronsViewSet(viewsets.ViewSet):
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):

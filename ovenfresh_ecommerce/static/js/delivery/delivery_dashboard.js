@@ -1,0 +1,458 @@
+let csrf_token = null
+let dashboard_url = null
+let availability_url = null
+let status_update_url = null
+let confirm_cash_url = null
+
+// Data storage
+let dashboardData = null
+let currentCodOrder = null
+
+async function InitializeDeliveryDashboard(
+  csrfTokenParam,
+  dashboardUrlParam,
+  availabilityUrlParam,
+  statusUpdateUrlParam,
+  confirmCashUrlParam,
+) {
+  csrf_token = csrfTokenParam
+  dashboard_url = dashboardUrlParam
+  availability_url = availabilityUrlParam
+  status_update_url = statusUpdateUrlParam
+  confirm_cash_url = confirmCashUrlParam
+
+  try {
+    showLoading()
+
+    // Load dashboard data
+    await loadDashboardData()
+
+    // Initialize event listeners
+    initializeEventListeners()
+
+    hideLoading()
+  } catch (error) {
+    console.error("Error initializing dashboard:", error)
+    showNotification("Error loading dashboard data.", "error")
+    hideLoading()
+  }
+}
+
+async function loadDashboardData() {
+  try {
+    const [success, result] = await callApi("GET", dashboard_url)
+
+    if (success && result.success) {
+      dashboardData = result.data
+      populateDashboard()
+    } else {
+      if (result.user_not_logged_in) {
+        // Redirect to login
+        window.location.href = "/delivery-login/"
+        return
+      }
+      throw new Error(result.error || "Failed to load dashboard data")
+    }
+  } catch (error) {
+    console.error("Error loading dashboard:", error)
+    showNotification("Error loading dashboard data.", "error")
+  }
+}
+
+function populateDashboard() {
+  if (!dashboardData) return
+
+  // Update user info
+  document.getElementById("userName").textContent = dashboardData.user_info.name
+
+  // Update availability toggle
+  const availabilityToggle = document.getElementById("availabilityToggle")
+  availabilityToggle.checked = dashboardData.user_info.is_available
+
+  // Update stats
+  document.getElementById("pendingCount").textContent = dashboardData.stats.pending_count
+  document.getElementById("completedCount").textContent = dashboardData.stats.completed_today
+  document.getElementById("todayEarnings").textContent = `₹${dashboardData.stats.today_earnings.toFixed(2)}`
+
+  // Populate orders
+  populateOrders("todayOrders", dashboardData.today_orders)
+  populateOrders("pendingOrders", dashboardData.pending_orders)
+}
+
+function populateOrders(containerId, orders) {
+  const container = document.getElementById(containerId)
+
+  if (!orders || orders.length === 0) {
+    container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No orders found</h5>
+                <p class="text-muted">You don't have any orders in this category.</p>
+            </div>
+        `
+    return
+  }
+
+  container.innerHTML = orders.map((order) => createOrderCard(order)).join("")
+}
+
+function createOrderCard(order) {
+  const statusClass = getStatusClass(order.status)
+  const statusText = getStatusText(order.status)
+  const paymentBadge = order.is_cod ? '<span class="cod-badge">COD</span>' : '<span class="online-badge">Online</span>'
+
+  // Determine action buttons based on status
+  let actionButtons = ""
+  if (order.status === "ready") {
+    actionButtons = `
+            <button class="btn btn-pickup btn-action" onclick="updateOrderStatus('${order.order_id}', 'out_for_delivery')">
+                <i class="fas fa-truck me-2"></i>Pick Up
+            </button>
+        `
+  } else if (order.status === "out_for_delivery") {
+    actionButtons = `
+            <button class="btn btn-deliver btn-action" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
+                <i class="fas fa-check me-2"></i>Mark Delivered
+            </button>
+        `
+  } else if (order.status === "delivered" && order.is_cod && !order.payment_received) {
+    actionButtons = `
+            <button class="btn btn-cash btn-action" onclick="showCodModal('${order.order_id}', ${order.total_amount})">
+                <i class="fas fa-money-bill-wave me-2"></i>Collect Cash
+            </button>
+        `
+  }
+
+  return `
+        <div class="order-card">
+            <div class="order-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">Order #${order.order_id}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            ${formatDate(order.delivery_date)}
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="status-badge status-${order.status}">${statusText}</span>
+                        <div class="mt-1">${paymentBadge}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>Customer Details</h6>
+                        <p class="mb-1"><strong>${order.customer_name}</strong></p>
+                        <p class="mb-2">
+                            <i class="fas fa-phone me-1"></i>
+                            <a href="tel:${order.customer_phone}" class="text-decoration-none">${order.customer_phone}</a>
+                        </p>
+                        
+                        <h6><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
+                        <p class="mb-2">${order.delivery_address}</p>
+                        
+                        ${
+                          order.special_instructions
+                            ? `
+                            <h6><i class="fas fa-sticky-note me-2"></i>Special Instructions</h6>
+                            <p class="mb-2 text-info">${order.special_instructions}</p>
+                        `
+                            : ""
+                        }
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-shopping-bag me-2"></i>Order Items (${order.items_count})</h6>
+                        <div class="order-items">
+                            ${order.items
+                              .map(
+                                (item) => `
+                                <span class="item-badge">
+                                    ${item.quantity}x ${item.product_name || "Product"}
+                                </span>
+                            `,
+                              )
+                              .join("")}
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6><i class="fas fa-rupee-sign me-2"></i>Total Amount</h6>
+                            <h4 class="text-primary mb-0">₹${order.total_amount.toFixed(2)}</h4>
+                        </div>
+                        
+                        ${
+                          actionButtons
+                            ? `
+                            <div class="mt-3">
+                                ${actionButtons}
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+}
+
+function initializeEventListeners() {
+  // Availability toggle
+  document.getElementById("availabilityToggle").addEventListener("change", async (e) => {
+    await toggleAvailability(e.target.checked)
+  })
+
+  // Auto refresh every 30 seconds
+  setInterval(async () => {
+    await loadDashboardData()
+  }, 30000)
+}
+
+async function toggleAvailability(isAvailable) {
+  try {
+    const [success, result] = await callApi(
+      "POST",
+      availability_url,
+      {
+        is_available: isAvailable,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      showNotification(result.data.message, "success")
+    } else {
+      throw new Error(result.error || "Failed to update availability")
+    }
+  } catch (error) {
+    console.error("Error updating availability:", error)
+    showNotification("Error updating availability.", "error")
+
+    // Revert toggle
+    document.getElementById("availabilityToggle").checked = !isAvailable
+  }
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+  if (!confirm(`Are you sure you want to mark this order as ${newStatus.replace("_", " ")}?`)) {
+    return
+  }
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      status_update_url,
+      {
+        order_id: orderId,
+        status: newStatus,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      showNotification(result.data.message, "success")
+      await loadDashboardData() // Refresh data
+    } else {
+      throw new Error(result.error || "Failed to update order status")
+    }
+  } catch (error) {
+    console.error("Error updating order status:", error)
+    showNotification("Error updating order status.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showCodModal(orderId, amount) {
+  currentCodOrder = { orderId, amount }
+
+  document.getElementById("codOrderId").textContent = orderId
+  document.getElementById("codAmount").textContent = `₹${amount.toFixed(2)}`
+  document.getElementById("collectedAmount").value = amount.toFixed(2)
+
+  const modal = new bootstrap.Modal(document.getElementById("codModal"))
+  modal.show()
+}
+
+async function confirmCashCollection() {
+  if (!currentCodOrder) return
+
+  const collectedAmount = Number.parseFloat(document.getElementById("collectedAmount").value)
+
+  if (isNaN(collectedAmount) || collectedAmount <= 0) {
+    showNotification("Please enter a valid amount.", "error")
+    return
+  }
+
+  if (collectedAmount !== currentCodOrder.amount) {
+    if (
+      !confirm(
+        `Collected amount (₹${collectedAmount}) doesn't match order amount (₹${currentCodOrder.amount}). Continue anyway?`,
+      )
+    ) {
+      return
+    }
+  }
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      confirm_cash_url,
+      {
+        order_id: currentCodOrder.orderId,
+        collected_amount: collectedAmount,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      showNotification(result.data.message, "success")
+
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById("codModal")).hide()
+
+      // Refresh data
+      await loadDashboardData()
+    } else {
+      throw new Error(result.error || "Failed to confirm cash collection")
+    }
+  } catch (error) {
+    console.error("Error confirming cash collection:", error)
+    showNotification("Error confirming cash collection.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function viewHistory() {
+  // TODO: Implement history view
+  showNotification("History view coming soon!", "info")
+}
+
+async function logout() {
+  if (!confirm("Are you sure you want to logout?")) {
+    return
+  }
+
+  try {
+    // Call logout API if available
+    await callApi("POST", "/user-api/logout-api/", {}, csrf_token)
+  } catch (error) {
+    console.log("Logout API error:", error)
+  }
+
+  // Redirect to login page
+  window.location.href = "/delivery-login/"
+}
+
+// Utility functions
+function getStatusClass(status) {
+  const statusClasses = {
+    confirmed: "status-confirmed",
+    preparing: "status-preparing",
+    ready: "status-ready",
+    out_for_delivery: "status-out_for_delivery",
+    delivered: "status-delivered",
+  }
+  return statusClasses[status] || "status-confirmed"
+}
+
+function getStatusText(status) {
+  const statusTexts = {
+    confirmed: "Confirmed",
+    preparing: "Preparing",
+    ready: "Ready",
+    out_for_delivery: "Out for Delivery",
+    delivered: "Delivered",
+  }
+  return statusTexts[status] || status
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+}
+
+function showLoading() {
+  const loader = document.getElementById("loader")
+  if (loader) loader.style.display = "flex"
+}
+
+function hideLoading() {
+  const loader = document.getElementById("loader")
+  if (loader) loader.style.display = "none"
+}
+
+function showNotification(message, type = "info") {
+  // Create toast container if it doesn't exist
+  let toastContainer = document.getElementById("toastContainer")
+  if (!toastContainer) {
+    toastContainer = document.createElement("div")
+    toastContainer.id = "toastContainer"
+    toastContainer.className = "position-fixed bottom-0 end-0 p-3"
+    toastContainer.style.zIndex = "9999"
+    document.body.appendChild(toastContainer)
+  }
+
+  // Create toast element
+  const toastId = `toast-${Date.now()}`
+  const toast = document.createElement("div")
+  toast.className = `toast show border-0`
+  toast.id = toastId
+
+  // Set toast background color based on type
+  const bgClass =
+    type === "error" ? "bg-danger" : type === "success" ? "bg-success" : type === "warning" ? "bg-warning" : "bg-info"
+
+  toast.classList.add(bgClass, "text-white")
+
+  toast.innerHTML = `
+        <div class="toast-header bg-transparent text-white border-0">
+            <strong class="me-auto">
+                <i class="fas ${
+                  type === "error"
+                    ? "fa-exclamation-circle"
+                    : type === "success"
+                      ? "fa-check-circle"
+                      : type === "warning"
+                        ? "fa-exclamation-triangle"
+                        : "fa-info-circle"
+                } me-2"></i>
+                Notification
+            </strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `
+
+  // Add toast to container
+  toastContainer.appendChild(toast)
+
+  // Initialize Bootstrap toast
+  const bsToast = new bootstrap.Toast(toast, {
+    autohide: true,
+    delay: 5000,
+  })
+
+  // Show toast
+  bsToast.show()
+
+  // Remove toast after it's hidden
+  toast.addEventListener("hidden.bs.toast", () => {
+    toast.remove()
+  })
+}

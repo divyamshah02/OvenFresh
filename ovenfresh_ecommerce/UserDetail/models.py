@@ -37,6 +37,9 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Add delivery-specific fields
+    is_available = models.BooleanField(default=True)  # For delivery availability toggle
+    plain_text_password = models.CharField(max_length=100, blank=True, null=True)  # Temporary solution
 
     # Override save to assign user_id automatically
     def save(self, *args, **kwargs):
@@ -74,4 +77,3 @@ class OTPVerification(models.Model):
 
     def __str__(self):
         return f"{self.mobile} - {self.otp}"
-
