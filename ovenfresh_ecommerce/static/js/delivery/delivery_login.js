@@ -33,7 +33,7 @@ async function checkLoginStatus() {
 
     if (success && result.success) {
       // Already logged in, redirect to dashboard
-      window.location.href = "/delivery-dashobard/"
+      window.location.href = "/delivery/dashboard/"
     }
   } catch (error) {
     // Not logged in, stay on login page
@@ -42,12 +42,12 @@ async function checkLoginStatus() {
 }
 
 async function handleLogin() {
-  const userId = document.getElementById("userId").value.trim()
+  const email = document.getElementById("email").value.trim()
   const password = document.getElementById("password").value.trim()
 
   // Validate inputs
-  if (!userId || !password) {
-    showError("Please enter both User ID and password")
+  if (!email || !password) {
+    showError("Please enter both email and password")
     return
   }
 
@@ -60,7 +60,7 @@ async function handleLogin() {
       "POST",
       login_url,
       {
-        user_id: userId,
+        email: email,
         password: password,
       },
       csrf_token,
@@ -71,7 +71,7 @@ async function handleLogin() {
 
       // Redirect to dashboard after short delay
       setTimeout(() => {
-        window.location.href = "/delivery-dashobard/"
+        window.location.href = "/delivery/dashboard/"
       }, 1000)
     } else {
       throw new Error(result.error || "Login failed")

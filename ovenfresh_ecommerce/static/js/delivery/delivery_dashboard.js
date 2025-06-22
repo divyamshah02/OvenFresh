@@ -3,9 +3,11 @@ let dashboard_url = null
 let availability_url = null
 let status_update_url = null
 let confirm_cash_url = null
+let my_orders_url = null
 
 // Data storage
 let dashboardData = null
+let pastOrders = []
 let currentCodOrder = null
 
 async function InitializeDeliveryDashboard(
@@ -14,12 +16,14 @@ async function InitializeDeliveryDashboard(
   availabilityUrlParam,
   statusUpdateUrlParam,
   confirmCashUrlParam,
+  myOrdersUrlParam,
 ) {
   csrf_token = csrfTokenParam
   dashboard_url = dashboardUrlParam
   availability_url = availabilityUrlParam
   status_update_url = statusUpdateUrlParam
   confirm_cash_url = confirmCashUrlParam
+  my_orders_url = myOrdersUrlParam
 
   try {
     showLoading()
@@ -33,7 +37,7 @@ async function InitializeDeliveryDashboard(
     hideLoading()
   } catch (error) {
     console.error("Error initializing dashboard:", error)
-    showNotification("Error loading dashboard data.", "error")
+    showToast("Error loading dashboard data.", "error")
     hideLoading()
   }
 }
@@ -48,14 +52,30 @@ async function loadDashboardData() {
     } else {
       if (result.user_not_logged_in) {
         // Redirect to login
-        window.location.href = "/delivery-login/"
+        window.location.href = "/delivery/login/"
         return
       }
       throw new Error(result.error || "Failed to load dashboard data")
     }
   } catch (error) {
     console.error("Error loading dashboard:", error)
-    showNotification("Error loading dashboard data.", "error")
+    // Redirect to login on any authentication error
+    window.location.href = "/delivery/login/"
+  }
+}
+
+async function loadPastOrders() {
+  try {
+    const [success, result] = await callApi("GET", `${my_orders_url}?date=completed`)
+
+    if (success && result.success) {
+      pastOrders = result.data || []
+      populateOrders("pastOrders", pastOrders)
+    } else {
+      console.error("Error loading past orders:", result.error)
+    }
+  } catch (error) {
+    console.error("Error loading past orders:", error)
   }
 }
 
@@ -99,33 +119,40 @@ function populateOrders(containerId, orders) {
 function createOrderCard(order) {
   const statusClass = getStatusClass(order.status)
   const statusText = getStatusText(order.status)
-  const paymentBadge = order.is_cod ? '<span class="cod-badge">COD</span>' : '<span class="online-badge">Online</span>'
+  const paymentBadge = order.is_cod
+    ? '<span class="badge bg-warning text-dark">COD</span>'
+    : '<span class="badge bg-success">Online</span>'
 
   // Determine action buttons based on status
   let actionButtons = ""
   if (order.status === "ready") {
     actionButtons = `
-            <button class="btn btn-pickup btn-action" onclick="updateOrderStatus('${order.order_id}', 'out_for_delivery')">
-                <i class="fas fa-truck me-2"></i>Pick Up
+            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${order.order_id}', 'out_for_delivery')">
+                <i class="fas fa-truck me-1"></i>Pick Up
             </button>
         `
   } else if (order.status === "out_for_delivery") {
-    actionButtons = `
-            <button class="btn btn-deliver btn-action" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
-                <i class="fas fa-check me-2"></i>Mark Delivered
-            </button>
-        `
-  } else if (order.status === "delivered" && order.is_cod && !order.payment_received) {
-    actionButtons = `
-            <button class="btn btn-cash btn-action" onclick="showCodModal('${order.order_id}', ${order.total_amount})">
-                <i class="fas fa-money-bill-wave me-2"></i>Collect Cash
-            </button>
-        `
+    // For COD orders, show collect cash button first
+    if (order.is_cod) {
+      actionButtons = `
+                <button class="btn btn-warning btn-sm" onclick="showCodModal('${order.order_id}', ${order.total_amount})">
+                    <i class="fas fa-money-bill-wave me-1"></i>Collect Cash & Deliver
+                </button>
+            `
+    } else {
+      // For online orders, directly mark as delivered
+      actionButtons = `
+                <button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
+                    <i class="fas fa-check me-1"></i>Mark Delivered
+                </button>
+            `
+    }
   }
+  // Remove the delivered + COD condition since we handle it above
 
   return `
-        <div class="order-card">
-            <div class="order-header">
+        <div class="card mb-3">
+            <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="mb-1">Order #${order.order_id}</h6>
@@ -135,7 +162,7 @@ function createOrderCard(order) {
                         </small>
                     </div>
                     <div class="text-end">
-                        <span class="status-badge status-${order.status}">${statusText}</span>
+                        <span class="badge ${statusClass}">${statusText}</span>
                         <div class="mt-1">${paymentBadge}</div>
                     </div>
                 </div>
@@ -166,11 +193,11 @@ function createOrderCard(order) {
                     
                     <div class="col-md-6">
                         <h6><i class="fas fa-shopping-bag me-2"></i>Order Items (${order.items_count})</h6>
-                        <div class="order-items">
+                        <div class="mb-3">
                             ${order.items
                               .map(
                                 (item) => `
-                                <span class="item-badge">
+                                <span class="badge bg-light text-dark me-1 mb-1">
                                     ${item.quantity}x ${item.product_name || "Product"}
                                 </span>
                             `,
@@ -178,7 +205,7 @@ function createOrderCard(order) {
                               .join("")}
                         </div>
                         
-                        <div class="mt-3">
+                        <div class="mb-3">
                             <h6><i class="fas fa-rupee-sign me-2"></i>Total Amount</h6>
                             <h4 class="text-primary mb-0">₹${order.total_amount.toFixed(2)}</h4>
                         </div>
@@ -186,7 +213,7 @@ function createOrderCard(order) {
                         ${
                           actionButtons
                             ? `
-                            <div class="mt-3">
+                            <div class="d-flex gap-2">
                                 ${actionButtons}
                             </div>
                         `
@@ -203,6 +230,11 @@ function initializeEventListeners() {
   // Availability toggle
   document.getElementById("availabilityToggle").addEventListener("change", async (e) => {
     await toggleAvailability(e.target.checked)
+  })
+
+  // Tab change event to load past orders when history tab is clicked
+  document.getElementById("history-tab").addEventListener("click", async () => {
+    await loadPastOrders()
   })
 
   // Auto refresh every 30 seconds
@@ -223,13 +255,13 @@ async function toggleAvailability(isAvailable) {
     )
 
     if (success && result.success) {
-      showNotification(result.data.message, "success")
+      showToast(result.data.message, "success")
     } else {
       throw new Error(result.error || "Failed to update availability")
     }
   } catch (error) {
     console.error("Error updating availability:", error)
-    showNotification("Error updating availability.", "error")
+    showToast("Error updating availability.", "error")
 
     // Revert toggle
     document.getElementById("availabilityToggle").checked = !isAvailable
@@ -255,14 +287,14 @@ async function updateOrderStatus(orderId, newStatus) {
     )
 
     if (success && result.success) {
-      showNotification(result.data.message, "success")
+      showToast(result.data.message, "success")
       await loadDashboardData() // Refresh data
     } else {
       throw new Error(result.error || "Failed to update order status")
     }
   } catch (error) {
     console.error("Error updating order status:", error)
-    showNotification("Error updating order status.", "error")
+    showToast("Error updating order status.", "error")
   } finally {
     hideLoading()
   }
@@ -285,23 +317,14 @@ async function confirmCashCollection() {
   const collectedAmount = Number.parseFloat(document.getElementById("collectedAmount").value)
 
   if (isNaN(collectedAmount) || collectedAmount <= 0) {
-    showNotification("Please enter a valid amount.", "error")
+    showToast("Please enter a valid amount.", "error")
     return
-  }
-
-  if (collectedAmount !== currentCodOrder.amount) {
-    if (
-      !confirm(
-        `Collected amount (₹${collectedAmount}) doesn't match order amount (₹${currentCodOrder.amount}). Continue anyway?`,
-      )
-    ) {
-      return
-    }
   }
 
   try {
     showLoading()
 
+    // First confirm cash collection
     const [success, result] = await callApi(
       "POST",
       confirm_cash_url,
@@ -313,27 +336,42 @@ async function confirmCashCollection() {
     )
 
     if (success && result.success) {
-      showNotification(result.data.message, "success")
+      // After successful cash collection, mark order as delivered
+      const [deliverySuccess, deliveryResult] = await callApi(
+        "POST",
+        status_update_url,
+        {
+          order_id: currentCodOrder.orderId,
+          status: "delivered",
+        },
+        csrf_token,
+      )
 
-      // Close modal
-      bootstrap.Modal.getInstance(document.getElementById("codModal")).hide()
+      if (deliverySuccess && deliveryResult.success) {
+        showToast("Cash collected and order marked as delivered!", "success")
 
-      // Refresh data
-      await loadDashboardData()
+        // Close modal
+        bootstrap.Modal.getInstance(document.getElementById("codModal")).hide()
+
+        // Refresh data
+        await loadDashboardData()
+      } else {
+        showToast("Cash collected but failed to mark as delivered. Please try again.", "warning")
+      }
     } else {
       throw new Error(result.error || "Failed to confirm cash collection")
     }
   } catch (error) {
     console.error("Error confirming cash collection:", error)
-    showNotification("Error confirming cash collection.", "error")
+    showToast("Error confirming cash collection.", "error")
   } finally {
     hideLoading()
   }
 }
 
 function viewHistory() {
-  // TODO: Implement history view
-  showNotification("History view coming soon!", "info")
+  // Switch to history tab
+  document.getElementById("history-tab").click()
 }
 
 async function logout() {
@@ -349,26 +387,26 @@ async function logout() {
   }
 
   // Redirect to login page
-  window.location.href = "/delivery-login/"
+  window.location.href = "/delivery/login/"
 }
 
 // Utility functions
 function getStatusClass(status) {
   const statusClasses = {
-    confirmed: "status-confirmed",
-    preparing: "status-preparing",
-    ready: "status-ready",
-    out_for_delivery: "status-out_for_delivery",
-    delivered: "status-delivered",
+    placed: "bg-info",
+    preparing: "bg-warning text-dark",
+    ready: "bg-primary",
+    out_for_delivery: "bg-secondary",
+    delivered: "bg-success",
   }
-  return statusClasses[status] || "status-confirmed"
+  return statusClasses[status] || "bg-info"
 }
 
 function getStatusText(status) {
   const statusTexts = {
-    confirmed: "Confirmed",
+    placed: "Order Placed",
     preparing: "Preparing",
-    ready: "Ready",
+    ready: "Ready for Pickup",
     out_for_delivery: "Out for Delivery",
     delivered: "Delivered",
   }
@@ -394,7 +432,7 @@ function hideLoading() {
   if (loader) loader.style.display = "none"
 }
 
-function showNotification(message, type = "info") {
+function showToast(message, type = "info") {
   // Create toast container if it doesn't exist
   let toastContainer = document.getElementById("toastContainer")
   if (!toastContainer) {

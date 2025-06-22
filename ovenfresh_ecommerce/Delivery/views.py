@@ -11,24 +11,25 @@ from django.db.models import Q, Count, Sum
 
 class DeliveryLoginViewSet(viewsets.ViewSet):
     """
-    Delivery person login with plain text password (temporary solution)
+    Delivery person login with email and plain text password
     """
     @handle_exceptions
     def create(self, request):
-        user_id = request.data.get("user_id")
+        email = request.data.get("email")
         password = request.data.get("password")
         
-        if not user_id or not password:
+        if not email or not password:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": "User ID and password are required."
+                "error": "Email and password are required."
             }, status=400)
         
         try:
-            user = User.objects.get(user_id=user_id, role="delivery", is_active=True)
+            # Find user by email and role
+            user = User.objects.get(email=email, role="delivery", is_active=True)
             
             # Check plain text password (temporary solution)
             if user.plain_text_password == password:
@@ -41,6 +42,7 @@ class DeliveryLoginViewSet(viewsets.ViewSet):
                     "data": {
                         "user_id": user.user_id,
                         "name": f"{user.first_name} {user.last_name}",
+                        "email": user.email,
                         "phone": user.contact_number,
                         "is_available": user.is_available
                     },
@@ -348,26 +350,29 @@ class ConfirmCashViewSet(viewsets.ViewSet):
             }, status=400)
 
         try:
+            # Allow cash collection for orders that are out_for_delivery or delivered
             order = Order.objects.get(
                 order_id=order_id,
                 assigned_delivery_partner_id=request.user.user_id,
                 is_cod=True,
-                status="delivered"
+                status__in=["out_for_delivery", "delivered"]
             )
         except Order.DoesNotExist:
             return Response({
                 "success": False, "user_not_logged_in": False, "user_unauthorized": False,
-                "data": None, "error": "COD Order not found, not delivered yet, or unauthorized."
+                "data": None, "error": "COD Order not found, not ready for delivery, or unauthorized."
             }, status=404)
 
         # Validate collected amount if provided
         if collected_amount is not None:
             try:
                 collected_amount = float(collected_amount)
-                if collected_amount != float(order.total_amount):
+                # Allow slight variations in collected amount
+                order_amount = float(order.total_amount)
+                if abs(collected_amount - order_amount) > 1:  # Allow ₹1 difference
                     return Response({
                         "success": False, "user_not_logged_in": False, "user_unauthorized": False,
-                        "data": None, "error": f"Collected amount (₹{collected_amount}) doesn't match order amount (₹{order.total_amount})."
+                        "data": None, "error": f"Collected amount (₹{collected_amount}) significantly differs from order amount (₹{order_amount})."
                     }, status=400)
             except (ValueError, TypeError):
                 return Response({
@@ -382,7 +387,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": {"message": "COD payment confirmed."},
+            "data": {"message": "COD payment confirmed successfully."},
             "error": None
         }, status=200)
 
@@ -552,7 +557,7 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": "Email already exists."
             }, status=400)
-        
+
         # Check if contact number already exists
         if User.objects.filter(contact_number=data.get('contact_number')).exists():
             return Response({
@@ -805,57 +810,4 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 "user_unauthorized": False,
                 "data": None,
                 "error": f"Failed to delete delivery partner: {str(e)}"
-            }, status=500)
-    
-    @handle_exceptions
-    @check_authentication(required_role="admin")
-    def toggle_status(self, request, pk=None):
-        """
-        Toggle partner active status
-        """
-        try:
-            partner = User.objects.get(user_id=pk, role="delivery")
-        except User.DoesNotExist:
-            return Response({
-                "success": False,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": None,
-                "error": "Delivery partner not found."
-            }, status=404)
-        
-        is_active = request.data.get('is_active')
-        if is_active is None:
-            return Response({
-                "success": False,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": None,
-                "error": "is_active field is required."
-            }, status=400)
-        
-        try:
-            partner.is_active = is_active
-            if not is_active:
-                partner.is_available = False  # If deactivating, also set unavailable
-            partner.save()
-            
-            return Response({
-                "success": True,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": {
-                    "message": f"Partner {'activated' if is_active else 'deactivated'} successfully.",
-                    "is_active": is_active
-                },
-                "error": None
-            }, status=200)
-            
-        except Exception as e:
-            return Response({
-                "success": False,
-                "user_not_logged_in": False,
-                "user_unauthorized": False,
-                "data": None,
-                "error": f"Failed to update partner status: {str(e)}"
             }, status=500)
