@@ -175,7 +175,6 @@ function populateOrderTimeline() {
   const timeline = document.getElementById("order-timeline")
   const statuses = [
     { key: "placed", label: "Order Placed", icon: "fas fa-shopping-cart" },
-    { key: "confirmed", label: "Order Confirmed", icon: "fas fa-check-circle" },
     { key: "preparing", label: "Preparing", icon: "fas fa-utensils" },
     { key: "ready", label: "Ready for Delivery", icon: "fas fa-box" },
     { key: "out_for_delivery", label: "Out for Delivery", icon: "fas fa-truck" },
@@ -312,12 +311,17 @@ async function assignDeliveryPerson() {
   }
 }
 
-function updateOrderStatus() {
+function updateOrderStatus(no_modal=false) {
   const newStatus = document.getElementById("status-select").value
   document.getElementById("modal-status-select").value = newStatus
 
-  const modal = new bootstrap.Modal(document.getElementById("updateStatusModal"))
-  modal.show()
+  if (!no_modal) {
+    const modal = new bootstrap.Modal(document.getElementById("updateStatusModal"))
+    modal.show()
+  }
+  else {
+    document.getElementById('new_update_btn').style.display = 'none';
+  }
 }
 
 async function confirmStatusUpdate() {
@@ -342,7 +346,12 @@ async function confirmStatusUpdate() {
       showNotification("Order status updated successfully!", "success")
 
       // Close modal
-      bootstrap.Modal.getInstance(document.getElementById("updateStatusModal")).hide()
+      try{
+        bootstrap.Modal.getInstance(document.getElementById("updateStatusModal")).hide()
+      }
+      catch {
+        
+      }
 
       // Refresh order details
       await loadOrderDetails()
@@ -357,7 +366,7 @@ async function confirmStatusUpdate() {
   }
 }
 
-function updateOrderStatusBadge(status) {
+function updateOrderStatusBadge(status, is_new=false) {
   const badge = document.getElementById("order-status-badge")
   const statusConfig = {
     placed: { class: "bg-info", text: "Placed" },
@@ -372,6 +381,11 @@ function updateOrderStatusBadge(status) {
   const config = statusConfig[status] || { class: "bg-secondary", text: status }
   badge.className = `order-status-badge badge ${config.class}`
   badge.textContent = config.text
+
+  if (is_new) {
+    updateOrderStatus(true)
+    document.getElementById('new_update_btn').style.display = '';
+  }
 }
 
 function downloadKOT() {
@@ -483,7 +497,7 @@ function generateKOTPDF() {
 function initializeEventListeners() {
   // Status select change
   document.getElementById("status-select").addEventListener("change", function () {
-    updateOrderStatusBadge(this.value)
+    updateOrderStatusBadge(this.value, true)
   })
 
   // Admin notes save button

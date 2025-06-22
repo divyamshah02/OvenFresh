@@ -15,10 +15,49 @@ let product_id = null
 let copiedAvailability = null
 let categoryData = []
 let selectedProductImages = []
-// let currentTheme = "ovenfresh-theme" // Declare currentTheme
 const urlParams = new URLSearchParams(window.location.search)
 if (urlParams.get("product_id")) {
   product_id = urlParams.get("product_id")
+}
+
+// Helper functions for quantity and UOM handling
+function combineQuantityUOM(quantity, uom) {
+  if (!quantity || !uom) return ""
+  return `${quantity} ${uom}`
+}
+
+function splitWeightVariation(weightVariation) {
+  if (!weightVariation) return { quantity: "", uom: "" }
+
+  // Handle various formats: "500g", "500 g", "500gm", "500 gm", "1.5kg", "2 piece", etc.
+  const match = weightVariation.trim().match(/^(\d+(?:\.\d+)?)\s*(.+)$/)
+
+  if (match) {
+    const quantity = match[1]
+    let uom = match[2].toLowerCase().trim()
+
+    // Normalize common variations
+    const uomMap = {
+      g: "gm",
+      gram: "gm",
+      grams: "gm",
+      kilogram: "kg",
+      kilograms: "kg",
+      liter: "ltr",
+      liters: "ltr",
+      milliliter: "ml",
+      milliliters: "ml",
+      pieces: "piece",
+      pcs: "piece",
+      pc: "piece",
+    }
+
+    uom = uomMap[uom] || uom
+
+    return { quantity, uom }
+  }
+
+  return { quantity: "", uom: "" }
 }
 
 function reloadWithParam(key, value) {
@@ -46,13 +85,13 @@ async function AdminAddProduct(
 
   // Initialize photo upload functionality
   initializePhotoUpload()
+  await loadCategoriesAndSubcategories()
+  await loadPincodesAndTimeslots()
 
   if (product_id) {
     await loadProductData()
     document.getElementById("variationSection").style.display = ""
   }
-  await loadCategoriesAndSubcategories()
-  await loadPincodesAndTimeslots()
 
   document.getElementById("submitProductBtn").addEventListener("click", async () => {
     showLoading("Creating product...")
@@ -554,12 +593,18 @@ async function createVariationWithAvailability() {
     actual_price: document.getElementById("actualPrice").value,
     discounted_price: document.getElementById("discountedPrice").value,
     is_vartied: true,
-    weight_variation: document.getElementById("weight").value,
+    weight_variation: combineQuantityUOM(
+      document.getElementById("quantity").value,
+      document.getElementById("uom").value,
+    ),
   }
 
   // Validate required fields
-  if (!variationData.weight_variation || !variationData.actual_price || !variationData.discounted_price) {
-    showToast("error", "Error", "Please fill all variation fields")
+  const quantity = document.getElementById("quantity").value
+  const uom = document.getElementById("uom").value
+
+  if (!quantity || !uom || !variationData.actual_price || !variationData.discounted_price) {
+    showToast("error", "Error", "Please fill all variation fields including quantity and unit")
     return
   }
 
@@ -619,7 +664,8 @@ async function createVariationWithAvailability() {
   showToast("success", "Success", "Variation and availability added successfully!")
 
   // Reset form fields
-  document.getElementById("weight").value = ""
+  document.getElementById("quantity").value = ""
+  document.getElementById("uom").value = ""
   document.getElementById("actualPrice").value = ""
   document.getElementById("discountedPrice").value = ""
 }
@@ -633,12 +679,18 @@ async function updateVariationWithAvailability(product_variation_id) {
     actual_price: document.getElementById("actualPrice").value,
     discounted_price: document.getElementById("discountedPrice").value,
     is_vartied: true,
-    weight_variation: document.getElementById("weight").value,
+    weight_variation: combineQuantityUOM(
+      document.getElementById("quantity").value,
+      document.getElementById("uom").value,
+    ),
   }
 
   // Validate required fields
-  if (!variationData.weight_variation || !variationData.actual_price || !variationData.discounted_price) {
-    showToast("error", "Error", "Please fill all variation fields")
+  const quantity = document.getElementById("quantity").value
+  const uom = document.getElementById("uom").value
+
+  if (!quantity || !uom || !variationData.actual_price || !variationData.discounted_price) {
+    showToast("error", "Error", "Please fill all variation fields including quantity and unit")
     return
   }
 
@@ -704,7 +756,8 @@ async function updateVariationWithAvailability(product_variation_id) {
   showToast("success", "Success", "Variation and availability updated successfully!")
 
   // Reset form and button state
-  document.getElementById("weight").value = ""
+  document.getElementById("quantity").value = ""
+  document.getElementById("uom").value = ""
   document.getElementById("actualPrice").value = ""
   document.getElementById("discountedPrice").value = ""
   document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-plus-circle me-1"></i> Add Variation'
@@ -777,14 +830,22 @@ function copyAvailability(data, is_edit = false) {
   if (is_edit) {
     document.getElementById("actualPrice").value = data.actual_price
     document.getElementById("discountedPrice").value = data.discounted_price
-    document.getElementById("weight").value = data.weight_variation
+
+    // Split weight variation into quantity and UOM
+    const { quantity, uom } = splitWeightVariation(data.weight_variation)
+    document.getElementById("quantity").value = quantity
+    document.getElementById("uom").value = uom
+
     document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-save me-1"></i> Update Variation'
     document.getElementById("productVariationId").value = data.product_variation_id
     document.getElementById("product_variation_heading").innerText = `Update Variation - ${data.weight_variation}`
   } else {
     document.getElementById("actualPrice").value = ""
     document.getElementById("discountedPrice").value = ""
-    document.getElementById("weight").value = ""
+
+    document.getElementById("quantity").value = ""
+    document.getElementById("uom").value = ""
+
     document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-plus-circle me-1"></i> Add Variation'
     document.getElementById("productVariationId").value = ""
     document.getElementById("product_variation_heading").innerText = `Add Product Variation`

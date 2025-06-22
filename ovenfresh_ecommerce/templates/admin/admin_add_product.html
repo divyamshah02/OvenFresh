@@ -122,9 +122,25 @@
                         <div class="card-body">
                             <form>
                                 <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <label for="weight" class="form-label">Weight</label>
-                                        <input type="text" class="form-control" id="weight" placeholder="e.g. 500g">
+                                    <div class="col-md-2">
+                                        <label for="quantity" class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" id="quantity" placeholder="e.g. 500" step="0.01">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="uom" class="form-label">Unit (UOM)</label>
+                                        <select class="form-select" id="uom">
+                                            <option value="">Select Unit</option>
+                                            <option value="kg">Kilogram (kg)</option>
+                                            <option value="gm">Gram (gm)</option>
+                                            <option value="lb">Pound (lb)</option>
+                                            <option value="oz">Ounce (oz)</option>
+                                            <option value="piece">Piece</option>
+                                            <option value="pack">Pack</option>
+                                            <option value="box">Box</option>
+                                            <option value="ltr">Liter (ltr)</option>
+                                            <option value="ml">Milliliter (ml)</option>
+                                            <option value="dozen">Dozen</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="actualPrice" class="form-label">Actual Price</label>
@@ -143,6 +159,7 @@
                                 </div>
                                 <input type="hidden" id="productVariationId" value="">
                             </form>
+
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="button" id="submitVariationBtn" class="btn btn-primary">
                                     <i class="fas fa-plus-circle me-1"></i> Add Variation
@@ -208,7 +225,7 @@
                             
                             <div id="pincodeAvailability" class="mb-3">
                                 <!-- JS will render checkboxes and charges -->
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                 </div>

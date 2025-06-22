@@ -504,9 +504,6 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 "is_active": partner.is_active,
                 "is_available": partner.is_available,
                 "plain_text_password": partner.plain_text_password or "",
-                "vehicle_type": getattr(partner, 'vehicle_type', '') or "",
-                "vehicle_number": getattr(partner, 'vehicle_number', '') or "",
-                "address": getattr(partner, 'address', '') or "",
                 "created_at": partner.created_at,
                 "total_deliveries": total_deliveries,
                 "completed_today": completed_today
@@ -582,14 +579,6 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 is_available=data.get('is_available', True)
             )
             
-            # Set additional fields if they exist in the model
-            if hasattr(partner, 'vehicle_type'):
-                partner.vehicle_type = data.get('vehicle_type', '')
-            if hasattr(partner, 'vehicle_number'):
-                partner.vehicle_number = data.get('vehicle_number', '')
-            if hasattr(partner, 'address'):
-                partner.address = data.get('address', '')
-            
             partner.save()
             
             return Response({
@@ -643,9 +632,6 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 "is_active": partner.is_active,
                 "is_available": partner.is_available,
                 "plain_text_password": partner.plain_text_password or "",
-                "vehicle_type": getattr(partner, 'vehicle_type', '') or "",
-                "vehicle_number": getattr(partner, 'vehicle_number', '') or "",
-                "address": getattr(partner, 'address', '') or "",
                 "created_at": partner.created_at,
                 "total_deliveries": total_deliveries,
                 "completed_today": completed_today
@@ -725,14 +711,6 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 partner.is_active = data.get('is_active')
             if 'is_available' in data:
                 partner.is_available = data.get('is_available')
-            
-            # Update additional fields if they exist in the model
-            if hasattr(partner, 'vehicle_type') and 'vehicle_type' in data:
-                partner.vehicle_type = data.get('vehicle_type', '')
-            if hasattr(partner, 'vehicle_number') and 'vehicle_number' in data:
-                partner.vehicle_number = data.get('vehicle_number', '')
-            if hasattr(partner, 'address') and 'address' in data:
-                partner.address = data.get('address', '')
             
             partner.save()
             

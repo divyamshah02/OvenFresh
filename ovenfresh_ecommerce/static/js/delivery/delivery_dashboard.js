@@ -92,7 +92,7 @@ function populateDashboard() {
   // Update stats
   document.getElementById("pendingCount").textContent = dashboardData.stats.pending_count
   document.getElementById("completedCount").textContent = dashboardData.stats.completed_today
-  document.getElementById("todayEarnings").textContent = `₹${dashboardData.stats.today_earnings.toFixed(2)}`
+  // document.getElementById("todayEarnings").textContent = `₹${dashboardData.stats.today_earnings.toFixed(2)}`
 
   // Populate orders
   populateOrders("todayOrders", dashboardData.today_orders)

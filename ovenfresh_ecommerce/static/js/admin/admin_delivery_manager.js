@@ -210,9 +210,6 @@ function editPartner(userId) {
   document.getElementById("contactNumber").value = partner.contact_number || ""
   document.getElementById("alternatePhone").value = partner.alternate_phone || ""
   document.getElementById("plainTextPassword").value = partner.plain_text_password || ""
-  document.getElementById("vehicleType").value = partner.vehicle_type || ""
-  document.getElementById("vehicleNumber").value = partner.vehicle_number || ""
-  document.getElementById("address").value = partner.address || ""
   document.getElementById("isActive").checked = partner.is_active
   document.getElementById("isAvailable").checked = partner.is_available
 
@@ -236,9 +233,6 @@ async function savePartner() {
     contact_number: document.getElementById("contactNumber").value,
     alternate_phone: document.getElementById("alternatePhone").value,
     plain_text_password: document.getElementById("plainTextPassword").value,
-    vehicle_type: document.getElementById("vehicleType").value,
-    vehicle_number: document.getElementById("vehicleNumber").value,
-    address: document.getElementById("address").value,
     is_active: document.getElementById("isActive").checked,
     is_available: document.getElementById("isAvailable").checked,
   }

@@ -234,14 +234,15 @@
                                 <div class="mt-2">
                                     <select class="form-select d-inline-block w-auto" id="status-select">
                                         <option value="placed">Placed</option>
-                                        <option value="confirmed">Confirmed</option>
+                                        <!-- <option value="confirmed">Confirmed</option> -->
                                         <option value="preparing">Preparing</option>
                                         <option value="ready">Ready for Delivery</option>
                                         <option value="out_for_delivery">Out for Delivery</option>
                                         <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <!-- <option value="cancelled">Cancelled</option> -->
                                     </select>
                                 </div>
+                                <button type="button" class="btn btn-primary mt-2" id="new_update_btn" onclick="confirmStatusUpdate()" style="display: none;">Update Status</button>
                             </div>
                         </div>
                     </div>
@@ -481,12 +482,12 @@
                         <label for="modal-status-select" class="form-label">New Status</label>
                         <select class="form-select" id="modal-status-select">
                             <option value="placed">Placed</option>
-                            <option value="confirmed">Confirmed</option>
+                            <!-- <option value="confirmed">Confirmed</option> -->
                             <option value="preparing">Preparing</option>
                             <option value="ready">Ready for Delivery</option>
                             <option value="out_for_delivery">Out for Delivery</option>
                             <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
+                            <!-- <option value="cancelled">Cancelled</option> -->
                         </select>
                     </div>
                     <div class="mb-3">
