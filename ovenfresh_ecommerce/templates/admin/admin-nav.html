@@ -9,7 +9,7 @@
         </div>
         <ul class="nav flex-column mx-2">
             <li class="nav-item" onclick="window.location=`{% url 'admin-dashboard-list' %}`" style="cursor: pointer;">
-                <a class="nav-link" data-section="dashboard">
+                <a class="nav-link">
                     <i class="fas fa-tachometer-alt me-2"></i>
                     Dashboard
                 </a>
@@ -38,19 +38,19 @@
                 </ul>
             </li>
             <li class="nav-item" onclick="window.location=`{% url 'admin-all-orders-list' %}`" style="cursor: pointer;">
-                <a class="nav-link" data-section="orders">
+                <a class="nav-link">
                     <i class="fas fa-shopping-cart me-2"></i>
                     Orders
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'admin-coupon-list' %}" data-section="customers">
-                    <i class="fas fa-users me-2"></i>
+            <li class="nav-item" onclick="window.location=`{% url 'admin-coupon-list' %}`" style="cursor: pointer;">
+                <a class="nav-link">
+                    <i class="fas fa-ticket me-2"></i>
                     Coupons
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'admin-delivery-person-list' %}" data-section="settings">
+            <li class="nav-item" onclick="window.location=`{% url 'admin-delivery-person-list' %}`" style="cursor: pointer;">
+                <a class="nav-link">
                     <i class="fas fa-truck me-2"></i>
                     Delivery Persons
                 </a>
