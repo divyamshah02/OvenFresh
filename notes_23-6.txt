@@ -1,0 +1,21 @@
+-> add cusotm dates in dashbaord
+remove discounte price
+
+sku, hsn, 
+
+in stock / out stock in product detail variaiotn
+-> add a button to auto inventory in product detail addition page and toggle with entering qty
+
+
+-> add an additional kitchen note as well to admin
+-> add an option to udpate the delivery time
+-> add commision to driver while selecting
+-> add delivery person attachment 
+
+
+
+-> Eggless 
+
+
+-> 9% cgst sgst
+
