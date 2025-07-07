@@ -45,4 +45,5 @@ router.register(r'delivery-dashobard', DeliveryDashboardViewSet, basename='deliv
 urlpatterns = [
     path('', include(router.urls)),
     path("payment-success-callback/", payment_success_callback, name="payment-success-callback"),
+    path('admin-login/', admin_login, name='admin_login'),
 ]

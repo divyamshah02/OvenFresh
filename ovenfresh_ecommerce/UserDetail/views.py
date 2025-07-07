@@ -875,6 +875,50 @@ class UserListViewSet(viewsets.ViewSet):
             }, status=status.HTTP_200_OK)
 
 
+class AdminLoginViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def create(self, request):
+        """
+        Admin Login with email and password
+        """
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Email and password are required."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.objects.filter(is_active=True, email=email, role='admin').first()
+        if not user:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Admin not found."
+                }, status=status.HTTP_404_NOT_FOUND)
+
+        authenticated_user = authenticate(request, username=user.user_id, password=password)
+        if not authenticated_user:
+            return Response(
+                {
+                    "success": False,
+                    "error": "Invalid credentials."
+                }, status=status.HTTP_401_UNAUTHORIZED)
+
+        login(request, authenticated_user)
+        return Response(
+            {
+                "success": True,
+                "data": {"user_id": user.user_id}
+            }, status=status.HTTP_200_OK)
+
+
+
 # class UserDetailViewSet(viewsets.ViewSet):
     
 #     @handle_exceptions
