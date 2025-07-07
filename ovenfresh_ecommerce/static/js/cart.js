@@ -463,9 +463,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const deliveryDateInput = document.getElementById("deliveryDate")
     if (deliveryDateInput) {
-        const today = new Date()
-        deliveryDateInput.min = today.toISOString().split("T")[0]
-        deliveryDateInput.value = today.toISOString().split("T")[0]
+        const now = new Date()
+        const year = now.getFullYear()
+        const month = String(now.getMonth() + 1).padStart(2, "0")
+        const day = String(now.getDate()).padStart(2, "0")
+        const today = `${year}-${month}-${day}`
+
+        deliveryDateInput.min = today
+        deliveryDateInput.value = today
 
         // Add event listener for date change
         deliveryDateInput.addEventListener("change", () => {

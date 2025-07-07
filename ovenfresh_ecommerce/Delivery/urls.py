@@ -1,19 +1,18 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    DeliveryPartnerViewSet,
-    AssignPartnerViewSet,
-    DeliveryStatusViewSet,
-    MyOrdersViewSet,
-    ConfirmCashViewSet,
-)
+from .views import *
 
 router = DefaultRouter()
-router.register(r'partners', DeliveryPartnerViewSet, basename='delivery-partners')  # GET: all active partners
-router.register(r'assign', AssignPartnerViewSet, basename='assign-delivery')       # POST: assign order
-router.register(r'status', DeliveryStatusViewSet, basename='delivery-status') # POST: picked_up / delivered
-router.register(r'my-orders', MyOrdersViewSet, basename='my-delivery-orders') # GET: orders for delivery user
-router.register(r'cod-confirm', ConfirmCashViewSet, basename='cod-confirm')      # POST: confirm COD payment
+router.register(r'login', DeliveryLoginViewSet, basename='delivery-login')
+router.register(r'dashboard', DeliveryDashboardViewSet, basename='delivery-dashboard')
+router.register(r'availability-toggle', DeliveryAvailabilityToggleViewSet, basename='delivery-availability')
+router.register(r'delivery-partners', DeliveryPartnerViewSet, basename='delivery-partners')
+router.register(r'assign-partner', AssignPartnerViewSet, basename='assign-partner')
+router.register(r'update-status', DeliveryStatusViewSet, basename='delivery-status')
+router.register(r'my-orders', MyOrdersViewSet, basename='my-orders')
+router.register(r'confirm-cash', ConfirmCashViewSet, basename='confirm-cash')
+router.register(r'history', DeliveryHistoryViewSet, basename='delivery-history')
+router.register(r'admin-delivery-partners-api', AdminDeliveryPartnerManagementViewSet, basename='admin-delivery-partners-api')
 
 urlpatterns = [
     path('', include(router.urls)),

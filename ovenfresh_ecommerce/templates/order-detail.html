@@ -117,6 +117,12 @@
                                         <p class="mb-1"><strong>Payment Status:</strong> <span id="payment-status">-</span></p>
                                         <p class="mb-0"><strong>Total Amount:</strong> <span id="total-amount">-</span></p>
                                     </div>
+                                    <div class="col-12">                                    
+                                        <button class="btn of-btn-outline-primary w-100" id="download-invoice-btn">
+                                            <i class="fas fa-download me-2"></i>
+                                            Download Invoice
+                                        </button>                                
+                                    </div>
                                 </div>
                                 
                                 <!-- Payment Button (Hidden by default) -->
@@ -179,7 +185,7 @@
                         </div>
 
                         <!-- Order Actions -->
-                        <div class="card border-0 shadow-sm mb-4" id="order-actions-section">
+                        <!-- <div class="card border-0 shadow-sm mb-4" id="order-actions-section">
                             <div class="card-header bg-white border-bottom">
                                 <h5 class="mb-0">
                                     <i class="fas fa-cogs me-2 of-text-primary"></i>
@@ -195,20 +201,20 @@
                                         </button>
                                     </div>
                                     <div class="col-md-4">
-                                        <button class="btn of-btn-outline-secondary w-100" id="download-invoice-btn">
+                                        <button class="btn of-btn-outline-primary w-100" id="download-invoice-btn">
                                             <i class="fas fa-download me-2"></i>
                                             Download Invoice
                                         </button>
                                     </div>
                                     <div class="col-md-4">
-                                        <button class="btn of-btn-outline-danger w-100" id="cancel-order-btn" style="display: none;">
+                                        <button class="btn of-btn-outline-danger w-100" id="cancel-order-btn">
                                             <i class="fas fa-times me-2"></i>
                                             Cancel Order
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <div class="col-lg-4">
@@ -261,10 +267,10 @@
                                 <i class="fas fa-redo fa-2x of-text-primary mb-3"></i>
                                 <h6>Loved this order?</h6>
                                 <p class="small text-muted mb-3">Reorder the same items with one click</p>
-                                <button class="btn of-btn-primary btn-sm" id="reorder-btn">
+                                <a class="btn of-btn-primary btn-sm" id="reorder-btn" href="{% url 'shop-list' %}">
                                     <i class="fas fa-shopping-cart me-2"></i>
-                                    Reorder Items
-                                </button>
+                                    Continue Shopping
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -371,9 +377,7 @@
         InitializeOrderDetail(
             csrfToken,
             orderId,
-            "/order-api/order-detail-api/",
-            "/order-api/cancel-order/",
-            "/order-api/reorder/"
+            "/order-api/order-detail-api/"
         );
         toggle_loader();
     </script>

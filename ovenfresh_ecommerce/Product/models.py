@@ -104,3 +104,46 @@ class AvailabilityCharges(models.Model):
 
     def __str__(self):
         return f"Availability for Product {self.product_id} - Pincode {self.pincode_id}"
+
+
+class Coupon(models.Model):
+    DISCOUNT_TYPE_CHOICES = [
+        ('percentage', 'Percentage'),
+        ('fixed', 'Fixed Amount'),
+    ]
+    
+    coupon_code = models.CharField(max_length=50, unique=True)
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE_CHOICES)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
+    minimum_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    maximum_discount_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    usage_limit = models.IntegerField(null=True, blank=True)  # Total usage limit
+    usage_count = models.IntegerField(default=0)  # Current usage count
+    valid_from = models.DateTimeField()
+    valid_until = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"{self.coupon_code} - {self.discount_value}{'%' if self.discount_type == 'percentage' else '₹'}"
+    
+    def is_valid(self):
+        now = timezone.now()
+        return (
+            self.is_active and
+            self.valid_from <= now <= self.valid_until and
+            (self.usage_limit is None or self.usage_count < self.usage_limit)
+        )
+    
+    def calculate_discount(self, order_amount):
+        if not self.is_valid() or order_amount < self.minimum_order_amount:
+            return 0
+        
+        if self.discount_type == 'percentage':
+            discount = (order_amount * self.discount_value) / 100
+            if self.maximum_discount_amount:
+                discount = min(discount, self.maximum_discount_amount)
+        else:
+            discount = self.discount_value
+        
+        return min(discount, order_amount)

@@ -8,6 +8,7 @@ let cart_list_url = null
 let add_user_data_url = null
 let add_address_url = null
 let transfer_cart_url = null
+let apply_coupon_url = null
 
 // User data
 let userData = null
@@ -26,8 +27,12 @@ let selectedTimeslot = null
 let mobileVerified = false
 let otpRequestId = null
 
+// Cart and coupon data
 let cartItems = []
 let currentOrderData = null
+let appliedCoupon = null
+let couponDiscount = 0
+let test_otp = '123456'
 
 async function InitializeCheckout(
   csrfTokenParam,
@@ -40,6 +45,7 @@ async function InitializeCheckout(
   placeOrderUrlParam,
   addUserUrlParam,
   addAddressUrlParam,
+  applyCouponUrlParam,
 ) {
   csrf_token = csrfTokenParam
   cart_list_url = cartListUrlParam
@@ -51,6 +57,7 @@ async function InitializeCheckout(
   add_user_data_url = addUserUrlParam
   add_address_url = addAddressUrlParam
   transfer_cart_url = transferCartUrlParam
+  apply_coupon_url = applyCouponUrlParam
 
   try {
     showLoading()
@@ -63,7 +70,7 @@ async function InitializeCheckout(
 
     // Load cart summary
     await loadCartSummary()
-    
+
     // Check URL parameters for pincode, delivery date, and timeslot
     checkUrlParameters()
 
@@ -112,7 +119,7 @@ async function checkUserLoggedIn() {
 async function transferCart(old_session_id) {
   showLoading()
   try {
-    const [success, result] = await callApi("POST", transfer_cart_url, {session_id: old_session_id}, csrf_token)
+    const [success, result] = await callApi("POST", transfer_cart_url, { session_id: old_session_id }, csrf_token)
     console.log(result)
     if (success && result.success) {
       return true
@@ -120,8 +127,8 @@ async function transferCart(old_session_id) {
       throw new Error(result.error || "Failed to transfer cart")
     }
   } catch (error) {
-    console.error("Error verifying OTP:", error)
-    showNotification("Error to transfer cart. Please try again.", "error")
+    console.error("Error transferring cart:", error)
+    showNotification("Error transferring cart. Please try again.", "error")
   } finally {
     hideLoading()
   }
@@ -245,7 +252,7 @@ function populateAddressFields(address) {
   document.getElementById("addressName").value = address.address_name || ""
   document.getElementById("city").value = address.city || ""
   document.getElementById("pincode").value = address.pincode || ""
-  checkPincode();
+  checkPincode()
 }
 
 function clearAddressFields() {
@@ -270,23 +277,15 @@ function enableAddressFields() {
 function showGuestCheckoutForm() {
   // Show regular checkout form for guest users
   const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
 
-  // Add verify button next to phone field
-  const phoneParent = phoneInput.parentElement
-  phoneParent.className = "col-8 col-md-10"
-  // phoneParent.classList.add("position-relative")
-  const verifyButtonParent = document.createElement("div")
-  verifyButtonParent.className = "col-4 col-md-2"
+  // Add verify button
   const verifyButton = document.createElement("button")
   verifyButton.type = "button"
-  verifyButton.className = "btn btn-sm of-btn-outline-primary end-0 top-0 mt-4 me-2 w-md-100"
+  verifyButton.className = "btn btn-sm of-btn-outline-primary mt-4 w-100"
   verifyButton.textContent = "Verify"
   verifyButton.onclick = showSendOtpModal
-  verifyButtonParent.appendChild(verifyButton)
-  // phoneParent.appendChild(verifyButtonParent)
-  phoneParent.parentNode.insertBefore(verifyButtonParent, phoneParent.nextSibling);
-
-  phoneParent.ex
+  verifyContainer.appendChild(verifyButton)
 }
 
 function showSendOtpModal() {
@@ -348,10 +347,17 @@ async function sendOtp() {
 
     if (success && result.success) {
       otpRequestId = result.data.otp_id
+      test_otp = result.data.otp
       showNotification("OTP sent successfully!", "success")
 
       // Close send OTP modal
-      bootstrap.Modal.getInstance(document.getElementById("sendOtpModal")).hide()
+      const sendOtpModal = document.getElementById("sendOtpModal")
+      if (sendOtpModal) {
+        const modalInstance = bootstrap.Modal.getInstance(sendOtpModal)
+        if (modalInstance) {
+          modalInstance.hide()
+        }
+      }
 
       // Show verify OTP modal
       showVerifyOtpModal(phone)
@@ -400,6 +406,14 @@ function showVerifyOtpModal(phone) {
   const modal = new bootstrap.Modal(document.getElementById("verifyOtpModal"))
   modal.show()
 
+  // Auto-fill OTP for testing (remove in production)
+  setTimeout(() => {
+    const otpInput = document.getElementById("otpCode")
+    if (otpInput) {
+      otpInput.value = test_otp
+    }
+  }, 500)
+
   // Remove modal from DOM when hidden
   document.getElementById("verifyOtpModal").addEventListener("hidden.bs.modal", function () {
     this.remove()
@@ -436,7 +450,13 @@ async function verifyOtp() {
         showNotification("Phone number verified successfully!", "success")
 
         // Close verify OTP modal
-        bootstrap.Modal.getInstance(document.getElementById("verifyOtpModal")).hide()
+        const verifyOtpModal = document.getElementById("verifyOtpModal")
+        if (verifyOtpModal) {
+          const modalInstance = bootstrap.Modal.getInstance(verifyOtpModal)
+          if (modalInstance) {
+            modalInstance.hide()
+          }
+        }
 
         // Update UI to show verified status
         updatePhoneVerifiedUI()
@@ -464,17 +484,16 @@ async function verifyOtp() {
 
 function updatePhoneVerifiedUI() {
   const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
+
   phoneInput.disabled = true // Lock phone field after verification
 
-  // Remove verify button
-  const verifyButton = phoneInput.parentElement.querySelector("button")
-  if (verifyButton) verifyButton.remove()
-
-  // Add verified badge
-  const verifiedBadge = document.createElement("span")
-  verifiedBadge.className = "badge bg-success position-absolute end-0 top-0 mt-4 me-2"
-  verifiedBadge.innerHTML = '<i class="fas fa-check me-1"></i> Verified'
-  phoneInput.parentElement.appendChild(verifiedBadge)
+  // Clear verify container and add verified badge
+  verifyContainer.innerHTML = `
+    <span class="badge bg-success mt-4 w-100 py-2">
+      <i class="fas fa-check me-1"></i> Verified
+    </span>
+  `
 }
 
 function checkUrlParameters() {
@@ -514,7 +533,7 @@ async function checkPincode(pincodeValue = null) {
   }
 
   try {
-    showLoading()
+    showLoading() // Add loader
 
     const pincode_params = {
       pincode: pincode,
@@ -527,11 +546,11 @@ async function checkPincode(pincodeValue = null) {
         showNotification("Delivery available in your area!", "success")
         pincodeTimeslots = result.data.availability_data || []
         todayPincodeTimeslots = result.data.today_availability_data || []
-        document.getElementById("deliver-not-available").style.display = "none";   
+        document.getElementById("deliver-not-available").style.display = "none"
         updateTimeslots()
       } else {
         showNotification("Sorry, delivery not available in your area.", "error")
-        document.getElementById("deliver-not-available").style.display = "";
+        document.getElementById("deliver-not-available").style.display = ""
         clearTimeslots()
       }
     } else {
@@ -541,7 +560,7 @@ async function checkPincode(pincodeValue = null) {
     console.error("Error checking pincode:", error)
     showNotification("Error checking pincode availability.", "error")
   } finally {
-    hideLoading()
+    hideLoading() // Hide loader
   }
 }
 
@@ -578,6 +597,8 @@ function updateTimeslots() {
 
 function updateShippingCharge() {
   const selectElement = document.getElementById("deliveryTime")
+  if (!selectElement || selectElement.selectedIndex === 0) return 0
+
   const selectedOption = selectElement.options[selectElement.selectedIndex]
   const charge = selectedOption.getAttribute("data-charge")
   return charge ? Number.parseFloat(charge) : 0
@@ -594,10 +615,15 @@ function isSelectedDateToday() {
   const deliveryDateInput = document.getElementById("deliveryDate")
   if (!deliveryDateInput || !deliveryDateInput.value) return false
 
-  const selectedDate = new Date(deliveryDateInput.value)
+  // Fix timezone issue by using local date
+  const selectedDate = new Date(deliveryDateInput.value + "T00:00:00")
   const today = new Date()
 
-  return selectedDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0)
+  // Get local date without time
+  const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const localSelected = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
+
+  return localSelected.getTime() === localToday.getTime()
 }
 
 async function loadCartSummary() {
@@ -606,8 +632,9 @@ async function loadCartSummary() {
     if (success && result.success) {
       cartItems = result.data.cart_items || []
       if (cartItems.length === 0) {
-        window.location.href = "/cart/";
-      }      
+        showEmptyCart()
+        return
+      }
       renderCheckoutItems()
       updateCartCount()
       calculateTotals()
@@ -619,6 +646,13 @@ async function loadCartSummary() {
     console.error("Error loading cart summary:", error)
     showNotification("Error loading cart summary.", "error")
   }
+}
+
+function showEmptyCart() {
+  showNotification("Your cart is empty. Redirecting to shop...", "warning")
+  setTimeout(() => {
+    window.location.href = "/cart/"
+  }, 2000)
 }
 
 function renderCheckoutItems() {
@@ -645,24 +679,47 @@ function renderCheckoutItems() {
 }
 
 function calculateTotals() {
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const tax = subtotal * 0.18 // 18% tax
-  const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
-  const total = subtotal + shipping + tax
+  showOrderSummaryLoader()
 
-  updateOrderSummary(subtotal, shipping, tax, total)
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
+  const discount = couponDiscount || 0
+  const tax = (subtotal - discount) * 0.18 // 18% tax
+  const total = subtotal + shipping + tax - discount
+
+  updateOrderSummary(subtotal, shipping, tax, total, discount)
+
+  setTimeout(() => {
+    hideOrderSummaryLoader()
+  }, 500) // Small delay to show loading effect
 }
 
-function updateOrderSummary(subtotal, shipping = null, tax, total) {
+function showOrderSummaryLoader() {
+  const summaryCard = document.getElementById("order-summary-card")
+  if (summaryCard) {
+    summaryCard.classList.add("order-summary-loading")
+  }
+}
+
+function hideOrderSummaryLoader() {
+  const summaryCard = document.getElementById("order-summary-card")
+  if (summaryCard) {
+    summaryCard.classList.remove("order-summary-loading")
+  }
+}
+
+function updateOrderSummary(subtotal, shipping = null, tax, total, discount = 0) {
   const subtotalElement = document.getElementById("checkout-subtotal")
   const shippingElement = document.getElementById("checkout-shipping")
   const taxElement = document.getElementById("checkout-tax")
+  const discountElement = document.getElementById("checkout-discount")
+  const discountRow = document.getElementById("discount-row")
   const totalElement = document.getElementById("checkout-total")
 
   if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`
 
   if (shipping === null) {
-    if (shippingElement) shippingElement.textContent = "To be calculated after selecting delivery time slot"
+    if (shippingElement) shippingElement.textContent = "To be calculated"
   } else if (shipping === 0) {
     if (shippingElement) shippingElement.textContent = "Free"
   } else {
@@ -670,16 +727,32 @@ function updateOrderSummary(subtotal, shipping = null, tax, total) {
   }
 
   if (taxElement) taxElement.textContent = `₹${tax.toFixed(2)}`
+
+  if (discountElement && discountRow) {
+    if (discount > 0) {
+      discountRow.style.display = "flex"
+      discountElement.textContent = `-₹${discount.toFixed(2)}`
+    } else {
+      discountRow.style.display = "none"
+    }
+  }
+
   if (totalElement) totalElement.textContent = `₹${total.toFixed(2)}`
 }
 
 function initializeEventListeners() {
-  // Set minimum delivery date to today
+  // Set minimum delivery date to today with proper timezone handling
   const deliveryDateInput = document.getElementById("deliveryDate")
   if (deliveryDateInput) {
-    const today = new Date()
-    deliveryDateInput.min = today.toISOString().split("T")[0]
-    deliveryDateInput.value = today.toISOString().split("T")[0]
+    // Fix timezone issue by using local date
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, "0")
+    const day = String(now.getDate()).padStart(2, "0")
+    const today = `${year}-${month}-${day}`
+
+    deliveryDateInput.min = today
+    deliveryDateInput.value = today
 
     // Add event listener for date change
     deliveryDateInput.addEventListener("change", () => {
@@ -709,17 +782,142 @@ function initializeEventListeners() {
   }
 
   // Add event listener for delivery time change
-  document.getElementById("deliveryTime").addEventListener("change", calculateTotals)
+  const deliveryTimeSelect = document.getElementById("deliveryTime")
+  if (deliveryTimeSelect) {
+    deliveryTimeSelect.addEventListener("change", calculateTotals)
+  }
 
   // Add event listener for Razorpay payment button
   const razorpayBtn = document.getElementById("razorpay-payment-btn")
   if (razorpayBtn) {
     razorpayBtn.addEventListener("click", processRazorpayPayment)
   }
+
+  // Add event listeners for coupon functionality
+  const applyCouponBtn = document.getElementById("apply-coupon-btn")
+  if (applyCouponBtn) {
+    applyCouponBtn.addEventListener("click", applyCoupon)
+  }
+
+  const removeCouponBtn = document.getElementById("remove-coupon-btn")
+  if (removeCouponBtn) {
+    removeCouponBtn.addEventListener("click", removeCoupon)
+  }
+
+  // Add enter key listener for coupon input
+  const couponInput = document.getElementById("couponCode")
+  if (couponInput) {
+    couponInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        applyCoupon()
+      }
+    })
+  }
+}
+
+// Coupon functionality
+async function applyCoupon() {
+  const couponCode = document.getElementById("couponCode").value.trim()
+  const couponSpinner = document.getElementById("coupon-spinner")
+  const applyCouponBtn = document.getElementById("apply-coupon-btn")
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponError = document.getElementById("coupon-error")
+
+  if (!couponCode) {
+    showCouponError("Please enter a coupon code.")
+    return
+  }
+
+  try {
+    // Show loading
+    couponSpinner.style.display = "inline-block"
+    applyCouponBtn.disabled = true
+    hideCouponMessages()
+
+    const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+
+    const [success, result] = await callApi(
+      "POST",
+      apply_coupon_url,
+      {
+        coupon_code: couponCode,
+        order_amount: subtotal,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      appliedCoupon = result.data.coupon
+      couponDiscount = result.data.discount_amount
+
+      showCouponSuccess(`Coupon applied! You saved ₹${couponDiscount.toFixed(2)}`)
+      document.getElementById("couponCode").disabled = true
+      applyCouponBtn.style.display = "none"
+
+      calculateTotals()
+    } else {
+      throw new Error(result.error || "Invalid coupon code")
+    }
+  } catch (error) {
+    console.error("Error applying coupon:", error)
+    showCouponError(error.message || "Error applying coupon. Please try again.")
+  } finally {
+    couponSpinner.style.display = "none"
+    applyCouponBtn.disabled = false
+  }
+}
+
+function removeCoupon() {
+  try {
+    showLoading()
+
+    appliedCoupon = null
+    couponDiscount = 0
+
+    document.getElementById("couponCode").value = ""
+    document.getElementById("couponCode").disabled = false
+    document.getElementById("apply-coupon-btn").style.display = "inline-block"
+    document.getElementById("discount-row").style.display = "none"
+    document.getElementById("checkout-discount").textContent = `-₹0.00`
+
+    hideCouponMessages()
+    calculateTotals()
+
+    showNotification("Coupon removed successfully.", "success")
+  } catch (error) {
+    console.error("Error removing coupon:", error)
+    showNotification("Error removing coupon. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showCouponSuccess(message) {
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponSuccessText = document.getElementById("coupon-success-text")
+
+  if (couponSuccessText) couponSuccessText.textContent = message
+  if (couponSuccess) couponSuccess.style.display = "block"
+}
+
+function showCouponError(message) {
+  const couponError = document.getElementById("coupon-error")
+  const couponErrorText = document.getElementById("coupon-error-text")
+
+  if (couponErrorText) couponErrorText.textContent = message
+  if (couponError) couponError.style.display = "block"
+}
+
+function hideCouponMessages() {
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponError = document.getElementById("coupon-error")
+
+  if (couponSuccess) couponSuccess.style.display = "none"
+  if (couponError) couponError.style.display = "none"
 }
 
 async function updateUserData() {
-  showLoading()
   const requiredFields = [
     "firstName",
     "lastName",
@@ -735,28 +933,26 @@ async function updateUserData() {
   const bodyData = {}
   requiredFields.forEach((fieldId) => {
     const field = document.getElementById(fieldId)
-    bodyData[fieldId] = field.value.trim()
+    if (field) {
+      bodyData[fieldId] = field.value.trim()
+    }
   })
 
   try {
     const [success, result] = await callApi("POST", add_user_data_url, bodyData, csrf_token)
     console.log(result)
     if (success && result.success) {
-      showNotification("User data updated.")
+      showNotification("User data updated.", "success")
     } else {
       throw new Error(result.error || "Failed to add data")
     }
   } catch (error) {
-    console.error("Error verifying OTP:", error)
+    console.error("Error updating user data:", error)
     showNotification("Error updating user data. Please try again.", "error")
-  } finally {
-    hideLoading()
   }
 }
 
 async function addNewAddress() {
-  showLoading()
-
   const address = document.getElementById("address").value.trim()
   const city = document.getElementById("city").value.trim()
   const pincode = document.getElementById("pincode").value.trim()
@@ -773,17 +969,15 @@ async function addNewAddress() {
     const [success, result] = await callApi("POST", add_address_url, bodyData, csrf_token)
     console.log(result)
     if (success && result.success) {
-      showNotification("Address Added.")
+      showNotification("Address added.", "success")
       userAddresses = result.data.addresses || userAddresses
       renderAddresses()
     } else {
       throw new Error(result.error || "Failed to add address")
     }
   } catch (error) {
-    console.error("Error verifying OTP:", error)
-    showNotification("Error updating user data. Please try again.", "error")
-  } finally {
-    hideLoading()
+    console.error("Error adding address:", error)
+    showNotification("Error adding address. Please try again.", "error")
   }
 }
 
@@ -806,38 +1000,57 @@ async function continueToPayment() {
     return
   }
 
-  if (!userDataAdded) {
-    await updateUserData()
-    await checkUserLoggedIn()
+  const continueBtn = document.querySelector('button[onclick="continueToPayment()"]')
+  const spinner = document.getElementById("continue-payment-spinner")
+
+  try {
+    // Show loading
+    if (spinner) spinner.style.display = "inline-block"
+    if (continueBtn) continueBtn.disabled = true
+
+    if (!userDataAdded) {
+      await updateUserData()
+      await checkUserLoggedIn()
+    }
+
+    if (selectedAddress === "new") {
+      await addNewAddress()
+    }
+
+    // Get payment method
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
+
+    // Prepare order data with coupon information
+    currentOrderData = {
+      shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
+      different_billing_address: document.getElementById("differentBillingAddress").checked,
+      billing_address: getBillingAddressData(),
+      payment_method: paymentMethod,
+      first_name: document.getElementById("firstName").value,
+      last_name: document.getElementById("lastName").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      pincode: document.getElementById("pincode").value,
+      delivery_date: document.getElementById("deliveryDate").value,
+      timeslot_id: document.getElementById("deliveryTime").value,
+      special_instructions: document.getElementById("specialInstructions").value,
+      // Add coupon data
+      coupon_code: appliedCoupon ? appliedCoupon.coupon_code : null,
+      coupon_discount: couponDiscount || 0,
+    }
+
+    // Call place order API
+    await placeOrder()
+  } catch (error) {
+    console.error("Error in continue to payment:", error)
+    showNotification("Error processing order. Please try again.", "error")
+  } finally {
+    // Hide loading
+    if (spinner) spinner.style.display = "none"
+    if (continueBtn) continueBtn.disabled = false
   }
-
-  if (selectedAddress === "new") {
-    await addNewAddress()
-  }
-
-  // Get payment method
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
-
-  // Prepare order data
-  currentOrderData = {
-    shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
-    different_billing_address: document.getElementById("differentBillingAddress").checked,
-    billing_address: getBillingAddressData(),
-    payment_method: paymentMethod,
-    first_name: document.getElementById("firstName").value,
-    last_name: document.getElementById("lastName").value,
-    email: document.getElementById("email").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-    city: document.getElementById("city").value,
-    pincode: document.getElementById("pincode").value,
-    delivery_date: document.getElementById("deliveryDate").value,
-    timeslot_id: document.getElementById("deliveryTime").value,
-    special_instructions: document.getElementById("specialInstructions").value,
-  }
-
-  // Call place order API
-  await placeOrder()
 }
 
 function getBillingAddressData() {
@@ -878,16 +1091,17 @@ function validateShippingForm() {
   requiredFields.forEach((fieldId) => {
     const field = document.getElementById(fieldId)
     if (!field || !field.value.trim()) {
-      field.classList.add("is-invalid")
+      if (field) field.classList.add("is-invalid")
       isValid = false
     } else {
-      field.classList.remove("is-invalid")
+      if (field) field.classList.remove("is-invalid")
     }
   })
 
   // Check if phone is verified for guest users
   if (!isLoggedIn && !mobileVerified) {
-    document.getElementById("phone").classList.add("is-invalid")
+    const phoneField = document.getElementById("phone")
+    if (phoneField) phoneField.classList.add("is-invalid")
     showNotification("Please verify your phone number.", "error")
     isValid = false
   }
@@ -906,10 +1120,10 @@ function validateShippingForm() {
     billingRequiredFields.forEach((fieldId) => {
       const field = document.getElementById(fieldId)
       if (!field || !field.value.trim()) {
-        field.classList.add("is-invalid")
+        if (field) field.classList.add("is-invalid")
         isValid = false
       } else {
-        field.classList.remove("is-invalid")
+        if (field) field.classList.remove("is-invalid")
       }
     })
   }
@@ -970,6 +1184,7 @@ function showPaymentOverview(orderData) {
         <p class="mb-1">Order ID: ${orderData.order_id}</p>
         <p class="mb-1">Payment ID: ${orderData.payment_id}</p>
         <p class="mb-0">Amount: ₹${orderData.total_amount}</p>
+        ${appliedCoupon ? `<p class="mb-0 text-success">Coupon: ${appliedCoupon.coupon_code} (-₹${couponDiscount.toFixed(2)})</p>` : ""}
       </div>
     </div>
   `
@@ -979,29 +1194,30 @@ function showPaymentOverview(orderData) {
 }
 
 function processRazorpayPayment() {
-  // In a real implementation, you would initialize Razorpay here
-  // For now, we'll simulate payment success
-  // const data = {'razorpay_order_id': 'order_QfQvm5k2jPuZNW', 'razorpay_key_id': 'rzp_test_XDwYWE4licPDpu', 'amount': 100000, 'currency': 'INR', 'callback_url': 'https://www.dynamiclabz.net/', 'order_receipt': 'order_rcpt_27dfaf715d'}
+  if (!currentPaymentData) {
+    showNotification("Payment data not available. Please try again.", "error")
+    return
+  }
+
   const data = currentPaymentData
   const options = {
-      key: data.razorpay_key_id,
-      amount: data.total_amount,
-      currency: 'INR',
-      name: "OvenFresh",
-      description: "Order Payment",
-      order_id: data.payment_id,
-      callback_url: `http://127.0.0.1:8000/payment-success-callback/?razorpay_order_id=${data.order_id}`,
-      notes: {
-          order_receipt: data.order_id
-      },
-      theme: {
-          color: "#F37254"
-      }
-  };
+    key: data.razorpay_key_id,
+    amount: data.total_amount,
+    currency: "INR",
+    name: "OvenFresh",
+    description: "Order Payment",
+    order_id: data.payment_id,
+    callback_url: `${window.location.origin}/payment-success-callback/?razorpay_order_id=${data.order_id}`,
+    notes: {
+      order_receipt: data.order_id,
+    },
+    theme: {
+      color: "#F37254",
+    },
+  }
 
-  const rzp = new Razorpay(options);
-  rzp.open();
-
+  const rzp = new Razorpay(options)
+  rzp.open()
 }
 
 function showCODSuccessModal(orderId) {
@@ -1013,6 +1229,7 @@ function showCODSuccessModal(orderId) {
             <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
             <h3>Order Placed Successfully!</h3>
             <p class="lead">Your order #${orderId} has been placed successfully.</p>
+            ${appliedCoupon ? `<p class="text-success">Coupon ${appliedCoupon.code} applied! You saved ₹${couponDiscount.toFixed(2)}</p>` : ""}
             <p class="text-muted">You will be redirected shortly...</p>
             <div class="spinner-border text-primary mt-3" role="status">
               <span class="visually-hidden">Loading...</span>
@@ -1037,48 +1254,11 @@ function showCODSuccessModal(orderId) {
 }
 
 function updateCartCount() {
-    const cartCount = cartItems.reduce((total, item) => total + parseInt(item.quantity), 0);
-    const cartCountElement = document.getElementById('cart-count');
-    if (cartCountElement) {
-        cartCountElement.textContent = cartCount;
-    }
-}
-
-async function updateCartCountFromAPI() {
-    try {
-        const [success, result] = await callApi("GET", cart_list_url);
-        if (success && result.success) {
-            cartItems = result.data.cart_items || [];
-            updateCartCount();
-        }
-    } catch (error) {
-        console.error("Error updating cart count:", error);
-    }
-}
-// Utility functions
-function formatDate(dateString) {
-  const date = new Date(dateString)
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const cartCount = cartItems.reduce((total, item) => total + Number.parseInt(item.quantity), 0)
+  const cartCountElement = document.getElementById("cart-count")
+  if (cartCountElement) {
+    cartCountElement.textContent = cartCount
   }
-  return date.toLocaleDateString("en-US", options)
-}
-
-function getPaymentMethodText(value) {
-  const methods = {
-    cod: "Cash on Delivery",
-    razorpay: "Online Payment",
-  }
-  return methods[value] || value
-}
-
-function toQueryString(params) {
-  return Object.keys(params)
-    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-    .join("&")
 }
 
 function showLoading() {
@@ -1110,11 +1290,3 @@ function showNotification(message, type = "info") {
     }
   }, 5000)
 }
-
-// Make functions globally available
-// window.continueToPayment = continueToPayment
-// window.showSendOtpModal = showSendOtpModal
-// window.sendOtp = sendOtp
-// window.verifyOtp = verifyOtp
-// window.checkPincode = checkPincode
-// window.processRazorpayPayment = processRazorpayPayment

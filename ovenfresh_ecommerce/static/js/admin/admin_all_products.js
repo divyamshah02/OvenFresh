@@ -4,12 +4,15 @@ let products_url = null
 let categories_url = null
 let variations_url = null
 
+let category__id = null
+
 let currentPage = 1
 const itemsPerPage = 10
 let totalItems = 0
 let currentFilters = {
   search: "",
   category: "",
+  sub_category: "",
   status: "",
   sortBy: "created_desc",
 }
@@ -19,7 +22,13 @@ let allCategories = []
 let selectedProducts = []
 let productToDelete = null
 
-async function AdminAllProducts(csrf_token_param, all_products_url_param, products_url_param, categories_url_param, variations_url_param) {
+async function AdminAllProducts(
+  csrf_token_param,
+  all_products_url_param,
+  products_url_param,
+  categories_url_param,
+  variations_url_param,
+) {
   csrf_token = csrf_token_param
   all_products_url = all_products_url_param
   products_url = products_url_param
@@ -66,6 +75,7 @@ function initializeEventListeners() {
 
   // Filter changes
   document.getElementById("categoryFilter").addEventListener("change", handleFilterChange)
+  document.getElementById("subCategoryFilter").addEventListener("change", handleFilterChange)
   document.getElementById("statusFilter").addEventListener("change", handleFilterChange)
   document.getElementById("sortBy").addEventListener("change", handleFilterChange)
 
@@ -118,15 +128,20 @@ function populateCategoryFilter() {
   })
 }
 
+// Update the loadProducts function to use correct API parameters
 async function loadProducts() {
   showLoading()
 
   try {
-    // Build query parameters
+    // Build query parameters with correct field names
     const params = new URLSearchParams({
       page: currentPage,
       limit: itemsPerPage,
-      ...currentFilters,
+      search: currentFilters.search,
+      category: currentFilters.category,
+      sub_category: currentFilters.sub_category,
+      status: currentFilters.status,
+      sortBy: currentFilters.sortBy,
     })
 
     const [success, result] = await callApi("GET", `${all_products_url}?${params}`)
@@ -173,20 +188,15 @@ function renderProductsTable() {
   })
 }
 
+// Update createProductRow function to use correct field names
 function createProductRow(product) {
   const row = document.createElement("tr")
 
-  // Get category name
-  const category = allCategories.find((cat) => cat.category_id === product.category_id)
-  const categoryName = category ? category.title : "Unknown"
-
-  // Calculate price range
+  // Use correct field names from backend
+  const categoryName = product.category_name || "Unknown"
+  const variationsCount = product.variations_count || 0
   const priceRange = calculatePriceRange(product.variations || [])
-
-  // Determine status
   const status = getProductStatus(product)
-
-  // Format date
   const createdDate = new Date(product.created_at || Date.now()).toLocaleDateString()
 
   row.innerHTML = `
@@ -209,7 +219,10 @@ function createProductRow(product) {
             <span class="badge bg-light text-dark">${categoryName}</span>
         </td>
         <td>
-            <span class="badge bg-info">${(product.variations || []).length} variations</span>
+            <span class="badge bg-info text-light">${product.sub_category_name || "None"}</span>
+        </td>
+        <td>
+            <span class="badge bg-info">${variationsCount} variations</span>
         </td>
         <td>${priceRange}</td>
         <td>${getStatusBadge(status)}</td>
@@ -232,6 +245,21 @@ function createProductRow(product) {
   return row
 }
 
+// Update getProductStatus function to use correct field names
+function getProductStatus(product) {
+  if (!product.is_active) {
+    return "inactive"
+  }
+
+  if (!product.variations || product.variations.length === 0) {
+    return "inactive"
+  }
+
+  const hasActiveVariations = product.variations.some((v) => v.is_active !== false)
+  return hasActiveVariations ? "active" : "inactive"
+}
+
+// Update calculatePriceRange function
 function calculatePriceRange(variations) {
   if (!variations || variations.length === 0) {
     return '<span class="text-muted">No variations</span>'
@@ -246,15 +274,6 @@ function calculatePriceRange(variations) {
   }
 
   return `₹${minPrice} - ₹${maxPrice}`
-}
-
-function getProductStatus(product) {
-  if (!product.variations || product.variations.length === 0) {
-    return "inactive"
-  }
-
-  const hasActiveVariations = product.variations.some((v) => v.is_active !== false)
-  return hasActiveVariations ? "active" : "inactive"
 }
 
 function getStatusBadge(status) {
@@ -306,7 +325,7 @@ function hideLoading() {
   const loadingEl = document.getElementById("globalLoading")
   if (loadingEl) {
     // loadingEl.style.display = "none"
-    loadingEl.remove();
+    loadingEl.remove()
   }
 }
 
@@ -368,7 +387,16 @@ function handleSearch() {
 }
 
 function handleFilterChange() {
-  currentFilters.category = document.getElementById("categoryFilter").value
+  const newCategory = document.getElementById("categoryFilter").value
+
+  // If category changed, update subcategory options and reset subcategory filter
+  if (newCategory !== currentFilters.category) {
+    populateSubCategoryFilter(newCategory)
+    document.getElementById("subCategoryFilter").value = ""    
+  }
+
+  currentFilters.category = newCategory
+  currentFilters.sub_category = document.getElementById("subCategoryFilter").value
   currentFilters.status = document.getElementById("statusFilter").value
   currentFilters.sortBy = document.getElementById("sortBy").value
   currentPage = 1
@@ -378,12 +406,15 @@ function handleFilterChange() {
 function clearFilters() {
   document.getElementById("searchInput").value = ""
   document.getElementById("categoryFilter").value = ""
+  document.getElementById("subCategoryFilter").value = ""
+  document.getElementById("subCategoryFilter").disabled = true
   document.getElementById("statusFilter").value = ""
   document.getElementById("sortBy").value = "created_desc"
 
   currentFilters = {
     search: "",
     category: "",
+    sub_category: "",
     status: "",
     sortBy: "created_desc",
   }
@@ -433,17 +464,17 @@ function updateSelectedCount() {
   }
 }
 
+// Update updateStats function to use correct field names
 function updateStats() {
-  // Calculate stats
   const totalProducts = allProducts.length
-  const activeProducts = allProducts.filter((p) => getProductStatus(p) === "active").length
-  const outOfStockProducts = allProducts.filter((p) => getProductStatus(p) === "out_of_stock").length
+  const activeProducts = allProducts.filter((p) => p.is_active === true).length
+  const inactiveProducts = allProducts.filter((p) => p.is_active === false).length
   const totalCategories = allCategories.length
 
   // Update DOM
   document.getElementById("totalProducts").textContent = totalProducts
   document.getElementById("activeProducts").textContent = activeProducts
-  document.getElementById("outOfStockProducts").textContent = outOfStockProducts
+  document.getElementById("outOfStockProducts").textContent = inactiveProducts
   document.getElementById("totalCategories").textContent = totalCategories
 }
 
@@ -495,12 +526,12 @@ function showProductDetails(product) {
                         <strong>Status:</strong> ${getStatusBadge(getProductStatus(product))}
                     </div>
                     <div class="col-sm-6">
-                        <strong>Variations:</strong> ${(product.variations || []).length}
+                        <strong>Variations:</strong> ${(product.product_variation || []).length}
                     </div>
                 </div>
                 
                 ${
-                  product.variations && product.variations.length > 0
+                  product.product_variation && product.product_variation.length > 0
                     ? `
                     <h6>Variations:</h6>
                     <div class="table-responsive">
@@ -513,7 +544,7 @@ function showProductDetails(product) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${product.variations
+                                ${product.product_variation
                                   .map(
                                     (variation) => `
                                     <tr>
@@ -553,6 +584,7 @@ function deleteProduct(productId) {
   modal.show()
 }
 
+// Update confirmDelete function to use correct API endpoint
 async function confirmDelete() {
   if (!productToDelete) return
 
@@ -563,7 +595,7 @@ async function confirmDelete() {
       showToast("success", "Success", "Product deleted successfully")
       loadProducts()
     } else {
-      showToast("error", "Error", "Failed to delete product")
+      showToast("error", "Error", result.error || "Failed to delete product")
     }
   } catch (error) {
     console.error("Error deleting product:", error)
@@ -586,6 +618,7 @@ function handleBulkDelete() {
   }
 }
 
+// Update bulkDeleteProducts function
 async function bulkDeleteProducts() {
   showLoading("Deleting products...")
 
@@ -595,7 +628,7 @@ async function bulkDeleteProducts() {
     )
 
     const results = await Promise.all(deletePromises)
-    const successCount = results.filter(([success]) => success).length
+    const successCount = results.filter(([success, result]) => success && result.success).length
 
     if (successCount === selectedProducts.length) {
       showToast("success", "Success", `${successCount} products deleted successfully`)
@@ -757,6 +790,30 @@ function getToastIcon(type) {
   return iconMap[type] || "fas fa-info-circle"
 }
 
+function populateSubCategoryFilter(categoryId) {
+  const subCategoryFilter = document.getElementById("subCategoryFilter")
+  subCategoryFilter.innerHTML = '<option value="">All Sub Categories</option>'
+  categoryId = Number(categoryId)
+
+  if (!categoryId) {
+    subCategoryFilter.disabled = true
+    return
+  }
+
+  const selectedCategory = allCategories.find((cat) => cat.category_id === categoryId)
+  if (selectedCategory && selectedCategory.subcategories) {
+    subCategoryFilter.disabled = false
+    selectedCategory.subcategories.forEach((subCategory) => {
+      const option = document.createElement("option")
+      option.value = subCategory.sub_category_id
+      option.textContent = subCategory.title
+      subCategoryFilter.appendChild(option)
+    })
+  } else {
+    subCategoryFilter.disabled = true
+  }
+}
+
 // Global loading function - Removed duplicate definition
 // function showLoading(message = 'Loading...') {
 //     let loadingEl = document.getElementById('globalLoading');
@@ -798,3 +855,4 @@ function getToastIcon(type) {
 // import { callApi } from './api-module';
 // Or, if it's a global function defined in another script:
 /* global callApi */
+/* global bootstrap */
