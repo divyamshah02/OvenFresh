@@ -93,6 +93,7 @@ class Order(models.Model):
     order_note = models.TextField(null=True, blank=True)
     special_instructions = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    delivery_photos = models.JSONField(default=list)
 
     def __str__(self):
         return self.order_id
