@@ -9,6 +9,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db.models import Q, Count, Sum
 from utils.handle_s3_bucket import upload_file_to_s3
+import logging
 
 class DeliveryLoginViewSet(viewsets.ViewSet):
     """
@@ -266,14 +267,9 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
 
         if status_type == "delivered":
             # Get all uploaded files
-            uploaded_files = []
-            i = 0
-            while f'images[{i}]' in request.FILES:
-                uploaded_files.append(request.FILES[f'images[{i}]'])
-                i += 1
-
-            # Process each file
+            uploaded_files = request.FILES.getlist('images')
             image_urls = []
+
             for uploaded_file in uploaded_files:
                 # Validate file type
                 allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
@@ -384,12 +380,19 @@ class ConfirmCashViewSet(viewsets.ViewSet):
     def create(self, request):
         order_id = request.data.get("order_id")
         collected_amount = request.data.get("collected_amount")
+        extra_cost = request.data.get("extra_cost", 0)
 
         if not order_id:
             return Response({
                 "success": False, "user_not_logged_in": False, "user_unauthorized": False,
                 "data": None, "error": "Order ID is required."
             }, status=400)
+
+        if extra_cost < 0:
+            return Response({
+                "success": False, "user_not_logged_in": False, "user_unauthorized": False,
+                "data": None,"error": "Extra cost cannot be negative"
+                }, status=400)
 
         try:
             # Allow cash collection for orders that are out_for_delivery or delivered
@@ -423,6 +426,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
                 }, status=400)
 
         order.payment_received = True
+        order.extra_cost = extra_cost
         order.save()
 
         return Response({

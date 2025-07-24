@@ -315,6 +315,7 @@ async function confirmCashCollection() {
   if (!currentCodOrder) return
 
   const collectedAmount = Number.parseFloat(document.getElementById("collectedAmount").value)
+  const extraCost = Number.parseFloat(document.getElementById("extraCost").value) || 0;
 
   if (isNaN(collectedAmount) || collectedAmount <= 0) {
     showToast("Please enter a valid amount.", "error")
@@ -331,21 +332,30 @@ async function confirmCashCollection() {
       {
         order_id: currentCodOrder.orderId,
         collected_amount: collectedAmount,
+        extra_cost: extraCost
       },
       csrf_token,
     )
 
     if (success && result.success) {
+      // Prepare form data for delivery status update with files
+      const formData = new FormData();
+      formData.append("order_id", currentCodOrder.orderId);
+      formData.append("status", "delivered");
+
+      // Add files to form data
+      const photoInput = document.getElementById("deliveryPhotos");
+      for (let i = 0; i < photoInput.files.length; i++) {
+        formData.append("images", photoInput.files[i]);  // Use same field name
+      }
+
       // After successful cash collection, mark order as delivered
-      const [deliverySuccess, deliveryResult] = await callApi(
+      const [deliverySuccess, deliveryResult] = await callApiMultipart(
         "POST",
         status_update_url,
-        {
-          order_id: currentCodOrder.orderId,
-          status: "delivered",
-        },
-        csrf_token,
-      )
+        formData,
+        csrf_token
+      );
 
       if (deliverySuccess && deliveryResult.success) {
         showToast("Cash collected and order marked as delivered!", "success")
@@ -366,6 +376,24 @@ async function confirmCashCollection() {
     showToast("Error confirming cash collection.", "error")
   } finally {
     hideLoading()
+  }
+}
+
+async function callApiMultipart(method, url, formData, csrfToken) {
+  try {
+    const response = await fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+
+    const result = await response.json();
+    return [response.ok, result];
+  } catch (error) {
+    console.error("API call failed:", error);
+    return [false, { success: false, error: "Network error" }];
   }
 }
 

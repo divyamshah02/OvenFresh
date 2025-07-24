@@ -94,6 +94,7 @@ class Order(models.Model):
     special_instructions = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     delivery_photos = models.JSONField(default=list)
+    extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
 
     def __str__(self):
         return self.order_id
