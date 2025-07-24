@@ -29,7 +29,7 @@ from utils.decorators import *
 class OrderViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    @check_authentication()
+    # @check_authentication()
     def create(self, request):
         """
         Place order from cart with coupon support
@@ -692,7 +692,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
 class OrderListViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    @check_authentication()
+    # @check_authentication()
     def list(self, request):
         """
         Get user orders with pagination and filtering

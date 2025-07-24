@@ -262,6 +262,7 @@ async function loadOrders() {
     const [success, result] = await callApi("GET", url)
 
     if (success && result.success) {
+      console.log(result.data.orders)
       ordersData = result.data.orders || []
       totalOrders = result.data.total_count || 0
       totalPages = result.data.total_pages || 1
@@ -322,29 +323,22 @@ function renderOrders() {
                            data-order-id="${order.order_id}" ${isSelected ? "checked" : ""}>
                 </div>
             </td>
-            <td>
-                <span class="fw-medium">${order.order_id}</span>
-                <div class="small text-muted">${formatDate(order.created_at, true)}</div>
-            </td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="avatar-circle me-2">
-                        <span>${getInitials(order.first_name, order.last_name)}</span>
-                    </div>
-                    <div>
-                        <div class="fw-medium">${order.first_name} ${order.last_name}</div>
-                        <div class="small text-muted">${order.phone}</div>
-                    </div>
-                </div>
-            </td>
             <td>${formatDate(order.created_at)}</td>
             <td>
+                <div class="fw-medium">${order.first_name} - ${order.phone}</div>
+                <div class="small text-muted">#${order.order_id}</div>
+            </td>
+            <td>
+              ${order.items.map(
+                item => `${item.product_title} (${item.weight_variation})`
+              ).join("<br>")}
+            </td>
+            <td>
                 <div>${formatDate(order.delivery_date)}</div>
-                <div class="small text-muted">${order.timeslot_name || "Not specified"}</div>
             </td>
             <td>
                 <div class="fw-bold">₹${formatCurrency(order.total_amount)}</div>
-                <div class="small text-muted">${order.order_items_count} items</div>
+                <div class="small text-muted">${order.items.length} items</div>
             </td>
             <td>
                 <span class="badge ${getPaymentStatusBadgeClass(order.payment_received, order.payment_method)}">
@@ -358,10 +352,10 @@ function renderOrders() {
             </td>
             <td>
                 <a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
-                            <i class="fas fa-edit me-2"></i>View Details
-                        </a>
+                    <i class="fas fa-edit me-2"></i>View Details
+                </a>
             </td>
-        `
+        `;
 
       //   <div class="dropdown">
       //     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">

@@ -220,7 +220,14 @@
                             <input type="number" class="form-control" id="collectedAmount" step="0.01" required>
                         </div>
                     </div>
-                    
+
+                    <!-- Delivery Photo Upload Section -->
+                    <div class="mb-3">
+                        <label for="deliveryPhotos" class="form-label">Delivery Proof Photos</label>
+                        <input class="form-control" type="file" id="deliveryPhotos" multiple accept="image/*">
+                        <div class="form-text">Upload photos for delivered items (optional but recommended)</div>
+                    </div>
+
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
                         After confirming cash collection, the order will be automatically marked as delivered.

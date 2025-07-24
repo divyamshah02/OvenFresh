@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db.models import Q, Count, Sum
+from utils.handle_s3_bucket import upload_file_to_s3
 
 class DeliveryLoginViewSet(viewsets.ViewSet):
     """
@@ -262,6 +263,47 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
                 "success": False, "user_not_logged_in": False, "user_unauthorized": False,
                 "data": None, "error": "Order not found or unauthorized."
             }, status=404)
+
+        if status_type == "delivered":
+            # Get all uploaded files
+            uploaded_files = []
+            i = 0
+            while f'images[{i}]' in request.FILES:
+                uploaded_files.append(request.FILES[f'images[{i}]'])
+                i += 1
+
+            # Process each file
+            image_urls = []
+            for uploaded_file in uploaded_files:
+                # Validate file type
+                allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+                file_extension = uploaded_file.name.split('.')[-1].lower()
+
+                if file_extension not in allowed_extensions:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Invalid file type: {uploaded_file.name}. Only JPG, PNG, and WebP are allowed."
+                    }, status=400)
+
+                # Upload to S3
+                try:
+                    file_url = upload_file_to_s3(uploaded_file, folder="delivery_photos")
+                    image_urls.append(file_url)
+                except Exception as e:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Failed to upload image: {str(e)}"
+                    }, status=500)
+
+            # Append new photos to existing delivery photos
+            if image_urls:
+                order.delivery_photos += image_urls
 
         order.status = status_type
         order.save()
