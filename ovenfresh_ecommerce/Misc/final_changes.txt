@@ -1,0 +1,33 @@
+Ovenfresh note changes - 
+
+Nav - Clickable logo
+
+Product detail page : 
+    -> Add veg option (logo) add veg in models as well
+    -> add description to backend and frontend
+    -> update breadcrumb linkage
+    -> Description/ingredieants/reviews
+    -> 
+
+Checkout :
+    -> remove verify module
+    -> Remove past addresses
+    -> timeslot selected from cart not visible in Checkout
+
+
+delivery login page -
+    -> Loading
+    ->
+
+delivery dashboard - 
+    -> Add modal to show photo uploaded
+    -> Add files to add extra cost instead of adding total amount and manage backend    
+    -> check photo not uploaded to s3 bucket / not getting url saved 
+
+Order detail admin - 
+    -> update KOT / Invoice
+    -> update breadcrumb add linkage
+    -> check for the photo uploaded by delivery person and check the extra amount paid
+    -> 
+
+Analysis page
