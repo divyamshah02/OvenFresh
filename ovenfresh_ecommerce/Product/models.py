@@ -29,9 +29,15 @@ class Product(models.Model):  # Meta information
     sub_category_id = models.BigIntegerField(blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    features = models.TextField(blank=True, null=True)
+    special_note = models.TextField(blank=True, null=True)
     photos = models.JSONField(default=list)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
+    is_veg = models.BooleanField(default=True)  # True for Veg, False for Non-Veg
+    ingredients = models.TextField(blank=True, null=True)
+    allergen_information = models.TextField(blank=True, null=True)
+    storage_instructions = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.product_id} - {self.title}"

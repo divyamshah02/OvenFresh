@@ -63,6 +63,12 @@ async function loadProductData(productId) {
         description: data.description,
         photos: data.photos || [],
         is_active: data.is_active,
+        is_veg: data.is_veg,
+        features: data.features || "",
+        special_note: data.special_note || "",
+        ingredients: data.ingredients || "",
+        allergen_information: data.allergen_information || "",
+        storage_instructions: data.storage_instructions || "",
         category_name: data.category_name,
         sub_category_name: data.sub_category_name,
       }
@@ -137,6 +143,22 @@ function renderProductDetails(product) {
   const productDescription = document.querySelector(".product-description p")
   if (productDescription) productDescription.textContent = product.description
 
+  // Update Veg/Non-Veg indicator
+  const vegIndicator = document.querySelector(".veg-indicator");
+  if (vegIndicator) {
+      if (product.is_veg) {
+          vegIndicator.className = "veg-indicator veg mb-2";
+          vegIndicator.innerHTML = `
+              <span class="badge bg-success">Veg</span>
+          `;
+      } else {
+          vegIndicator.className = "veg-indicator non-veg mb-2";
+          vegIndicator.innerHTML = `
+              <span class="badge bg-danger">Non-Veg</span>
+          `;
+      }
+  }
+
   // Update stock status
   const stockBadge = document.querySelector(".badge.bg-success")
   if (stockBadge) {
@@ -147,14 +169,84 @@ function renderProductDetails(product) {
   // Update category in description tab
   const descriptionTab = document.getElementById("description")
   if (descriptionTab) {
-    const categoryInfo = descriptionTab.querySelector("p")
-    if (categoryInfo) {
-      categoryInfo.innerHTML = `
-                ${product.description}
-                <br><br>
-                <strong>Category:</strong> ${product.category_name} > ${product.sub_category_name}
-            `
+    let featuresHtml = '';
+
+    // Create features list if features exist
+    if (product.features) {
+      // Split features by newline and create list items
+      const featuresList = product.features.split('\n').filter(f => f.trim() !== '');
+      
+      if (featuresList.length > 0) {
+        featuresHtml = `
+          <p>This product features:</p>
+          <ul>
+            ${featuresList.map(feature => `<li>${feature}</li>`).join('')}
+          </ul>
+        `;
+      }
     }
+
+    descriptionTab.innerHTML = `
+      <h5>Product Description</h5>
+      <p>${product.description || ''}</p>
+      <p>
+        <br>
+        <strong>Category:</strong> ${product.category_name} > ${product.sub_category_name}
+      </p>
+      ${featuresHtml}
+      <p>${product.special_note || ''}</p>
+    `;
+  }
+
+  // Update ingredients tab
+  const ingredientsTab = document.getElementById("ingredients")
+  if (ingredientsTab) {
+    let mainIngredientsHtml = '<li>No ingredients information available</li>';
+    let allergenHtml = '<li>No allergen information available</li>';
+    let storageHtml = '<li>No storage instructions available</li>';
+
+    if (product.ingredients) {
+      const ingredientsList = product.ingredients.split('\n').filter(i => i.trim() !== '');
+      if (ingredientsList.length > 0) {
+        mainIngredientsHtml = ingredientsList.map(ingredient => `<li>${ingredient}</li>`).join('');
+      }
+    }
+
+    if (product.allergen_information) {
+      const allergenList = product.allergen_information.split('\n').filter(a => a.trim() !== '');
+      if (allergenList.length > 0) {
+        allergenHtml = allergenList.map(allergen => `<li>${allergen}</li>`).join('');
+      }
+    }
+
+    if (product.storage_instructions) {
+      const storageList = product.storage_instructions.split('\n').filter(s => s.trim() !== '');
+      if (storageList.length > 0) {
+        storageHtml = storageList.map(instruction => `<li>${instruction}</li>`).join('');
+      }
+    }
+
+    ingredientsTab.innerHTML = `
+      <h5>Ingredients</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <h6>Main Ingredients:</h6>
+          <ul>
+            ${mainIngredientsHtml}
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h6>Allergen Information:</h6>
+          <ul>
+            ${allergenHtml}
+          </ul>
+          <h6>Storage:</h6>
+          <ul>
+            ${storageHtml}
+          </ul>
+        </div>
+      </div>
+    `;
   }
 }
 
@@ -750,8 +842,12 @@ function formatDate(dateString) {
 function updateBreadcrumb(product) {
   const breadcrumbItems = document.querySelectorAll(".breadcrumb-item")
   if (breadcrumbItems.length >= 3) {
-    // Update category breadcrumb
-    breadcrumbItems[2].innerHTML = `<a href="#">${product.category_name}</a>`
+    // Create dynamic link with category name or ID
+    breadcrumbItems[2].innerHTML = `
+      <a href="/shop/?category=${encodeURIComponent(product.category_name)}">
+        ${product.category_name}
+      </a>
+    `
   }
 
   const lastItem = breadcrumbItems[breadcrumbItems.length - 1]
