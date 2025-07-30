@@ -358,7 +358,7 @@ function handleCategoryChange(event) {
   const subCatSelect = document.getElementById("subCategorySelect")
   subCatSelect.innerHTML = `<option value="">Select Sub-Category</option>` // Clear
 
-  const selectedCategory = categoryData.find((cat) => cat.category_id === selectedCatId)
+  const selectedCategory = categoryData.find((cat) => cat.category_id == selectedCatId)
 
   if (selectedCategory && selectedCategory.subcategories) {
     selectedCategory.subcategories.forEach((sub) => {
@@ -552,6 +552,13 @@ async function createProductMeta(is_update = false) {
   const formData = new FormData()
   formData.append("title", title)
   formData.append("description", document.getElementById("productDesc").value)
+  formData.append("features", document.getElementById("productFeatures").value);
+  formData.append("special_note", document.getElementById("productSpecialNote").value);
+  formData.append("ingredients", document.getElementById("productIngredients").value);
+  formData.append("allergen_information", document.getElementById("productAllergens").value);
+  formData.append("storage_instructions", document.getElementById("productStorage").value);
+  formData.append("is_veg", document.getElementById("productIsVeg").checked ? "true" : "false");
+
   formData.append("category_id", categoryId)
   formData.append("sub_category_id", subCategoryId)
 

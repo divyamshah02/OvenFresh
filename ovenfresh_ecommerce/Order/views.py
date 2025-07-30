@@ -1091,7 +1091,11 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'assigned_delivery_partner_name': delivery_partner_name,
                 
                 # Order items
-                'order_items': items_data
+                'order_items': items_data,
+                
+                # Photos and extra cost
+                'delivery_photos': order.delivery_photos if order.delivery_photos else [],
+                'extra_cost': float(order.extra_cost or 0),
             }
             
             return Response({

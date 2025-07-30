@@ -82,7 +82,8 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'assigned_delivery_partner_id', 'order_note', 'special_instructions',
             'created_at', 'order_items', 'customer_name', 'status_display',
             'payment_status', 'timeslot_name', 'assigned_delivery_partner_name',
-            'subtotal', 'delivery_charge', 'tax_amount'
+            'subtotal', 'delivery_charge', 'tax_amount',
+            'delivery_photos', 'extra_cost'
         ]
     
     def get_order_items(self, obj):

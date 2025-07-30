@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 class Category(models.Model):
-    category_id = models.BigIntegerField(unique=True)  # 10-digit
+    category_id = models.CharField(max_length=20, unique=True)  # 10-digit
     title = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -13,8 +13,8 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    category_id = models.BigIntegerField()
-    sub_category_id = models.BigIntegerField(unique=True)  # 10-digit
+    category_id = models.CharField(max_length=20)
+    sub_category_id = models.CharField(max_length=20, unique=True)  # 10-digit
     title = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -24,9 +24,9 @@ class SubCategory(models.Model):
 
 
 class Product(models.Model):  # Meta information
-    product_id = models.BigIntegerField(unique=True)  # 10-digit
-    category_id = models.BigIntegerField()
-    sub_category_id = models.BigIntegerField(blank=True, null=True)
+    product_id = models.CharField(max_length=20, unique=True)  # 10-digit
+    category_id = models.CharField(max_length=20)
+    sub_category_id = models.CharField(max_length=20, blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     features = models.TextField(blank=True, null=True)
@@ -44,21 +44,44 @@ class Product(models.Model):  # Meta information
 
 
 class ProductVariation(models.Model):
-    product_id = models.BigIntegerField()
-    product_variation_id = models.BigIntegerField(unique=True)  # 10-digit
+    product_id = models.CharField(max_length=20)
+    product_variation_id = models.CharField(max_length=20, unique=True)  # 10-digit
     actual_price = models.CharField(max_length=20)
     discounted_price = models.CharField(max_length=20)
     is_vartied = models.BooleanField(default=True)
     weight_variation = models.CharField(max_length=100)  # E.g., "500g"
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
+    stock_quantity = models.IntegerField(default=None, null=True)  # New field for stock management
+    stock_bull = models.BooleanField(default=True)  # New field for stock bull
 
     def __str__(self):
         return f"Variation {self.product_variation_id} of Product {self.product_id}"
+    
+    def update_stock(self, quantity_sold):
+        """Update stock after an order is placed"""
+        if self.stock_quantity is not None:
+            # Quantity-based stock management
+            self.stock_quantity = max(0, self.stock_quantity - quantity_sold)
+            self.stock_bull = self.stock_quantity > 0
+            self.save()
+    
+    @property
+    def stock_status(self):
+        """Returns human-readable stock status"""
+        if self.stock_quantity is not None:
+            return f"In Stock ({self.stock_quantity})" if self.stock_bull else "Out of Stock"
+        return "In Stock" if self.stock_bull else "Out of Stock"
+    
+    def save(self, *args, **kwargs):
+        """Automatically update stock_bull when saving with quantity"""
+        if self.stock_quantity is not None:
+            self.stock_bull = self.stock_quantity > 0
+        super().save(*args, **kwargs)
 
 
 class Reviews(models.Model):
-    product_id = models.BigIntegerField()
+    product_id = models.CharField(max_length=20)
     ratings = models.FloatField()
     review_text = models.TextField(max_length=3000)
     is_approved_admin = models.BooleanField(default=False)
@@ -95,8 +118,8 @@ class TimeSlot(models.Model):
 
 
 class AvailabilityCharges(models.Model):
-    product_id = models.BigIntegerField()
-    product_variation_id = models.BigIntegerField()
+    product_id = models.CharField(max_length=20)
+    product_variation_id = models.CharField(max_length=20)
     pincode_id = models.IntegerField()
     
     # Store as JSON: { "1": { "available": true, "charge": 50 }, ... }
