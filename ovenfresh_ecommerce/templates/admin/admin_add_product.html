@@ -114,22 +114,6 @@
                                 <label class="form-check-label" for="productIsVeg">Is Vegetarian</label>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Stock Management</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" 
-                                        id="stockToggle" checked>
-                                    <label class="form-check-label" for="stockToggle">
-                                        In Stock
-                                    </label>
-                                </div>
-                                <div class="mt-2">
-                                    <label for="stockQuantity" class="form-label">Or Set Quantity</label>
-                                    <input type="number" class="form-control" id="stockQuantity" 
-                                        placeholder="Leave empty for toggle mode">
-                                </div>
-                            </div>
-
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="button" id="submitProductBtn" class="btn btn-primary">
@@ -200,6 +184,36 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Stock Management</label>
+                                    <div>
+                                        <!-- Radio buttons -->
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="toggleMode" value="toggle" checked>
+                                            <label class="form-check-label" for="toggleMode">Use Toggle</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="quantityMode" value="quantity">
+                                            <label class="form-check-label" for="quantityMode">Set Quantity</label>
+                                        </div>
+
+                                        <!-- Toggle container -->
+                                        <div id="toggleContainer" class="mt-3">
+                                            <label for="stockToggle" class="form-check-label me-2">In Stock</label>
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="stockToggle" checked>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity container -->
+                                        <div id="quantityContainer" class="mt-3" style="display: none;">
+                                            <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                                            <input type="number" class="form-control" id="stockQuantity" placeholder="Enter quantity">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <input type="hidden" id="productVariationId" value="">
                             </form>
 

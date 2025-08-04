@@ -120,7 +120,8 @@ class ProductVariationSerializer(serializers.ModelSerializer):
         model = ProductVariation
         fields = [
             'id', 'product_id', 'product_variation_id', 'actual_price',
-            'discounted_price', 'is_vartied', 'weight_variation', 'created_at'
+            'discounted_price', 'is_vartied', 'weight_variation', 'created_at',
+            'stock_toggle_mode', 'in_stock_bull', 'stock_quantity'
         ]
 
     def to_representation(self, instance):

@@ -52,8 +52,9 @@ class ProductVariation(models.Model):
     weight_variation = models.CharField(max_length=100)  # E.g., "500g"
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
-    stock_quantity = models.IntegerField(default=None, null=True)  # New field for stock management
-    stock_bull = models.BooleanField(default=True)  # New field for stock bull
+    stock_toggle_mode = models.BooleanField(default=True)  # True for toggle mode, False for quantity mode
+    stock_quantity = models.IntegerField(default=None, null=True) # Quantity-based stock management
+    in_stock_bull = models.BooleanField(default=True) # True if in stock, False if out of stock
 
     def __str__(self):
         return f"Variation {self.product_variation_id} of Product {self.product_id}"
@@ -63,20 +64,20 @@ class ProductVariation(models.Model):
         if self.stock_quantity is not None:
             # Quantity-based stock management
             self.stock_quantity = max(0, self.stock_quantity - quantity_sold)
-            self.stock_bull = self.stock_quantity > 0
+            self.in_stock_bull = self.stock_quantity > 0
             self.save()
     
     @property
     def stock_status(self):
         """Returns human-readable stock status"""
         if self.stock_quantity is not None:
-            return f"In Stock ({self.stock_quantity})" if self.stock_bull else "Out of Stock"
-        return "In Stock" if self.stock_bull else "Out of Stock"
+            return f"In Stock ({self.stock_quantity})" if self.in_stock_bull else "Out of Stock"
+        return "In Stock" if self.in_stock_bull else "Out of Stock"
     
     def save(self, *args, **kwargs):
-        """Automatically update stock_bull when saving with quantity"""
+        """Automatically update in_stock_bull when saving with quantity"""
         if self.stock_quantity is not None:
-            self.stock_bull = self.stock_quantity > 0
+            self.in_stock_bull = self.stock_quantity > 0
         super().save(*args, **kwargs)
 
 
