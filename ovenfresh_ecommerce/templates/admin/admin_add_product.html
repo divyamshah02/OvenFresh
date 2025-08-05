@@ -52,7 +52,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="productTitle" class="form-label">Product Title</label>
-                                    <input type="text" class="form-control" id="productTitle" placeholder="Enter product title">
+                                    <input type="text" class="form-control" id="productTitle" placeholder="Enter Product Title">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="productPhotos" class="form-label">Product Photos</label>
@@ -72,7 +72,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="productDesc" class="form-label">Product Description</label>
-                                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter description"></textarea>
+                                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter Description"></textarea>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
@@ -87,6 +87,33 @@
                                         <option value="">-- Select Sub-Category --</option>
                                     </select>
                                 </div>
+                                <div class="mb-3">
+                                <label for="productFeatures" class="form-label">Key Features</label>
+                                <textarea class="form-control" id="productFeatures" rows="2" placeholder="e.g. Three layers of moist chocolate sponge cake..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productSpecialNote" class="form-label">Special Note</label>
+                                <textarea class="form-control" id="productSpecialNote" rows="2" placeholder="Optional message writing, delivery info, etc."></textarea>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="productIngredients" class="form-label">Ingredients</label>
+                                    <textarea class="form-control" id="productIngredients" rows="2" placeholder="E.g. Flour, sugar, cocoa powder, etc."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="productAllergens" class="form-label">Allergen Information</label>
+                                    <textarea class="form-control" id="productAllergens" rows="2" placeholder="E.g. Contains dairy, nuts, gluten..."></textarea>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productStorage" class="form-label">Storage Instructions</label>
+                                <textarea class="form-control" id="productStorage" rows="2" placeholder="E.g. Keep refrigerated below 5°C"></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="productIsVeg" checked>
+                                <label class="form-check-label" for="productIsVeg">Is Vegetarian</label>
+                            </div>
+
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="button" id="submitProductBtn" class="btn btn-primary">
@@ -157,6 +184,36 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Stock Management</label>
+                                    <div>
+                                        <!-- Radio buttons -->
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="toggleMode" value="toggle" checked>
+                                            <label class="form-check-label" for="toggleMode">Use Toggle</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="quantityMode" value="quantity">
+                                            <label class="form-check-label" for="quantityMode">Set Quantity</label>
+                                        </div>
+
+                                        <!-- Toggle container -->
+                                        <div id="toggleContainer" class="mt-3">
+                                            <label for="stockToggle" class="form-check-label me-2">In Stock</label>
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="stockToggle" checked>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity container -->
+                                        <div id="quantityContainer" class="mt-3" style="display: none;">
+                                            <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                                            <input type="number" class="form-control" id="stockQuantity" placeholder="Enter quantity">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <input type="hidden" id="productVariationId" value="">
                             </form>
 

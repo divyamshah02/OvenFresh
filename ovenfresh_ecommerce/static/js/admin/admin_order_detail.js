@@ -83,6 +83,9 @@ function populateOrderDetails() {
   // Populate delivery information
   populateDeliveryInfo()
 
+  // Populate delivery photos
+  populateDeliveryPhotos()
+
   // Populate order summary
   populateOrderSummary()
 
@@ -169,6 +172,43 @@ function populateOrderItems() {
     `,
     )
     .join("")
+}
+
+function populateDeliveryPhotos() {
+    // Get delivery photos container
+    const container = document.getElementById("delivery-photos-container");
+    
+    // Clear existing content
+    container.innerHTML = "";
+    
+    // Populate delivery photos if available
+    if (orderData.delivery_photos && orderData.delivery_photos.length > 0) {
+        orderData.delivery_photos.forEach((photoUrl, index) => {
+            const photoElement = document.createElement("div");
+            photoElement.className = "col-4 col-md-3";
+            photoElement.innerHTML = `
+                <a href="${photoUrl}" target="_blank">
+                  <img src="${photoUrl}" 
+                      alt="Delivery photo ${index + 1}" 
+                      class="img-fluid rounded border delivery-photo">
+            `;
+            container.appendChild(photoElement);
+        });
+    } else {
+        // Show placeholder if no photos
+        container.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <div class="text-muted">
+                    <i class="fas fa-images fa-2x mb-2"></i>
+                    <p>No delivery photos available</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Populate total extra cost
+    const extraCost = orderData.extra_cost || 0;
+    document.getElementById("total-extra-cost").textContent = extraCost.toFixed(2);
 }
 
 function populateOrderTimeline() {

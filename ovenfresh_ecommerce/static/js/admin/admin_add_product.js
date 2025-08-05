@@ -358,7 +358,7 @@ function handleCategoryChange(event) {
   const subCatSelect = document.getElementById("subCategorySelect")
   subCatSelect.innerHTML = `<option value="">Select Sub-Category</option>` // Clear
 
-  const selectedCategory = categoryData.find((cat) => cat.category_id === selectedCatId)
+  const selectedCategory = categoryData.find((cat) => cat.category_id == selectedCatId)
 
   if (selectedCategory && selectedCategory.subcategories) {
     selectedCategory.subcategories.forEach((sub) => {
@@ -552,6 +552,13 @@ async function createProductMeta(is_update = false) {
   const formData = new FormData()
   formData.append("title", title)
   formData.append("description", document.getElementById("productDesc").value)
+  formData.append("features", document.getElementById("productFeatures").value);
+  formData.append("special_note", document.getElementById("productSpecialNote").value);
+  formData.append("ingredients", document.getElementById("productIngredients").value);
+  formData.append("allergen_information", document.getElementById("productAllergens").value);
+  formData.append("storage_instructions", document.getElementById("productStorage").value);
+  formData.append("is_veg", document.getElementById("productIsVeg").checked ? "true" : "false");
+
   formData.append("category_id", categoryId)
   formData.append("sub_category_id", subCategoryId)
 
@@ -584,8 +591,55 @@ async function createProductMeta(is_update = false) {
   updatePhotoUploadUI()
 }
 
+function setupStockModeToggle() {
+    const toggleModeRadio = document.getElementById('toggleMode');
+    const quantityModeRadio = document.getElementById('quantityMode');
+    const toggleContainer = document.getElementById('toggleContainer');
+    const quantityContainer = document.getElementById('quantityContainer');
+
+    function updateStockModeDisplay() {
+        if (toggleModeRadio.checked) {
+            toggleContainer.style.display = 'block';
+            quantityContainer.style.display = 'none';
+        } else {
+            toggleContainer.style.display = 'none';
+            quantityContainer.style.display = 'flex';
+        }
+    }
+
+    // Set initial display
+    updateStockModeDisplay();
+
+    // Add event listeners
+    toggleModeRadio.addEventListener('change', updateStockModeDisplay);
+    quantityModeRadio.addEventListener('change', updateStockModeDisplay);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupStockModeToggle();
+});
+
 async function createVariationWithAvailability() {
   if (!product_id) return
+
+  const selectedStockMode = document.querySelector('input[name="stockMode"]:checked').value;
+  
+  // Prepare stock data based on user input
+  const stockData = {};
+
+  if (selectedStockMode === "quantity") {
+    const stockQuantity = document.getElementById("stockQuantity").value;
+    if (!stockQuantity) {
+      showToast("error", "Error", "Please enter stock quantity.");
+      return;
+    }
+    stockData.stock_quantity = stockQuantity;
+    stockData.stock_toggle_mode = false;
+  } else {
+    const stockToggle = document.getElementById("stockToggle").checked;
+    stockData.in_stock_bull = stockToggle;
+    stockData.stock_toggle_mode = true;
+  }
 
   // 1. Send variation data
   const variationData = {
@@ -597,6 +651,7 @@ async function createVariationWithAvailability() {
       document.getElementById("quantity").value,
       document.getElementById("uom").value,
     ),
+    ...stockData // Include stock data if provided
   }
 
   // Validate required fields
@@ -668,10 +723,19 @@ async function createVariationWithAvailability() {
   document.getElementById("uom").value = ""
   document.getElementById("actualPrice").value = ""
   document.getElementById("discountedPrice").value = ""
+  document.getElementById("stockQuantity").value = "";
+  document.getElementById("stockToggle").checked = true;
+
+  // Reset radio buttons to default
+  document.getElementById("toggleMode").checked = true;
+  document.getElementById("quantityContainer").style.display = "none";
+  document.getElementById("toggleContainer").style.display = "block";
 }
 
 async function updateVariationWithAvailability(product_variation_id) {
   if (!product_id) return
+
+  const selectedStockMode = document.querySelector('input[name="stockMode"]:checked').value;
 
   // 1. Send variation data
   const variationData = {
@@ -683,6 +747,20 @@ async function updateVariationWithAvailability(product_variation_id) {
       document.getElementById("quantity").value,
       document.getElementById("uom").value,
     ),
+  }
+
+  if (selectedStockMode === "quantity") {
+    const stockQuantity = document.getElementById("stockQuantity").value;
+    if (!stockQuantity) {
+      showToast("error", "Error", "Please enter stock quantity.");
+      return;
+    }
+    variationData.stock_quantity = stockQuantity;
+    variationData.stock_toggle_mode = false;
+  } else {
+    const stockToggle = document.getElementById("stockToggle").checked;
+    variationData.in_stock_bull = stockToggle;
+    variationData.stock_toggle_mode = true;
   }
 
   // Validate required fields
@@ -763,6 +841,13 @@ async function updateVariationWithAvailability(product_variation_id) {
   document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-plus-circle me-1"></i> Add Variation'
   document.getElementById("productVariationId").value = ""
   document.getElementById("product_variation_heading").innerText = "Add Product Variation"
+  document.getElementById("stockQuantity").value = "";
+  document.getElementById("stockToggle").checked = true;
+
+  // Reset radio buttons to default
+  document.getElementById("toggleMode").checked = true;
+  document.getElementById("quantityContainer").style.display = "none";
+  document.getElementById("toggleContainer").style.display = "block";
 }
 
 async function loadExistingVariations() {

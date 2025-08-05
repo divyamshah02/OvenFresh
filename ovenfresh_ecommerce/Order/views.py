@@ -93,7 +93,7 @@ class OrderViewSet(viewsets.ViewSet):
                 "success": False, 
                 "user_not_logged_in": False, 
                 "user_unauthorized": False, 
-                "data": None, 
+                "data": None,
                 "error": "Delivery not available for this pincode and timeslot."
             }, status=400)
 
@@ -138,7 +138,7 @@ class OrderViewSet(viewsets.ViewSet):
                         "data": None, 
                         "error": f"Minimum order amount for this coupon is ₹{coupon.minimum_order_amount}"
                     }, status=400)
-                    
+
             except Coupon.DoesNotExist:
                 return Response({
                     "success": False, 
@@ -228,6 +228,20 @@ class OrderViewSet(viewsets.ViewSet):
                 discount=item_discount,
                 final_amount=(float(item['price']) * float(item['quantity'])) - item_discount,
             )
+            
+            try:
+                variation = ProductVariation.objects.select_for_update().get(
+                    product_variation_id=item['product_variation_id']
+                )
+                
+                # Only update if using quantity-based stock management
+                if not variation.stock_toggle_mode:
+                    if variation.stock_quantity is not None:
+                        variation.update_stock(int(item['quantity']))
+
+            except ProductVariation.DoesNotExist:
+                # Log error but don't block order
+                logger.error(f"Variation not found: {item['product_variation_id']}")
 
         # Clear the cart after order is placed
         cart_obj.delete()
@@ -1091,7 +1105,11 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'assigned_delivery_partner_name': delivery_partner_name,
                 
                 # Order items
-                'order_items': items_data
+                'order_items': items_data,
+                
+                # Photos and extra cost
+                'delivery_photos': order.delivery_photos if order.delivery_photos else [],
+                'extra_cost': float(order.extra_cost or 0),
             }
             
             return Response({

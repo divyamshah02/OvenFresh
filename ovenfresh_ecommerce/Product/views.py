@@ -255,6 +255,13 @@ class ProductViewSet(viewsets.ViewSet):
             description = data.get("description")
             category_id = data.get("category_id")
             sub_category_id = data.get("sub_category_id")
+            features = data.get("features")
+            special_note = data.get("special_note")
+            is_veg_str = data.get("is_veg", "true")
+            is_veg = is_veg_str.lower() == "true"
+            ingredients = data.get("ingredients")
+            allergen_information = data.get("allergen_information")
+            storage_instructions = data.get("storage_instructions")
 
             if not title or not category_id:
                 return Response({
@@ -320,6 +327,12 @@ class ProductViewSet(viewsets.ViewSet):
                 photos=image_urls,
                 category_id=category_id,
                 sub_category_id=sub_category_id,
+                features=features,
+                special_note=special_note,
+                is_veg=is_veg,
+                ingredients=ingredients,
+                allergen_information=allergen_information,
+                storage_instructions=storage_instructions,
                 created_at=timezone.now()
             )
             new_product.save()
@@ -707,6 +720,35 @@ class ProductVariationViewSet(viewsets.ViewSet):
         is_vartied = request.data.get("is_vartied", True)
         weight_variation = request.data.get("weight_variation")
 
+        # Stock management fields
+        stock_toggle_mode = request.data.get("stock_toggle_mode", True)
+        stock_quantity = request.data.get("stock_quantity", None)
+        if isinstance(stock_toggle_mode, str):
+            stock_toggle_mode = stock_toggle_mode.lower() == "true"
+        elif stock_toggle_mode is None and stock_quantity is not None:
+            stock_toggle_mode = False
+        else:
+            stock_toggle_mode = bool(stock_toggle_mode)
+        
+        in_stock_bull = request.data.get("in_stock_bull", False)
+        if isinstance(in_stock_bull, str):
+            in_stock_bull = in_stock_bull.lower() == "true"
+
+        # Handle empty stock quantity
+        if not stock_toggle_mode:
+            try:
+                stock_quantity = int(stock_quantity)
+                # Auto-set in_stock_bull based on quantity
+                in_stock_bull = stock_quantity > 0
+            except (ValueError, TypeError):
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Invalid stock quantity"
+                }, status=status.HTTP_400_BAD_REQUEST)
+
         if not product_id or not actual_price or not discounted_price:
             return Response({
                 "success": False,
@@ -725,6 +767,9 @@ class ProductVariationViewSet(viewsets.ViewSet):
             discounted_price=discounted_price,
             is_vartied=is_vartied,
             weight_variation=weight_variation,
+            stock_toggle_mode=stock_toggle_mode,
+            stock_quantity=stock_quantity,
+            in_stock_bull=in_stock_bull,
             created_at=timezone.now()
         )
         new_variation.save()
@@ -748,7 +793,8 @@ class ProductVariationViewSet(viewsets.ViewSet):
             "user_not_logged_in": False,
             "user_unauthorized": False,
             "data": {
-                "product_variation_id": product_variation_id
+                "product_variation_id": product_variation_id,
+                "in_stock_bull": new_variation.in_stock_bull
             },
             "error": None
         }, status=status.HTTP_201_CREATED)
@@ -811,6 +857,17 @@ class ProductVariationViewSet(viewsets.ViewSet):
         is_vartied = request.data.get("is_vartied", True)
         weight_variation = request.data.get("weight_variation")
 
+        # Stock management fields
+        stock_toggle_mode = request.data.get("stock_toggle_mode", True)
+        if isinstance(stock_toggle_mode, str):
+            stock_toggle_mode = stock_toggle_mode.lower() == "true"
+        
+        stock_quantity = request.data.get("stock_quantity", None)
+        
+        in_stock_bull = request.data.get("in_stock_bull", True)
+        if isinstance(in_stock_bull, str):
+            in_stock_bull = in_stock_bull.lower() == "true"
+
         if not product_variation_id or not product_id or not actual_price or not discounted_price:
             return Response({
                 "success": False,
@@ -830,6 +887,27 @@ class ProductVariationViewSet(viewsets.ViewSet):
                 "error": "Product Variation not found."
             }, status=status.HTTP_404_NOT_FOUND)
 
+        # Update stock fields if provided
+        if not stock_toggle_mode:
+            if stock_quantity == "":
+                product_variation_obj.stock_quantity = None
+                product_variation_obj.in_stock_bull = False
+            else:
+                try:
+                    product_variation_obj.stock_quantity = int(stock_quantity)
+                    # Auto-update in_stock_bull based on quantity
+                    product_variation_obj.in_stock_bull = product_variation_obj.stock_quantity > 0
+                except (ValueError, TypeError):
+                    return Response({
+                        "success": False,
+                        "error": "Invalid stock quantity"
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+        if in_stock_bull is not None:
+            if isinstance(in_stock_bull, str):
+                in_stock_bull = in_stock_bull.lower() == "true"
+            product_variation_obj.in_stock_bull = in_stock_bull
+
         product_variation_obj.actual_price = actual_price
         product_variation_obj.discounted_price = discounted_price
         product_variation_obj.is_vartied = is_vartied
@@ -841,7 +919,10 @@ class ProductVariationViewSet(viewsets.ViewSet):
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
-            "data": "Product variation updated successfully",
+            "data": {
+                "message": "Product variation updated successfully",
+                "in_stock_bull": product_variation_obj.in_stock_bull
+            },
             "error": None
         }, status=status.HTTP_200_OK)
 
