@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pierre Hermé Ispahan Macaron Collection - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-dark: #2C3E50;
+            --primary-green: #588157;
+            --accent-cream: #F8F6F0;
+            --accent-light: #FEFCF7;
+            --text-dark: #1A1A1A;
+            --text-light: #6B7280;
+            --text-muted: #9CA3AF;
+            --shadow-light: 0 4px 20px rgba(212, 175, 55, 0.1);
+            --shadow-medium: 0 8px 40px rgba(212, 175, 55, 0.15);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F7DC6F 50%, #D4AF37 100%);
+            --gradient-dark: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-overlay: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(88, 129, 87, 0.9) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--accent-light);
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--accent-cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-gold);
+            border-radius: 4px;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-gold);
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .navbar-brand img {
+            height: 55px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-gold) !important;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb-section {
+            background: var(--accent-cream);
+            padding: 2rem 0;
+            /* margin-top: 90px; */
+        }
+
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .breadcrumb-item a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--primary-gold);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Product Section */
+        .product-section {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        /* Product Images */
+        .product-images {
+            position: sticky;
+            top: 120px;
+        }
+
+        .main-image {
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .main-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .thumbnail-images .thumbnail-img {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .thumbnail-img.active,
+        .thumbnail-img:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Product Info */
+        .product-info {
+            padding-left: 2rem;
+        }
+
+        .product-badges {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-hot {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+        }
+
+        .badge-stock {
+            background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+            color: white;
+        }
+
+        .badge-chef {
+            background: var(--gradient-gold);
+            color: white;
+        }
+
+        .product-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .chef-signature {
+            color: var(--primary-gold);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .product-rating {
+            margin-bottom: 2rem;
+        }
+
+        .stars {
+            color: var(--primary-gold);
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        .rating-text {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .review-count {
+            color: var(--text-muted);
+        }
+
+        .product-price {
+            margin-bottom: 3rem;
+        }
+
+        .current-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+
+        .original-price {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .product-description {
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 3rem;
+        }
+
+        .product-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .product-features li i {
+            color: var(--primary-gold);
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Product Options */
+        .product-options {
+            background: var(--accent-cream);
+            padding: 2.5rem;
+            border-radius: 25px;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .countdown-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+        }
+
+        .countdown-section h5 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .countdown-timer {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-select,
+        .form-control {
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .quantity-selector button {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-selector button:hover {
+            background: var(--primary-dark);
+        }
+
+        .quantity-selector input {
+            border: none;
+            text-align: center;
+            width: 80px;
+            height: 45px;
+            font-weight: 600;
+            background: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .btn-premium {
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .btn-add-cart {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+            color: white;
+        }
+
+        .btn-buy-now {
+            background: transparent;
+            border: 2px solid var(--primary-gold);
+            color: var(--primary-gold);
+        }
+
+        .btn-buy-now:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-premium:hover::before {
+            left: 100%;
+        }
+
+        /* Features Section */
+        .features-section {
+            background: var(--accent-cream);
+            padding: 3rem 0;
+            margin: 3rem 0;
+            border-radius: 25px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .feature-item i {
+            font-size: 2rem;
+            color: var(--primary-gold);
+            margin-right: 1rem;
+            min-width: 50px;
+        }
+
+        .feature-item h6 {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-item small {
+            color: var(--text-light);
+        }
+
+        /* Tabs Section */
+        .tabs-section {
+            background: var(--accent-cream);
+            padding: 5rem 0;
+        }
+
+        .nav-tabs {
+            border: none;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .nav-tabs .nav-link {
+            background: white;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            padding: 12px 24px;
+            margin: 0 0.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-link:hover {
+            background: var(--gradient-gold);
+            color: white;
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .tab-pane h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+        }
+
+        /* Reviews */
+        .reviews-summary {
+            background: var(--accent-cream);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+        }
+
+        .rating-average {
+            text-align: center;
+        }
+
+        .rating-average .h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .progress-bar {
+            background: var(--gradient-gold);
+            border-radius: 10px;
+        }
+
+        .review-item {
+            background: var(--accent-cream);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Related Products */
+        .related-products {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: all 0.5s ease;
+            height: 100%;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .product-img {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.1);
+        }
+
+        .product-actions {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .product-actions {
+            bottom: 0;
+        }
+
+        .btn-product-action {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-product-action:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .product-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .product-body h5 {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .product-rating {
+            margin-bottom: 1rem;
+        }
+
+        .product-price .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo img {
+            height: 60px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-links h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gradient-gold);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary-gold);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .product-info {
+                padding-left: 0;
+                margin-top: 2rem;
+            }
+            
+            .product-title {
+                font-size: 2rem;
+            }
+            
+            .current-price {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .product-images {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Navigation -->
+        <!-- Topbar -->
+        <div class="topbar text-center d-none d-md-block">
+            <div class="container">
+                Celebrate Occasions with Mumbai's best Online Gift Store.
+            </div>
+        </div>
+
+        <!-- Main Navbar -->
+        <nav class="navbar bg-white px-3 border-bottom">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+
+                <!-- Logo -->
+                <!-- <a class="navbar-brand fw-bold" href="#">LOGO</a> -->
+                <img src="https://ovenfresh.pythonanywhere.com/static/img/logo.png" alt="">
+
+                <!-- Search Center -->
+                <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                    <!-- <input class="form-control me-2 rounded-5 border-3 border-black navbar-search-input"
+                        type="search" placeholder="Search..." aria-label="Search">
+                    <button class="btn of-btn-primary rounded-5" type="submit"><i class="bi bi-search"></i></button> -->
+                    <div class="search-wrapper mx-auto">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                    </div>
+                </form>
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center">
+                    <a href="{% url 'cart-list' %}" class="icon-btn me-2" aria-label="Cart">
+                        <i class="bi bi-cart"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                    </a>
+                    <a href="{% url 'account-list' %}" class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                            class="bi bi-person-circle"></i></a>
+
+                    <!-- Hamburger only on mobile -->
+                    <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Menu Bar -->
+        <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+            <div class="container position-relative">
+                <ul class="nav justify-content-center">
+                    <!-- Cakes with Mega Menu -->
+                    <li class="nav-item position-static dropdown-mega">
+                        <a class="nav-link" href="{% url 'shop-list' %}">Cakes</a>
+                        <div class="mega-menu d-none">
+                            <div class="container py-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <p>Theme Cakes</p>
+                                        <p>Rosette Cakes</p>
+                                        <p>Bento Cakes</p>
+                                        <p>Numeric Cakes</p>
+                                        <p>Fault Line Cakes</p>
+                                        <p>Fresh Fruit Cakes</p>
+                                        <p>Classic Cakes</p>
+                                        <p>Dutch Truffle Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Gourmet Cakes</p>
+                                        <p>Tea Cakes</p>
+                                        <p>Pinata Cakes</p>
+                                        <p>Butter Cream Cakes</p>
+                                        <p>Chocolate Cakes</p>
+                                        <p>Cheese Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>99% Gold Cakes</p>
+                                        <p>Fusion Cakes</p>
+                                        <p>Red Velvet Cakes</p>
+                                        <p>Two Tier Cakes</p>
+                                        <p>Photo Cakes</p>
+                                        <p>Pastry</p>
+                                        <p>Geode Cakes</p>
+                                        <p>Alphabet Cakes</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>Trending Bomb Cakes</p>
+                                        <p>Heart Shape Cakes</p>
+                                        <p>Pull Me Up Cakes</p>
+                                        <p>Butterscotch Cakes</p>
+                                        <p>Fresh Flower Cakes</p>
+                                        <p>Low Frosting Cakes</p>
+                                        <p>Overloaded Cakes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Other Menu Items -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mobile Offcanvas Menu -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Cakes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+                </ul>
+            </div>
+        </div>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb-section">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="chef-curated.html">Chef Curated</a></li>
+                    <li class="breadcrumb-item"><a href="#">Pierre Hermé Collection</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Ispahan Macaron Collection</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Product Detail -->
+    <section class="product-section">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <!-- Product Images -->
+                    <div class="product-images">
+                        <div class="main-image">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Pierre Hermé Ispahan Macaron Collection" id="main-product-image">
+                        </div>
+                        <div class="thumbnail-images">
+                            <div class="row g-2">
+                                <div class="col-3">
+                                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                         alt="View 1" class="img-fluid thumbnail-img active" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div class="col-3">
+                                    <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                         alt="View 2" class="img-fluid thumbnail-img" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div class="col-3">
+                                    <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                         alt="View 3" class="img-fluid thumbnail-img" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div class="col-3">
+                                    <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                         alt="View 4" class="img-fluid thumbnail-img" onclick="changeMainImage(this.src)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6" data-aos="fade-left">
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <div class="product-badges">
+                            <span class="product-badge badge-chef">Chef Curated</span>
+                            <span class="product-badge badge-hot">Exclusive</span>
+                            <span class="product-badge badge-stock">In Stock</span>
+                        </div>
+                        
+                        <h1 class="product-title">Ispahan Macaron Collection</h1>
+                        <div class="chef-signature">by Pierre Hermé - The Picasso of Pastry</div>
+                        
+                        <div class="product-rating">
+                            <div class="d-flex align-items-center">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="rating-text">(4.8 out of 5)</span>
+                                <span class="review-count">• 127 reviews</span>
+                            </div>
+                        </div>
+                        
+                        <div class="product-price">
+                            <span class="current-price">₹2,499</span>
+                            <span class="original-price">₹2,999</span>
+                            <span class="discount-badge">17% OFF</span>
+                        </div>
+                        
+                        <div class="product-description">
+                            <p>Experience the legendary Ispahan macaron collection by Pierre Hermé, featuring the iconic combination of rose, raspberry, and lychee. Each macaron is a masterpiece of French patisserie, crafted with the finest ingredients and Pierre Hermé's revolutionary techniques.</p>
+                            
+                            <ul class="product-features">
+                                <li><i class="fas fa-crown"></i>Signature Pierre Hermé recipe and technique</li>
+                                <li><i class="fas fa-leaf"></i>Premium French ingredients imported directly</li>
+                                <li><i class="fas fa-heart"></i>Rose petals, fresh raspberry, and lychee essence</li>
+                                <li><i class="fas fa-gift"></i>Elegant luxury packaging included</li>
+                                <li><i class="fas fa-truck"></i>Same day delivery in Mumbai premium areas</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Product Options -->
+                        <div class="product-options">
+                            <!-- Countdown Timer -->
+                            <div class="countdown-section">
+                                <h5>For same day delivery <span class="countdown-timer" id="deliveryCountdown">5:24:18</span> left</h5>
+                                <small class="text-muted">Order before 6 PM for guaranteed same day delivery</small>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label for="collection-size" class="form-label">Collection Size:</label>
+                                    <select class="form-select" id="collection-size">
+                                        <option value="6pc">6 Pieces - ₹2,499</option>
+                                        <option value="12pc">12 Pieces - ₹4,799</option>
+                                        <option value="18pc">18 Pieces - ₹6,999</option>
+                                        <option value="24pc">24 Pieces - ₹8,999</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">                                        
+                                    <label for="quantity" class="form-label">Quantity:</label>
+                                    <div class="quantity-selector">
+                                        <button type="button" onclick="changeQuantity(-1)">-</button>
+                                        <input type="number" id="quantity" value="1" min="1" max="5">
+                                        <button type="button" onclick="changeQuantity(1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="pincode-check" class="form-label">Check Delivery Area:</label>
+                                    <input type="text" placeholder="Enter your pincode" class="form-control" id="pincode-check">
+                                </div>
+                                <div class="col-12">
+                                    <button class="w-100 btn btn-outline-secondary rounded-pill" id="check-pincode-btn">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Check Availability
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mt-3" style="display: none;" id="delivery_options">
+                                <div class="col-md-6">
+                                    <label for="delivery-date" class="form-label">Delivery Date:</label>
+                                    <input type="date" class="form-control" id="delivery-date">
+                                </div>
+                                <div class="col-md-6">                                        
+                                    <label for="timeslot" class="form-label">Premium Time Slots:</label>
+                                    <select class="form-select" id="timeslot">
+                                        <option value="morning" data-charge="200">Morning Delivery (10:00 - 12:00) - ₹200</option>
+                                        <option value="afternoon" data-charge="0">Afternoon Delivery (14:00 - 17:00) - Free</option>
+                                        <option value="evening" data-charge="0">Evening Delivery (17:00 - 20:00) - Free</option>
+                                        <option value="premium" data-charge="500">Premium Evening (20:00 - 22:00) - ₹500</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn-premium btn-add-cart" onclick="AddToCart()">
+                                <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                            </button>
+                            <button class="btn-premium btn-buy-now" onclick="buyNow()">
+                                <i class="fas fa-bolt me-2"></i>Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-item">
+                        <i class="fas fa-crown"></i>
+                        <div>
+                            <h6>Chef Curated</h6>
+                            <small>Authentic Pierre Hermé recipe</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h6>Same Day Delivery</h6>
+                            <small>Order before 6 PM</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <h6>Premium Quality</h6>
+                            <small>Imported French ingredients</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-item">
+                        <i class="fas fa-gift"></i>
+                        <div>
+                            <h6>Luxury Packaging</h6>
+                            <small>Elegant presentation box</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Details Tabs -->
+    <section class="tabs-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab">Ingredients</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews (127)</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="chef-story-tab" data-bs-toggle="tab" data-bs-target="#chef-story" type="button" role="tab">Chef's Story</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="productTabsContent">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel">
+                            <h5>The Legendary Ispahan Collection</h5>
+                            <p>The Ispahan macaron is Pierre Hermé's most celebrated creation, a harmonious blend of rose, raspberry, and lychee that has become synonymous with luxury French patisserie. This exclusive collection brings you the authentic taste of Paris, crafted with the same meticulous attention to detail that has made Pierre Hermé a legend.</p>
+                            
+                            <p>Each macaron in this collection features:</p>
+                            <ul>
+                                <li>Delicate almond shells infused with natural rose essence</li>
+                                <li>Fresh raspberry ganache made with premium French raspberries</li>
+                                <li>Lychee-rose buttercream with real lychee fruit</li>
+                                <li>Crystallized rose petals for the perfect finishing touch</li>
+                                <li>Pierre Hermé's signature technique for optimal texture and flavor</li>
+                            </ul>
+                            
+                            <p>Perfect for special celebrations, romantic occasions, or as an exquisite gift for connoisseurs of fine French pastry. Each collection comes in Pierre Hermé's signature luxury packaging.</p>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="ingredients" role="tabpanel">
+                            <h5>Premium French Ingredients</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Main Ingredients:</h6>
+                                    <ul>
+                                        <li>French Almond Flour (Marcona Almonds)</li>
+                                        <li>Organic Rose Petals from Grasse</li>
+                                        <li>Fresh French Raspberries</li>
+                                        <li>Premium Lychee Fruit</li>
+                                        <li>French Butter (Isigny Sainte-Mère)</li>
+                                        <li>Madagascar Vanilla</li>
+                                        <li>Belgian White Chocolate</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Allergen Information:</h6>
+                                    <ul>
+                                        <li>Contains: Almonds, Milk, Eggs</li>
+                                        <li>May contain: Other nuts</li>
+                                        <li>Gluten-free recipe</li>
+                                    </ul>
+                                    <h6>Storage Instructions:</h6>
+                                    <ul>
+                                        <li>Store in refrigerator (2-4°C)</li>
+                                        <li>Best consumed within 3 days</li>
+                                        <li>Bring to room temperature 15 minutes before serving</li>
+                                        <li>Keep in original packaging to maintain freshness</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="reviews" role="tabpanel">
+                            <h5>Customer Reviews</h5>
+                            <div class="reviews-summary">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="rating-average">
+                                            <span class="h2">4.8</span>
+                                            <div class="stars">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <p class="text-muted">Based on 127 reviews</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="rating-breakdown">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="me-2">5 stars</span>
+                                                <div class="progress flex-grow-1 me-2">
+                                                    <div class="progress-bar" style="width: 85%"></div>
+                                                </div>
+                                                <span>108</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="me-2">4 stars</span>
+                                                <div class="progress flex-grow-1 me-2">
+                                                    <div class="progress-bar" style="width: 12%"></div>
+                                                </div>
+                                                <span>15</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="me-2">3 stars</span>
+                                                <div class="progress flex-grow-1 me-2">
+                                                    <div class="progress-bar" style="width: 2%"></div>
+                                                </div>
+                                                <span>3</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span class="me-2">2 stars</span>
+                                                <div class="progress flex-grow-1 me-2">
+                                                    <div class="progress-bar" style="width: 1%"></div>
+                                                </div>
+                                                <span>1</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2">1 star</span>
+                                                <div class="progress flex-grow-1 me-2">
+                                                    <div class="progress-bar" style="width: 0%"></div>
+                                                </div>
+                                                <span>0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="reviews-list">
+                                <div class="review-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">Arjun Mehta</h6>
+                                            <div class="stars small">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">3 days ago</small>
+                                    </div>
+                                    <p class="mb-0">Absolutely extraordinary! These macarons are a work of art. The rose-raspberry-lychee combination is divine. Worth every penny for such authentic French luxury. The packaging was also exquisite.</p>
+                                </div>
+                                
+                                <div class="review-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">Kavya Sharma</h6>
+                                            <div class="stars small">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">1 week ago</small>
+                                    </div>
+                                    <p class="mb-0">Ordered these for my anniversary and they were perfect! The taste transported me straight to Paris. The delivery was prompt and the macarons arrived in perfect condition. Highly recommend!</p>
+                                </div>
+                                
+                                <div class="review-item">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">Rohit Gupta</h6>
+                                            <div class="stars small">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">2 weeks ago</small>
+                                    </div>
+                                    <p class="mb-0">Best macarons I've ever tasted! The quality is exceptional and you can really taste the premium ingredients. This is what authentic French patisserie should be like. Will definitely order again.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="chef-story" role="tabpanel">
+                            <h5>Pierre Hermé - The Picasso of Pastry</h5>
+                            <p>Pierre Hermé is widely regarded as the world's greatest pastry chef, revolutionizing the art of French patisserie with his innovative approach and uncompromising pursuit of perfection. Born into a family of bakers in Alsace, Pierre began his career at the age of 14 and has since become a legend in the culinary world.</p>
+                            
+                            <h6>The Ispahan Legacy</h6>
+                            <p>Created in 2000, the Ispahan macaron represents Pierre Hermé's philosophy of combining unexpected flavors to create harmonious masterpieces. The inspiration came from his desire to capture the essence of a Persian garden in a single bite - the delicate rose, the tartness of raspberry, and the exotic sweetness of lychee.</p>
+                            
+                            <h6>Awards & Recognition</h6>
+                            <ul>
+                                <li>Chevalier de la Légion d'Honneur (2016)</li>
+                                <li>World's Best Pastry Chef by The World's 50 Best Restaurants (2016)</li>
+                                <li>Pastry Chef of the Year by Gault & Millau multiple times</li>
+                                <li>Author of numerous acclaimed pastry books</li>
+                            </ul>
+                            
+                            <p>Each macaron in this collection is made following Pierre Hermé's exact specifications, ensuring you experience the same exceptional quality that has made him a global icon in the world of luxury pastry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="related-products">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>More from Chef Curated Collection</h2>
+                <p>Discover other masterpieces from world-renowned pastry chefs</p>
+            </div>
+            <div class="row g-4">
+                <!-- Related Product 1 -->
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dominique Ansel Cronut" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Dominique Ansel Cronut Collection</h5>
+                            <div class="product-rating">
+                                <div class="stars small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="ms-2">(89)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">₹1,899</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 2 -->
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Cedric Grolet Fruit Sculptures" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Cedric Grolet Fruit Sculptures</h5>
+                            <div class="product-rating">
+                                <div class="stars small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="ms-2">(76)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">₹3,299</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 3 -->
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Antonio Bachour Desserts" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Antonio Bachour Architectural Desserts</h5>
+                            <div class="product-rating">
+                                <div class="stars small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="ms-2">(94)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">₹2,799</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 4 -->
+                <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Amaury Guichon Chocolates" class="img-fluid">
+                            <div class="product-actions">
+                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                            </div>
+                        </div>
+                        <div class="product-body">
+                            <h5>Amaury Guichon Chocolate Sculptures</h5>
+                            <div class="product-rating">
+                                <div class="stars small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="ms-2">(112)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="price">₹4,199</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-logo">
+                            <img src="https://ovenfresh.pythonanywhere.com/static/img/ovenfresh-logo-min.webp" alt="Oven Fresh">
+                        </div>
+                        <p class="footer-description">
+                            Experience the finest curated collections from world-renowned pastry chefs. OvenFresh brings you exceptional quality and artisanal craftsmanship in every creation.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Collections</h5>
+                            <ul>
+                                <li><a href="#">Pierre Hermé</a></li>
+                                <li><a href="#">Dominique Ansel</a></li>
+                                <li><a href="#">Cedric Grolet</a></li>
+                                <li><a href="#">Antonio Bachour</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Quick Links</h5>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Chef Stories</a></li>
+                                <li><a href="#">Premium Cakes</a></li>
+                                <li><a href="#">Gift Collections</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Track Order</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Returns</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Legal</h5>
+                            <ul>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms of Service</a></li>
+                                <li><a href="#">Cookie Policy</a></li>
+                                <li><a href="#">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 OvenFresh. All Rights Reserved. Crafted with passion for culinary excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.querySelector('.scroll-progress');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // Image gallery functionality
+        function changeMainImage(src) {
+            const mainImage = document.getElementById('main-product-image');
+            mainImage.src = src;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-img').forEach(img => {
+                img.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Quantity selector
+        function changeQuantity(change) {
+            const quantityInput = document.getElementById('quantity');
+            let currentValue = parseInt(quantityInput.value);
+            let newValue = currentValue + change;
+            
+            if (newValue >= 1 && newValue <= 5) {
+                quantityInput.value = newValue;
+                updatePrice();
+            }
+        }
+
+        // Update price based on selection
+        function updatePrice() {
+            const collectionSize = document.getElementById('collection-size').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            let basePrice = 2499;
+            switch(collectionSize) {
+                case '12pc': basePrice = 4799; break;
+                case '18pc': basePrice = 6999; break;
+                case '24pc': basePrice = 8999; break;
+            }
+            
+            const totalPrice = basePrice * quantity;
+            document.querySelector('.current-price').textContent = `₹${totalPrice.toLocaleString()}`;
+        }
+
+        // Countdown timer
+        function updateCountdown() {
+            const now = new Date();
+            const target = new Date();
+            target.setHours(18, 0, 0, 0); // 6 PM today
+            
+            if (now > target) {
+                target.setDate(target.getDate() + 1); // Next day if past 6 PM
+            }
+            
+            const diff = target - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('deliveryCountdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Pincode checker
+        document.getElementById('check-pincode-btn').addEventListener('click', function() {
+            const pincode = document.getElementById('pincode-check').value;
+            if (pincode.length === 6) {
+                document.getElementById('delivery_options').style.display = 'block';
+                this.textContent = '✓ Delivery Available';
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-success');
+            } else {
+                alert('Please enter a valid 6-digit pincode');
+            }
+        });
+
+        // Add to cart functionality
+        function AddToCart() {
+            const collectionSize = document.getElementById('collection-size').value;
+            const quantity = document.getElementById('quantity').value;
+            
+            // Add shimmer effect
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding to Cart...';
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check me-2"></i>Added to Cart!';
+                button.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45A049 100%)';
+                
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-shopping-bag me-2"></i>Add to Cart';
+                    button.style.background = 'var(--gradient-gold)';
+                }, 2000);
+            }, 1000);
+        }
+
+        // Buy now functionality
+        function buyNow() {
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 1000);
+        }
+
+        // Initialize countdown and price updates
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            document.getElementById('collection-size').addEventListener('change', updatePrice);
+            document.getElementById('quantity').addEventListener('change', updatePrice);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Product card hover effects
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Tab switching animation
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const targetPane = document.querySelector(e.target.getAttribute('data-bs-target'));
+                targetPane.style.opacity = '0';
+                targetPane.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    targetPane.style.transition = 'all 0.3s ease';
+                    targetPane.style.opacity = '1';
+                    targetPane.style.transform = 'translateY(0)';
+                }, 50);
+            });
+        });
+    </script>
+</body>
+
+</html>

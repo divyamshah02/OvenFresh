@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curated Chef Collection - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-dark: #2C3E50;
+            --primary-green: #588157;
+            --accent-cream: #F8F6F0;
+            --accent-light: #FEFCF7;
+            --text-dark: #1A1A1A;
+            --text-light: #6B7280;
+            --text-muted: #9CA3AF;
+            --shadow-light: 0 4px 20px rgba(212, 175, 55, 0.1);
+            --shadow-medium: 0 8px 40px rgba(212, 175, 55, 0.15);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F7DC6F 50%, #D4AF37 100%);
+            --gradient-dark: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-overlay: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(88, 129, 87, 0.9) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--accent-light);
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--accent-cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-gold);
+            border-radius: 4px;
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .navbar-brand img {
+            height: 55px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-gold) !important;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            background: var(--gradient-overlay), url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            /* align-items: center; */            
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(88, 129, 87, 0.3) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+        }
+
+        .hero-features {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            min-width: 200px;
+        }
+
+        .hero-feature:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-feature-icon {
+            font-size: 2.5rem;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-feature-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .hero-feature-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: floatSlow 15s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(2) { animation-delay: -5s; }
+        .floating-element:nth-child(3) { animation-delay: -10s; }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        /* Section Divider */
+        .section-divider {
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 0%, var(--accent-light) 100%);
+            position: relative;
+            margin-top: -150px;
+            z-index: 3;
+        }
+
+        /* Chef Cards Section */
+        .chefs-section {
+            padding: 120px 0;
+            background: var(--accent-light);
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--gradient-gold);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Premium Chef Cards */
+        .chef-card {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .chef-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 1;
+            border-radius: 30px;
+        }
+
+        .chef-card:hover {
+            transform: translateY(-20px) scale(1.02);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .chef-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .chef-image-container {
+            height: 350px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .chef-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.7s ease;
+            filter: grayscale(20%);
+        }
+
+        .chef-card:hover .chef-image {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        .country-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--gradient-gold);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .chef-specialty-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--text-dark);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        .chef-content {
+            padding: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chef-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .chef-title {
+            color: var(--primary-gold);
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .chef-description {
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .chef-awards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .award-badge {
+            background: linear-gradient(135deg, var(--accent-cream) 0%, #f0f0f0 100%);
+            color: var(--text-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .award-badge:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .chef-cta {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .chef-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .chef-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+            color: white;
+        }
+
+        .chef-cta:hover::before {
+            left: 100%;
+        }
+
+        .chef-cta i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Experience Section */
+        .experience-section {
+            padding: 120px 0;
+            background: var(--gradient-dark);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .experience-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="0.5" fill="rgba(212,175,55,0.1)"/><circle cx="75" cy="75" r="0.5" fill="rgba(212,175,55,0.1)"/><circle cx="50" cy="10" r="0.3" fill="rgba(212,175,55,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .experience-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .experience-icon {
+            font-size: 4rem;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .experience-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .experience-description {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo img {
+            height: 60px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-links h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gradient-gold);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary-gold);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-features {
+                gap: 1.5rem;
+            }
+            
+            .hero-feature {
+                min-width: 150px;
+                padding: 1.5rem;
+            }
+            
+            .chef-content {
+                padding: 2rem;
+            }
+            
+            .chef-name {
+                font-size: 1.5rem;
+            }
+
+            .hero-section {
+                background-attachment: scroll;
+            }
+        }
+
+        /* Loading Animation */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-gold);
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Navigation -->
+    <!-- Topbar -->
+    <div class="topbar text-center d-none d-md-block">
+        <div class="container">
+            Celebrate Occasions with Mumbai's best Online Gift Store.
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="navbar bg-white px-3 border-bottom">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+
+            <!-- Logo -->
+            <!-- <a class="navbar-brand fw-bold" href="#">LOGO</a> -->
+            <img src="https://ovenfresh.pythonanywhere.com/static/img/logo.png" alt="">
+
+            <!-- Search Center -->
+            <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                <!-- <input class="form-control me-2 rounded-5 border-3 border-black navbar-search-input"
+                    type="search" placeholder="Search..." aria-label="Search">
+                <button class="btn of-btn-primary rounded-5" type="submit"><i class="bi bi-search"></i></button> -->
+                <div class="search-wrapper mx-auto">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                </div>
+            </form>
+
+            <!-- Right Section -->
+            <div class="d-flex align-items-center">
+                <a href="{% url 'cart-list' %}" class="icon-btn me-2" aria-label="Cart">
+                    <i class="bi bi-cart"></i>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                </a>
+                <a href="{% url 'account-list' %}" class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                        class="bi bi-person-circle"></i></a>
+
+                <!-- Hamburger only on mobile -->
+                <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Menu Bar -->
+    <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+        <div class="container position-relative">
+            <ul class="nav justify-content-center">
+                <!-- Cakes with Mega Menu -->
+                <li class="nav-item position-static dropdown-mega">
+                    <a class="nav-link" href="{% url 'shop-list' %}">Cakes</a>
+                    <div class="mega-menu d-none">
+                        <div class="container py-4">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <p>Theme Cakes</p>
+                                    <p>Rosette Cakes</p>
+                                    <p>Bento Cakes</p>
+                                    <p>Numeric Cakes</p>
+                                    <p>Fault Line Cakes</p>
+                                    <p>Fresh Fruit Cakes</p>
+                                    <p>Classic Cakes</p>
+                                    <p>Dutch Truffle Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>Gourmet Cakes</p>
+                                    <p>Tea Cakes</p>
+                                    <p>Pinata Cakes</p>
+                                    <p>Butter Cream Cakes</p>
+                                    <p>Chocolate Cakes</p>
+                                    <p>Cheese Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>99% Gold Cakes</p>
+                                    <p>Fusion Cakes</p>
+                                    <p>Red Velvet Cakes</p>
+                                    <p>Two Tier Cakes</p>
+                                    <p>Photo Cakes</p>
+                                    <p>Pastry</p>
+                                    <p>Geode Cakes</p>
+                                    <p>Alphabet Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>Trending Bomb Cakes</p>
+                                    <p>Heart Shape Cakes</p>
+                                    <p>Pull Me Up Cakes</p>
+                                    <p>Butterscotch Cakes</p>
+                                    <p>Fresh Flower Cakes</p>
+                                    <p>Low Frosting Cakes</p>
+                                    <p>Overloaded Cakes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Other Menu Items -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mobile Offcanvas Menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Cakes</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <!-- Floating Elements -->
+        <div class="floating-element" style="top: 20%; left: 10%; font-size: 3rem; color: rgba(255,255,255,0.1);">
+            <i class="fas fa-birthday-cake"></i>
+        </div>
+        <div class="floating-element" style="top: 60%; right: 15%; font-size: 2.5rem; color: rgba(255,255,255,0.1);">
+            <i class="fas fa-cookie-bite"></i>
+        </div>
+        <div class="floating-element" style="bottom: 30%; left: 20%; font-size: 2rem; color: rgba(255,255,255,0.1);">
+            <i class="fas fa-ice-cream"></i>
+        </div>
+
+        <div class="container" style="margin-top: 20px;">
+            <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+                <div class="hero-badge" data-aos="fade-up" data-aos-delay="200">
+                    Exclusive Culinary Experience
+                </div>
+                <h1 class="hero-title" data-aos="fade-up" data-aos-delay="400">
+                    Curated Chef Collection
+                </h1>
+                <!-- <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="600">
+                    Discover the artistry and innovation of world-renowned pastry chefs who have revolutionized the culinary landscape with their extraordinary signature creations.
+                </p> -->
+                
+                <div class="hero-features">
+                    <div class="hero-feature" data-aos="fade-up" data-aos-delay="800">
+                        <div class="hero-feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="hero-feature-text">Award Winners</div>
+                        <div class="hero-feature-desc">Michelin-starred excellence</div>
+                    </div>
+                    <div class="hero-feature" data-aos="fade-up" data-aos-delay="1000">
+                        <div class="hero-feature-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="hero-feature-text">Master Artisans</div>
+                        <div class="hero-feature-desc">Culinary innovation leaders</div>
+                    </div>
+                    <div class="hero-feature" data-aos="fade-up" data-aos-delay="1200">
+                        <div class="hero-feature-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <div class="hero-feature-text">Global Excellence</div>
+                        <div class="hero-feature-desc">International recognition</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Divider -->
+    <div class="section-divider"></div> 
+
+    <!-- Chef Profiles Section -->
+    <section class="chefs-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <div class="section-badge">Master Chefs</div>
+                <h2 class="section-title">Legendary Pastry Artists</h2>
+                <p class="section-description">
+                    Meet the visionary chefs whose innovative techniques and artistic passion have redefined the world of fine pastry and dessert craftsmanship.
+                </p>
+            </div>
+
+            <div class="row g-5">
+                <!-- Pierre Hermé -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Pierre Hermé" class="chef-image">
+                            <div class="country-badge">France</div>
+                            <div class="chef-specialty-badge">Macarons & Fine Pastries</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Pierre Hermé</h3>
+                            <div class="chef-title">The Picasso of Pastry</div>
+                            <p class="chef-description">
+                                Renowned as the 'Picasso of Pastry,' Pierre Hermé has revolutionized French patisserie with his innovative flavor combinations and artistic presentations. His legendary macarons feature unexpected pairings that challenge traditional pastry conventions while maintaining exceptional quality and sophistication.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">Best Pastry Chef</span>
+                                <span class="award-badge">Legion of Honor</span>
+                                <span class="award-badge">Relais Desserts</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                Explore Ispahan Macaron Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dominique Ansel -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dominique Ansel" class="chef-image">
+                            <div class="country-badge">USA</div>
+                            <div class="chef-specialty-badge">Innovative Pastries</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Dominique Ansel</h3>
+                            <div class="chef-title">Innovation Pioneer</div>
+                            <p class="chef-description">
+                                The creative genius behind the world-famous Cronut, Dominique Ansel has redefined modern pastry with his inventive approach. His groundbreaking creations consistently push culinary boundaries, combining technical mastery with playful innovation that captivates food enthusiasts globally.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">James Beard Award</span>
+                                <span class="award-badge">World's Best Pastry Chef</span>
+                                <span class="award-badge">Time Magazine Innovation</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                Discover Cronut & Cookie Shot Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cedric Grolet -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Cedric Grolet" class="chef-image">
+                            <div class="country-badge">France</div>
+                            <div class="chef-specialty-badge">Sculptural Desserts</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Cedric Grolet</h3>
+                            <div class="chef-title">Sculptural Virtuoso</div>
+                            <p class="chef-description">
+                                Celebrated for his incredibly realistic fruit-shaped pastries, Cedric Grolet masterfully blurs the line between culinary art and dessert. His meticulous attention to detail and revolutionary techniques have established him as one of the most influential pastry chefs of the modern era.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">World Pastry Champion</span>
+                                <span class="award-badge">Best Restaurant Pastry Chef</span>
+                                <span class="award-badge">Instagram Sensation</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                Experience Fruit Sculpture Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Antonio Bachour -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="800">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Antonio Bachour" class="chef-image">
+                            <div class="country-badge">USA</div>
+                            <div class="chef-specialty-badge">Modern Plated Desserts</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Antonio Bachour</h3>
+                            <div class="chef-title">Architectural Genius</div>
+                            <p class="chef-description">
+                                Antonio Bachour's architectural approach to pastry combines bold flavors with stunning visual presentations. His desserts are characterized by clean geometric lines, vibrant colors, and unexpected flavor combinations that create unforgettable culinary experiences for discerning palates.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">Best Pastry Chef Americas</span>
+                                <span class="award-badge">Pastry Art & Design Award</span>
+                                <span class="award-badge">Culinary Excellence</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                View Architectural Dessert Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amaury Guichon -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="1000">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Amaury Guichon" class="chef-image">
+                            <div class="country-badge">France</div>
+                            <div class="chef-specialty-badge">Chocolate Sculptures</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Amaury Guichon</h3>
+                            <div class="chef-title">Chocolate Sculptor</div>
+                            <p class="chef-description">
+                                Famous for his extraordinary chocolate sculptures and viral social media presence, Amaury Guichon masterfully combines traditional Swiss chocolate-making techniques with contemporary artistry. His creations are spectacular visual experiences that deliver exceptional taste and craftsmanship.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">Pastry World Cup Champion</span>
+                                <span class="award-badge">Social Media Pastry Star</span>
+                                <span class="award-badge">Netflix Featured</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                Explore Chocolate Sculpture Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Christina Tosi -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="1200">
+                    <div class="chef-card">
+                        <div class="chef-image-container">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616c9c0b8d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Christina Tosi" class="chef-image">
+                            <div class="country-badge">USA</div>
+                            <div class="chef-specialty-badge">Playful American Desserts</div>
+                        </div>
+                        <div class="chef-content">
+                            <h3 class="chef-name">Christina Tosi</h3>
+                            <div class="chef-title">Nostalgic Innovator</div>
+                            <p class="chef-description">
+                                Christina Tosi revolutionized American desserts through her Milk Bar empire, bringing playful nostalgia to fine dining. Her unconventional flavor combinations and whimsical presentations have redefined gourmet desserts, making sophisticated pastries accessible and delightfully memorable.
+                            </p>
+                            <div class="chef-awards">
+                                <span class="award-badge">James Beard Outstanding Pastry Chef</span>
+                                <span class="award-badge">Food & Wine Best New Chef</span>
+                                <span class="award-badge">MasterChef Judge</span>
+                            </div>
+                            <button class="chef-cta">
+                                <i class="fas fa-crown"></i>
+                                Discover Milk Bar Signature Collection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="experience-section">
+        <div class="container">
+            <div class="experience-content" data-aos="fade-up">
+                <div class="experience-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <h2 class="experience-title">Experience Culinary Excellence</h2>
+                <p class="experience-description">
+                    Each chef's signature collection represents years of dedication, innovation, and passion for the art of pastry. Discover flavors and techniques that have shaped the future of dessert craftsmanship and elevated culinary artistry to new heights.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-logo">
+                            <img src="https://ovenfresh.pythonanywhere.com/static/img/ovenfresh-logo-min.webp" alt="Oven Fresh">
+                        </div>
+                        <p class="footer-description">
+                            Experience the finest curated collections from world-renowned pastry chefs. OvenFresh brings you exceptional quality and artisanal craftsmanship in every creation.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Collections</h5>
+                            <ul>
+                                <li><a href="#">Pierre Hermé</a></li>
+                                <li><a href="#">Dominique Ansel</a></li>
+                                <li><a href="#">Cedric Grolet</a></li>
+                                <li><a href="#">Antonio Bachour</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Quick Links</h5>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Chef Stories</a></li>
+                                <li><a href="#">Premium Cakes</a></li>
+                                <li><a href="#">Gift Collections</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Track Order</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Returns</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Legal</h5>
+                            <ul>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms of Service</a></li>
+                                <li><a href="#">Cookie Policy</a></li>
+                                <li><a href="#">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 OvenFresh. All Rights Reserved. Crafted with passion for culinary excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll progress bar
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.querySelector('.scroll-progress');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Chef CTA button interactions
+        document.querySelectorAll('.chef-cta').forEach(button => {
+            button.addEventListener('click', function() {
+                // Add ripple effect
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+                
+                // Add your navigation logic here
+                console.log('Navigate to chef collection');
+            });
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero-section');
+            const speed = scrolled * 0.5;
+            
+            if (parallax) {
+                parallax.style.transform = `translateY(${speed}px)`;
+            }
+        });
+
+        // Add loading animation for elements
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add hover sound effect (optional)
+        document.querySelectorAll('.chef-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                // Add subtle hover sound if needed
+                // new Audio('hover-sound.mp3').play();
+            });
+        });
+    </script>
+</body>
+
+</html>

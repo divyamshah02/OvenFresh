@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pierre Hermé Ispahan Collection - Oven Fresh</title>
+
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --primary-dark: #2C3E50;
+            --primary-green: #588157;
+            --accent-cream: #F8F6F0;
+            --accent-light: #FEFCF7;
+            --text-dark: #1A1A1A;
+            --text-light: #6B7280;
+            --text-muted: #9CA3AF;
+            --shadow-light: 0 4px 20px rgba(212, 175, 55, 0.1);
+            --shadow-medium: 0 8px 40px rgba(212, 175, 55, 0.15);
+            --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.1);
+            --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #F7DC6F 50%, #D4AF37 100%);
+            --gradient-dark: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            --gradient-overlay: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(88, 129, 87, 0.9) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--accent-light);
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--accent-cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-gold);
+            border-radius: 4px;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-gold);
+            z-index: 9999;
+            transition: width 0.1s ease;
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .navbar-brand img {
+            height: 55px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-gold);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-gold) !important;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: var(--gradient-overlay), url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 50px 0 100px;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(88, 129, 87, 0.3) 0%, transparent 50%);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 24px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .back-link i {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .chef-profile {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chef-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .chef-avatar:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-gold);
+        }
+
+        .chef-info {
+            color: white;
+        }
+
+        .collection-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chef-signature {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .chef-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            opacity: 0.9;
+            max-width: 800px;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            height: 150px;
+            background: linear-gradient(to bottom, transparent 0%, var(--accent-light) 100%);
+            position: relative;
+            margin-top: -150px;
+            z-index: 3;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 120px 0;
+            background: var(--accent-light);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: var(--gradient-gold);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Product Cards */
+        .product-card {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .product-image-container {
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--gradient-gold);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-content {
+            padding: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .product-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+        }
+
+        .add-to-cart-btn {
+            background: var(--gradient-gold);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4);
+            color: white;
+        }
+
+        .add-to-cart-btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+            border-radius: 25px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 2px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo img {
+            height: 60px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-gold);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-links h5 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gradient-gold);
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary-gold);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .chef-profile {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .chef-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .collection-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-section {
+                padding: 120px 0 80px;
+            }
+            
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--gradient-gold);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 10000;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Navigation -->
+    <!-- Topbar -->
+    <div class="topbar text-center d-none d-md-block">
+        <div class="container">
+            Celebrate Occasions with Mumbai's best Online Gift Store.
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="navbar bg-white px-3 border-bottom">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+
+            <!-- Logo -->
+            <!-- <a class="navbar-brand fw-bold" href="#">LOGO</a> -->
+            <img src="https://ovenfresh.pythonanywhere.com/static/img/logo.png" alt="">
+
+            <!-- Search Center -->
+            <form class="d-none d-md-flex mx-auto navbar-search" role="search">
+                <!-- <input class="form-control me-2 rounded-5 border-3 border-black navbar-search-input"
+                    type="search" placeholder="Search..." aria-label="Search">
+                <button class="btn of-btn-primary rounded-5" type="submit"><i class="bi bi-search"></i></button> -->
+                <div class="search-wrapper mx-auto">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                </div>
+            </form>
+
+            <!-- Right Section -->
+            <div class="d-flex align-items-center">
+                <a href="{% url 'cart-list' %}" class="icon-btn me-2" aria-label="Cart">
+                    <i class="bi bi-cart"></i>
+                    <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cart-count">0</span>
+                </a>
+                <a href="{% url 'account-list' %}" class="icon-btn me-2 d-none d-md-block" aria-label="Account"><i
+                        class="bi bi-person-circle"></i></a>
+
+                <!-- Hamburger only on mobile -->
+                <button class="icon-btn d-md-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Menu Bar -->
+    <div class="bg-light border-bottom py-2 text-center main-menu position-md-fixed w-100 menu-bar-fixed d-none d-md-block">
+        <div class="container position-relative">
+            <ul class="nav justify-content-center">
+                <!-- Cakes with Mega Menu -->
+                <li class="nav-item position-static dropdown-mega">
+                    <a class="nav-link" href="{% url 'shop-list' %}">Cakes</a>
+                    <div class="mega-menu d-none">
+                        <div class="container py-4">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <p>Theme Cakes</p>
+                                    <p>Rosette Cakes</p>
+                                    <p>Bento Cakes</p>
+                                    <p>Numeric Cakes</p>
+                                    <p>Fault Line Cakes</p>
+                                    <p>Fresh Fruit Cakes</p>
+                                    <p>Classic Cakes</p>
+                                    <p>Dutch Truffle Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>Gourmet Cakes</p>
+                                    <p>Tea Cakes</p>
+                                    <p>Pinata Cakes</p>
+                                    <p>Butter Cream Cakes</p>
+                                    <p>Chocolate Cakes</p>
+                                    <p>Cheese Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>99% Gold Cakes</p>
+                                    <p>Fusion Cakes</p>
+                                    <p>Red Velvet Cakes</p>
+                                    <p>Two Tier Cakes</p>
+                                    <p>Photo Cakes</p>
+                                    <p>Pastry</p>
+                                    <p>Geode Cakes</p>
+                                    <p>Alphabet Cakes</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>Trending Bomb Cakes</p>
+                                    <p>Heart Shape Cakes</p>
+                                    <p>Pull Me Up Cakes</p>
+                                    <p>Butterscotch Cakes</p>
+                                    <p>Fresh Flower Cakes</p>
+                                    <p>Low Frosting Cakes</p>
+                                    <p>Overloaded Cakes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Other Menu Items -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mobile Offcanvas Menu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Cakes</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Flowers</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Desserts</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Chocolates</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Corporate Gifting</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Sumptous Mango</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Mother's Day</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}">Design Your Hamper</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <a href="chef-curated.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Chefs
+            </a>
+            
+            <div class="chef-profile">
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Pierre Hermé" class="chef-avatar">
+                <div class="chef-info">
+                    <h1 class="collection-title">Ispahan Macaron Collection</h1>
+                    <div class="chef-signature">by Pierre Hermé</div>
+                    <p class="chef-description">
+                        Known as the 'Picasso of Pastry,' Pierre Hermé revolutionized the world of French patisserie 
+                        with his innovative flavor combinations and artistic presentations. His macarons are considered 
+                        the finest in the world, and his creative approach has influenced pastry chefs globally.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Divider -->
+    <div class="section-divider"></div>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">Exclusive Collection</div>
+                <h2 class="section-title">Pierre Hermé Masterpieces</h2>
+                <p class="section-description">
+                    Discover the legendary creations that have made Pierre Hermé a global icon in luxury pastry
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All Products</button>
+                    <button class="filter-btn" data-filter="macarons">Macarons</button>
+                    <button class="filter-btn" data-filter="tarts">Tarts</button>
+                    <button class="filter-btn" data-filter="collections">Collections</button>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row g-5">
+                <!-- Product 1: Ispahan Macaron Box -->
+                <div class="col-lg-4 col-md-6" data-category="macarons collections">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Ispahan Macaron Box" class="product-image">
+                            <div class="category-badge">Macarons</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Ispahan Macaron Box (12 pieces)</h3>
+                            <p class="product-description">
+                                Rose, raspberry, and lychee macarons in an elegant gift box. The signature creation that made Pierre Hermé legendary.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$45</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('ispahan-box')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2: Signature Macaron Collection -->
+                <div class="col-lg-4 col-md-6" data-category="macarons collections">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Signature Macaron Collection" class="product-image">
+                            <div class="category-badge">Macarons</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Signature Macaron Collection (24 pieces)</h3>
+                            <p class="product-description">
+                                Assorted premium macarons featuring Pierre's most celebrated flavors in a luxury presentation box.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$85</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('signature-collection')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3: Rose Petal Tart -->
+                <div class="col-lg-4 col-md-6" data-category="tarts">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1603532648955-039310d9ed75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Rose Petal Tart" class="product-image">
+                            <div class="category-badge">Tarts</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Rose Petal Tart</h3>
+                            <p class="product-description">
+                                Delicate rose-infused tart with fresh petals and cream. A romantic masterpiece of French patisserie.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$32</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('rose-tart')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4: Chocolate Passion Macarons -->
+                <div class="col-lg-4 col-md-6" data-category="macarons">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Chocolate Passion Macarons" class="product-image">
+                            <div class="category-badge">Macarons</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Chocolate Passion Macarons (6 pieces)</h3>
+                            <p class="product-description">
+                                Rich chocolate shells filled with passion fruit ganache. An exotic twist on the classic macaron.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$28</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('chocolate-passion')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 5: Lemon Verbena Tart -->
+                <div class="col-lg-4 col-md-6" data-category="tarts">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Lemon Verbena Tart" class="product-image">
+                            <div class="category-badge">Tarts</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Lemon Verbena Tart</h3>
+                            <p class="product-description">
+                                Refreshing lemon verbena custard in a crisp pastry shell. A perfect balance of citrus and herbs.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$35</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('lemon-tart')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 6: Grand Cru Collection -->
+                <div class="col-lg-4 col-md-6" data-category="collections">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                                 alt="Grand Cru Collection" class="product-image">
+                            <div class="category-badge">Collections</div>
+                        </div>
+                        <div class="product-content">
+                            <h3 class="product-name">Grand Cru Collection (36 pieces)</h3>
+                            <p class="product-description">
+                                The ultimate Pierre Hermé experience featuring rare and seasonal flavors in a luxury wooden box.
+                            </p>
+                            <div class="product-footer">
+                                <div class="product-price">$125</div>
+                                <button class="add-to-cart-btn" onclick="addToCart('grand-cru')">
+                                    <i class="fas fa-shopping-bag"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="footer-logo">
+                            <img src="https://ovenfresh.pythonanywhere.com/static/img/ovenfresh-logo-min.webp" alt="Oven Fresh">
+                        </div>
+                        <p class="footer-description">
+                            Experience the finest curated collections from world-renowned pastry chefs. OvenFresh brings you exceptional quality and artisanal craftsmanship in every creation.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Collections</h5>
+                            <ul>
+                                <li><a href="#">Pierre Hermé</a></li>
+                                <li><a href="#">Dominique Ansel</a></li>
+                                <li><a href="#">Cedric Grolet</a></li>
+                                <li><a href="#">Antonio Bachour</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Quick Links</h5>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Chef Stories</a></li>
+                                <li><a href="#">Premium Cakes</a></li>
+                                <li><a href="#">Gift Collections</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Track Order</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Returns</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <div class="footer-links">
+                            <h5>Legal</h5>
+                            <ul>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms of Service</a></li>
+                                <li><a href="#">Cookie Policy</a></li>
+                                <li><a href="#">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 OvenFresh. All Rights Reserved. Crafted with passion for culinary excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Initialize AOS with minimal settings
+        AOS.init({
+            duration: 600,
+            once: true,
+            offset: 50,
+            disable: 'mobile'
+        });
+
+        // Simple navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Simple scroll progress bar
+        window.addEventListener('scroll', function() {
+            const scrollProgress = document.querySelector('.scroll-progress');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                const products = document.querySelectorAll('[data-category]');
+                
+                products.forEach(product => {
+                    const categories = product.getAttribute('data-category').split(' ');
+                    
+                    if (filter === 'all' || categories.includes(filter)) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Add to cart functionality
+        function addToCart(productId) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Add loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            button.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                button.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45A049 100%)';
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'var(--gradient-gold)';
+                    button.disabled = false;
+                }, 2000);
+                
+                // Show success message
+                showNotification('Product added to cart successfully!');
+            }, 1000);
+        }
+
+        // Simple notification system
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide and remove notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

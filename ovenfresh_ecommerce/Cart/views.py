@@ -98,7 +98,7 @@ class CartViewSet(viewsets.ViewSet):
                     user_id=user.user_id
                 )
         else:
-            # Not logged in, session_id is required
+            # Session-based cart for guest users
             if not session_id:
                 return Response({
                     "success": False,

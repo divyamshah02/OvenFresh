@@ -45,7 +45,8 @@ from django.db import models
 
 class Order(models.Model):
     order_id = models.CharField(max_length=20, unique=True)  # 10-digit custom ID
-    user_id = models.CharField(max_length=20)
+    user_id = models.CharField(max_length=20, null=True, blank=True)
+    session_id = models.CharField(max_length=20, null=True, blank=True)
     pincode_id = models.CharField(max_length=20)
     timeslot_id = models.CharField(max_length=20)
     

@@ -10,29 +10,29 @@ let add_address_url = null
 let transfer_cart_url = null
 let apply_coupon_url = null
 
-// User data
-let userData = null
-let userAddresses = []
-let isLoggedIn = false
-let userDataAdded = false
+// User data - keeping for compatibility but not using authentication
+const userData = null
+const userAddresses = []
+const isLoggedIn = false
+const userDataAdded = false
 let currentPaymentData = null
 
 // Delivery data
 let pincodeTimeslots = []
 let todayPincodeTimeslots = []
-let selectedAddress = "new"
+const selectedAddress = "new"
 let selectedTimeslot = null
 
-// OTP verification
-let mobileVerified = false
-let otpRequestId = null
+// OTP verification - commented out for guest checkout
+// let mobileVerified = false
+// let otpRequestId = null
 
 // Cart and coupon data
 let cartItems = []
 let currentOrderData = null
 let appliedCoupon = null
 let couponDiscount = 0
-let test_otp = '123456'
+// let test_otp = '123456'
 
 async function InitializeCheckout(
   csrfTokenParam,
@@ -62,8 +62,8 @@ async function InitializeCheckout(
   try {
     showLoading()
 
-    // Check if user is logged in
-    await checkUserLoggedIn()
+    // REMOVED: Check if user is logged in - now working as guest checkout
+    // await checkUserLoggedIn()
 
     // Initialize event listeners
     initializeEventListeners()
@@ -74,6 +74,9 @@ async function InitializeCheckout(
     // Check URL parameters for pincode, delivery date, and timeslot
     checkUrlParameters()
 
+    // Show guest checkout form directly
+    showGuestCheckoutForm()
+
     hideLoading()
   } catch (error) {
     console.error("Error initializing checkout:", error)
@@ -82,6 +85,8 @@ async function InitializeCheckout(
   }
 }
 
+// COMMENTED OUT: Authentication check function
+/*
 async function checkUserLoggedIn() {
   try {
     const [success, result] = await callApi("GET", check_user_loggedin_url)
@@ -115,7 +120,10 @@ async function checkUserLoggedIn() {
     showGuestCheckoutForm()
   }
 }
+*/
 
+// COMMENTED OUT: Cart transfer function
+/*
 async function transferCart(old_session_id) {
   showLoading()
   try {
@@ -133,7 +141,10 @@ async function transferCart(old_session_id) {
     hideLoading()
   }
 }
+*/
 
+// COMMENTED OUT: User data population
+/*
 function populateUserData() {
   if (!userData) return
 
@@ -148,7 +159,10 @@ function populateUserData() {
     mobileVerified = true // Phone is already verified for logged in users
   }
 }
+*/
 
+// COMMENTED OUT: Address rendering
+/*
 function renderAddresses() {
   if (!userAddresses || userAddresses.length === 0) return
 
@@ -212,7 +226,10 @@ function renderAddresses() {
     populateAddressFields(selectedAddress)
   }
 }
+*/
 
+// COMMENTED OUT: Address selection handling
+/*
 function handleAddressSelection(event) {
   const addressId = event.target.value
 
@@ -244,7 +261,10 @@ function handleAddressSelection(event) {
     }
   }
 }
+*/
 
+// COMMENTED OUT: Address field functions
+/*
 function populateAddressFields(address) {
   if (!address) return
 
@@ -273,21 +293,26 @@ function enableAddressFields() {
   document.getElementById("city").disabled = false
   document.getElementById("pincode").disabled = false
 }
+*/
 
 function showGuestCheckoutForm() {
-  // Show regular checkout form for guest users
+  // Show regular checkout form for guest users - no verification needed
   const phoneInput = document.getElementById("phone")
   const verifyContainer = document.getElementById("phone-verify-container")
 
-  // Add verify button
+  // REMOVED: Add verify button - no longer needed for guest checkout
+  /*
   const verifyButton = document.createElement("button")
   verifyButton.type = "button"
   verifyButton.className = "btn btn-sm of-btn-outline-primary mt-4 w-100"
   verifyButton.textContent = "Verify"
   verifyButton.onclick = showSendOtpModal
   verifyContainer.appendChild(verifyButton)
+  */
 }
 
+// COMMENTED OUT: All OTP-related functions
+/*
 function showSendOtpModal() {
   const phone = document.getElementById("phone").value.trim()
 
@@ -495,6 +520,7 @@ function updatePhoneVerifiedUI() {
     </span>
   `
 }
+*/
 
 function checkUrlParameters() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -917,6 +943,8 @@ function hideCouponMessages() {
   if (couponError) couponError.style.display = "none"
 }
 
+// COMMENTED OUT: User data update function
+/*
 async function updateUserData() {
   const requiredFields = [
     "firstName",
@@ -951,7 +979,10 @@ async function updateUserData() {
     showNotification("Error updating user data. Please try again.", "error")
   }
 }
+*/
 
+// COMMENTED OUT: Add new address function
+/*
 async function addNewAddress() {
   const address = document.getElementById("address").value.trim()
   const city = document.getElementById("city").value.trim()
@@ -980,6 +1011,7 @@ async function addNewAddress() {
     showNotification("Error adding address. Please try again.", "error")
   }
 }
+*/
 
 function getCSRFToken() {
   const name = "csrftoken"
@@ -1008,6 +1040,8 @@ async function continueToPayment() {
     if (spinner) spinner.style.display = "inline-block"
     if (continueBtn) continueBtn.disabled = true
 
+    // REMOVED: User data and address updates - not needed for guest checkout
+    /*
     if (!userDataAdded) {
       await updateUserData()
       await checkUserLoggedIn()
@@ -1016,13 +1050,15 @@ async function continueToPayment() {
     if (selectedAddress === "new") {
       await addNewAddress()
     }
+    */
 
     // Get payment method
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
 
-    // Prepare order data with coupon information
+    // Prepare order data with coupon information - MODIFIED for guest checkout
     currentOrderData = {
-      shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
+      // REMOVED: shipping_address_id - not needed for guest checkout
+      // shipping_address_id: selectedAddress !== "new" ? selectedAddress.id : null,
       different_billing_address: document.getElementById("differentBillingAddress").checked,
       billing_address: getBillingAddressData(),
       payment_method: paymentMethod,
@@ -1098,6 +1134,8 @@ function validateShippingForm() {
     }
   })
 
+  // REMOVED: Phone verification check - not needed for guest checkout
+  /*
   // Check if phone is verified for guest users
   if (!isLoggedIn && !mobileVerified) {
     const phoneField = document.getElementById("phone")
@@ -1105,6 +1143,7 @@ function validateShippingForm() {
     showNotification("Please verify your phone number.", "error")
     isValid = false
   }
+  */
 
   // Validate billing address if different billing is checked
   const isDifferentBilling = document.getElementById("differentBillingAddress").checked
@@ -1140,6 +1179,7 @@ async function placeOrder() {
     showLoading()
 
     const [success, result] = await callApi("POST", place_order_url, currentOrderData, csrf_token)
+    console.log(result.data)
 
     if (success && result.success) {
       if (currentOrderData.payment_method === "razorpay") {

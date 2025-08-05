@@ -34,7 +34,10 @@ class OrderViewSet(viewsets.ViewSet):
         """
         Place order from cart with coupon support
         """
-        user_id = request.user.user_id
+        # Get user_id if authenticated, otherwise set to None or empty string
+        user_id = request.user.user_id if request.user.is_authenticated else None
+
+        session_id = request.session.get('session_token')
         data = request.data
         
         # Check required fields
@@ -54,8 +57,12 @@ class OrderViewSet(viewsets.ViewSet):
             }, status=400)
 
         # Get cart items
-        cart = Cart.objects.filter(user_id=user_id).first()
-        if not cart:
+        if user_id:
+            cart = Cart.objects.filter(user_id=user_id).first()
+        else:
+            cart = Cart.objects.filter(session_id=session_id).first()
+        
+        if not cart and user_id:
             return Response({
                 "success": False, 
                 "user_not_logged_in": False, 
@@ -63,8 +70,12 @@ class OrderViewSet(viewsets.ViewSet):
                 "data": None, 
                 "error": "Cart not found."
             }, status=400)
+        
+        if cart:
+            cart_obj = CartItem.objects.filter(cart_id=cart.cart_id)
+        else:
+            cart_obj = CartItem.objects.none()
             
-        cart_obj = CartItem.objects.filter(cart_id=cart.cart_id)
         if not cart_obj.exists():
             return Response({
                 "success": False, 
@@ -159,7 +170,8 @@ class OrderViewSet(viewsets.ViewSet):
         order_id = self.generate_unique_order_id()
         order = Order.objects.create(
             order_id=order_id,
-            user_id=user_id,
+            user_id=user_id or "",  # Use empty string if no user_id
+            session_id=session_id or "",  # Use empty string if no user_id
             pincode_id=data["pincode"],
             timeslot_id=data["timeslot_id"],
             
@@ -244,7 +256,8 @@ class OrderViewSet(viewsets.ViewSet):
                 logger.error(f"Variation not found: {item['product_variation_id']}")
 
         # Clear the cart after order is placed
-        cart_obj.delete()
+        if cart_obj:
+            cart_obj.delete()
 
         # Handle payment method
         response_data = {
@@ -573,17 +586,21 @@ class PaymentStatusCheckViewSet(viewsets.ViewSet):
 class OrderDetailViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    @check_authentication()
+    # @check_authentication()
     def list(self, request):
         """
         Get order details by order ID
         """
-        user_id = request.user.user_id
+        user_id = request.user.user_id if request.user.is_authenticated else None
+        session_id = request.session.get('session_token')
         order_id = request.query_params.get("order_id")
         
         try:
             # Get order details
-            order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            if user_id:
+                order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            else:
+                order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
             if not order:
                 return Response({
                     "success": False, 
