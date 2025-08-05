@@ -724,10 +724,11 @@ class ProductVariationViewSet(viewsets.ViewSet):
         stock_toggle_mode = request.data.get("stock_toggle_mode", True)
         stock_quantity = request.data.get("stock_quantity", None)
         if isinstance(stock_toggle_mode, str):
-            if stock_quantity is not None:
-                stock_toggle_mode = False
-            else:
-                stock_toggle_mode = stock_toggle_mode.lower() == "true"
+            stock_toggle_mode = stock_toggle_mode.lower() == "true"
+        elif stock_toggle_mode is None and stock_quantity is not None:
+            stock_toggle_mode = False
+        else:
+            stock_toggle_mode = bool(stock_toggle_mode)
         
         in_stock_bull = request.data.get("in_stock_bull", False)
         if isinstance(in_stock_bull, str):
