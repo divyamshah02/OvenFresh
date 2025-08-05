@@ -1,13 +1,24 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
 
-from Product.models import TimeSlot
+from Product.models import TimeSlot, Product, ProductVariation
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product_title = serializers.SerializerMethodField()
+    weight_variation = serializers.SerializerMethodField()
+
     class Meta:
         model = OrderItem
         fields = "__all__"
+
+    def get_product_title(self, obj):
+        products = self.context.get("products", {})
+        return products.get(obj.product_id)
+
+    def get_weight_variation(self, obj):
+        variations = self.context.get("variations", {})
+        return variations.get(obj.product_variation_id)
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -19,7 +30,18 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_items(self, obj):
         order_items = OrderItem.objects.filter(order_id=obj.order_id)
-        return OrderItemSerializer(order_items, many=True).data
+        product_ids = set(item.product_id for item in order_items)
+        variation_ids = set(item.product_variation_id for item in order_items)
+
+        products = {str(p.product_id): p.title for p in Product.objects.filter(product_id__in=product_ids)}
+        variations = {str(v.product_variation_id): v.weight_variation for v in ProductVariation.objects.filter(product_variation_id__in=variation_ids)}
+
+        serializer = OrderItemSerializer(
+            order_items,
+            many=True,
+            context={'products': products, 'variations': variations}
+        )
+        return serializer.data
 
 
 class KitchenNoteSerializer(serializers.ModelSerializer):
@@ -60,7 +82,8 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'assigned_delivery_partner_id', 'order_note', 'special_instructions',
             'created_at', 'order_items', 'customer_name', 'status_display',
             'payment_status', 'timeslot_name', 'assigned_delivery_partner_name',
-            'subtotal', 'delivery_charge', 'tax_amount'
+            'subtotal', 'delivery_charge', 'tax_amount',
+            'delivery_photos', 'extra_cost'
         ]
     
     def get_order_items(self, obj):

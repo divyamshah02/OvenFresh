@@ -221,8 +221,9 @@ class CartTransferViewSet(viewsets.ViewSet):
     @check_authentication(required_role=None)
     def create(self, request):
         user = request.user
-        # session_id = request.session.session_key  # get session id from request
-        session_id = request.session.get('session_token')
+        session_id = request.data.get('session_id')
+        if not session_id:
+            session_id = request.session.get('session_token')
 
         if not session_id:
             return Response({
@@ -233,7 +234,7 @@ class CartTransferViewSet(viewsets.ViewSet):
                 "error": "No session ID available"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        guest_cart = Cart.objects.get(session_id=session_id, active_cart=True)
+        guest_cart = Cart.objects.filter(session_id=session_id, active_cart=True).first()
         if not guest_cart:
             return Response({
                 "success": False,
@@ -243,13 +244,13 @@ class CartTransferViewSet(viewsets.ViewSet):
                 "error": "No open cart found for this session"
             }, status=status.HTTP_404_NOT_FOUND)
 
-        user_cart = Cart.objects.get(user_id=user.user_id, active_cart=True)
+        user_cart = Cart.objects.filter(user_id=user.user_id, active_cart=True).first()
         if user_cart:
             user_cart.active_cart = False
             user_cart.save()
         
         guest_cart.user_id = user.user_id
-        guest_cart.session_id = None
+        # guest_cart.session_id = None
         guest_cart.active_cart = True
         guest_cart.save()
 

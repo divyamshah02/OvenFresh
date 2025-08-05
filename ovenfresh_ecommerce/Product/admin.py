@@ -7,7 +7,8 @@ from .models import (
     Reviews,
     Pincode,
     TimeSlot,
-    AvailabilityCharges
+    AvailabilityCharges,
+    Coupon
 )
 
 
@@ -67,3 +68,34 @@ class AvailabilityChargesAdmin(admin.ModelAdmin):
     list_display = ['id', 'product_id', 'product_variation_id', 'pincode_id', 'is_available', 'created_at']
     list_filter = ['is_available', 'created_at']
     search_fields = ['product_id', 'product_variation_id']
+
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = [
+        'coupon_code', 'discount_type', 'discount_value', 
+        'minimum_order_amount', 'usage_count', 'usage_limit',
+        'valid_from', 'valid_until', 'is_active'
+    ]
+    list_filter = ['discount_type', 'is_active', 'valid_from', 'valid_until']
+    search_fields = ['coupon_code']
+    readonly_fields = ['usage_count', 'created_at']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('coupon_code', 'discount_type', 'discount_value')
+        }),
+        ('Conditions', {
+            'fields': ('minimum_order_amount', 'maximum_discount_amount')
+        }),
+        ('Usage Limits', {
+            'fields': ('usage_limit', 'usage_count')
+        }),
+        ('Validity', {
+            'fields': ('valid_from', 'valid_until', 'is_active')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        })
+    )

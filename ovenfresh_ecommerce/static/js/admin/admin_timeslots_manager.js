@@ -188,12 +188,14 @@ function createTimeslotRow(timeslot) {
                         onclick="toggleTimeslotStatus(${timeslot.id})" title="${timeslot.is_active ? "Deactivate" : "Activate"}">
                     <i class="fas fa-toggle-${timeslot.is_active ? "on" : "off"}"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTimeslot(${timeslot.id})" title="Delete">
-                    <i class="fas fa-trash"></i>
-                </button>
+                
             </div>
         </td>
     `
+
+    // <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTimeslot(${timeslot.id})" title="Delete">
+    //                 <i class="fas fa-trash"></i>
+    //             </button>
 
   return row
 }

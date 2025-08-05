@@ -40,6 +40,47 @@
         <div class="loader"></div>
     </div>
 
+    <!-- OTP Login Modal (Non-closable) -->
+    <div class="modal fade" id="otpLoginModal" tabindex="-1" aria-labelledby="otpLoginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="otpLoginModalLabel">Login Required</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="mobile-input-section">
+                        <i class="fas fa-mobile-alt fa-3x of-text-primary mb-3"></i>
+                        <h6 class="mb-3">Enter your mobile number to continue</h6>
+                        <div class="mb-3">
+                            <input type="tel" class="form-control form-control-lg text-center" id="mobileNumber" placeholder="Enter mobile number" maxlength="10">
+                            <div class="invalid-feedback" id="mobileError"></div>
+                        </div>
+                        <button class="btn of-btn-primary btn-lg w-100" onclick="sendOTP()">
+                            <span id="sendOtpText">Send OTP</span>
+                            <span id="sendOtpLoader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                    </div>
+
+                    <div id="otp-input-section" style="display: none;">
+                        <i class="fas fa-key fa-3x of-text-primary mb-3"></i>
+                        <h6 class="mb-3">Enter the OTP sent to <span id="displayMobile"></span></h6>
+                        <div class="mb-3">
+                            <input type="text" class="form-control form-control-lg text-center" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6">
+                            <div class="invalid-feedback" id="otpError"></div>
+                        </div>
+                        <button class="btn of-btn-primary btn-lg w-100 mb-2" onclick="verifyOTP()">
+                            <span id="verifyOtpText">Verify OTP</span>
+                            <span id="verifyOtpLoader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                        </button>
+                        <button class="btn btn-outline-secondary w-100" onclick="goBackToMobile()">
+                            <i class="fas fa-arrow-left me-2"></i>Change Mobile Number
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="blur" id="main-content">
         <!-- ##### ##### Start Nav Section ##### ##### -->
         {% include 'nav.html' %}
@@ -82,9 +123,6 @@
                                     </a>
                                     <a href="#" class="list-group-item list-group-item-action" data-section="addresses">
                                         <i class="fas fa-map-marker-alt me-3"></i>Addresses
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action" data-section="settings">
-                                        <i class="fas fa-cog me-3"></i>Settings
                                     </a>
                                     <a href="#" class="list-group-item list-group-item-action text-danger" onclick="logout()">
                                         <i class="fas fa-sign-out-alt me-3"></i>Logout
@@ -201,73 +239,6 @@
                                 <div class="card-body">
                                     <div id="addresses-list" class="row g-3">
                                         <!-- Addresses will be populated here -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Settings Section -->
-                        <div id="settings-section" class="account-section" style="display: none;">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-white border-bottom">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-cog me-2 of-text-primary"></i>
-                                        Account Settings
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Change Password -->
-                                    <div class="mb-4">
-                                        <h6 class="mb-3">Change Password</h6>
-                                        <form id="password-form">
-                                            <div class="row g-3">
-                                                <div class="col-12">
-                                                    <label for="currentPassword" class="form-label">Current Password *</label>
-                                                    <input type="password" class="form-control" id="currentPassword" required>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="newPassword" class="form-label">New Password *</label>
-                                                    <input type="password" class="form-control" id="newPassword" required>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="confirmPassword" class="form-label">Confirm Password *</label>
-                                                    <input type="password" class="form-control" id="confirmPassword" required>
-                                                </div>
-                                                <div class="col-12">
-                                                    <button type="submit" class="btn of-btn-primary">
-                                                        <i class="fas fa-key me-2"></i>Change Password
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <hr>
-
-                                    <!-- Notification Preferences -->
-                                    <div class="mb-4">
-                                        <h6 class="mb-3">Notification Preferences</h6>
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-                                            <label class="form-check-label" for="emailNotifications">
-                                                Email notifications for order updates
-                                            </label>
-                                        </div>
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" id="smsNotifications" checked>
-                                            <label class="form-check-label" for="smsNotifications">
-                                                SMS notifications for order updates
-                                            </label>
-                                        </div>
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input" type="checkbox" id="promotionalEmails">
-                                            <label class="form-check-label" for="promotionalEmails">
-                                                Promotional emails and offers
-                                            </label>
-                                        </div>
-                                        <button class="btn of-btn-outline-primary" onclick="updateNotificationPreferences()">
-                                            <i class="fas fa-bell me-2"></i>Update Preferences
-                                        </button>
                                     </div>
                                 </div>
                             </div>

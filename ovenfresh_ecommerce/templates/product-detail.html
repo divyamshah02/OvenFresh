@@ -103,6 +103,10 @@
                             
                             <h1 class="product-title mb-3">Loading...</h1>
                             
+                            <div class="veg-indicator veg mb-2">
+                                <span class="badge">Loading...</span>
+                            </div>
+
                             <div class="product-rating mb-3">
                                 <div class="d-flex align-items-center">
                                     <div class="stars me-2">
@@ -136,6 +140,24 @@
                             
                             <!-- Product Options -->
                             <div class="product-options mb-4">
+                                <!-- Countdown Timer -->
+                                <div class="countdown-section mb-4">
+                                    <h5>For same day delivery <span id="deliveryCountdown" class="text-danger"></span> left.</h5>
+                                    <!-- <div class="card border-warning">
+                                        <div class="card-body text-center py-3">
+                                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                                <i class="fas fa-clock text-warning me-2"></i>
+                                                <h6 class="mb-0 text-warning">Order before 22:45 for same day delivery!</h6>
+                                            </div>
+                                            <div class="countdown-timer">
+                                                <span class="badge bg-warning text-dark fs-5 px-3 py-2" id="deliveryCountdownd">
+                                                    Loading...
+                                                </span>
+                                            </div>
+                                            <small class="text-muted mt-2 d-block">Time remaining for today's delivery slot</small>
+                                        </div>
+                                    </div> -->
+                                </div>
                                 <div class="row g-3">
                                     <!-- <div class="row align-items-center" style="min-height: 100px;">
                                         <label for="pincode-check" class="form-label">Check Pincode:</label>
@@ -228,10 +250,10 @@
                                     </div> -->
                                     <div class="col-md-12">
                                         <div class="d-grid gap-2 d-md-flex">
-                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="addToCart()">
+                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="AddToCart()">
                                                 <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                             </button>
-                                            <button class="btn of-btn-outline-primary rounded-pill">
+                                            <button class="btn of-btn-outline-primary rounded-pill" onclick="buyNow()">
                                                 <!-- <i class="fas fa-heart"></i> -->
                                                 Buy Now
                                             </button>
@@ -278,8 +300,8 @@
                                     <div class="feature-item d-flex align-items-center">
                                         <i class="fas fa-undo of-text-primary me-3"></i>
                                         <div>
-                                            <h6 class="mb-0">Easy Returns</h6>
-                                            <small class="text-muted">Hassle-free returns</small>
+                                            <h6 class="mb-0">12 Am Delivery</h6>
+                                            <small class="text-muted">Late Night Delivery</small>
                                         </div>
                                     </div>
                                 </div>
@@ -306,22 +328,15 @@
                                 <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews (42)</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">Delivery Info</button>
+                                <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#special_instructions" type="button" role="tab">Special Instructions</button>
                             </li>
                         </ul>
                         <div class="tab-content bg-white p-4 rounded-bottom shadow-sm" id="productTabsContent">
+                            <!-- Description Tab - Now dynamic -->
                             <div class="tab-pane fade show active" id="description" role="tabpanel">
-                                <h5>Product Description</h5>
-                                <p>Our Chocolate Truffle Cake is a masterpiece of indulgence, crafted with the finest Belgian chocolate and premium ingredients. Each layer tells a story of rich flavors and smooth textures that melt in your mouth.</p>
-                                <p>This cake features:</p>
-                                <ul>
-                                    <li>Three layers of moist chocolate sponge cake</li>
-                                    <li>Rich chocolate truffle cream filling</li>
-                                    <li>Smooth chocolate ganache topping</li>
-                                    <li>Decorative chocolate shavings</li>
-                                    <li>Optional custom message writing</li>
-                                </ul>
-                                <p>Perfect for birthdays, anniversaries, celebrations, or any moment that calls for something special. Our expert bakers ensure each cake is made fresh to order with the highest quality standards.</p>
+                                <div class="loading-placeholder">
+                                    <p>Loading product details...</p>
+                                </div>
                             </div>
                             <div class="tab-pane fade" id="ingredients" role="tabpanel">
                                 <h5>Ingredients</h5>
@@ -465,10 +480,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="delivery" role="tabpanel">
-                                <h5>Delivery Information</h5>
+                            <div class="tab-pane fade" id="special_instructions" role="tabpanel">
+                                <h5>Special Instructions</h5>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-12">
+                                        <h6>Special Instructions:</h6>
+                                        <ul>
+                                            <li>Keep refrigerated upon delivery</li>
+                                            <li>Handle with care</li>
+                                            <li>Contact us for special delivery requests</li>
+                                        </ul>
+                                    </div>
+                                    <!-- <div class="col-md-6">
                                         <h6>Delivery Areas:</h6>
                                         <ul>
                                             <li>Mumbai (All areas)</li>
@@ -497,7 +520,7 @@
                                             <li>Handle with care</li>
                                             <li>Contact us for special delivery requests</li>
                                         </ul>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -767,95 +790,17 @@
     </style>
 
     <script>
-        // Cart functionality
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-        function updateCartCount() {
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cart-count').textContent = cartCount;
-        }
-
-        function changeMainImage(src) {
-            document.getElementById('main-product-image').src = src;
-            
-            // Update active thumbnail
-            document.querySelectorAll('.thumbnail-img').forEach(img => {
-                img.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        function changeQuantity(change) {
-            const quantityInput = document.getElementById('quantity');
-            let currentQuantity = parseInt(quantityInput.value);
-            let newQuantity = currentQuantity + change;
-            
-            if (newQuantity >= 1 && newQuantity <= 10) {
-                quantityInput.value = newQuantity;
-            }
-        }
-
-        function addToCart() {
-            const product = {
-                id: 1,
-                name: "Chocolate Truffle Cake",
-                price: 35.99,
-                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80",
-                weight: document.getElementById('weight').value,
-                flavor: document.getElementById('flavor').value,
-                message: document.getElementById('message').value,
-                deliveryDate: document.getElementById('delivery-date').value,
-                quantity: parseInt(document.getElementById('quantity').value)
-            };
-
-            const existingItem = cart.find(item => 
-                item.id === product.id && 
-                item.weight === product.weight && 
-                item.flavor === product.flavor
+        window.onload = async function () {
+            const csrfToken = "{{ csrf_token }}";
+            await InitializeProductDetail(
+                csrfToken,
+                "{% url 'product-list' %}",
+                "{% url 'check-pincode-list' %}",
+                "{% url 'cart-api-list' %}",
+                "{% url 'checkout-list' %}"
             );
-
-            if (existingItem) {
-                existingItem.quantity += product.quantity;
-            } else {
-                cart.push(product);
-            }
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            
-            // Show success message
-            alert('Product added to cart successfully!');
-        }
-
-        // Set minimum delivery date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('delivery-date').min = tomorrow.toISOString().split('T')[0];
-
-        window.onload = function () {
             toggle_loader();
-            updateCartCount();
-        };
-
-        window.addEventListener('scroll', function () {
-            const menuBar = document.querySelector('.main-menu');
-            const scrollTrigger = 95;
-
-            if (window.scrollY >= scrollTrigger) {
-                menuBar.classList.add('fixed-top');
-            } else {
-                menuBar.classList.remove('fixed-top');
-            }
-        });
-    </script>
-    
-    <script>
-        const csrfToken = "{{ csrf_token }}";
-        InitializeProductDetail(
-            csrfToken,
-            "{% url 'product-list' %}",
-            "{% url 'check-pincode-list' %}"
-        );
+        }
     </script>
 </body>
 

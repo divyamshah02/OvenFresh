@@ -2,11 +2,11 @@ let csrfToken = null;
 let categoryUrl = null;
 let subcategoryUrl = null;
 
-function showToast(message, type = 'success') {
+function showToastNoti(message, type = 'success') {
     const toastHTML = `
         <div class="toast align-items-center text-bg-${type} border-0 show" role="alert">
             <div class="d-flex">
-                <div class="toast-body">${message}</div>
+                <div class="toast-body text-white">${message}</div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         </div>`;
@@ -34,54 +34,54 @@ function cancelNewCategory() {
 
 async function saveNewCategory() {
     const title = document.getElementById("newCategoryInput").value.trim();
-    if (!title) return showToast("Category title cannot be empty", "danger");
+    if (!title) return showToastNoti("Category title cannot be empty", "danger");
 
     const [Success, Res] = await callApi("POST", categoryUrl, { title }, csrfToken);
     if (Success && Res.success) {
-        showToast("Category added successfully");
+        showToastNoti("Category added successfully");
         cancelNewCategory();
         fetchAndRenderCategories();
     } else {
-        showToast(Res?.error || "Failed to add category", "danger");
+        showToastNoti(Res?.error || "Failed to add category", "danger");
     }
 }
 
 async function saveNewSubCategory(catId, inputId) {
     const title = document.getElementById(inputId).value.trim();
-    if (!title) return showToast("Subcategory title cannot be empty", "danger");
+    if (!title) return showToastNoti("Subcategory title cannot be empty", "danger");
 
     const [Success, Res] = await callApi("POST", subcategoryUrl, { title, category_id: catId }, csrfToken);
     if (Success && Res.success) {
-        showToast("Subcategory added");
+        showToastNoti("Subcategory added");
         fetchAndRenderCategories();
     } else {
-        showToast(Res?.error || "Failed to add subcategory", "danger");
+        showToastNoti(Res?.error || "Failed to add subcategory", "danger");
     }
 }
 
 async function deleteItem(url, id, label) {
-    const [Success, Res] = await callApi("DELETE", url, { id }, csrfToken);
+    const [Success, Res] = await callApi("DELETE", `${url}${id}/`, { id }, csrfToken);
     if (Success && Res.success) {
-        showToast(`${label} deleted`);
+        showToastNoti(`${label} deleted`);
         fetchAndRenderCategories();
     } else {
-        showToast(Res?.error || `Failed to delete ${label}`, "danger");
+        showToastNoti(Res?.error || `Failed to delete ${label}`, "danger");
     }
 }
 
 async function updateItem(url, id, newTitle, label) {
     const [Success, Res] = await callApi("PUT", `${url}${id}/`, { title: newTitle }, csrfToken);
     if (Success && Res.success) {
-        showToast(`${label} updated`);
+        showToastNoti(`${label} updated`);
         fetchAndRenderCategories();
     } else {
-        showToast(Res?.error || `Failed to update ${label}`, "danger");
+        showToastNoti(Res?.error || `Failed to update ${label}`, "danger");
     }
 }
 
 async function fetchAndRenderCategories() {
     const [Success, Res] = await callApi("GET", categoryUrl);
-    if (!Success || !Res.success) return showToast("Failed to fetch categories", "danger");
+    if (!Success || !Res.success) return showToastNoti("Failed to fetch categories", "danger");
 
     const categoryListDiv = document.getElementById("categoryList");
     categoryListDiv.innerHTML = "";

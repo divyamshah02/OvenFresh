@@ -83,6 +83,9 @@ function populateOrderDetails() {
   // Populate delivery information
   populateDeliveryInfo()
 
+  // Populate delivery photos
+  populateDeliveryPhotos()
+
   // Populate order summary
   populateOrderSummary()
 
@@ -171,11 +174,47 @@ function populateOrderItems() {
     .join("")
 }
 
+function populateDeliveryPhotos() {
+    // Get delivery photos container
+    const container = document.getElementById("delivery-photos-container");
+    
+    // Clear existing content
+    container.innerHTML = "";
+    
+    // Populate delivery photos if available
+    if (orderData.delivery_photos && orderData.delivery_photos.length > 0) {
+        orderData.delivery_photos.forEach((photoUrl, index) => {
+            const photoElement = document.createElement("div");
+            photoElement.className = "col-4 col-md-3";
+            photoElement.innerHTML = `
+                <a href="${photoUrl}" target="_blank">
+                  <img src="${photoUrl}" 
+                      alt="Delivery photo ${index + 1}" 
+                      class="img-fluid rounded border delivery-photo">
+            `;
+            container.appendChild(photoElement);
+        });
+    } else {
+        // Show placeholder if no photos
+        container.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <div class="text-muted">
+                    <i class="fas fa-images fa-2x mb-2"></i>
+                    <p>No delivery photos available</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Populate total extra cost
+    const extraCost = orderData.extra_cost || 0;
+    document.getElementById("total-extra-cost").textContent = extraCost.toFixed(2);
+}
+
 function populateOrderTimeline() {
   const timeline = document.getElementById("order-timeline")
   const statuses = [
     { key: "placed", label: "Order Placed", icon: "fas fa-shopping-cart" },
-    { key: "confirmed", label: "Order Confirmed", icon: "fas fa-check-circle" },
     { key: "preparing", label: "Preparing", icon: "fas fa-utensils" },
     { key: "ready", label: "Ready for Delivery", icon: "fas fa-box" },
     { key: "out_for_delivery", label: "Out for Delivery", icon: "fas fa-truck" },
@@ -312,12 +351,17 @@ async function assignDeliveryPerson() {
   }
 }
 
-function updateOrderStatus() {
+function updateOrderStatus(no_modal=false) {
   const newStatus = document.getElementById("status-select").value
   document.getElementById("modal-status-select").value = newStatus
 
-  const modal = new bootstrap.Modal(document.getElementById("updateStatusModal"))
-  modal.show()
+  if (!no_modal) {
+    const modal = new bootstrap.Modal(document.getElementById("updateStatusModal"))
+    modal.show()
+  }
+  else {
+    document.getElementById('new_update_btn').style.display = 'none';
+  }
 }
 
 async function confirmStatusUpdate() {
@@ -342,7 +386,12 @@ async function confirmStatusUpdate() {
       showNotification("Order status updated successfully!", "success")
 
       // Close modal
-      bootstrap.Modal.getInstance(document.getElementById("updateStatusModal")).hide()
+      try{
+        bootstrap.Modal.getInstance(document.getElementById("updateStatusModal")).hide()
+      }
+      catch {
+        
+      }
 
       // Refresh order details
       await loadOrderDetails()
@@ -357,7 +406,7 @@ async function confirmStatusUpdate() {
   }
 }
 
-function updateOrderStatusBadge(status) {
+function updateOrderStatusBadge(status, is_new=false) {
   const badge = document.getElementById("order-status-badge")
   const statusConfig = {
     placed: { class: "bg-info", text: "Placed" },
@@ -372,6 +421,11 @@ function updateOrderStatusBadge(status) {
   const config = statusConfig[status] || { class: "bg-secondary", text: status }
   badge.className = `order-status-badge badge ${config.class}`
   badge.textContent = config.text
+
+  if (is_new) {
+    updateOrderStatus(true)
+    document.getElementById('new_update_btn').style.display = '';
+  }
 }
 
 function downloadKOT() {
@@ -448,7 +502,7 @@ function generateKOTPDF() {
 
   // Customer details
   doc.text("Customer Details:", 20, 70)
-  doc.text(`${orderData.first_name} ${orderData.last_name}`, 20, 85)
+  doc.text(`Name: ${orderData.first_name} ${orderData.last_name}`, 20, 85)
   doc.text(`Phone: ${orderData.phone}`, 20, 95)
 
   // Delivery details
@@ -483,7 +537,7 @@ function generateKOTPDF() {
 function initializeEventListeners() {
   // Status select change
   document.getElementById("status-select").addEventListener("change", function () {
-    updateOrderStatusBadge(this.value)
+    updateOrderStatusBadge(this.value, true)
   })
 
   // Admin notes save button

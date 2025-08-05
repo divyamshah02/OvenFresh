@@ -74,6 +74,11 @@ class Order(models.Model):
     # Order details
     status = models.CharField(max_length=30, default="not_placed")  # e.g., not_placed, placed, preparing, delivered
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal_amount = models.CharField(max_length=255)
+    tax_amount = models.CharField(max_length=255)
+    discount_amount = models.CharField(max_length=255, null=True, blank=True)
+    coupon_code = models.CharField(max_length=255, null=True, blank=True)
+    coupon_discount = models.CharField(max_length=255, null=True, blank=True)
     
     # Payment details
     razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)  # Payment gateway ID
@@ -88,6 +93,8 @@ class Order(models.Model):
     order_note = models.TextField(null=True, blank=True)
     special_instructions = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    delivery_photos = models.JSONField(default=list)
+    extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
 
     def __str__(self):
         return self.order_id

@@ -188,8 +188,8 @@
                             <h1 class="h2">Order Details</h1>
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">
-                                    <li class="breadcrumb-item"><a href="/admin/dashboard/">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="/admin/orders/">Orders</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin-dashboard/">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin-all-orders/">Orders</a></li>
                                     <li class="breadcrumb-item active" id="breadcrumb-order-id">Order Details</li>
                                 </ol>
                             </nav>
@@ -234,14 +234,15 @@
                                 <div class="mt-2">
                                     <select class="form-select d-inline-block w-auto" id="status-select">
                                         <option value="placed">Placed</option>
-                                        <option value="confirmed">Confirmed</option>
+                                        <!-- <option value="confirmed">Confirmed</option> -->
                                         <option value="preparing">Preparing</option>
                                         <option value="ready">Ready for Delivery</option>
                                         <option value="out_for_delivery">Out for Delivery</option>
                                         <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
+                                        <!-- <option value="cancelled">Cancelled</option> -->
                                     </select>
                                 </div>
+                                <button type="button" class="btn btn-primary mt-2" id="new_update_btn" onclick="confirmStatusUpdate()" style="display: none;">Update Status</button>
                             </div>
                         </div>
                     </div>
@@ -342,6 +343,43 @@
                                             <!-- Order items will be populated here -->
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-camera me-2"></i>Delivery Photos & Extra Costs
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Extra Cost Section -->
+                                    <div class="col-md-4 mb-4 mb-md-0">
+                                        <div class="border rounded p-3 h-100">
+                                            <h6 class="mb-3">Extra Charges</h6>
+                                            <hr>
+                                            <div class="d-flex justify-content-between fw-bold">
+                                                <span>Total Extra Cost:</span>
+                                                <span>₹<span id="total-extra-cost">0.00</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Delivery Photos Section -->
+                                    <div class="col-md-8">
+                                        <h6 class="mb-3">Delivery Proof Photos</h6>
+                                        <div class="row g-2" id="delivery-photos-container">
+                                            <!-- Photos will be populated here -->
+                                            <div class="col-12 text-center py-4">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-images fa-2x mb-2"></i>
+                                                    <p>No delivery photos available</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -481,12 +519,12 @@
                         <label for="modal-status-select" class="form-label">New Status</label>
                         <select class="form-select" id="modal-status-select">
                             <option value="placed">Placed</option>
-                            <option value="confirmed">Confirmed</option>
+                            <!-- <option value="confirmed">Confirmed</option> -->
                             <option value="preparing">Preparing</option>
                             <option value="ready">Ready for Delivery</option>
                             <option value="out_for_delivery">Out for Delivery</option>
                             <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
+                            <!-- <option value="cancelled">Cancelled</option> -->
                         </select>
                     </div>
                     <div class="mb-3">

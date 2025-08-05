@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Dashboard - OvenFresh</title>
+    
+    <!-- Import BootStrap CSS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Import Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
+
+    <!-- Import FontAwsome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Import Admin Styles -->
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+    <link rel="stylesheet" href="/static/css/loader.css">
+</head>
+<body class="ovenfresh-theme">
+    <div id="loader" class="loader-container">
+        <div class="loader"></div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main content -->
+            <main class="col-12 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <h1 class="h2">
+                            <i class="fas fa-truck me-2"></i>
+                            Delivery Dashboard
+                        </h1>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="d-flex align-items-center me-3">
+                            <span class="me-2">Available:</span>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="availabilityToggle">
+                                <label class="form-check-label" for="availabilityToggle"></label>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>
+                                <span id="userName">Delivery Person</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="viewHistory()">
+                                    <i class="fas fa-history me-2"></i>Delivery History
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Pending Orders</h6>
+                                        <h3 class="card-title mb-0" id="pendingCount">0</h3>
+                                        <p class="small text-muted mb-0">Orders to deliver</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Completed Today</h6>
+                                        <h3 class="card-title mb-0" id="completedCount">0</h3>
+                                        <p class="small text-success mb-0">Successfully delivered</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="col-md-4 mb-3">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-subtitle mb-1">Today's Earnings</h6>
+                                        <h3 class="card-title mb-0" id="todayEarnings">₹0</h3>
+                                        <p class="small text-info mb-0">COD collections</p>
+                                    </div>
+                                    <div class="icon-container">
+                                        <i class="fas fa-rupee-sign"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+
+                <!-- Filter Tabs -->
+                <ul class="nav nav-pills mb-4" id="orderTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="today-tab" data-bs-toggle="pill" data-bs-target="#today" type="button" role="tab">
+                            <i class="fas fa-calendar-day me-2"></i>Today's Orders
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pending-tab" data-bs-toggle="pill" data-bs-target="#pending" type="button" role="tab">
+                            <i class="fas fa-clock me-2"></i>All Pending
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i>Past Orders
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Orders Content -->
+                <div class="tab-content" id="orderTabsContent">
+                    <!-- Today's Orders -->
+                    <div class="tab-pane fade show active" id="today" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-calendar-day me-2"></i>
+                                    Today's Orders
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="todayOrders">
+                                    <!-- Orders will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pending Orders -->
+                    <div class="tab-pane fade" id="pending" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    All Pending Orders
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="pendingOrders">
+                                    <!-- Orders will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past Orders -->
+                    <div class="tab-pane fade" id="history" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-history me-2"></i>
+                                    Past Orders
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="pastOrders">
+                                    <!-- Past orders will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- COD Collection Modal -->
+    <div class="modal fade" id="codModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        Collect Cash & Complete Delivery
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <h4>Order #<span id="codOrderId"></span></h4>
+                        <p class="text-muted">Amount to collect: <strong id="codAmount"></strong></p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="collectedAmount" class="form-label">Collected Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="collectedAmount" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="extraCost" class="form-label">Extra Cost (Toll/Parking)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="extraCost" 
+                                step="0.01" min="0" value="0">
+                        </div>
+                        <div class="form-text">Additional charges collected (optional)</div>
+                    </div>
+
+                    <!-- Delivery Photo Upload Section -->
+                    <div class="mb-3">
+                        <label for="deliveryPhotos" class="form-label">Delivery Proof Photos</label>
+                        <input class="form-control" type="file" id="deliveryPhotos" multiple accept="image/*">
+                        <div class="form-text">Upload photos for delivered items (optional but recommended)</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        After confirming cash collection, the order will be automatically marked as delivered.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="confirmCashCollection()">
+                        <i class="fas fa-check me-2"></i>Collect Cash & Deliver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- Import BootStrap JavaScript Library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- JS -->
+    <script src="/static/js/loader.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/delivery/delivery_dashboard.js"></script>
+    
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        InitializeDeliveryDashboard(
+            csrfToken,
+            "/delivery-api/dashboard/",
+            "/delivery-api/availability-toggle/",
+            "/delivery-api/update-status/",
+            "/delivery-api/confirm-cash/",
+            "/delivery-api/my-orders/"
+        );
+        toggle_loader();
+    </script>
+</body>
+</html>

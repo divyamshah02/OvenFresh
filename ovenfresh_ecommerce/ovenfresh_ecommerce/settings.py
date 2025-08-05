@@ -14,6 +14,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+# Feature Flags
+ENABLE_PINCODE_LOGIC = False  # Set to True to enable pincode-based availability
+
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 # X_FRAME_OPTIONS = 'ALLOWALL'
 # CORS_ALLOW_ALL_ORIGINS = True  # allow fetch/ajax from anywhere
@@ -36,6 +40,7 @@ INSTALLED_APPS = [
     'Product',
     'Analytics',
     'FrontEnd',
+    'Cms'
 ]
 
 MIDDLEWARE = [
@@ -123,3 +128,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Divyam
 RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfWER3WVdFNGxpY1BEcHU=")
 RAZORPAY_KEY_SECRET = base64_to_text("WnBBMmVqTGdZcU42emh0Z1pRU3k1TXBI")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'django_errors.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'ovenfresh': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+        },
+    },
+}

@@ -198,7 +198,7 @@ function initializeEventListeners() {
   // View full order button in quick view modal
   document.getElementById("viewFullOrderBtn").addEventListener("click", () => {
     if (currentQuickViewOrderId) {
-      window.location.href = `/admin/order-detail/?order_id=${currentQuickViewOrderId}`
+      window.location.href = `/admin-order-detail/?order_id=${currentQuickViewOrderId}`
     }
   })
 }
@@ -262,6 +262,7 @@ async function loadOrders() {
     const [success, result] = await callApi("GET", url)
 
     if (success && result.success) {
+      console.log(result.data.orders)
       ordersData = result.data.orders || []
       totalOrders = result.data.total_count || 0
       totalPages = result.data.total_pages || 1
@@ -322,29 +323,22 @@ function renderOrders() {
                            data-order-id="${order.order_id}" ${isSelected ? "checked" : ""}>
                 </div>
             </td>
-            <td>
-                <span class="fw-medium">${order.order_id}</span>
-                <div class="small text-muted">${formatDate(order.created_at, true)}</div>
-            </td>
-            <td>
-                <div class="d-flex align-items-center">
-                    <div class="avatar-circle me-2">
-                        <span>${getInitials(order.first_name, order.last_name)}</span>
-                    </div>
-                    <div>
-                        <div class="fw-medium">${order.first_name} ${order.last_name}</div>
-                        <div class="small text-muted">${order.phone}</div>
-                    </div>
-                </div>
-            </td>
             <td>${formatDate(order.created_at)}</td>
             <td>
+                <div class="fw-medium">${order.first_name} - ${order.phone}</div>
+                <div class="small text-muted">#${order.order_id}</div>
+            </td>
+            <td>
+              ${order.items.map(
+                item => `${item.product_title} (${item.weight_variation})`
+              ).join("<br>")}
+            </td>
+            <td>
                 <div>${formatDate(order.delivery_date)}</div>
-                <div class="small text-muted">${order.timeslot_name || "Not specified"}</div>
             </td>
             <td>
                 <div class="fw-bold">₹${formatCurrency(order.total_amount)}</div>
-                <div class="small text-muted">${order.order_items_count} items</div>
+                <div class="small text-muted">${order.items.length} items</div>
             </td>
             <td>
                 <span class="badge ${getPaymentStatusBadgeClass(order.payment_received, order.payment_method)}">
@@ -357,42 +351,45 @@ function renderOrders() {
                 </span>
             </td>
             <td>
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Actions
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" onclick="viewOrderQuick('${order.order_id}')">
-                            <i class="fas fa-eye me-2"></i>Quick View
-                        </a></li>
-                        <li><a class="dropdown-item" href="/admin/order-detail/?order_id=${order.order_id}">
-                            <i class="fas fa-edit me-2"></i>View Details
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="printOrderKOT('${order.order_id}')">
-                            <i class="fas fa-print me-2"></i>Print KOT
-                        </a></li>
-                        ${
-                          order.status !== "delivered" && order.status !== "cancelled"
-                            ? `
-                        <li><a class="dropdown-item" href="#" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
-                            <i class="fas fa-check-circle me-2"></i>Mark as Delivered
-                        </a></li>`
-                            : ""
-                        }
-                        ${
-                          order.status !== "cancelled"
-                            ? `
-                        <li><a class="dropdown-item text-danger" href="#" onclick="updateOrderStatus('${order.order_id}', 'cancelled')">
-                            <i class="fas fa-times-circle me-2"></i>Cancel Order
-                        </a></li>`
-                            : ""
-                        }
-                    </ul>
-                </div>
+                <a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
+                    <i class="fas fa-edit me-2"></i>View Details
+                </a>
             </td>
-        `
+        `;
 
+      //   <div class="dropdown">
+      //     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      //         Actions
+      //     </button>
+      //     <ul class="dropdown-menu dropdown-menu-end">
+      //         <li><a class="dropdown-item" href="#" onclick="viewOrderQuick('${order.order_id}')">
+      //             <i class="fas fa-eye me-2"></i>Quick View
+      //         </a></li>
+      //         <li><a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
+      //             <i class="fas fa-edit me-2"></i>View Details
+      //         </a></li>
+      //         <li><hr class="dropdown-divider"></li>
+      //         <li><a class="dropdown-item" href="#" onclick="printOrderKOT('${order.order_id}')">
+      //             <i class="fas fa-print me-2"></i>Print KOT
+      //         </a></li>
+      //         ${
+      //           order.status !== "delivered" && order.status !== "cancelled"
+      //             ? `
+      //         <li><a class="dropdown-item" href="#" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
+      //             <i class="fas fa-check-circle me-2"></i>Mark as Delivered
+      //         </a></li>`
+      //             : ""
+      //         }
+      //         ${
+      //           order.status !== "cancelled"
+      //             ? `
+      //         <li><a class="dropdown-item text-danger" href="#" onclick="updateOrderStatus('${order.order_id}', 'cancelled')">
+      //             <i class="fas fa-times-circle me-2"></i>Cancel Order
+      //         </a></li>`
+      //             : ""
+      //         }
+      //     </ul>
+      // </div>
     tableBody.appendChild(row)
   })
 
@@ -647,7 +644,7 @@ function printOrderKOT(orderId) {
   showToast("Printing KOT for order " + orderId, "info")
 
   // Redirect to the order detail page with a print parameter
-  window.open(`/admin/order-detail/?order_id=${orderId}&print_kot=true`, "_blank")
+  window.open(`/admin-order-detail/?order_id=${orderId}&print_kot=true`, "_blank")
 }
 
 function printBulkKOT() {

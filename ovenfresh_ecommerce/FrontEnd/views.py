@@ -1,5 +1,8 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -116,6 +119,21 @@ class AdminTemplateViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_template.html')
 
 
+class AdminDashboardViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_dashboard.html')
+
+class AdminCmsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_homepage_manager.html')
+
+
 class AdminAllProductViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -156,6 +174,14 @@ class AdminTimeslotViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_timeslots_manager.html')
 
 
+class AdminCouponViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_coupon_manager.html')
+
+
 class AdminAllOrdersViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -170,4 +196,48 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_order_detail.html')
+
+
+class AdminPincodeOrderDetailViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_pincode_orders.html')
+
+
+class AdminDeliverPersonViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_delivery_manager.html')
+
+
+class DeliveryLoginViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'delivery/delivery_login.html')
+
+
+class DeliveryDashboardViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="delivery")
+    def list(self, request):
+        return render(request, 'delivery/delivery_dashboard.html')
+
+
+def admin_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_staff:
+            login(request, user)
+            return redirect('admin_dashboard')
+        else:
+            messages.error(request, 'Invalid credentials or not an admin.')
+    return render(request, 'admin/admin_login.html')
 

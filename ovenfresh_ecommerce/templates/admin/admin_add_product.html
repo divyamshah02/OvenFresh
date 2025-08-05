@@ -52,30 +52,68 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="productTitle" class="form-label">Product Title</label>
-                                    <input type="text" class="form-control" id="productTitle" placeholder="Enter product title">
+                                    <input type="text" class="form-control" id="productTitle" placeholder="Enter Product Title">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="productPhoto" class="form-label">Product Photo URL</label>
-                                    <input type="text" class="form-control" id="productPhoto" placeholder="Enter photo URL" value="https://www.dynamiclabz.net/static/assets/images/resource/livechat%20(1).png">
+                                    <label for="productPhotos" class="form-label">Product Photos</label>
+                                    <div class="p-4 text-center border rounded" id="photoUploadBox"
+                                        onclick="document.getElementById('productPhotoInput').click()"
+                                        style="cursor: pointer; background-color: #f8f9fa; border: 2px dashed #dee2e6;">
+                                        <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted" id="photoUploadIcon"></i>
+                                        <p class="mb-0 text-muted" id="photoUploadText">Click to upload product images</p>
+                                        <p class="mb-0 small text-muted">Recommended aspect ratio: 1:1 (square)</p>
+                                        <p class="mb-0 small text-success" id="photoUploadFileText" style="display: none;"></p>
+                                        <input type="file" id="productPhotoInput" hidden multiple accept="image/*">
+                                    </div>
+                                    <div id="photoPreviewContainer" class="mt-3" style="display: none;">
+                                        <div class="row" id="photoPreviewGrid"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="productDesc" class="form-label">Product Description</label>
-                                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter description"></textarea>
+                                <textarea class="form-control" id="productDesc" rows="3" placeholder="Enter Description"></textarea>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="categorySelect" class="form-label">Category</label>
                                     <select class="form-select" id="categorySelect">
-                                        <option disabled selected>-- Select Category --</option>
+                                        <option value="">-- Select Category --</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="subCategorySelect" class="form-label">Sub-Category</label>
                                     <select class="form-select" id="subCategorySelect">
-                                        <option disabled selected>-- Select Sub-Category --</option>
+                                        <option value="">-- Select Sub-Category --</option>
                                     </select>
                                 </div>
+                                <div class="mb-3">
+                                <label for="productFeatures" class="form-label">Key Features</label>
+                                <textarea class="form-control" id="productFeatures" rows="2" placeholder="e.g. Three layers of moist chocolate sponge cake..."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productSpecialNote" class="form-label">Special Note</label>
+                                <textarea class="form-control" id="productSpecialNote" rows="2" placeholder="Optional message writing, delivery info, etc."></textarea>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="productIngredients" class="form-label">Ingredients</label>
+                                    <textarea class="form-control" id="productIngredients" rows="2" placeholder="E.g. Flour, sugar, cocoa powder, etc."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="productAllergens" class="form-label">Allergen Information</label>
+                                    <textarea class="form-control" id="productAllergens" rows="2" placeholder="E.g. Contains dairy, nuts, gluten..."></textarea>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productStorage" class="form-label">Storage Instructions</label>
+                                <textarea class="form-control" id="productStorage" rows="2" placeholder="E.g. Keep refrigerated below 5°C"></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="productIsVeg" checked>
+                                <label class="form-check-label" for="productIsVeg">Is Vegetarian</label>
+                            </div>
+
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <button type="button" id="submitProductBtn" class="btn btn-primary">
@@ -83,6 +121,19 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Existing Images Section -->
+                <div id="existingImagesContainer" class="card mb-4" style="display: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Existing Product Images</h5>
+                        <small class="text-muted">Click delete to remove images</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="existingImagesGrid">
+                            <!-- Existing images will be populated here by JavaScript -->
+                        </div>
                     </div>
                 </div>
 
@@ -98,9 +149,25 @@
                         <div class="card-body">
                             <form>
                                 <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <label for="weight" class="form-label">Weight</label>
-                                        <input type="text" class="form-control" id="weight" placeholder="e.g. 500g">
+                                    <div class="col-md-2">
+                                        <label for="quantity" class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" id="quantity" placeholder="e.g. 500" step="0.01">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="uom" class="form-label">Unit (UOM)</label>
+                                        <select class="form-select" id="uom">
+                                            <option value="">Select Unit</option>
+                                            <option value="kg">Kilogram (kg)</option>
+                                            <option value="gm">Gram (gm)</option>
+                                            <option value="lb">Pound (lb)</option>
+                                            <option value="oz">Ounce (oz)</option>
+                                            <option value="piece">Piece</option>
+                                            <option value="pack">Pack</option>
+                                            <option value="box">Box</option>
+                                            <option value="ltr">Liter (ltr)</option>
+                                            <option value="ml">Milliliter (ml)</option>
+                                            <option value="dozen">Dozen</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label for="actualPrice" class="form-label">Actual Price</label>
@@ -117,19 +184,64 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Stock Management</label>
+                                    <div>
+                                        <!-- Radio buttons -->
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="toggleMode" value="toggle" checked>
+                                            <label class="form-check-label" for="toggleMode">Use Toggle</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="stockMode" id="quantityMode" value="quantity">
+                                            <label class="form-check-label" for="quantityMode">Set Quantity</label>
+                                        </div>
+
+                                        <!-- Toggle container -->
+                                        <div id="toggleContainer" class="mt-3">
+                                            <label for="stockToggle" class="form-check-label me-2">In Stock</label>
+                                            <div class="form-check form-switch m-0">
+                                                <input class="form-check-input" type="checkbox" id="stockToggle" checked>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity container -->
+                                        <div id="quantityContainer" class="mt-3" style="display: none;">
+                                            <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                                            <input type="number" class="form-control" id="stockQuantity" placeholder="Enter quantity">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <input type="hidden" id="productVariationId" value="">
                             </form>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" id="submitVariationBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-1"></i> Add Variation
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card mb-4">
+                    <div class="card mb-4" id="availabilityCard">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Variation Availability</h5>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#availabilityTools">
-                                <i class="fas fa-tools me-1"></i> Show Tools
-                            </button>
+                            <div>
+                                <span class="badge bg-info me-2" id="pincodeStatusBadge">Loading...</span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#availabilityTools">
+                                    <i class="fas fa-tools me-1"></i> Show Tools
+                                </button>
+                            </div>
                         </div>
                         <div class="card-body">
+                            <div id="pincodeDisabledMessage" class="alert alert-info" style="display: none;">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Pincode-based availability is currently disabled.</strong> 
+                                All products will be available everywhere with standard delivery charges.
+                            </div>
+                            
                             <div class="collapse mb-4" id="availabilityTools">
                                 <div class="card card-body bg-light">
                                     <h6 class="mb-3">Availability Tools</h6>
@@ -171,12 +283,6 @@
                             <div id="pincodeAvailability" class="mb-3">
                                 <!-- JS will render checkboxes and charges -->
                             </div>
-                            
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" id="submitVariationBtn" class="btn btn-primary">
-                                    <i class="fas fa-plus-circle me-1"></i> Add Variation
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,7 +298,6 @@
     <script src="/static/js/api_caller.js"></script>
     <script src="/static/js/scripts.js"></script>
     <script src="/static/js/admin/admin_add_product.js"></script>
-
 
     <script>
         const csrfToken = "{{ csrf_token }}";

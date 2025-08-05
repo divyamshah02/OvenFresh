@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('django-admin/', admin.site.urls),
     # path('favicon.ico', RedirectView.as_view(url='/static/assets/img/logo.ico')),
 
     path('', include('FrontEnd.urls')),
@@ -15,5 +15,6 @@ urlpatterns = [
     path('delivery-api/', include('Delivery.urls')),
     path('product-api/', include('Product.urls')),
     path('analytics-api/', include('Analytics.urls')),
+    path('cms-api/', include('Cms.urls')),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

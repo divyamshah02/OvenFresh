@@ -7,7 +7,8 @@ from .models import (
     Reviews,
     Pincode,
     TimeSlot,
-    AvailabilityCharges
+    AvailabilityCharges,
+    Coupon
 )
 
 
@@ -80,22 +81,36 @@ class AllProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
+        # Add category information
         if 'category_id' in representation:        
             category_data = Category.objects.filter(category_id=representation['category_id']).first()
-            
-            representation['category_name'] = category_data.title if category_data else None
+            representation['category_name'] = category_data.title if category_data else "Unknown"
 
-        if 'sub_category_id' in representation:        
+        # Add subcategory information
+        if 'sub_category_id' in representation and representation['sub_category_id']:        
             sub_category_data = SubCategory.objects.filter(sub_category_id=representation['sub_category_id']).first()
-            
-            representation['sub_category_name'] = sub_category_data.title if sub_category_data else None
+            representation['sub_category_name'] = sub_category_data.title if sub_category_data else "Unknown"
+        else:
+            representation['sub_category_name'] = None
         
+        # Add variations information
         if 'product_id' in representation:
-            product_variation_obj = ProductVariation.objects.filter(product_id=representation['product_id']).first()
-            if product_variation_obj:
-                representation['product_variation_id'] = product_variation_obj.product_variation_id
-                representation['actual_price'] = product_variation_obj.discounted_price
-                representation['weight'] = product_variation_obj.weight_variation
+            variations = ProductVariation.objects.filter(product_id=representation['product_id'])
+            representation['variations'] = ProductVariationDetailSerializer(variations, many=True).data
+            representation['variations_count'] = variations.count()
+            
+            # Get first variation for price display
+            first_variation = variations.first()
+            if first_variation:
+                representation['product_variation_id'] = first_variation.product_variation_id
+                representation['actual_price'] = first_variation.actual_price
+                representation['discounted_price'] = first_variation.discounted_price
+                representation['weight'] = first_variation.weight_variation
+            else:
+                representation['product_variation_id'] = None
+                representation['actual_price'] = "0"
+                representation['discounted_price'] = "0"
+                representation['weight'] = "N/A"
 
         return representation
 
@@ -105,7 +120,8 @@ class ProductVariationSerializer(serializers.ModelSerializer):
         model = ProductVariation
         fields = [
             'id', 'product_id', 'product_variation_id', 'actual_price',
-            'discounted_price', 'is_vartied', 'weight_variation', 'created_at'
+            'discounted_price', 'is_vartied', 'weight_variation', 'created_at',
+            'stock_toggle_mode', 'in_stock_bull', 'stock_quantity'
         ]
 
     def to_representation(self, instance):
@@ -170,3 +186,24 @@ class AvailabilityChargesSerializer(serializers.ModelSerializer):
             'pincode_id', 'timeslot_data',
             'delivery_charges', 'is_available', 'created_at'
         ]
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = [
+            'id', 'coupon_code', 'discount_type', 'discount_value',
+            'minimum_order_amount', 'maximum_discount_amount',
+            'usage_limit', 'usage_count', 'valid_from', 'valid_until',
+            'is_active', 'created_at'
+        ]
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['is_valid'] = instance.is_valid()
+        return representation
+
+
+class CouponApplicationSerializer(serializers.Serializer):
+    coupon_code = serializers.CharField(max_length=50)
+    order_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
