@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, F
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from django.db import transaction
 
 from .models import *
 from .serializers import *
@@ -26,6 +27,19 @@ from utils.razorpay_utils import *
 from utils.decorators import *
 
 
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
+from reportlab.pdfgen import canvas
+from django.http import FileResponse
+import tempfile
+import os
+from decimal import Decimal
+
+
 class OrderViewSet(viewsets.ViewSet):
     
     @handle_exceptions
@@ -34,7 +48,10 @@ class OrderViewSet(viewsets.ViewSet):
         """
         Place order from cart with coupon support
         """
-        user_id = request.user.user_id
+        # Get user_id if authenticated, otherwise set to None or empty string
+        user_id = request.user.user_id if request.user.is_authenticated else None
+
+        session_id = request.session.get('session_token')
         data = request.data
         
         # Check required fields
@@ -54,8 +71,12 @@ class OrderViewSet(viewsets.ViewSet):
             }, status=400)
 
         # Get cart items
-        cart = Cart.objects.filter(user_id=user_id).first()
-        if not cart:
+        if user_id:
+            cart = Cart.objects.filter(user_id=user_id).first()
+        else:
+            cart = Cart.objects.filter(session_id=session_id).first()
+        
+        if not cart and user_id:
             return Response({
                 "success": False, 
                 "user_not_logged_in": False, 
@@ -63,8 +84,12 @@ class OrderViewSet(viewsets.ViewSet):
                 "data": None, 
                 "error": "Cart not found."
             }, status=400)
+        
+        if cart:
+            cart_obj = CartItem.objects.filter(cart_id=cart.cart_id)
+        else:
+            cart_obj = CartItem.objects.none()
             
-        cart_obj = CartItem.objects.filter(cart_id=cart.cart_id)
         if not cart_obj.exists():
             return Response({
                 "success": False, 
@@ -159,7 +184,8 @@ class OrderViewSet(viewsets.ViewSet):
         order_id = self.generate_unique_order_id()
         order = Order.objects.create(
             order_id=order_id,
-            user_id=user_id,
+            user_id=user_id or "",  # Use empty string if no user_id
+            session_id=session_id or "",  # Use empty string if no user_id
             pincode_id=data["pincode"],
             timeslot_id=data["timeslot_id"],
             
@@ -244,7 +270,8 @@ class OrderViewSet(viewsets.ViewSet):
                 logger.error(f"Variation not found: {item['product_variation_id']}")
 
         # Clear the cart after order is placed
-        cart_obj.delete()
+        if cart_obj:
+            cart_obj.delete()
 
         # Handle payment method
         response_data = {
@@ -333,12 +360,13 @@ class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
 class ConfirmOrderViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    @check_authentication()
+    # @check_authentication()
     def create(self, request):
         """
         Verify payment status with Razorpay and update order
         """
-        user_id = request.user.user_id
+        user_id = request.user.user_id if request.user.is_authenticated else None
+        session_id = request.session.get('session_token')
         data = request.data
         
         # Validate required fields
@@ -356,7 +384,10 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
         
         try:
             # Get order from database
-            order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            if user_id:
+                order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            else:
+                order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
             if not order:
                 return Response({
                     "success": False, 
@@ -573,17 +604,21 @@ class PaymentStatusCheckViewSet(viewsets.ViewSet):
 class OrderDetailViewSet(viewsets.ViewSet):
     
     @handle_exceptions
-    @check_authentication()
+    # @check_authentication()
     def list(self, request):
         """
         Get order details by order ID
         """
-        user_id = request.user.user_id
+        user_id = request.user.user_id if request.user.is_authenticated else None
+        session_id = request.session.get('session_token')
         order_id = request.query_params.get("order_id")
         
         try:
             # Get order details
-            order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            if user_id:
+                order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
+            else:
+                order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
             if not order:
                 return Response({
                     "success": False, 
@@ -1355,3 +1390,395 @@ class CODApprovalViewSet(viewsets.ViewSet):
         order.save()
 
         return Response({"success": True, "user_not_logged_in": False, "user_unauthorized": False, "data": {"message": "COD Order completed."}, "error": None}, status=200)
+
+
+class GenerateInvoiceViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        """
+        Generate and download invoice PDF for a given order_id
+        """
+        order_id = request.query_params.get('order_id')
+        
+        if not order_id:
+            return Response({
+                "success": False,
+                "error": "Order ID is required"
+            }, status=400)
+        
+        try:
+            # Get order details
+            order = Order.objects.get(order_id=order_id)
+            order_items = OrderItem.objects.filter(order_id=order_id)
+            
+            # Generate PDF
+            pdf_file = self.generate_invoice_pdf(order, order_items)
+            
+            # Return PDF as download
+            response = FileResponse(
+                open(pdf_file, 'rb'),
+                as_attachment=True,
+                filename=f'invoice_{order_id}.pdf',
+                content_type='application/pdf'
+            )
+            
+            # Clean up temporary file after response
+            def cleanup():
+                try:
+                    os.unlink(pdf_file)
+                except:
+                    pass
+            
+            response.close = cleanup
+            return response
+            
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "error": str(e)
+            }, status=500)
+    
+    def generate_invoice_pdf(self, order, order_items):
+        """
+        Generate PDF invoice using ReportLab
+        """
+        # Create temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        temp_file.close()
+        
+        # Create PDF document
+        doc = SimpleDocTemplate(
+            temp_file.name,
+            pagesize=A4,
+            rightMargin=30,
+            leftMargin=30,
+            topMargin=30,
+            bottomMargin=30
+        )
+        
+        # Container for PDF elements
+        elements = []
+        
+        # Get styles
+        styles = getSampleStyleSheet()
+        
+        # Custom styles
+        company_style = ParagraphStyle(
+            'CompanyStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            leading=12,
+            alignment=TA_LEFT
+        )
+        
+        customer_style = ParagraphStyle(
+            'CustomerStyle',
+            parent=styles['Normal'],
+            fontSize=10,
+            leading=12,
+            alignment=TA_RIGHT
+        )
+        
+        order_number_style = ParagraphStyle(
+            'OrderNumberStyle',
+            parent=styles['Heading1'],
+            fontSize=16,
+            alignment=TA_CENTER,
+            spaceAfter=20
+        )
+        
+        # Company and Customer Info Table
+        company_info = f"""
+        <b>Ovenfresh Catering Service</b><br/>
+        Shop No. 123, Food Street<br/>
+        Near Subway Station, Andheri<br/>
+        Mumbai 400058<br/>
+        <br/>
+        Contact: +91 9876543210<br/>
+        Email: orders@ovenfresh.in<br/>
+        GST No: 27AABCO1234C1Z5<br/>
+        FSSAI: 12345678901234<br/>
+        State Name: Maharashtra, Code: 27<br/>
+        Order Date: {order.created_at.strftime('%B %d, %Y')}
+        """
+        
+        customer_info = f"""
+        <b>Bill To:</b><br/>
+        {order.first_name} {order.last_name}<br/>
+        {order.delivery_address}<br/>
+        <br/>
+        Phone: {order.phone}<br/>
+        Email: {order.email}<br/>
+        <br/>
+        <b>Delivery Date:</b> {order.delivery_date.strftime('%B %d, %Y')}
+        """
+        
+        # Create header table
+        header_data = [
+            [
+                Paragraph(company_info, company_style),
+                Paragraph(customer_info, customer_style)
+            ]
+        ]
+        
+        header_table = Table(header_data, colWidths=[4*inch, 4*inch])
+        header_table.setStyle(TableStyle([
+            
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        
+
+        logo_path = os.path.join(settings.BASE_DIR, 'static', 'img',  'logo.png')  # update to correct path
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=1*inch, height=1*inch)
+            logo.hAlign = 'CENTER'
+            elements.append(logo)
+            elements.append(Spacer(1, 20))
+
+            
+        elements.append(header_table)
+        elements.append(Spacer(1, 20))
+        
+        # Order Number
+        order_number = Paragraph(f"Order Number: {order.order_id}", order_number_style)
+        elements.append(order_number)
+        elements.append(Spacer(1, 20))
+        
+        # Items Table Header
+        items_data = [['Sr. No.', 'Description', 'Amount (incl GST)']]
+        
+        # Add order items
+        total_amount = Decimal('0.00')
+        for idx, item in enumerate(order_items, 1):
+            try:
+                product = Product.objects.get(product_id=item.product_id)
+                variation = ProductVariation.objects.get(product_variation_id=item.product_variation_id)
+                
+                description = f"{product.title} - {variation.weight_variation} (Qty: {item.quantity})"
+                amount = f"₹{item.final_amount}"
+                
+                items_data.append([str(idx), description, amount])
+                total_amount += item.final_amount
+                
+            except (Product.DoesNotExist, ProductVariation.DoesNotExist):
+                items_data.append([str(idx), "Product not found", f"₹{item.final_amount}"])
+                total_amount += item.final_amount
+        
+        # Add delivery charges if any
+        if order.delivery_charge and order.delivery_charge > 0:
+            items_data.append([
+                str(len(items_data)),
+                "Delivery Charges",
+                f"₹{order.delivery_charge}"
+            ])
+            total_amount += order.delivery_charge
+        
+        # Add discount if any
+        if hasattr(order, 'coupon_discount') and order.coupon_discount:
+            discount_amount = Decimal(str(order.coupon_discount))
+            if discount_amount > 0:
+                items_data.append([
+                    str(len(items_data)),
+                    f"Discount ({order.coupon_code})",
+                    f"-₹{discount_amount}"
+                ])
+                total_amount -= discount_amount
+        
+        # Add empty row for spacing
+        items_data.append(['', '', ''])
+        
+        # Add total row
+        items_data.append(['', 'Total', f"₹{order.total_amount}"])
+        
+        # Create items table
+        items_table = Table(items_data, colWidths=[0.8*inch, 5*inch, 1.5*inch])
+        items_table.setStyle(TableStyle([
+            # Header row styling
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),  # Amount column right aligned
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            
+            # Data rows styling
+            ('FONTNAME', (0, 1), (-1, -3), 'Helvetica'),
+            ('FONTSIZE', (0, 1), (-1, -3), 9),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -3), [colors.white, colors.lightgrey]),
+            
+            # Total row styling
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, -1), (-1, -1), 12),
+            ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
+            
+            # Grid lines
+            ('GRID', (0, 0), (-1, -2), 1, colors.black),
+            ('LINEBELOW', (0, -1), (-1, -1), 2, colors.black),
+            
+            # Padding
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        elements.append(items_table)
+        elements.append(Spacer(1, 30))
+        
+        # Amount in words
+        amount_words = self.number_to_words(float(order.total_amount))
+        amount_text = Paragraph(f"<b>Amount in words:</b><br/>{amount_words} only", company_style)
+        elements.append(amount_text)
+        elements.append(Spacer(1, 40))
+        
+        # Footer
+        footer_data = [
+            [
+                Paragraph("<b>From Ovenfresh</b>", company_style),
+                Paragraph("<b>Authorized Signatory</b>", customer_style)
+            ]
+        ]
+        
+        footer_table = Table(footer_data, colWidths=[4*inch, 4*inch])
+        footer_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ]))
+        
+        elements.append(footer_table)
+        
+        # Build PDF
+        doc.build(elements)
+        
+        return temp_file.name
+    
+    def number_to_words(self, number):
+        """
+        Convert number to words (Indian numbering system)
+        """
+        try:
+            # Simple implementation for common amounts
+            ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
+            teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen']
+            tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety']
+            
+            if number == 0:
+                return "Zero Rupees"
+            
+            # Convert to integer (ignoring decimals for simplicity)
+            num = int(number)
+            
+            if num < 10:
+                return f"{ones[num]} Rupees"
+            elif num < 20:
+                return f"{teens[num-10]} Rupees"
+            elif num < 100:
+                return f"{tens[num//10]} {ones[num%10]}".strip() + " Rupees"
+            elif num < 1000:
+                return f"{ones[num//100]} Hundred {self.number_to_words(num%100)}".replace(" Rupees", "").strip() + " Rupees"
+            elif num < 100000:
+                return f"{self.number_to_words(num//1000)} Thousand {self.number_to_words(num%1000)}".replace(" Rupees", "").strip() + " Rupees"
+            else:
+                return f"{self.number_to_words(num//100000)} Lakh {self.number_to_words(num%100000)}".replace(" Rupees", "").strip() + " Rupees"
+                
+        except:
+            return f"Rupees {number}"
+
+
+class AdminCreateOrderViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Create order from admin panel with manual pricing
+        """
+        try:
+            with transaction.atomic():
+                data = request.data
+                
+                # Generate unique order ID
+                order_id = self.generate_unique_order_id()
+                
+                # Calculate discount
+                items_subtotal = sum(item['final_amount'] for item in data['items'])
+                delivery_charge = data.get('delivery_charge', 0)
+                calculated_total = items_subtotal + delivery_charge
+                final_amount = data['final_amount']
+                discount_amount = calculated_total - final_amount
+                
+                # Create order
+                order = Order.objects.create(
+                    order_id=order_id,
+                    user_id=None,  # Admin created order
+                    pincode_id=data['pincode_id'],
+                    timeslot_id=data['timeslot_id'],
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
+                    email=data['email'],
+                    phone=data['phone'],
+                    delivery_date=data['delivery_date'],
+                    delivery_address=data['delivery_address'],
+                    delivery_charge=delivery_charge,
+                    status=data.get('status', 'placed'),
+                    total_amount=final_amount,
+                    subtotal_amount=str(items_subtotal),
+                    tax_amount='0.00',  # No tax for admin orders
+                    discount_amount=str(discount_amount),
+                    coupon_code=data.get('discount_reason', 'Admin Discount'),
+                    coupon_discount=str(discount_amount),
+                    payment_method=data.get('payment_method', 'cod'),
+                    is_cod=data.get('is_cod', True),
+                    payment_received=data.get('payment_received', True),
+                    special_instructions=data.get('special_instructions', ''),
+                    order_note=f"Admin created order. {data.get('order_note', '')}"
+                )
+                
+                # Create order items
+                for item_data in data['items']:
+                    OrderItem.objects.create(
+                        order_id=order_id,
+                        product_id=item_data['product_id'],
+                        product_variation_id=item_data['product_variation_id'],
+                        quantity=item_data['quantity'],
+                        amount=item_data['amount'],
+                        discount=0,  # No item-level discount
+                        final_amount=item_data['final_amount']
+                    )
+                
+                return Response({
+                    "success": True,
+                    "data": {
+                        "order_id": order_id,
+                        "total_amount": final_amount,
+                        "discount_amount": discount_amount,
+                        "message": "Order created successfully"
+                    },
+                    "error": None
+                }, status=201)
+                
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=400)
+    
+    def generate_unique_order_id(self):
+        """Generate unique 10-digit order ID"""
+        while True:
+            order_id = get_random_string(10, allowed_chars='0123456789')
+            if not Order.objects.filter(order_id=order_id).exists():
+                return order_id
+
+

@@ -1,0 +1,32 @@
+Exception in list: 'AnonymousUser' object has no attribute 'user_id'
+User: Anonymous
+Session: {'session_key': '2ztx6huc3cohqlk5lhk6wlu54p2xojcl', 'session_expiry': datetime.datetime(2025, 8, 19, 20, 52, 25, 638894, tzinfo=datetime.timezone.utc), 'session_data': {'session_token': 'LRN5SRzDfRirICwiobjYFUNviphiMBoE'}}
+Path: /order-api/order-detail-api/
+Method: GET
+Data: {}
+Traceback (most recent call last):
+  File "C:\Users\Divyam Shah\OneDrive\Desktop\Dynamic Labz\Clients\Clients\Oven fresh\OvenFresh\ovenfresh_ecommerce\utils\decorators.py", line 47, in _wrapped_view
+    return view_func(self, request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divyam Shah\OneDrive\Desktop\Dynamic Labz\Clients\Clients\Oven fresh\OvenFresh\ovenfresh_ecommerce\Order\views.py", line 594, in list
+    user_id = request.user.user_id
+              ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AnonymousUser' object has no attribute 'user_id'
+Internal Server Error: /order-api/order-detail-api/
+"GET /order-api/order-detail-api/?order_id=8561091640 HTTP/1.1" 500 323
+Exception in list: 'AnonymousUser' object has no attribute 'user_id'
+User: Anonymous
+Session: {'session_key': '2ztx6huc3cohqlk5lhk6wlu54p2xojcl', 'session_expiry': datetime.datetime(2025, 8, 19, 20, 52, 27, 267022, tzinfo=datetime.timezone.utc), 'session_data': {'session_token': 'LRN5SRzDfRirICwiobjYFUNviphiMBoE'}}
+Path: /order-api/order-detail-api/
+Method: GET
+Data: {}
+Traceback (most recent call last):
+  File "C:\Users\Divyam Shah\OneDrive\Desktop\Dynamic Labz\Clients\Clients\Oven fresh\OvenFresh\ovenfresh_ecommerce\utils\decorators.py", line 47, in _wrapped_view
+    return view_func(self, request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divyam Shah\OneDrive\Desktop\Dynamic Labz\Clients\Clients\Oven fresh\OvenFresh\ovenfresh_ecommerce\Order\views.py", line 594, in list
+    user_id = request.user.user_id
+              ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'AnonymousUser' object has no attribute 'user_id'
+Internal Server Error: /order-api/order-detail-api/
+"GET /order-api/order-detail-api/?order_id=8561091640 HTTP/1.1" 500 323

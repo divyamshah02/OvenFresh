@@ -131,12 +131,13 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <label for="searchInput" class="form-label">Search Orders</label>
-                                <div class="input-group">
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Order ID, Customer name, Phone...">
+                                <!-- <div class="input-group">
                                     <input type="text" class="form-control" id="searchInput" placeholder="Order ID, Customer name, Phone...">
                                     <button class="btn btn-outline-secondary" type="button" id="searchBtn">
                                         <i class="fas fa-search"></i>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="dateRangeFilter" class="form-label">Date Range</label>
@@ -214,6 +215,11 @@
                                         <i class="fas fa-times me-1"></i> Clear Filters
                                     </button>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100" type="button" id="searchBtn">
+                                    Search &nbsp;<i class="fas fa-search"></i>
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -48,11 +48,12 @@ function AdminAllOrders(
   timeslots_url = timeslotsUrlParam
 
   // Initialize the page
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     initializeDatePickers()
     initializeEventListeners()
-    loadTimeslots()
-    loadOrders()
+    await loadTimeslots()
+    await loadOrders()
+    await applyFiltersFromQueryParams()
   })
 }
 
@@ -963,4 +964,49 @@ function showEmptyState() {
 
 function hideEmptyState() {
   document.getElementById("emptyState").style.display = "none"
+}
+
+
+async function applyFiltersFromQueryParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const filterMap = {
+        'search': ['searchInput', 'search'],                      // [elementId, filters.key]
+        'status': ['statusFilter', 'status'],
+        'payment': ['paymentFilter', 'paymentStatus'],
+        'payment_method': ['paymentMethodFilter', 'paymentMethod'],
+        'delivery_date': ['deliveryDateFilter', 'deliveryDate'],
+        'timeslot': ['timeslotFilter', 'timeslot'],
+        'sort_by': ['sortBy', 'sortBy']
+    };
+
+    let filterApplied = false;
+
+    for (const [paramKey, [elementId, filterKey]] of Object.entries(filterMap)) {
+        if (urlParams.has(paramKey)) {
+            const value = urlParams.get(paramKey);
+
+            // Set element value
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = value;
+            }
+
+            // Set filter object value
+            if (filters && typeof filters === 'object') {
+                filters[filterKey] = value;
+            }
+
+            filterApplied = true;
+        }
+    }
+
+    // Trigger the search button
+    if (filterApplied) {
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+          await loadOrders()
+            // searchBtn.click();
+        }
+    }
 }

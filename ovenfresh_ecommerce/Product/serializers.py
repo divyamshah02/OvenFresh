@@ -135,14 +135,22 @@ class ProductVariationSerializer(serializers.ModelSerializer):
         return representation
 
 
+# class ProductVariationDetailSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductVariation
+#         fields = [
+#             'id', 'product_id', 'product_variation_id', 'actual_price',
+#             'discounted_price', 'is_vartied', 'weight_variation', 'created_at'
+#         ]
+
 class ProductVariationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariation
         fields = [
             'id', 'product_id', 'product_variation_id', 'actual_price',
-            'discounted_price', 'is_vartied', 'weight_variation', 'created_at'
+            'discounted_price', 'is_vartied', 'weight_variation', 'created_at',
+            'stock_toggle_mode', 'in_stock_bull', 'stock_quantity'
         ]
-
     # def to_representation(self, instance):
     #     representation = super().to_representation(instance)
 

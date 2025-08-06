@@ -18,6 +18,7 @@ class HomeViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+        # Use the CMS-controlled homepage
         return render(request, 'home.html')
 
 class ShopViewSet(viewsets.ViewSet):
@@ -206,6 +207,14 @@ class AdminPincodeOrderDetailViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_pincode_orders.html')
 
 
+class AdminAddOrderViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_add_order.html')
+
+
 class AdminDeliverPersonViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -234,7 +243,7 @@ def admin_login(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_staff:
+        if (user is not None and user.is_staff):
             login(request, user)
             return redirect('admin_dashboard')
         else:

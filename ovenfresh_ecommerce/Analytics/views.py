@@ -1931,6 +1931,21 @@ class DashboardStatsViewSet(viewsets.ViewSet):
             # Mock average delivery time (you can calculate from actual delivery data)
             avg_delivery_time = 45  # Placeholder in minutes
             
+            limit = int(request.query_params.get('limit', 10))
+            recent_orders = current_orders.order_by('-created_at')[:limit]
+            
+            orders_data = []
+            for order in recent_orders:
+                orders_data.append({
+                    'order_id': order.order_id,
+                    'customer_name': f"{order.first_name} {order.last_name}",
+                    'phone': order.phone,
+                    'total_amount': float(order.total_amount),
+                    'status': order.status,
+                    'payment_method': order.payment_method,
+                    'created_at': order.created_at.isoformat(),
+                })
+
             data = {
                 'total_orders': total_orders,
                 'total_revenue': total_revenue,
@@ -1953,6 +1968,8 @@ class DashboardStatsViewSet(viewsets.ViewSet):
                 'customer_satisfaction': customer_satisfaction,
                 'avg_order_value': avg_order_value,
                 'avg_delivery_time': avg_delivery_time,
+
+                'orders_data': orders_data,
             }
             
             return Response({
