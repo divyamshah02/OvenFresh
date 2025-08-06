@@ -23,6 +23,8 @@ router.register(r'assign_delivery_partner', AssignDeliveryPartnerViewSet, basena
 router.register(r'delivery_status', DeliveryStatusViewSet, basename='delivery-status')
 router.register(r'cod_approval', CODApprovalViewSet, basename='cod-approval')
 
+router.register(r'generate-invoice', GenerateInvoiceViewSet, basename='generate-invoice')
+
 urlpatterns = [
     path('', include(router.urls)),    
 ]

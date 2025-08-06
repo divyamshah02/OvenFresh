@@ -39,7 +39,8 @@ async function AdminDashboard(
 }
 
 async function initializeDashboard() {
-  await Promise.all([loadDashboardStats(), loadDashboardCharts(), loadRecentOrders(), loadTopProducts()])
+  // await Promise.all([loadDashboardStats(), loadDashboardCharts(), loadRecentOrders(), loadTopProducts()])
+  await Promise.all([loadDashboardStats(), loadDashboardCharts(), loadTopProducts()])
 }
 
 async function loadDashboardStats() {
@@ -48,6 +49,7 @@ async function loadDashboardStats() {
 
     if (success && result.success) {
       populateDashboardStats(result.data)
+      populateRecentOrders(result.data.orders_data)      
     } else {
       throw new Error(result.error || "Failed to load dashboard stats")
     }
