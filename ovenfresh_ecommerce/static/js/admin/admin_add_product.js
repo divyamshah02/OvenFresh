@@ -292,6 +292,13 @@ async function loadProductData() {
 
     document.getElementById("productTitle").value = Res.data.title
     document.getElementById("productDesc").value = Res.data.description
+    document.getElementById("productSku").value = Res.data.sku
+    document.getElementById("productHSN").value = Res.data.hsn
+    document.getElementById("productFeatures").value = Res.data.features
+    document.getElementById("productSpecialNote").value = Res.data.special_note 
+    document.getElementById("productIngredients").value = Res.data.ingredients
+    document.getElementById("productAllergens").value = Res.data.allergen_information
+    document.getElementById("productStorage").value = Res.data.storage_instructions
 
     // Fix: Use correct field names for category and subcategory selection
     const categorySelect = document.getElementById("categorySelect")
@@ -553,6 +560,8 @@ async function createProductMeta(is_update = false) {
   formData.append("title", title)
   formData.append("description", document.getElementById("productDesc").value)
   formData.append("features", document.getElementById("productFeatures").value);
+  formData.append("sku", document.getElementById("productSku").value);
+  formData.append("hsn", document.getElementById("productHSN").value);
   formData.append("special_note", document.getElementById("productSpecialNote").value);
   formData.append("ingredients", document.getElementById("productIngredients").value);
   formData.append("allergen_information", document.getElementById("productAllergens").value);
@@ -913,6 +922,7 @@ async function loadExistingVariations() {
 
 function copyAvailability(data, is_edit = false) {
   if (is_edit) {
+    console.log(data)
     document.getElementById("actualPrice").value = data.actual_price
     document.getElementById("discountedPrice").value = data.discounted_price
 
@@ -924,6 +934,29 @@ function copyAvailability(data, is_edit = false) {
     document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-save me-1"></i> Update Variation'
     document.getElementById("productVariationId").value = data.product_variation_id
     document.getElementById("product_variation_heading").innerText = `Update Variation - ${data.weight_variation}`
+
+    const toggleContainer = document.getElementById('toggleContainer');
+    const quantityContainer = document.getElementById('quantityContainer');
+
+    if (data.stock_toggle_mode){
+      document.getElementById('toggleMode').checked = true
+      toggleContainer.style.display = 'block';
+      quantityContainer.style.display = 'none';
+
+      document.getElementById('stockToggle').checked = data.in_stock_bull
+    }
+
+    else {
+      document.getElementById('quantityMode').checked = true
+      toggleContainer.style.display = 'none';
+      quantityContainer.style.display = 'flex';
+      document.getElementById('stockQuantity').value = data.stock_quantity
+
+    }
+
+    if (data.in_stock_bull) {
+      document.getElementById('stockToggle').checked = true
+    }
   } else {
     document.getElementById("actualPrice").value = ""
     document.getElementById("discountedPrice").value = ""

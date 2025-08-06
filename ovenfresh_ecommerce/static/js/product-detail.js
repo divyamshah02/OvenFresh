@@ -256,12 +256,19 @@ function renderVariationOptions(variations) {
     weightSelect.innerHTML = variations
       .map((variation) => {
         const price = variation.discounted_price || variation.actual_price
+        const stockStatus = variation.in_stock_bull ? "In Stock" : "Out of Stock";
+        const stockClass = variation.in_stock_bull ? "text-success" : "text-danger";
         return `
-                <option value="${variation.product_variation_id}" 
-                        data-actual-price="${variation.actual_price}"
-                        data-discounted-price="${variation.discounted_price || ""}"
-                        data-weight="${variation.weight_variation}">
-                    ${variation.weight_variation} - ₹${price}
+                <option 
+                  value="${variation.product_variation_id}" 
+                  data-actual-price="${variation.actual_price}"
+                  data-discounted-price="${variation.discounted_price || ""}"
+                  data-weight="${variation.weight_variation}"
+                  data-stock="${variation.in_stock_bull}"
+                  ${!variation.in_stock_bull ? "disabled" : ""}
+                >
+                  ${variation.weight_variation} - ₹${price}
+                  <span class="${stockClass}">(${stockStatus})</span>
                 </option>
             `
       })
@@ -275,11 +282,38 @@ function renderVariationOptions(variations) {
       if (variation) {
         selectVariation(variation)
       }
-    })
+    });
+
+    // Update stock badge in product header
+    const firstInStock = variations.find(v => v.in_stock_bull);
+    const stockBadge = document.querySelector(".badge.bg-success");
+    if (stockBadge) {
+      if (firstInStock) {
+        stockBadge.textContent = "In Stock";
+        stockBadge.className = "badge bg-success";
+      } else {
+        stockBadge.textContent = "Out of Stock";
+        stockBadge.className = "badge bg-danger";
+
+      }
+    }
   }
 }
 
 function selectVariation(variation) {
+  const stockStatus = document.getElementById("variationStockStatus");
+  if (stockStatus) {
+    stockStatus.textContent = variation.in_stock_bull ? "In Stock" : "Out of Stock";
+    stockStatus.className = variation.in_stock_bull ? "badge bg-success" : "badge bg-danger";
+  }
+
+  // Enable/Disable Add to Cart and Buy Now buttons
+  const addToCartBtn = document.getElementById("addToCartBtn");
+  const buyNowBtn = document.getElementById("buyNowBtn");
+
+  if (addToCartBtn) addToCartBtn.disabled = !variation.in_stock_bull;
+  if (buyNowBtn) buyNowBtn.disabled = !variation.in_stock_bull;
+
   selectedVariation = variation
   updatePriceDisplay(variation)
 }

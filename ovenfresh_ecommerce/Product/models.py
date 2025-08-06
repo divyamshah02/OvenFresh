@@ -29,6 +29,8 @@ class Product(models.Model):  # Meta information
     sub_category_id = models.CharField(max_length=20, blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    sku = models.CharField(max_length=20, null=True, blank=True)
+    hsn = models.CharField(max_length=20, null=True, blank=True)
     features = models.TextField(blank=True, null=True)
     special_note = models.TextField(blank=True, null=True)
     photos = models.JSONField(default=list)
@@ -74,12 +76,20 @@ class ProductVariation(models.Model):
             return f"In Stock ({self.stock_quantity})" if self.in_stock_bull else "Out of Stock"
         return "In Stock" if self.in_stock_bull else "Out of Stock"
     
+    # def save(self, *args, **kwargs):
+    #     """Automatically update in_stock_bull when saving with quantity"""
+    #     if self.stock_quantity is not None:
+    #         self.in_stock_bull = self.stock_quantity > 0
+    #     super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         """Automatically update in_stock_bull when saving with quantity"""
-        if self.stock_quantity is not None:
-            self.in_stock_bull = self.stock_quantity > 0
+        if not self.stock_toggle_mode:
+            if self.stock_quantity is not None:
+                self.in_stock_bull = self.stock_quantity > 0
+            else:
+                self.in_stock_bull = False
         super().save(*args, **kwargs)
-
 
 class Reviews(models.Model):
     product_id = models.CharField(max_length=20)

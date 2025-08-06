@@ -29,6 +29,7 @@ router.register(r'admin-coupon', AdminCouponViewSet, basename='admin-coupon')
 router.register(r'admin-delivery-person', AdminDeliverPersonViewSet, basename='admin-delivery-person')
 
 router.register(r'admin-all-orders', AdminAllOrdersViewSet, basename='admin-all-orders')
+router.register(r'admin-add-order', AdminAddOrderViewSet, basename='admin-add-order')
 router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 router.register(r'admin-pincode-order', AdminPincodeOrderDetailViewSet, basename='admin-pincode-order')
 

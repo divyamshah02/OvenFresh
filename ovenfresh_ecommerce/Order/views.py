@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum, Count, F
 from django.utils.crypto import get_random_string
 from django.utils import timezone
+from django.db import transaction
 
 from .models import *
 from .serializers import *
@@ -1692,3 +1693,92 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
                 
         except:
             return f"Rupees {number}"
+
+
+class AdminCreateOrderViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Create order from admin panel with manual pricing
+        """
+        try:
+            with transaction.atomic():
+                data = request.data
+                
+                # Generate unique order ID
+                order_id = self.generate_unique_order_id()
+                
+                # Calculate discount
+                items_subtotal = sum(item['final_amount'] for item in data['items'])
+                delivery_charge = data.get('delivery_charge', 0)
+                calculated_total = items_subtotal + delivery_charge
+                final_amount = data['final_amount']
+                discount_amount = calculated_total - final_amount
+                
+                # Create order
+                order = Order.objects.create(
+                    order_id=order_id,
+                    user_id=None,  # Admin created order
+                    pincode_id=data['pincode_id'],
+                    timeslot_id=data['timeslot_id'],
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
+                    email=data['email'],
+                    phone=data['phone'],
+                    delivery_date=data['delivery_date'],
+                    delivery_address=data['delivery_address'],
+                    delivery_charge=delivery_charge,
+                    status=data.get('status', 'placed'),
+                    total_amount=final_amount,
+                    subtotal_amount=str(items_subtotal),
+                    tax_amount='0.00',  # No tax for admin orders
+                    discount_amount=str(discount_amount),
+                    coupon_code=data.get('discount_reason', 'Admin Discount'),
+                    coupon_discount=str(discount_amount),
+                    payment_method=data.get('payment_method', 'cod'),
+                    is_cod=data.get('is_cod', True),
+                    payment_received=data.get('payment_received', True),
+                    special_instructions=data.get('special_instructions', ''),
+                    order_note=f"Admin created order. {data.get('order_note', '')}"
+                )
+                
+                # Create order items
+                for item_data in data['items']:
+                    OrderItem.objects.create(
+                        order_id=order_id,
+                        product_id=item_data['product_id'],
+                        product_variation_id=item_data['product_variation_id'],
+                        quantity=item_data['quantity'],
+                        amount=item_data['amount'],
+                        discount=0,  # No item-level discount
+                        final_amount=item_data['final_amount']
+                    )
+                
+                return Response({
+                    "success": True,
+                    "data": {
+                        "order_id": order_id,
+                        "total_amount": final_amount,
+                        "discount_amount": discount_amount,
+                        "message": "Order created successfully"
+                    },
+                    "error": None
+                }, status=201)
+                
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=400)
+    
+    def generate_unique_order_id(self):
+        """Generate unique 10-digit order ID"""
+        while True:
+            order_id = get_random_string(10, allowed_chars='0123456789')
+            if not Order.objects.filter(order_id=order_id).exists():
+                return order_id
+
+
