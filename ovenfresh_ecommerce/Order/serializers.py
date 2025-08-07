@@ -23,10 +23,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
+    timeslot_name_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = "__all__"
+        extra_fields = ['timeslot_name']
 
     def get_items(self, obj):
         order_items = OrderItem.objects.filter(order_id=obj.order_id)
@@ -42,6 +44,14 @@ class OrderSerializer(serializers.ModelSerializer):
             context={'products': products, 'variations': variations}
         )
         return serializer.data
+
+    def get_timeslot_name_time(self, obj):
+        """Return the timeslot name from timeslot_id"""
+        try:
+            timeslot = TimeSlot.objects.get(id=obj.timeslot_id)
+            return f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
+        except TimeSlot.DoesNotExist:
+            return "Not specified"
 
 
 class KitchenNoteSerializer(serializers.ModelSerializer):

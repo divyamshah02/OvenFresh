@@ -336,6 +336,7 @@ function renderOrders() {
             </td>
             <td>
                 <div>${formatDate(order.delivery_date)}</div>
+                <div class="small text-muted">${order.timeslot_name_time || "No Timeslot"}</div>
             </td>
             <td>
                 <div class="fw-bold">₹${formatCurrency(order.total_amount)}</div>
