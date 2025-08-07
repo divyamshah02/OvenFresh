@@ -76,8 +76,11 @@ class ProductVariation(models.Model):
     
     def save(self, *args, **kwargs):
         """Automatically update in_stock_bull when saving with quantity"""
-        if self.stock_quantity is not None:
-            self.in_stock_bull = self.stock_quantity > 0
+        if not self.stock_toggle_mode:
+            if self.stock_quantity is not None:
+                self.in_stock_bull = self.stock_quantity > 0
+            else:
+                self.in_stock_bull = False
         super().save(*args, **kwargs)
 
 

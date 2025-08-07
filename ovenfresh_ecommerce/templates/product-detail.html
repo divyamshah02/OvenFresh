@@ -68,7 +68,7 @@
                         <div class="product-images">
                             <div class="main-image mb-3">
                                 <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                     alt="Chocolate Truffle Cake" class="img-fluid rounded-4 shadow" id="main-product-image">
+                                     alt="Chocolate Truffle Cake" class="img-fluid rounded-4 shadow" id="main-product-image" style="min-width: 600px; min-height: 600px; object-fit: cover;">
                             </div>
                             <div class="thumbnail-images">
                                 <div class="row g-2">
@@ -98,7 +98,7 @@
                         <div class="product-info">
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-danger me-2">Hot Selling</span>
-                                <span class="badge bg-success">In Stock</span>
+                                <span class="badge bg-success" id="variationStockStatus">In Stock</span>
                             </div>
                             
                             <h1 class="product-title mb-3">Loading...</h1>
@@ -250,10 +250,10 @@
                                     </div> -->
                                     <div class="col-md-12">
                                         <div class="d-grid gap-2 d-md-flex">
-                                            <button class="btn of-btn-primary rounded-pill flex-fill" onclick="AddToCart()">
+                                            <button id="addToCartBtn" class="btn of-btn-primary rounded-pill flex-fill" onclick="AddToCart()">
                                                 <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                             </button>
-                                            <button class="btn of-btn-outline-primary rounded-pill" onclick="buyNow()">
+                                            <button id="buyNowBtn" class="btn of-btn-outline-primary rounded-pill" onclick="buyNow()">
                                                 <!-- <i class="fas fa-heart"></i> -->
                                                 Buy Now
                                             </button>
