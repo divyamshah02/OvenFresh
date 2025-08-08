@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Order, OrderItem
 
 from Product.models import TimeSlot, Product, ProductVariation
+from UserDetail.models import User
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -24,11 +25,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
     timeslot_name_time = serializers.SerializerMethodField()
+    delivery_partner_name_number = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = "__all__"
-        extra_fields = ['timeslot_name']
+        extra_fields = ['timeslot_name_time', 'delivery_partner_name_number']
 
     def get_items(self, obj):
         order_items = OrderItem.objects.filter(order_id=obj.order_id)
@@ -52,6 +54,26 @@ class OrderSerializer(serializers.ModelSerializer):
             return f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
         except TimeSlot.DoesNotExist:
             return "Not specified"
+
+    def get_delivery_partner_name_number(self, obj):
+        """Fetch delivery partner name if assigned"""
+        if not obj.assigned_delivery_partner_id:
+            return None
+
+        # Optimize by checking context for prefetched data
+        delivery_partners = self.context.get('delivery_partners', {})
+        if obj.assigned_delivery_partner_id in delivery_partners:
+            return delivery_partners[obj.assigned_delivery_partner_id]
+
+        # Fallback to database query if not prefetched
+        try:
+            partner = User.objects.get(
+                user_id=obj.assigned_delivery_partner_id,
+                role='delivery'
+            )
+            return f"{partner.first_name} {partner.last_name} - {partner.contact_number}"
+        except User.DoesNotExist:
+            return None
 
 
 class KitchenNoteSerializer(serializers.ModelSerializer):
