@@ -336,6 +336,13 @@ function renderOrders() {
             </td>
             <td>
                 <div>${formatDate(order.delivery_date)}</div>
+                <div class="small text-muted">${order.timeslot_name_time || "No Timeslot"}</div>
+            </td>
+            <td>
+                ${order.delivery_partner_name_number ?
+                    `<div class="fw-medium">${order.delivery_partner_name_number}</div>` :
+                    `<span class="badge bg-warning text-dark">Not Assigned</span>`
+                }
             </td>
             <td>
                 <div class="fw-bold">₹${formatCurrency(order.total_amount)}</div>
@@ -353,7 +360,7 @@ function renderOrders() {
             </td>
             <td>
                 <a class="dropdown-item" href="/admin-order-detail/?order_id=${order.order_id}">
-                    <i class="fas fa-edit me-2"></i>View Details
+                    <i class="fas fa-eye me-2"></i>
                 </a>
             </td>
         `;

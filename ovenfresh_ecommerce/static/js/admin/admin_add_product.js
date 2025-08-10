@@ -931,6 +931,21 @@ function copyAvailability(data, is_edit = false) {
     document.getElementById("quantity").value = quantity
     document.getElementById("uom").value = uom
 
+    // Update stock-related fields
+    if (variation.stock_toggle_mode) {
+      // Stock toggle mode (in_stock_bull)
+      document.getElementById("toggleMode").checked = true;
+      document.getElementById("stockToggle").checked = variation.in_stock_bull || false;
+      document.getElementById("quantityContainer").style.display = "none";
+      document.getElementById("toggleContainer").style.display = "block";
+    } else {
+      // Stock quantity mode
+      document.getElementById("quantityMode").checked = true;
+      document.getElementById("stockQuantity").value = variation.stock_quantity || "";
+      document.getElementById("quantityContainer").style.display = "block";
+      document.getElementById("toggleContainer").style.display = "none";
+    }
+
     document.getElementById("submitVariationBtn").innerHTML = '<i class="fas fa-save me-1"></i> Update Variation'
     document.getElementById("productVariationId").value = data.product_variation_id
     document.getElementById("product_variation_heading").innerText = `Update Variation - ${data.weight_variation}`
