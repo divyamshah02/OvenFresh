@@ -95,17 +95,21 @@ async function AdminAddProduct(
 
   document.getElementById("submitProductBtn").addEventListener("click", async () => {
     showLoading("Creating product...")
+    let product_added = false
     if (!product_id) {
-      await createProductMeta() // creates product and sets product_id
+      product_added = await createProductMeta() // creates product and sets product_id
       reloadWithParam("product_id", product_id)
     } else {
-      await createProductMeta(true) // updates product
+      product_added = await createProductMeta(true) // updates product
     }
-    await loadProductData()
-    document.getElementById("variationSection").style.display = ""
-    await loadExistingVariations()
+
+    if (product_added === true) {
+      await loadProductData()
+      document.getElementById("variationSection").style.display = ""
+      await loadExistingVariations()      
+      showToast("success", "Success", "Product saved successfully")
+    }
     hideLoading()
-    showToast("success", "Success", "Product saved successfully")
   })
 
   document.getElementById("submitVariationBtn").addEventListener("click", async () => {
@@ -546,13 +550,13 @@ async function createProductMeta(is_update = false) {
 
   if (!title || !categoryId || !subCategoryId) {
     showToast("error", "Error", "Please fill all required fields")
-    return
+    return false
   }
 
   // For new products, require at least one image
   if (!is_update && selectedProductImages.length === 0) {
     showToast("error", "Error", "Please upload at least one product image")
-    return
+    return false
   }
 
   // Create FormData for file upload
@@ -588,7 +592,7 @@ async function createProductMeta(is_update = false) {
 
   if (!productSuccess || !productRes.success) {
     showToast("error", "Error", productRes.error || "Failed to save product")
-    return
+    return false
   }
 
   if (!is_update) {
@@ -598,6 +602,8 @@ async function createProductMeta(is_update = false) {
   // Clear selected images after successful upload
   selectedProductImages = []
   updatePhotoUploadUI()
+
+  return true
 }
 
 function setupStockModeToggle() {

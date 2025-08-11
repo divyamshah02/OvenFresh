@@ -600,20 +600,20 @@ class AllProductsViewSet(viewsets.ViewSet):
             subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
             sub_category_id = subcategory_data.sub_category_id
             if sub_category_id:                
-                product_obj = Product.objects.filter(sub_category_id=sub_category_id)
+                product_obj = Product.objects.filter(sub_category_id=sub_category_id, is_extras=False, is_active=True)
             else:
-                product_obj = Product.objects.all()
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         elif category:
             category_data = Category.objects.filter(title__icontains=category).first()
             category_id = category_data.category_id
             if category_id:                
-                product_obj = Product.objects.filter(category_id=category_id)
+                product_obj = Product.objects.filter(category_id=category_id, is_extras=False, is_active=True)
             else:
-                product_obj = Product.objects.all()
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         else:
-            product_obj = Product.objects.all()
+            product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         product_data = AllProductSerializer(product_obj, many=True)
 
@@ -639,7 +639,7 @@ class AllProductsAdminViewSet(viewsets.ViewSet):
         limit = int(request.query_params.get('limit', 10))
 
         # Start with all products
-        product_obj = Product.objects.all()
+        product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         # Apply search filter
         if search:

@@ -40,6 +40,7 @@ class Product(models.Model):  # Meta information
     ingredients = models.TextField(blank=True, null=True)
     allergen_information = models.TextField(blank=True, null=True)
     storage_instructions = models.TextField(blank=True, null=True)
+    is_extras = models.BooleanField(default=False)  # True if product is an extra item (like sauces, etc.)
 
     def __str__(self):
         return f"{self.product_id} - {self.title}"
