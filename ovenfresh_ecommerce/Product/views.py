@@ -262,6 +262,9 @@ class ProductViewSet(viewsets.ViewSet):
             ingredients = data.get("ingredients")
             allergen_information = data.get("allergen_information")
             storage_instructions = data.get("storage_instructions")
+            sku = data.get("sku")
+            hsn = data.get("hsn")
+
 
             if not title or not category_id:
                 return Response({
@@ -333,6 +336,8 @@ class ProductViewSet(viewsets.ViewSet):
                 ingredients=ingredients,
                 allergen_information=allergen_information,
                 storage_instructions=storage_instructions,
+                hsn=hsn,
+                sku=sku,
                 created_at=timezone.now()
             )
             new_product.save()
@@ -407,6 +412,15 @@ class ProductViewSet(viewsets.ViewSet):
         description = data.get("description")
         category_id = data.get("category_id")
         sub_category_id = data.get("sub_category_id")
+        features = data.get("features")
+        special_note = data.get("special_note")
+        is_veg_str = data.get("is_veg", "true")
+        is_veg = is_veg_str.lower() == "true"
+        ingredients = data.get("ingredients")
+        allergen_information = data.get("allergen_information")
+        storage_instructions = data.get("storage_instructions")
+        sku = data.get("sku")
+        hsn = data.get("hsn")
 
         if not product_id or not title or not category_id:
             return Response({
@@ -470,6 +484,15 @@ class ProductViewSet(viewsets.ViewSet):
         product_obj.description = description
         product_obj.category_id = category_id
         product_obj.sub_category_id = sub_category_id
+        product_obj.features = features
+        product_obj.special_note = special_note
+        product_obj.is_veg = is_veg
+        product_obj.ingredients = ingredients
+        product_obj.allergen_information = allergen_information
+        product_obj.storage_instructions = storage_instructions
+        product_obj.sku = sku
+        product_obj.hsn = hsn
+
 
         # If new images are uploaded, add them to existing photos
         if new_image_urls:
@@ -577,20 +600,20 @@ class AllProductsViewSet(viewsets.ViewSet):
             subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
             sub_category_id = subcategory_data.sub_category_id
             if sub_category_id:                
-                product_obj = Product.objects.filter(sub_category_id=sub_category_id)
+                product_obj = Product.objects.filter(sub_category_id=sub_category_id, is_extras=False, is_active=True)
             else:
-                product_obj = Product.objects.all()
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         elif category:
             category_data = Category.objects.filter(title__icontains=category).first()
             category_id = category_data.category_id
             if category_id:                
-                product_obj = Product.objects.filter(category_id=category_id)
+                product_obj = Product.objects.filter(category_id=category_id, is_extras=False, is_active=True)
             else:
-                product_obj = Product.objects.all()
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         else:
-            product_obj = Product.objects.all()
+            product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         product_data = AllProductSerializer(product_obj, many=True)
 
@@ -616,7 +639,7 @@ class AllProductsAdminViewSet(viewsets.ViewSet):
         limit = int(request.query_params.get('limit', 10))
 
         # Start with all products
-        product_obj = Product.objects.all()
+        product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         # Apply search filter
         if search:
@@ -859,6 +882,7 @@ class ProductVariationViewSet(viewsets.ViewSet):
 
         # Stock management fields
         stock_toggle_mode = request.data.get("stock_toggle_mode", True)
+        print(stock_toggle_mode)
         if isinstance(stock_toggle_mode, str):
             stock_toggle_mode = stock_toggle_mode.lower() == "true"
         
@@ -889,7 +913,8 @@ class ProductVariationViewSet(viewsets.ViewSet):
 
         # Update stock fields if provided
         if not stock_toggle_mode:
-            if stock_quantity == "":
+            product_variation_obj.stock_toggle_mode = False
+            if stock_quantity == "":                
                 product_variation_obj.stock_quantity = None
                 product_variation_obj.in_stock_bull = False
             else:
@@ -902,7 +927,8 @@ class ProductVariationViewSet(viewsets.ViewSet):
                         "success": False,
                         "error": "Invalid stock quantity"
                     }, status=status.HTTP_400_BAD_REQUEST)
-
+        else:
+            product_variation_obj.stock_toggle_mode = True
         if in_stock_bull is not None:
             if isinstance(in_stock_bull, str):
                 in_stock_bull = in_stock_bull.lower() == "true"

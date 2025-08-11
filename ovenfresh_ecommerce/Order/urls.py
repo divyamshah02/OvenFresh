@@ -10,6 +10,7 @@ router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-
 router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')
 
 router.register(r'admin-all-orders-api', AdminOrderListViewSet, basename='admin-all-orders-api')
+router.register(r'admin-create-order', AdminCreateOrderViewSet, basename='admin-create-order')
 router.register(r'admin-order-briefe-api', AdminOrderBriefeViewSet, basename='admin-order-briefe-api')
 router.register(r'admin-orders-export-api', AdminExportOrdersViewSet, basename='admin-orders-export-api')
 

@@ -207,6 +207,14 @@ class AdminPincodeOrderDetailViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_pincode_orders.html')
 
 
+class AdminAddOrderViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_add_order.html')
+
+
 class AdminDeliverPersonViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -241,3 +249,4 @@ def admin_login(request):
         else:
             messages.error(request, 'Invalid credentials or not an admin.')
     return render(request, 'admin/admin_login.html')
+

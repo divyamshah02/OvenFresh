@@ -26,7 +26,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'product_id', 'title', 'category_id', 'sub_category_id', 'created_at']
+    list_display = ['id', 'product_id', 'title', 'category_id', 'sub_category_id', 'is_extras', 'created_at']
     search_fields = ['product_id', 'title']
     list_filter = ['created_at']
 

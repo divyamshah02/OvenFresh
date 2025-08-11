@@ -29,6 +29,8 @@ class Product(models.Model):  # Meta information
     sub_category_id = models.CharField(max_length=20, blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    sku = models.CharField(max_length=20, null=True, blank=True)
+    hsn = models.CharField(max_length=20, null=True, blank=True)
     features = models.TextField(blank=True, null=True)
     special_note = models.TextField(blank=True, null=True)
     photos = models.JSONField(default=list)
@@ -38,6 +40,7 @@ class Product(models.Model):  # Meta information
     ingredients = models.TextField(blank=True, null=True)
     allergen_information = models.TextField(blank=True, null=True)
     storage_instructions = models.TextField(blank=True, null=True)
+    is_extras = models.BooleanField(default=False)  # True if product is an extra item (like sauces, etc.)
 
     def __str__(self):
         return f"{self.product_id} - {self.title}"
@@ -74,6 +77,12 @@ class ProductVariation(models.Model):
             return f"In Stock ({self.stock_quantity})" if self.in_stock_bull else "Out of Stock"
         return "In Stock" if self.in_stock_bull else "Out of Stock"
     
+    # def save(self, *args, **kwargs):
+    #     """Automatically update in_stock_bull when saving with quantity"""
+    #     if self.stock_quantity is not None:
+    #         self.in_stock_bull = self.stock_quantity > 0
+    #     super().save(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         """Automatically update in_stock_bull when saving with quantity"""
         if not self.stock_toggle_mode:
@@ -82,7 +91,6 @@ class ProductVariation(models.Model):
             else:
                 self.in_stock_bull = False
         super().save(*args, **kwargs)
-
 
 class Reviews(models.Model):
     product_id = models.CharField(max_length=20)
