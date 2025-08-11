@@ -52,7 +52,7 @@ async function loadDashboardData() {
     } else {
       if (result.user_not_logged_in) {
         // Redirect to login
-        window.location.href = "/delivery/login/"
+        window.location.href = "/delivery-login/"
         return
       }
       throw new Error(result.error || "Failed to load dashboard data")
@@ -60,7 +60,7 @@ async function loadDashboardData() {
   } catch (error) {
     console.error("Error loading dashboard:", error)
     // Redirect to login on any authentication error
-    window.location.href = "/delivery/login/"
+    window.location.href = "/delivery-login/"
   }
 }
 
@@ -409,13 +409,14 @@ async function logout() {
 
   try {
     // Call logout API if available
-    await callApi("POST", "/user-api/logout-api/", {}, csrf_token)
+    const [success, result] = await callApi("POST", "/user-api/logout-api/", {}, csrf_token)
+
   } catch (error) {
     console.log("Logout API error:", error)
   }
 
   // Redirect to login page
-  window.location.href = "/delivery/login/"
+  window.location.href = "/delivery-login/"
 }
 
 // Utility functions
