@@ -51,16 +51,24 @@ async function InitializeProductDetail(
   }
 
   document.getElementById("toppers").addEventListener("change", function () {
-    const selectedProductId = this.value
-    if (selectedProductId) {
-      quickAddToCart("", selectedProductId)
+    const selectedOption = this.options[this.selectedIndex];
+    
+    const selectedProductVariationId = selectedOption.value;
+    const product_id = selectedOption.getAttribute("data-product_id");
+
+    if (selectedProductVariationId) {
+      ExtraAddToCart(product_id, selectedProductVariationId, 1)
     }
   })
 
   document.getElementById("greetind_cards").addEventListener("change", function () {
-    const selectedProductId = this.value
-    if (selectedProductId) {
-      quickAddToCart("", selectedProductId)
+    const selectedOption = this.options[this.selectedIndex];
+    
+    const selectedProductVariationId = selectedOption.value;
+    const product_id = selectedOption.getAttribute("data-product_id");
+
+    if (selectedProductVariationId) {
+      ExtraAddToCart(product_id, selectedProductVariationId, 1)
     }
   })
 }
@@ -160,20 +168,27 @@ function renderProductDetails(product) {
   if (productDescription) productDescription.textContent = product.description
 
   // Update Veg/Non-Veg indicator
-  const vegIndicator = document.querySelector(".veg-indicator")
-  if (vegIndicator) {
-    if (product.is_veg) {
-      vegIndicator.className = "veg-indicator veg mb-2"
-      vegIndicator.innerHTML = `
-              <span class="badge bg-success">Veg</span>
-          `
-    } else {
-      vegIndicator.className = "veg-indicator non-veg mb-2"
-      vegIndicator.innerHTML = `
-              <span class="badge bg-danger">Non-Veg</span>
-          `
-    }
+const vegIndicator = document.querySelector(".veg-indicator");
+if (vegIndicator) {
+  if (product.is_veg) {
+    vegIndicator.className = "veg-indicator veg mb-2";
+    vegIndicator.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <rect width="20" height="20" fill="white" stroke="green" stroke-width="2"/>
+        <circle cx="10" cy="10" r="5" fill="green"/>
+      </svg>
+    `;
+  } else {
+    vegIndicator.className = "veg-indicator non-veg mb-2";
+    vegIndicator.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <rect width="20" height="20" fill="white" stroke="brown" stroke-width="2"/>
+        <circle cx="10" cy="10" r="5" fill="brown"/>
+      </svg>
+    `;
   }
+}
+
 
   // Update stock status
   const stockBadge = document.querySelector(".badge.bg-success")
@@ -695,6 +710,48 @@ async function AddToCart(variationId, quantity, additionalData) {
       product_variation_id: product_variation_id,
       qty: qty,
       ...additionalData,
+    }
+
+    const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token)
+    if (success && result.success) {
+      showNotification("Item added to cart!", "success")
+      // Refresh cart if we're on cart page
+      if (document.getElementById("cart-items")) {
+        await GenerateCart(csrf_token, cart_list_url, pincode_check_url)
+      } else {
+        // Just update cart count if we're on other pages
+        updateCartCountFromAPI()
+      }
+      return true
+    } else {
+      showNotification(result.error || "Failed to add item to cart.", "error")
+      console.error(result)
+      return false
+    }
+  } catch (error) {
+    console.error("Error adding to cart:", error)
+    showNotification("Error adding item to cart.", "error")
+    return false
+  }
+}
+
+async function ExtraAddToCart(productId, variationId, quantity) {
+  const product_id = productId
+  const product_variation_id = variationId
+  console.log(product_id)
+  console.log(product_variation_id)
+  const qty = quantity || Number.parseInt(document.getElementById("quantity").value) || 1
+
+  if (!product_variation_id || qty < 1) {
+    showNotification("Invalid product or quantity.", "error")
+    return false
+  }
+
+  try {
+    const bodyData = {
+      product_id: product_id,
+      product_variation_id: product_variation_id,
+      qty: qty
     }
 
     const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token)
