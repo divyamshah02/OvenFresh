@@ -167,7 +167,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Reviews
         fields = [
             'id', 'product_id', 'ratings', 'review_text',
-            'is_approved_admin', 'created_at'
+            'is_approved_admin', 'created_at', 'is_active'
         ]
 
 

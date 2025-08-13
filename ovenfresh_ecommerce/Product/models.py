@@ -7,6 +7,7 @@ class Category(models.Model):
     title = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
+    is_extras = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.category_id} - {self.title}"
@@ -18,6 +19,7 @@ class SubCategory(models.Model):
     title = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
+    is_extras = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.sub_category_id} - {self.title}"

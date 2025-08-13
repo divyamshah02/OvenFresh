@@ -3,6 +3,8 @@ let pincode_check_url = null
 let cart_list_url = null
 let checkout_url = null
 let csrf_token = null
+let reviews_api_url = "" // Add reviews API URL parameter
+const timeslots_url = null // Declare timeslots_url variable
 
 // Current product data
 let currentProduct = null
@@ -19,12 +21,14 @@ async function InitializeProductDetail(
   pincodeCheckUrlParam,
   cartListUrlParam,
   checkoutUrlParam,
+  reviewsApiUrlParam, // Added reviews API URL parameter
 ) {
   csrf_token = csrfTokenParam
   product_detail_url = productDetailUrlParam
   pincode_check_url = pincodeCheckUrlParam
   cart_list_url = cartListUrlParam
   checkout_url = checkoutUrlParam
+  reviews_api_url = reviewsApiUrlParam // Store reviews API URL
 
   // Get product ID from URL parameters
   const urlParams = new URLSearchParams(window.location.search)
@@ -37,16 +41,28 @@ async function InitializeProductDetail(
 
   try {
     await loadProductData(productId)
-    // await loadTimeslots();
     initializeEventListeners()
     updateCartCountFromAPI()
-
-    // Initialize delivery countdown
     initializeDeliveryCountdown()
+    initializeReviewForm() // Initialize review form functionality
   } catch (error) {
     console.error("Error initializing product detail:", error)
     showNotification("Error loading product details.", "error")
   }
+
+  document.getElementById("toppers").addEventListener("change", function () {
+    const selectedProductId = this.value
+    if (selectedProductId) {
+      quickAddToCart("", selectedProductId)
+    }
+  })
+
+  document.getElementById("greetind_cards").addEventListener("change", function () {
+    const selectedProductId = this.value
+    if (selectedProductId) {
+      quickAddToCart("", selectedProductId)
+    }
+  })
 }
 
 async function loadProductData(productId) {
@@ -144,19 +160,19 @@ function renderProductDetails(product) {
   if (productDescription) productDescription.textContent = product.description
 
   // Update Veg/Non-Veg indicator
-  const vegIndicator = document.querySelector(".veg-indicator");
+  const vegIndicator = document.querySelector(".veg-indicator")
   if (vegIndicator) {
-      if (product.is_veg) {
-          vegIndicator.className = "veg-indicator veg mb-2";
-          vegIndicator.innerHTML = `
+    if (product.is_veg) {
+      vegIndicator.className = "veg-indicator veg mb-2"
+      vegIndicator.innerHTML = `
               <span class="badge bg-success">Veg</span>
-          `;
-      } else {
-          vegIndicator.className = "veg-indicator non-veg mb-2";
-          vegIndicator.innerHTML = `
+          `
+    } else {
+      vegIndicator.className = "veg-indicator non-veg mb-2"
+      vegIndicator.innerHTML = `
               <span class="badge bg-danger">Non-Veg</span>
-          `;
-      }
+          `
+    }
   }
 
   // Update stock status
@@ -169,60 +185,60 @@ function renderProductDetails(product) {
   // Update category in description tab
   const descriptionTab = document.getElementById("description")
   if (descriptionTab) {
-    let featuresHtml = '';
+    let featuresHtml = ""
 
     // Create features list if features exist
     if (product.features) {
       // Split features by newline and create list items
-      const featuresList = product.features.split('\n').filter(f => f.trim() !== '');
-      
+      const featuresList = product.features.split("\n").filter((f) => f.trim() !== "")
+
       if (featuresList.length > 0) {
         featuresHtml = `
           <p>This product features:</p>
           <ul>
-            ${featuresList.map(feature => `<li>${feature}</li>`).join('')}
+            ${featuresList.map((feature) => `<li>${feature}</li>`).join("")}
           </ul>
-        `;
+        `
       }
     }
 
     descriptionTab.innerHTML = `
       <h5>Product Description</h5>
-      <p>${product.description || ''}</p>
+      <p>${product.description || ""}</p>
       <p>
         <br>
         <strong>Category:</strong> ${product.category_name} > ${product.sub_category_name}
       </p>
       ${featuresHtml}
-      <p>${product.special_note || ''}</p>
-    `;
+      <p>${product.special_note || ""}</p>
+    `
   }
 
   // Update ingredients tab
   const ingredientsTab = document.getElementById("ingredients")
   if (ingredientsTab) {
-    let mainIngredientsHtml = '<li>No ingredients information available</li>';
-    let allergenHtml = '<li>No allergen information available</li>';
-    let storageHtml = '<li>No storage instructions available</li>';
+    let mainIngredientsHtml = "<li>No ingredients information available</li>"
+    let allergenHtml = "<li>No allergen information available</li>"
+    let storageHtml = "<li>No storage instructions available</li>"
 
     if (product.ingredients) {
-      const ingredientsList = product.ingredients.split('\n').filter(i => i.trim() !== '');
+      const ingredientsList = product.ingredients.split("\n").filter((i) => i.trim() !== "")
       if (ingredientsList.length > 0) {
-        mainIngredientsHtml = ingredientsList.map(ingredient => `<li>${ingredient}</li>`).join('');
+        mainIngredientsHtml = ingredientsList.map((ingredient) => `<li>${ingredient}</li>`).join("")
       }
     }
 
     if (product.allergen_information) {
-      const allergenList = product.allergen_information.split('\n').filter(a => a.trim() !== '');
+      const allergenList = product.allergen_information.split("\n").filter((a) => a.trim() !== "")
       if (allergenList.length > 0) {
-        allergenHtml = allergenList.map(allergen => `<li>${allergen}</li>`).join('');
+        allergenHtml = allergenList.map((allergen) => `<li>${allergen}</li>`).join("")
       }
     }
 
     if (product.storage_instructions) {
-      const storageList = product.storage_instructions.split('\n').filter(s => s.trim() !== '');
+      const storageList = product.storage_instructions.split("\n").filter((s) => s.trim() !== "")
       if (storageList.length > 0) {
-        storageHtml = storageList.map(instruction => `<li>${instruction}</li>`).join('');
+        storageHtml = storageList.map((instruction) => `<li>${instruction}</li>`).join("")
       }
     }
 
@@ -246,7 +262,7 @@ function renderProductDetails(product) {
           </ul>
         </div>
       </div>
-    `;
+    `
   }
 }
 
@@ -256,8 +272,8 @@ function renderVariationOptions(variations) {
     weightSelect.innerHTML = variations
       .map((variation) => {
         const price = variation.discounted_price || variation.actual_price
-        const stockStatus = variation.in_stock_bull ? "In Stock" : "Out of Stock";
-        const stockClass = variation.in_stock_bull ? "text-success" : "text-danger";
+        const stockStatus = variation.in_stock_bull ? "In Stock" : "Out of Stock"
+        const stockClass = variation.in_stock_bull ? "text-success" : "text-danger"
         return `
                 <option 
                   value="${variation.product_variation_id}" 
@@ -282,37 +298,36 @@ function renderVariationOptions(variations) {
       if (variation) {
         selectVariation(variation)
       }
-    });
+    })
 
     // Update stock badge in product header
-    const firstInStock = variations.find(v => v.in_stock_bull);
-    const stockBadge = document.querySelector(".badge.bg-success");
+    const firstInStock = variations.find((v) => v.in_stock_bull)
+    const stockBadge = document.querySelector(".badge.bg-success")
     if (stockBadge) {
       if (firstInStock) {
-        stockBadge.textContent = "In Stock";
-        stockBadge.className = "badge bg-success";
+        stockBadge.textContent = "In Stock"
+        stockBadge.className = "badge bg-success"
       } else {
-        stockBadge.textContent = "Out of Stock";
-        stockBadge.className = "badge bg-danger";
-
+        stockBadge.textContent = "Out of Stock"
+        stockBadge.className = "badge bg-danger"
       }
     }
   }
 }
 
 function selectVariation(variation) {
-  const stockStatus = document.getElementById("variationStockStatus");
+  const stockStatus = document.getElementById("variationStockStatus")
   if (stockStatus) {
-    stockStatus.textContent = variation.in_stock_bull ? "In Stock" : "Out of Stock";
-    stockStatus.className = variation.in_stock_bull ? "badge bg-success" : "badge bg-danger";
+    stockStatus.textContent = variation.in_stock_bull ? "In Stock" : "Out of Stock"
+    stockStatus.className = variation.in_stock_bull ? "badge bg-success" : "badge bg-danger"
   }
 
   // Enable/Disable Add to Cart and Buy Now buttons
-  const addToCartBtn = document.getElementById("addToCartBtn");
-  const buyNowBtn = document.getElementById("buyNowBtn");
+  const addToCartBtn = document.getElementById("addToCartBtn")
+  const buyNowBtn = document.getElementById("buyNowBtn")
 
-  if (addToCartBtn) addToCartBtn.disabled = !variation.in_stock_bull;
-  if (buyNowBtn) buyNowBtn.disabled = !variation.in_stock_bull;
+  if (addToCartBtn) addToCartBtn.disabled = !variation.in_stock_bull
+  if (buyNowBtn) buyNowBtn.disabled = !variation.in_stock_bull
 
   selectedVariation = variation
   updatePriceDisplay(variation)
@@ -401,16 +416,20 @@ function renderProductReviews(reviews) {
   const reviewsList = document.querySelector(".reviews-list")
   const reviewsTab = document.getElementById("reviews-tab")
 
+  // Filter only approved reviews
+  const approvedReviews = reviews.filter((review) => review.is_approved_admin)
+
   // Update reviews count in tab
   if (reviewsTab) {
-    reviewsTab.textContent = `Reviews (${reviews.length})`
+    reviewsTab.textContent = `Reviews (${approvedReviews.length})`
   }
 
   if (reviewsList) {
-    if (reviews.length > 0) {
-      // Calculate average rating
-      const avgRating = reviews.reduce((sum, review) => sum + Number.parseFloat(review.ratings), 0) / reviews.length
-      updateProductRating(avgRating, reviews.length)
+    if (approvedReviews.length > 0) {
+      // Calculate average rating from approved reviews
+      const avgRating =
+        approvedReviews.reduce((sum, review) => sum + Number.parseFloat(review.ratings), 0) / approvedReviews.length
+      updateProductRating(avgRating, approvedReviews.length)
 
       // Update reviews summary
       const ratingAverage = document.querySelector(".rating-average .h2")
@@ -420,18 +439,18 @@ function renderProductReviews(reviews) {
 
       const reviewsCount = document.querySelector(".rating-average p")
       if (reviewsCount) {
-        reviewsCount.textContent = `Based on ${reviews.length} reviews`
+        reviewsCount.textContent = `Based on ${approvedReviews.length} reviews`
       }
 
-      // Render individual reviews
-      reviewsList.innerHTML = reviews
-        .slice(0, 3)
+      // Render individual approved reviews
+      reviewsList.innerHTML = approvedReviews
+        .slice(0, 5) // Show more reviews
         .map(
           (review) => `
                 <div class="review-item border-bottom pb-3 mb-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <h6 class="mb-1">Customer</h6>
+                            <h6 class="mb-1">${review.reviewer_name || "Customer"}</h6>
                             <div class="stars small">
                                 ${generateStarRating(Number.parseFloat(review.ratings))}
                             </div>
@@ -503,77 +522,6 @@ function changeQuantity(change) {
     }
   }
 }
-
-// async function checkPincode() {
-//     const pincodeInput = document.getElementById('pincode-check');
-//     const pincode = pincodeInput.value.trim();
-
-//     if (!pincode) {
-//         showNotification("Please enter a pincode.", "warning");
-//         return;
-//     }
-
-//     if (!/^\d{6}$/.test(pincode)) {
-//         showNotification("Please enter a valid 6-digit pincode.", "error");
-//         return;
-//     }
-
-//     try {
-//         const pincode_params = {
-//             pincode: pincode,
-//             product_id: currentProduct.product_id
-//         }
-//         const url = `${pincode_check_url}?` + toQueryString(pincode_params);
-//         const [success, result] = await callApi("GET", url);
-
-//         if (success && result.success) {
-//             if (result.data.is_deliverable) {
-//                 showNotification("Delivery available in your area!", "success");
-//                 pincodeTimeslots = result.data.availability_data || [];
-//                 showDeliveryOptions();
-//             } else {
-//                 showNotification("Sorry, delivery not available in your area.", "error");
-//                 hideDeliveryOptions();
-//             }
-//         } else {
-//             showNotification(result.error || "Error checking pincode.", "error");
-//         }
-//     } catch (error) {
-//         console.error("Error checking pincode:", error);
-//         showNotification("Error checking pincode availability.", "error");
-//     }
-// }
-
-// function showDeliveryOptions() {
-//     const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
-//     if (deliveryOptionsRow) {
-//         deliveryOptionsRow.style.display = 'flex';
-
-//         // Update timeslots with pricing from pincode check
-//         const timeslotSelect = document.getElementById('timeslot');
-//         if (timeslotSelect && pincodeTimeslots.length > 0) {
-//             timeslotSelect.innerHTML = pincodeTimeslots.map(slot => {
-//                 // Find matching timeslot from general timeslots to get title
-//                 const timeslotInfo = availableTimeslots.find(ts => ts.id === slot.timeslot_id) || {};
-//                 const title = timeslotInfo.time_slot_title || `${slot.start_time} - ${slot.end_time}`;
-//                 const charge = parseFloat(slot.delivery_charge || 0);
-
-//                 return `
-//                     <option value="${slot.timeslot_id}" data-charge="${charge}">
-//                         ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : '(Free delivery)'}
-//                     </option>
-//                 `;
-//             }).join('');
-//         }
-//     }
-// }
-
-// function hideDeliveryOptions() {
-//     const deliveryOptionsRow = document.querySelector('.row.m-0.p-0.g-3');
-//     if (deliveryOptionsRow) {
-//         deliveryOptionsRow.style.display = 'none';
-//     }
-// }
 
 async function checkPincode() {
   const pincodeInput = document.getElementById("pincode-check")
@@ -731,10 +679,10 @@ async function addToCart_old() {
   }
 }
 
-async function AddToCart() {
+async function AddToCart(variationId, quantity, additionalData) {
   const product_id = selectedVariation.product_id
-  const product_variation_id = selectedVariation.product_variation_id
-  const qty = Number.parseInt(document.getElementById("quantity").value) || 1
+  const product_variation_id = variationId || selectedVariation.product_variation_id
+  const qty = quantity || Number.parseInt(document.getElementById("quantity").value) || 1
 
   if (!product_variation_id || qty < 1) {
     showNotification("Invalid product or quantity.", "error")
@@ -746,6 +694,7 @@ async function AddToCart() {
       product_id: product_id,
       product_variation_id: product_variation_id,
       qty: qty,
+      ...additionalData,
     }
 
     const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token)
@@ -799,10 +748,10 @@ async function buyNow() {
 
   window.location.href = checkoutUrl
 
-  const success = await addToCart()
-  if (success) {
-    window.location.href = "cart.html"
-  }
+  // const success = await addToCart()
+  // if (success) {
+  //     window.location.href = "cart.html"
+  // }
 }
 
 async function quickAddToCart(productId, variationId = null) {
@@ -877,11 +826,7 @@ function updateBreadcrumb(product) {
   const breadcrumbItems = document.querySelectorAll(".breadcrumb-item")
   if (breadcrumbItems.length >= 3) {
     // Create dynamic link with category name or ID
-    breadcrumbItems[2].innerHTML = `
-      <a href="/shop/?category=${encodeURIComponent(product.category_name)}">
-        ${product.category_name}
-      </a>
-    `
+    breadcrumbItems[2].innerHTML = `<a href="/shop/?category=${encodeURIComponent(product.category_name)}">${product.category_name}</a>`
   }
 
   const lastItem = breadcrumbItems[breadcrumbItems.length - 1]
@@ -987,7 +932,6 @@ function initializeDeliveryCountdown() {
   const timeDiff = targetTime - now
 
   if (timeDiff <= 0) {
-    
     // Time has passed, show message
     document.getElementById("deliveryCountdown").innerHTML = `
             <i class="fas fa-exclamation-circle me-1"></i>
@@ -1004,4 +948,75 @@ function initializeDeliveryCountdown() {
 
   // Start the countdown
   updateCountdown("deliveryCountdown", hours, minutes, seconds)
+}
+
+function initializeReviewForm() {
+  const reviewForm = document.getElementById("reviewForm")
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", handleReviewSubmission)
+  }
+}
+
+async function handleReviewSubmission(event) {
+  event.preventDefault()
+
+  const form = event.target
+
+  // Get form values
+  const reviewerName = document.getElementById("reviewerName").value.trim()
+  const reviewerEmail = document.getElementById("reviewerEmail").value.trim()
+  const reviewText = document.getElementById("reviewText").value.trim()
+  const rating = document.querySelector('input[name="rating"]:checked')?.value
+
+  // Validation
+  if (!reviewerName || !reviewerEmail || !reviewText || !rating) {
+    showNotification("Please fill in all required fields.", "error")
+    return
+  }
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(reviewerEmail)) {
+    showNotification("Please enter a valid email address.", "error")
+    return
+  }
+
+  // Get current product ID
+  const urlParams = new URLSearchParams(window.location.search)
+  const productId = urlParams.get("product_id") || urlParams.get("id")
+
+  if (!productId) {
+    showNotification("Product not found.", "error")
+    return
+  }
+
+  try {
+    // Prepare review data
+    const reviewData = {
+      product_id: productId,
+      reviewer_name: reviewerName,
+      reviewer_email: reviewerEmail,
+      review_text: reviewText,
+      ratings: Number.parseFloat(rating),
+    }
+
+    // Submit review
+    const [success, result] = await callApi("POST", reviews_api_url, reviewData, csrf_token)
+
+    if (success && result.success) {
+      showNotification("Review submitted successfully! It will be published after admin approval.", "success")
+
+      // Reset form
+      form.reset()
+
+      // Clear star rating
+      const ratingInputs = document.querySelectorAll('input[name="rating"]')
+      ratingInputs.forEach((input) => (input.checked = false))
+    } else {
+      throw new Error(result.error || "Failed to submit review")
+    }
+  } catch (error) {
+    console.error("Error submitting review:", error)
+    showNotification("Error submitting review. Please try again.", "error")
+  }
 }

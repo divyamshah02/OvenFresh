@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.db.models import Q
 from django.conf import settings
+from django.db import models
 
 from django.utils import timezone
 
@@ -22,7 +23,7 @@ class CategoryViewSet(viewsets.ViewSet):
     
     @handle_exceptions
     def list(self, request):
-        categories = Category.objects.all()
+        categories = Category.objects.filter(is_extras=False, is_active=True)
         category_serializer = CategorySerializer(categories, many=True)
         return Response({
             "success": True,
@@ -134,7 +135,7 @@ class CategoryViewSet(viewsets.ViewSet):
 class SubCategoryViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
-        sub_categories = SubCategory.objects.all()
+        sub_categories = SubCategory.objects.filter(is_extras=False, is_active=True)
         sub_category_serializer = SubCategorySerializer(sub_categories, many=True)
         return Response({
             "success": True,
@@ -1701,28 +1702,291 @@ class ApplyCouponViewSet(viewsets.ViewSet):
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": "Coupon is expired or not active"
+                "error": "Coupon is not valid or has expired"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        if order_amount < coupon.minimum_order_amount:
+        discount_amount = coupon.calculate_discount(order_amount)
+        
+        if discount_amount == 0:
             return Response({
                 "success": False,
                 "user_not_logged_in": False,
                 "user_unauthorized": False,
                 "data": None,
-                "error": f"Minimum order amount should be ₹{coupon.minimum_order_amount}"
+                "error": f"Order amount must be at least ₹{coupon.minimum_order_amount}"
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        discount_amount = coupon.calculate_discount(order_amount)
         
         return Response({
             "success": True,
             "user_not_logged_in": False,
             "user_unauthorized": False,
             "data": {
-                "coupon": CouponSerializer(coupon).data,
-                "discount_amount": discount_amount,
-                "final_amount": order_amount - discount_amount
+                "coupon_code": coupon.coupon_code,
+                "discount_amount": float(discount_amount),
+                "discount_type": coupon.discount_type,
+                "discount_value": float(coupon.discount_value),
+                "final_amount": float(order_amount - discount_amount)
             },
             "error": None
         }, status=status.HTTP_200_OK)
+
+
+class ReviewsViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    def list(self, request):
+        """Get approved reviews for a product"""
+        product_id = request.query_params.get('product_id')
+        
+        if not product_id:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "product_id is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get only approved and active reviews
+        reviews = Reviews.objects.filter(
+            product_id=product_id, 
+            is_approved_admin=True, 
+            is_active=True
+        ).order_by('-created_at')
+        
+        serializer = ReviewSerializer(reviews, many=True)
+        
+        # Calculate average rating
+        avg_rating = reviews.aggregate(avg_rating=models.Avg('ratings'))['avg_rating']
+        avg_rating = round(avg_rating, 1) if avg_rating else 0
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "reviews": serializer.data,
+                "total_reviews": reviews.count(),
+                "average_rating": avg_rating
+            },
+            "error": None
+        }, status=status.HTTP_200_OK)
+    
+    @handle_exceptions
+    def create(self, request):
+        """Create a new review (no authentication required)"""
+        product_id = request.data.get("product_id")
+        ratings = request.data.get("ratings")
+        review_text = request.data.get("review_text")
+        
+        if not product_id or not ratings or not review_text:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "product_id, ratings, and review_text are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate ratings range
+        try:
+            ratings = float(ratings)
+            if ratings < 1 or ratings > 5:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Ratings must be between 1 and 5."
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, TypeError):
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Invalid ratings value."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if product exists
+        if not Product.objects.filter(product_id=product_id, is_active=True).exists():
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Create review (will be pending admin approval)
+        new_review = Reviews(
+            product_id=product_id,
+            ratings=ratings,
+            review_text=review_text.strip(),
+            is_approved_admin=False,  # Requires admin approval
+            is_active=True,
+            created_at=timezone.now()
+        )
+        new_review.save()
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "message": "Review submitted successfully! It will be visible after admin approval.",
+                "review_id": new_review.id
+            },
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+
+class AdminReviewsViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        """Get all reviews for admin management"""
+        # Get filter parameters
+        status_filter = request.query_params.get('status', 'all')  # all, pending, approved, rejected
+        product_id = request.query_params.get('product_id', '')
+        search = request.query_params.get('search', '')
+        page = int(request.query_params.get('page', 1))
+        limit = int(request.query_params.get('limit', 10))
+        
+        # Start with all reviews
+        reviews = Reviews.objects.all()
+        
+        # Apply status filter
+        if status_filter == 'pending':
+            reviews = reviews.filter(is_approved_admin=False, is_active=True)
+        elif status_filter == 'approved':
+            reviews = reviews.filter(is_approved_admin=True, is_active=True)
+        elif status_filter == 'rejected':
+            reviews = reviews.filter(is_active=False)
+        
+        # Apply product filter
+        if product_id:
+            reviews = reviews.filter(product_id=product_id)
+        
+        # Apply search filter
+        if search:
+            reviews = reviews.filter(
+                Q(review_text__icontains=search) |
+                Q(product_id__icontains=search)
+            )
+        
+        # Order by creation date (newest first)
+        reviews = reviews.order_by('-created_at')
+        
+        # Get total count
+        total_count = reviews.count()
+        
+        # Apply pagination
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_reviews = reviews[start:end]
+        
+        # Serialize reviews with product information
+        serialized_reviews = []
+        for review in paginated_reviews:
+            review_data = ReviewSerializer(review).data
+            
+            # Add product information
+            product = Product.objects.filter(product_id=review.product_id).first()
+            if product:
+                review_data['product_title'] = product.title
+                review_data['product_photos'] = product.photos
+            else:
+                review_data['product_title'] = 'Product Not Found'
+                review_data['product_photos'] = []
+            
+            serialized_reviews.append(review_data)
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "reviews": serialized_reviews,
+                "total": total_count,
+                "page": page,
+                "limit": limit,
+                "total_pages": (total_count + limit - 1) // limit,
+                "pending_count": Reviews.objects.filter(is_approved_admin=False, is_active=True).count()
+            },
+            "error": None
+        }, status=status.HTTP_200_OK)
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def update(self, request, pk):
+        """Approve or reject a review"""
+        action = request.data.get("action")  # 'approve' or 'reject'
+        
+        if action not in ['approve', 'reject']:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Action must be 'approve' or 'reject'."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            review = Reviews.objects.get(id=pk)
+        except Reviews.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Review not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if action == 'approve':
+            review.is_approved_admin = True
+            review.is_active = True
+            message = "Review approved successfully."
+        else:  # reject
+            review.is_approved_admin = False
+            review.is_active = False
+            message = "Review rejected successfully."
+        
+        review.save()
+        
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": {
+                "message": message,
+                "review_id": review.id,
+                "status": action
+            },
+            "error": None
+        }, status=status.HTTP_200_OK)
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def destroy(self, request, pk):
+        """Delete a review permanently"""
+        try:
+            review = Reviews.objects.get(id=pk)
+            review.delete()
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Review deleted successfully."},
+                "error": None
+            }, status=status.HTTP_200_OK)
+        except Reviews.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Review not found."
+            }, status=status.HTTP_404_NOT_FOUND)

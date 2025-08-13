@@ -25,6 +25,9 @@ router.register(r'check-pincode', CheckPincodeViewSet, basename='check-pincode')
 router.register(r'coupons', CouponViewSet, basename='coupons')
 router.register(r'apply-coupon', ApplyCouponViewSet, basename='apply-coupon')
 
+router.register(r'reviews', ReviewsViewSet, basename='reviews')
+router.register(r'admin-reviews', AdminReviewsViewSet, basename='admin-reviews')
+
 urlpatterns = [
     path('', include(router.urls)),
 ]

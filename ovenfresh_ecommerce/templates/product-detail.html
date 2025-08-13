@@ -159,6 +159,24 @@
                                     </div> -->
                                 </div>
                                 <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="weight" class="form-label">Greeting Cards</label>
+                                        <select class="form-select" id="greetind_cards">
+                                            <option value="">None</option>                                            
+                                            {% for card in get_cards %}
+                                            <option value="{{card.product_variation_id}}">{{card.title}} - ₹{{card.actual_price}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="toppers" class="form-label">Toppers</label>
+                                        <select class="form-select" id="toppers">
+                                            <option value="">None</option>                                            
+                                            {% for topper in get_toppers %}
+                                            <option value="{{topper.product_variation_id}}">{{topper.title}} - ₹{{topper.actual_price}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                     <!-- <div class="row align-items-center" style="min-height: 100px;">
                                         <label for="pincode-check" class="form-label">Check Pincode:</label>
                                         <div class="col-md-8">
@@ -370,6 +388,53 @@
                             </div>
                             <div class="tab-pane fade" id="reviews" role="tabpanel">
                                 <h5>Customer Reviews</h5>
+                                
+                                <!-- Add review submission form -->
+                                <div class="review-form-section mb-5">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Write a Review</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="reviewForm">
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label for="reviewerName" class="form-label">Your Name</label>
+                                                        <input type="text" class="form-control" id="reviewerName" required>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="reviewerEmail" class="form-label">Email</label>
+                                                        <input type="email" class="form-control" id="reviewerEmail" required>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="reviewRating" class="form-label">Rating</label>
+                                                        <div class="rating-input">
+                                                            <input type="radio" name="rating" value="5" id="star5">
+                                                            <label for="star5" class="star"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" name="rating" value="4" id="star4">
+                                                            <label for="star4" class="star"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" name="rating" value="3" id="star3">
+                                                            <label for="star3" class="star"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" name="rating" value="2" id="star2">
+                                                            <label for="star2" class="star"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" name="rating" value="1" id="star1">
+                                                            <label for="star1" class="star"><i class="fas fa-star"></i></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="reviewText" class="form-label">Your Review</label>
+                                                        <textarea class="form-control" id="reviewText" rows="4" placeholder="Share your experience with this product..." required></textarea>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn of-btn-primary">Submit Review</button>
+                                                        <small class="text-muted ms-3">Your review will be published after admin approval.</small>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="reviews-summary mb-4">
                                     <div class="row align-items-center">
                                         <div class="col-md-3 text-center">
@@ -787,6 +852,36 @@
         .progress {
             height: 8px;
         }
+        
+        /* Add review form styling */
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        
+        .rating-input input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-input .star {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #ddd;
+            transition: color 0.2s;
+            margin-right: 5px;
+        }
+        
+        .rating-input input[type="radio"]:checked ~ .star,
+        .rating-input .star:hover,
+        .rating-input .star:hover ~ .star {
+            color: #ffc107;
+        }
+        
+        .review-form-section {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 2rem;
+        }
     </style>
 
     <script>
@@ -797,7 +892,8 @@
                 "{% url 'product-list' %}",
                 "{% url 'check-pincode-list' %}",
                 "{% url 'cart-api-list' %}",
-                "{% url 'checkout-list' %}"
+                "{% url 'checkout-list' %}",
+                "{% url 'reviews-list' %}" // Add reviews API URL
             );
             toggle_loader();
         }
