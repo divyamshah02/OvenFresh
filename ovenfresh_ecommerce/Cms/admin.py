@@ -107,11 +107,11 @@ class ProductSectionAdmin(admin.ModelAdmin):
         if obj.category_id:
             try:
                 category = Category.objects.get(id=obj.category_id)
-                result = category.name
+                result = category.title
                 if obj.subcategory_id:
                     try:
                         subcategory = SubCategory.objects.get(id=obj.subcategory_id)
-                        result += f" > {subcategory.name}"
+                        result += f" > {subcategory.title}"
                     except SubCategory.DoesNotExist:
                         pass
                 return result

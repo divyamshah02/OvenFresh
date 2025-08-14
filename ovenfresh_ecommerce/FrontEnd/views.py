@@ -20,7 +20,8 @@ class HomeViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         # Use the CMS-controlled homepage
-        return render(request, 'home.html')
+        # return render(request, 'home.html')
+        return render(request, 'home_dynamic.html')
 
 class ShopViewSet(viewsets.ViewSet):
 
@@ -157,6 +158,15 @@ class AdminDashboardViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_dashboard.html')
+
+
+class AdminHomeCmsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_home_management.html')
+
 
 class AdminCmsViewSet(viewsets.ViewSet):
 
