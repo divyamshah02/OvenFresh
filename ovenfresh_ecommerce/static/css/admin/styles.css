@@ -207,6 +207,24 @@ body {
   text-align: center;
 }
 
+/* Order status background colors */
+.status-placed {
+    background-color: white;
+}
+.status-preparing {
+    background-color: #f5f5dc; /* Beige pastel */
+}
+.status-ready {
+    background-color: #dfb0ff69; /* Mauve pastel */
+}
+.status-out {
+    background-color: #44e9ec60; /* Light yellow */
+}
+.status-delivered {
+    background-color: #98fb987f; /* Pastel green */
+}
+
+
 /* ===== CARD STYLES ===== */
 .card {
   background-color: var(--surface-color);

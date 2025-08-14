@@ -1138,6 +1138,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 # Delivery person
                 'assigned_delivery_partner_id': order.assigned_delivery_partner_id,
                 'assigned_delivery_partner_name': delivery_partner_name,
+                'assigned_delivery_partner_commission': order.assigned_delivery_partner_commission,
                 
                 # Order items
                 'order_items': items_data,
@@ -1268,6 +1269,7 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
         try:
             order_id = request.data.get('order_id')
             delivery_person_id = request.data.get('delivery_person_id')
+            commission = request.data.get('commission', 0)
             
             if not order_id or not delivery_person_id:
                 return Response({
@@ -1284,6 +1286,7 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
             
             # Assign delivery person
             order.assigned_delivery_partner_id = delivery_person_id
+            order.assigned_delivery_partner_commission = commission
             order.save()
             
             return Response({
@@ -1291,7 +1294,8 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
                 "data": {
                     "order_id": order_id,
                     "delivery_person_id": delivery_person_id,
-                    "delivery_person_name": delivery_person.first_name
+                    "delivery_person_name": delivery_person.first_name,
+                    "commission": commission
                 },
                 "error": None
             }, status=200)
