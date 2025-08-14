@@ -91,6 +91,7 @@ class Order(models.Model):
     
     # Other details
     assigned_delivery_partner_id = models.CharField(max_length=20, null=True, blank=True)
+    assigned_delivery_partner_commission = models.CharField(max_length=20, null=True, blank=True)
     order_note = models.TextField(null=True, blank=True)
     special_instructions = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

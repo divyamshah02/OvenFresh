@@ -313,6 +313,23 @@ function renderOrders() {
 
   ordersData.forEach((order) => {
     const row = document.createElement("tr")
+    switch (order.status.toLowerCase()) {
+      case "placed":
+        row.classList.add("status-placed");
+        break;
+      case "preparing":
+        row.classList.add("status-preparing");
+        break;
+      case "ready":
+        row.classList.add("status-ready");
+        break;
+      case "out_for_delivery":
+        row.classList.add("status-out");
+        break;
+      case "delivered":
+        row.classList.add("status-delivered");
+        break;
+    }
 
     // Check if this order is selected
     const isSelected = selectedOrders.has(order.order_id)

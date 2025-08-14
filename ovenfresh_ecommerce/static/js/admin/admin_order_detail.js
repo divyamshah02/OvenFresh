@@ -9,6 +9,7 @@ let assign_delivery_person_url = null
 let orderData = null
 let deliveryPersons = []
 let selectedDeliveryPerson = null
+let selectedCommission = 0;
 
 async function InitializeAdminOrderDetail(
   csrfTokenParam,
@@ -130,7 +131,8 @@ function populateDeliveryInfo() {
         <small>${orderData.delivery_address}</small>
         ${
           orderData.assigned_delivery_partner_name
-            ? `<p class="mt-2 mb-0"><strong>Assigned to:</strong> ${orderData.assigned_delivery_partner_name}</p>`
+            ? `<p class="mt-2 mb-0"><strong>Assigned to:</strong> ${orderData.assigned_delivery_partner_name}</p>
+               <p class="mb-0"><strong>Commission:</strong> ${orderData.assigned_delivery_partner_commission || "0"}</p>`
             : '<p class="mt-2 mb-0 text-warning"><strong>No delivery person assigned</strong></p>'
         }
     `
@@ -318,11 +320,34 @@ function selectDeliveryPerson(personId) {
   selectedDeliveryPerson = personId
 }
 
-async function assignDeliveryPerson() {
+function openCommissionModal() {
+  // Ensure a delivery person is selected before showing modal
   if (!selectedDeliveryPerson) {
-    showNotification("Please select a delivery person.", "warning")
-    return
+    showNotification("Please select a delivery person.", "warning");
+    return;
   }
+
+  // Reset commission input before showing
+  document.getElementById("commissionInput").value = "";
+
+  // Show Bootstrap modal
+  const commissionModal = new bootstrap.Modal(document.getElementById("commissionModal"));
+  commissionModal.show();
+}
+
+async function assignDeliveryPerson() {
+  selectedCommission = parseFloat(document.getElementById("commissionInput").value);
+
+  if (isNaN(selectedCommission)) {
+      showNotification("Invalid Commission Amount!", "warning");
+      return;
+  }
+
+  if (selectedCommission < 0) {
+    showNotification("Commission cannot be negative.", "warning");
+    return;
+  }
+  selectedCommission = parseFloat(selectedCommission.toFixed(2));
 
   try {
     showLoading()
@@ -333,6 +358,7 @@ async function assignDeliveryPerson() {
       {
         order_id: order_id,
         delivery_person_id: selectedDeliveryPerson,
+        commission: selectedCommission,
       },
       csrf_token,
     )
@@ -340,6 +366,7 @@ async function assignDeliveryPerson() {
     if (success && result.success) {
       showNotification("Delivery person assigned successfully!", "success")
       await loadOrderDetails() // Refresh order details
+      bootstrap.Modal.getInstance(document.getElementById("commissionModal")).hide();
     } else {
       throw new Error(result.error || "Failed to assign delivery person")
     }
