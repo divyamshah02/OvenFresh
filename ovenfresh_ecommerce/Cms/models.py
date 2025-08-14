@@ -7,7 +7,7 @@ class HeroBanner(models.Model):
     description = models.TextField(blank=True, null=True)
     image = models.URLField()
     button_text = models.CharField(max_length=50, default="Shop Now")
-    button_link = models.URLField(blank=True, null=True)
+    button_link = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page Management - ShopAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+</head>
+
+<body class="ovenfresh-theme">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% include 'admin/admin-nav.html' %}
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="h2">Home Page Management</h1>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-outline-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                            <a href="/home_dynamic/" target="_blank" class="btn btn-outline-primary">
+                                <i class="fas fa-external-link-alt me-1"></i> Preview Home Page
+                            </a>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Navigation Tabs -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="sectionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero-section" type="button" role="tab">
+                                    <i class="fas fa-images me-2"></i>Hero Banners
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery-section" type="button" role="tab">
+                                    <i class="fas fa-truck me-2"></i>Delivery Policies
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories-section" type="button" role="tab">
+                                    <i class="fas fa-th-large me-2"></i>Categories
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features-section" type="button" role="tab">
+                                    <i class="fas fa-star me-2"></i>Features
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-section" type="button" role="tab">
+                                    <i class="fas fa-info-circle me-2"></i>About Section
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products-section" type="button" role="tab">
+                                    <i class="fas fa-box me-2"></i>Product Sections
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="clients-tab" data-bs-toggle="tab" data-bs-target="#clients-section" type="button" role="tab">
+                                    <i class="fas fa-handshake me-2"></i>Client Logos
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="sectionTabsContent">
+                            <!-- Hero Banners Section -->
+                            <div class="tab-pane fade show active" id="hero-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Hero Banners Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#heroBannerModal">
+                                        <i class="fas fa-plus me-1"></i> Add Hero Banner
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="heroBannersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Image</th>
+                                                <th>Title</th>
+                                                <th>Subtitle</th>
+                                                <th>Button Text</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="heroBannersTableBody">
+                                            <!-- Hero banners will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Policies Section -->
+                            <div class="tab-pane fade" id="delivery-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Delivery Policies Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deliveryPolicyModal">
+                                        <i class="fas fa-plus me-1"></i> Add Delivery Policy
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="deliveryPoliciesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Type</th>
+                                                <th>Title</th>
+                                                <th>Icon</th>
+                                                <th>Countdown</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="deliveryPoliciesTableBody">
+                                            <!-- Delivery policies will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Categories Section -->
+                            <div class="tab-pane fade" id="categories-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Homepage Categories Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                                        <i class="fas fa-plus me-1"></i> Add Category
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="categoriesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Image</th>
+                                                <th>Title</th>
+                                                <th>Description</th>
+                                                <th>Link</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="categoriesTableBody">
+                                            <!-- Categories will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Features Section -->
+                            <div class="tab-pane fade" id="features-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Features Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#featureModal">
+                                        <i class="fas fa-plus me-1"></i> Add Feature
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="featuresTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Icon</th>
+                                                <th>Title</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="featuresTableBody">
+                                            <!-- Features will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- About Section -->
+                            <div class="tab-pane fade" id="about-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">About Section Management</h5>
+                                    <button type="button" class="btn btn-primary" id="editAboutBtn">
+                                        <i class="fas fa-edit me-1"></i> Edit About Section
+                                    </button>
+                                </div>
+                                <div id="aboutSectionPreview">
+                                    <!-- About section preview will be loaded here -->
+                                </div>
+                            </div>
+
+                            <!-- Product Sections -->
+                            <div class="tab-pane fade" id="products-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Product Sections Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productSectionModal">
+                                        <i class="fas fa-plus me-1"></i> Add Product Section
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="productSectionsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Category/Subcategory</th>
+                                                <th>Max Products</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="productSectionsTableBody">
+                                            <!-- Product sections will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Client Logos Section -->
+                            <div class="tab-pane fade" id="clients-section" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Client Logos Management</h5>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#clientLogoModal">
+                                        <i class="fas fa-plus me-1"></i> Add Client Logo
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="clientLogosTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Logo</th>
+                                                <th>Company Name</th>
+                                                <th>Website</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="clientLogosTableBody">
+                                            <!-- Client logos will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals will be added here -->
+    <!-- Hero Banner Modal -->
+    <div class="modal fade" id="heroBannerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Hero Banner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="heroBannerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="heroBannerTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="heroBannerTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="heroBannerOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="heroBannerOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="heroBannerSubtitle" class="form-label">Subtitle</label>
+                            <textarea class="form-control" id="heroBannerSubtitle" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="heroBannerDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="heroBannerDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="heroBannerImage" class="form-label">Image URL *</label>
+                            <input type="url" class="form-control" id="heroBannerImage" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="heroBannerButtonText" class="form-label">Button Text</label>
+                                <input type="text" class="form-control" id="heroBannerButtonText" value="Shop Now">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="heroBannerButtonLink" class="form-label">Button Link</label>
+                                <input type="url" class="form-control" id="heroBannerButtonLink">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="heroBannerActive" checked>
+                                <label class="form-check-label" for="heroBannerActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveHeroBannerBtn">Save Banner</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Policy Modal -->
+    <div class="modal fade" id="deliveryPolicyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Delivery Policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deliveryPolicyForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="deliveryPolicyTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="deliveryPolicyOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyType" class="form-label">Policy Type *</label>
+                                <select class="form-select" id="deliveryPolicyType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="same_day">Same Day Delivery</option>
+                                    <option value="midnight">Midnight Delivery</option>
+                                    <option value="express">Express Delivery</option>
+                                    <option value="standard">Standard Delivery</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyIcon" class="form-label">Icon Class</label>
+                                <input type="text" class="form-control" id="deliveryPolicyIcon" placeholder="fas fa-truck">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deliveryPolicyDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="deliveryPolicyDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyCountdownHour" class="form-label">Countdown Hour (24h format)</label>
+                                <input type="number" class="form-control" id="deliveryPolicyCountdownHour" min="0" max="23">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyCountdownMinute" class="form-label">Countdown Minute</label>
+                                <input type="number" class="form-control" id="deliveryPolicyCountdownMinute" min="0" max="59" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="deliveryPolicyActive" checked>
+                                <label class="form-check-label" for="deliveryPolicyActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveDeliveryPolicyBtn">Save Policy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Homepage Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="categoryTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="categoryTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categoryOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="categoryOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="categoryDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryImage" class="form-label">Image URL *</label>
+                            <input type="url" class="form-control" id="categoryImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryLink" class="form-label">Link URL</label>
+                            <input type="url" class="form-control" id="categoryLink">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="categoryActive" checked>
+                                <label class="form-check-label" for="categoryActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save Category</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Modal -->
+    <div class="modal fade" id="featureModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Feature</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="featureForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="featureTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="featureTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="featureOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="featureOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="featureIcon" class="form-label">Icon Class *</label>
+                            <input type="text" class="form-control" id="featureIcon" placeholder="fas fa-star" required>
+                            <div class="form-text">Use Font Awesome icon classes (e.g., fas fa-star, fas fa-truck, etc.)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="featureDescription" class="form-label">Description *</label>
+                            <textarea class="form-control" id="featureDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="featureActive" checked>
+                                <label class="form-check-label" for="featureActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveFeatureBtn">Save Feature</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section Modal -->
+    <div class="modal fade" id="aboutSectionModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit About Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="aboutSectionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="aboutTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutSubtitle" class="form-label">Subtitle</label>
+                                <input type="text" class="form-control" id="aboutSubtitle">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="aboutDescription" class="form-label">Description *</label>
+                            <textarea class="form-control" id="aboutDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutImage" class="form-label">Main Image URL</label>
+                                <input type="url" class="form-control" id="aboutImage">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutButtonText" class="form-label">Button Text</label>
+                                <input type="text" class="form-control" id="aboutButtonText" value="Learn More">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="aboutButtonLink" class="form-label">Button Link</label>
+                            <input type="url" class="form-control" id="aboutButtonLink">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="aboutActive" checked>
+                                <label class="form-check-label" for="aboutActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveAboutSectionBtn">Save About Section</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Section Modal -->
+    <div class="modal fade" id="productSectionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Product Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productSectionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="productSectionTitle" class="form-label">Section Title *</label>
+                                <input type="text" class="form-control" id="productSectionTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="productSectionOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="productSectionOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="productSectionType" class="form-label">Section Type *</label>
+                                <select class="form-select" id="productSectionType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="category">By Category</option>
+                                    <option value="subcategory">By Subcategory</option>
+                                    <option value="featured">Featured Products</option>
+                                    <option value="latest">Latest Products</option>
+                                    <option value="bestseller">Best Sellers</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="productSectionMaxProducts" class="form-label">Max Products to Show</label>
+                                <input type="number" class="form-control" id="productSectionMaxProducts" value="8" min="1" max="20">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3" id="categorySelectDiv" style="display: none;">
+                                <label for="productSectionCategory" class="form-label">Category</label>
+                                <select class="form-select" id="productSectionCategory">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3" id="subcategorySelectDiv" style="display: none;">
+                                <label for="productSectionSubcategory" class="form-label">Subcategory</label>
+                                <select class="form-select" id="productSectionSubcategory">
+                                    <option value="">Select Subcategory</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productSectionDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="productSectionDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="productSectionActive" checked>
+                                <label class="form-check-label" for="productSectionActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProductSectionBtn">Save Product Section</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Logo Modal -->
+    <div class="modal fade" id="clientLogoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Client Logo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clientLogoForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="clientLogoCompanyName" class="form-label">Company Name *</label>
+                                <input type="text" class="form-control" id="clientLogoCompanyName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="clientLogoOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="clientLogoOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoImage" class="form-label">Logo Image URL *</label>
+                            <input type="url" class="form-control" id="clientLogoImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoWebsite" class="form-label">Company Website</label>
+                            <input type="url" class="form-control" id="clientLogoWebsite">
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="clientLogoDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="clientLogoActive" checked>
+                                <label class="form-check-label" for="clientLogoActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveClientLogoBtn">Save Client Logo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/scripts.js"></script>
+    <script src="/static/js/admin/admin_home_management.js"></script>
+
+    <script>
+        const csrfToken = "{{ csrf_token }}";
+        AdminHomeManagement(
+            csrfToken,
+            "/cms-api/hero-banners/",
+            "/cms-api/delivery-policies/",
+            "/cms-api/homepage-categories/",
+            "/cms-api/features/",
+            "/cms-api/about-section/",
+            "/cms-api/product-sections/",
+            "/cms-api/client-logos/",
+            "/cms-api/categories/",
+            "/cms-api/subcategories/",
+            "/cms-api/products/"
+        );
+    </script>
+</body>
+
+</html>
