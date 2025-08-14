@@ -32,6 +32,7 @@ router.register(r'admin-all-orders', AdminAllOrdersViewSet, basename='admin-all-
 router.register(r'admin-add-order', AdminAddOrderViewSet, basename='admin-add-order')
 router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 router.register(r'admin-pincode-order', AdminPincodeOrderDetailViewSet, basename='admin-pincode-order')
+router.register(r'admin-review', AdminReviewsViewSet, basename='admin-review')
 
 
 

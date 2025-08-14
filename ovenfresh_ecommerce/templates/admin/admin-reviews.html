@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reviews Management - OvenFresh Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Updated CSS path to match admin structure -->
+  <link rel="stylesheet" href="/static/css/admin/styles.css">
+</head>
+<body class="ovenfresh-theme">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Include admin navigation template -->
+      {% include 'admin/admin-nav.html' %}
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="d-flex align-items-center">
+            <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="h2">Reviews Management</h1>
+          </div>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="bulkApprove">
+                <i class="fas fa-check me-1"></i> Bulk Approve
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger" id="bulkReject">
+                <i class="fas fa-times me-1"></i> Bulk Reject
+              </button>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> Admin
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Added loading spinner -->
+        <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading reviews data...</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+          <div class="col-md-3 mb-3">
+            <div class="card stat-card gradient-warning">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="card-subtitle mb-1">Pending Reviews</h6>
+                    <h3 class="card-title mb-0" id="pendingCount">0</h3>
+                    <p class="small mb-0 text-black-75">Awaiting approval</p>
+                  </div>
+                  <div class="icon-container bg-white bg-opacity-20">
+                    <i class="fas fa-clock text-black"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card stat-card gradient-success">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="card-subtitle mb-1">Approved Reviews</h6>
+                    <h3 class="card-title mb-0" id="approvedCount">0</h3>
+                    <p class="small mb-0 text-black-75">Live on website</p>
+                  </div>
+                  <div class="icon-container bg-white bg-opacity-20">
+                    <i class="fas fa-check-circle text-black"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card stat-card gradient-primary">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="card-subtitle mb-1">Average Rating</h6>
+                    <h3 class="card-title mb-0" id="avgRating">0.0</h3>
+                    <p class="small mb-0 text-black-75">Overall rating</p>
+                  </div>
+                  <div class="icon-container bg-white bg-opacity-20">
+                    <i class="fas fa-star text-black"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card stat-card gradient-info">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="card-subtitle mb-1">Total Reviews</h6>
+                    <h3 class="card-title mb-0" id="totalCount">0</h3>
+                    <p class="small mb-0 text-black-75">All time reviews</p>
+                  </div>
+                  <div class="icon-container bg-white bg-opacity-20">
+                    <i class="fas fa-list text-black"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Content -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4 mb-2 mb-md-0">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Search reviews..." id="searchInput">
+                  <button class="btn btn-primary" type="button" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-8 d-flex justify-content-md-end">
+                <div class="btn-group me-2">
+                  <select class="form-select" id="statusFilter">
+                    <option value="all">All Reviews</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+                <div class="btn-group me-2">
+                  <select class="form-select" id="ratingFilter">
+                    <option value="">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                  </select>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-secondary" id="refreshBtn">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label" for="selectAll"></label>
+                      </div>
+                    </th>
+                    <th>Product</th>
+                    <th>Rating</th>
+                    <th>Review Text</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewsTableBody">
+                  <!-- Reviews will be loaded here dynamically -->
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <span id="paginationInfo">Loading...</span>
+              </div>
+              <nav>
+                <ul class="pagination mb-0" id="pagination">
+                  <!-- Pagination will be loaded here dynamically -->
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Review Detail Modal -->
+  <div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Review Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4">
+              <img id="modalProductImage" src="/placeholder.svg" alt="Product" class="img-fluid rounded mb-3">
+              <h6 id="modalProductTitle">Product Title</h6>
+            </div>
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <div id="modalRating" class="mb-2">
+                  <!-- Stars will be displayed here -->
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Review Text</label>
+                <div class="border rounded p-3" id="modalReviewText">
+                  <!-- Review text will be displayed here -->
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Submitted Date</label>
+                <p id="modalDate" class="mb-0"></p>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Current Status</label>
+                <p id="modalStatus" class="mb-0"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" id="modalApproveBtn">
+            <i class="fas fa-check me-1"></i> Approve
+          </button>
+          <button type="button" class="btn btn-danger" id="modalRejectBtn">
+            <i class="fas fa-times me-1"></i> Reject
+          </button>
+          <button type="button" class="btn btn-outline-danger" id="modalDeleteBtn">
+            <i class="fas fa-trash me-1"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Added toast container for notifications -->
+  <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Added API caller script -->
+  <script src="/static/js/api_caller.js"></script>
+  <script src="/static/js/admin/admin-reviews.js"></script>
+
+  <!-- Added Django-style JavaScript initialization with CSRF token and API endpoints -->
+  <script>
+    const csrfToken = "{{ csrf_token }}";
+    AdminReviews(
+      csrfToken,
+      "{% url 'admin-reviews-list' %}",
+      "{% url 'admin-reviews-list' %}",
+
+    );
+  </script>
+</body>
+</html>
