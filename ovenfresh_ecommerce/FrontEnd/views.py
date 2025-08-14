@@ -12,6 +12,7 @@ from utils.decorators import handle_exceptions, check_authentication
 from UserDetail.models import User
 from Order.models import Order, OrderItem
 from Order.serializers import OrderItemSerializer
+from Product.models import *
 
 
 class HomeViewSet(viewsets.ViewSet):
@@ -32,7 +33,37 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
-        return render(request, 'product-detail.html')
+        get_toppers = Product.objects.filter(sub_category_id="9234546814")
+        toppers = []
+        for topper in get_toppers:
+            temp_topper = {
+                "product_id": topper.product_id,
+                "title": topper.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=topper.product_id)
+            if product_variations.exists():
+                temp_topper["actual_price"] = product_variations.first().actual_price
+                temp_topper["product_variation_id"] = product_variations.first().product_variation_id
+            toppers.append(temp_topper)
+
+        get_cards = Product.objects.filter(sub_category_id="3622759923")
+        cards = []
+        for card in get_cards:
+            temp_card = {
+                "product_id": card.product_id,
+                "title": card.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=card.product_id)
+            if product_variations.exists():
+                temp_card["actual_price"] = product_variations.first().actual_price
+                temp_card["product_variation_id"] = product_variations.first().product_variation_id
+            cards.append(temp_card)
+
+        data = {
+            "get_toppers": toppers,
+            "get_cards": cards,
+        }
+        return render(request, 'product-detail.html', data)
 
 
 class CartViewSet(viewsets.ViewSet):
@@ -181,6 +212,14 @@ class AdminCouponViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def list(self, request):
         return render(request, 'admin/admin_coupon_manager.html')
+
+
+class AdminReviewsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin-reviews.html')
 
 
 class AdminAllOrdersViewSet(viewsets.ViewSet):
