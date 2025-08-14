@@ -12,7 +12,7 @@ def base64_to_text(b64_text):
 
 if __name__ == "__main__":
     # Example usage
-    original_text = "Hello, World!"
+    original_text = "Hello world"
     encoded_text = text_to_base64(original_text)
     decoded_text = base64_to_text(encoded_text)
 
@@ -21,3 +21,8 @@ if __name__ == "__main__":
     print(f"Decoded Text: {decoded_text}")
     
     
+    RAZORPAY_KEY_ID = base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ=")
+    RAZORPAY_KEY_SECRET = base64_to_text("UkFYTXVZcGs2TEJkejcxTnBtTjRrVUdP")
+
+    print(RAZORPAY_KEY_ID)
+    print(RAZORPAY_KEY_SECRET)
