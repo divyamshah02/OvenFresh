@@ -321,99 +321,99 @@ class ImportProductsViewSet(viewsets.ViewSet):
             with open(json_path, "r", encoding="utf-8") as f:
                 products_data = json.load(f)
 
-            # Pass 1: Create categories & subcategories
             category_map = {}
             subcategory_map = {}
 
-            for p in products_data[0:1]:
-                category_string = p.get("Categories", "")
-                if not category_string:
-                    continue
+            for indd,p in enumerate(products_data[0:1]):
+                try:
+                    print(f"Processing product: {indd+1} {p.get('Name', 'Unknown')}")
+                    cat_dict = p.get("Categories", {})  # This is already a dict like {"Cakes": ["Bento Cakes", "Chocolate Cakes"]}
+                    if not cat_dict:
+                        continue
+                    print(f"Categories found: {cat_dict}")
+                    # Extract category & subcategory list
+                    main_cat = list(cat_dict.keys())[0]
+                    sub_cats = cat_dict[main_cat] if isinstance(cat_dict[main_cat], list) else []
 
-                parts = [c.strip() for c in category_string.split(">")]
-                main_cat = parts[0]
-                sub_cat = parts[1] if len(parts) > 1 else None
+                    # Create category if not exists
+                    if main_cat not in category_map:
+                        cat_obj, _ = Category.objects.get_or_create(
+                            title=main_cat,
+                            defaults={"category_id": self.generate_category_id()}
+                        )
+                        category_map[main_cat] = cat_obj.category_id
 
-                # Create Category if not exists
-                if main_cat and main_cat not in category_map:
-                    cat_obj, _ = Category.objects.get_or_create(
-                        title=main_cat,
-                        defaults={"category_id": self.generate_id()}
-                    )
-                    category_map[main_cat] = cat_obj.category_id
+                    # Create all subcategories & collect IDs
+                    sub_category_ids = []
+                    for sub_cat in sub_cats:
+                        if sub_cat not in subcategory_map:
+                            sub_obj, _ = SubCategory.objects.get_or_create(
+                                title=sub_cat,
+                                category_id=category_map[main_cat],
+                                defaults={"sub_category_id": self.generate_sub_category_id()}
+                            )
+                            subcategory_map[sub_cat] = sub_obj.sub_category_id
+                        sub_category_ids.append(subcategory_map[sub_cat])
 
-                # Create SubCategory if not exists
-                if sub_cat and sub_cat not in subcategory_map:
-                    sub_obj, _ = SubCategory.objects.get_or_create(
-                        title=sub_cat,
-                        category_id=category_map[main_cat],
-                        defaults={"sub_category_id": self.generate_id()}
-                    )
-                    subcategory_map[sub_cat] = sub_obj.sub_category_id
+                    # Pick first subcategory ID for main product field
+                    main_sub_cat_id = sub_category_ids[0] if sub_category_ids else None
 
-            # Pass 2: Create Products & Variations
-            for p in products_data:
-                category_string = p.get("Categories", "")
-                parts = [c.strip() for c in category_string.split(">")]
-                main_cat = parts[0] if parts else None
-                sub_cat = parts[1] if len(parts) > 1 else None
+                    # Download & upload images
+                    image_urls = []
+                    if p.get("Images"):
+                        for img_url in p["Images"].split(","):
+                            img_url = img_url.strip()
+                            if not img_url:
+                                continue
+                            try:
+                                resp = requests.get(img_url, timeout=10)
+                                resp.raise_for_status()
+                                content_file = ContentFile(resp.content)
+                                content_file.name = img_url.split("/")[-1]
+                                guessed_type, _ = mimetypes.guess_type(img_url)
+                                content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
+                                content_file.content_type = content_type
+                                file_url = upload_file_to_s3(content_file, folder="products")
+                                print(f"Image uploaded: {file_url}")
+                                image_urls.append(file_url)
+                            except Exception as e:
+                                print(f"Image upload failed for {img_url}: {e}")
 
-                # Download & upload images to S3
-                image_urls = []
-                if p.get("Images"):
-                    for img_url in p["Images"].split(","):
-                        img_url = img_url.strip()
-                        if not img_url:
-                            continue
-                        try:
-                            resp = requests.get(img_url, timeout=10)
-                            resp.raise_for_status()
-
-                            # Wrap bytes in ContentFile
-                            content_file = ContentFile(resp.content)
-                            content_file.name = img_url.split("/")[-1]
-
-                            # Guess content type from URL or headers
-                            guessed_type, _ = mimetypes.guess_type(img_url)
-                            content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
-                            content_file.content_type = content_type  # Add missing attr
-
-                            file_url = upload_file_to_s3(content_file, folder="products")
-                            print(f"Image uploaded: {file_url}")
-                            image_urls.append(file_url)
-
-                        except Exception as e:
-                            print(f"Image upload failed for {img_url}: {e}")
-
-                # Create product
-                product_id = self.generate_id()
-                product_obj = Product.objects.create(
-                    product_id=product_id,
-                    title=p.get("Name", ""),
-                    description=p.get("Short description"),
-                    photos=image_urls,
-                    category_id=category_map.get(main_cat),
-                    sub_category_id=subcategory_map.get(sub_cat),
-                    hsn=self.get_hsn(p),
-                    created_at=timezone.now(),
-                    is_veg=True  # Default to True unless you add logic
-                )
-
-                # Create variations
-                for var in p.get("Products_varaitons", []):
-                    ProductVariation.objects.create(
+                    # Create product
+                    product_id = self.generate_id()
+                    product_obj = Product.objects.create(
                         product_id=product_id,
-                        product_variation_id=self.generate_id(),
-                        actual_price=var.get("Regular price", 0),
-                        discounted_price=var.get("Regular price", 0),
-                        is_vartied=True,
-                        weight_variation=self.get_weight(var),
-                        is_active=True,
+                        title=p.get("Name", ""),
+                        description=p.get("Short description"),
+                        photos=image_urls,
+                        category_id=category_map.get(main_cat),
+                        sub_category_id=main_sub_cat_id,
+                        sub_category_id_list=sub_category_ids,  # NEW LIST FIELD
+                        hsn=self.get_hsn(p),
                         created_at=timezone.now(),
-                        stock_toggle_mode=True,
-                        stock_quantity=None,
-                        in_stock_bull=bool(var.get("In stock?", 1))
+                        is_veg=True
                     )
+
+                    # Create variations
+                    for var in p.get("Products_varaitons", []):
+                        ProductVariation.objects.create(
+                            product_id=product_id,
+                            product_variation_id=self.generate_id(),
+                            actual_price=var.get("Regular price", 0),
+                            discounted_price=var.get("Regular price", 0),
+                            is_vartied=True,
+                            weight_variation=self.get_weight(var),
+                            is_active=True,
+                            created_at=timezone.now(),
+                            stock_toggle_mode=True,
+                            stock_quantity=None,
+                            in_stock_bull=bool(var.get("In stock?", 1))
+                        )
+
+                    print(f"Product {p.get('Name', 'Unknown')} imported successfully with ID {product_id}")
+                except Exception as e:
+                    print(f"XXXXXX Error processing product {p.get('Name', 'Unknown')}: {e}")
+                    continue
 
             return JsonResponse({
                 "success": True,
@@ -442,3 +442,15 @@ class ImportProductsViewSet(viewsets.ViewSet):
         elif str(variation.get("Attribute 2 name", "")).lower() == "weight":
             return variation.get("Attribute 2 value(s)")
         return None
+    
+    def generate_sub_category_id(self):
+        while True:
+            sub_category_id = ''.join(random.choices(string.digits, k=10))
+            if not SubCategory.objects.filter(is_active=True, sub_category_id=sub_category_id).exists():
+                return sub_category_id
+
+    def generate_category_id(self):
+        while True:
+            category_id = ''.join(random.choices(string.digits, k=10))
+            if not Category.objects.filter(is_active=True, category_id=category_id).exists():
+                return category_id
