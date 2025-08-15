@@ -20,6 +20,8 @@ import json
 import requests
 import random
 import string
+import os
+import re
 from django.http import JsonResponse
 from utils.handle_s3_bucket import upload_file_to_s3, delete_file_from_s3
 
@@ -373,18 +375,25 @@ class ImportProductsViewSet(viewsets.ViewSet):
                                 guessed_type, _ = mimetypes.guess_type(img_url)
                                 content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
                                 content_file.content_type = content_type
-                                file_url = upload_file_to_s3(content_file, folder="products")
+                                try:                                    
+                                    relative_path = img_url.split("/uploads/")[1]
+                                    s3_folder = f"products/{os.path.dirname(relative_path)}"
+                                except:
+                                    # Fallback if URL doesn't contain 'uploads/'
+                                    s3_folder = "products"
+
+                                file_url = upload_file_to_s3(content_file, folder=s3_folder)
                                 print(f"Image uploaded: {file_url}")
                                 image_urls.append(file_url)
                             except Exception as e:
                                 print(f"Image upload failed for {img_url}: {e}")
 
                     # Create product
-                    product_id = self.generate_id()
+                    product_id = self.generate_product_id()
                     product_obj = Product.objects.create(
                         product_id=product_id,
                         title=p.get("Name", ""),
-                        description=p.get("Short description"),
+                        description=self.clean_description(p.get("Short description")),
                         photos=image_urls,
                         category_id=category_map.get(main_cat),
                         sub_category_id=main_sub_cat_id,
@@ -398,7 +407,7 @@ class ImportProductsViewSet(viewsets.ViewSet):
                     for var in p.get("Products_varaitons", []):
                         ProductVariation.objects.create(
                             product_id=product_id,
-                            product_variation_id=self.generate_id(),
+                            product_variation_id=self.generate_product_variation_id(),
                             actual_price=var.get("Regular price", 0),
                             discounted_price=var.get("Regular price", 0),
                             is_vartied=True,
@@ -407,7 +416,7 @@ class ImportProductsViewSet(viewsets.ViewSet):
                             created_at=timezone.now(),
                             stock_toggle_mode=True,
                             stock_quantity=None,
-                            in_stock_bull=bool(var.get("In stock?", 1))
+                            in_stock_bull=not bool(var.get("In stock?", 1))
                         )
 
                     print(f"Product {p.get('Name', 'Unknown')} imported successfully with ID {product_id}")
@@ -426,8 +435,32 @@ class ImportProductsViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def generate_id(self, length=10):
-        return ''.join(random.choices(string.digits, k=length))
+    def clean_description(self, text):
+        if not text:
+            return ""
+        
+        # Remove HTML tags
+        text = re.sub(r'<[^>]+>', '', text)
+        
+        # Remove _x000D_ and escaped \n or \t
+        text = text.replace('_x000D_', ' ')
+        text = text.replace('\\n', ' ').replace('\\t', ' ')
+        
+        # Collapse multiple spaces
+        text = re.sub(r'\s+', ' ', text)
+        
+        return text.strip()
+    def generate_product_id(self):
+        while True:
+            product_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not Product.objects.filter(is_active=True, product_id=product_id).exists():
+                return product_id
+
+    def generate_product_variation_id(self):
+        while True:
+            product_variation_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not ProductVariation.objects.filter(is_active=True, product_variation_id=product_variation_id).exists():
+                return product_variation_id
 
     def get_hsn(self, product_dict):
         if str(product_dict.get("Attribute 1 name", "")).lower() == "hsn code":
@@ -445,12 +478,12 @@ class ImportProductsViewSet(viewsets.ViewSet):
     
     def generate_sub_category_id(self):
         while True:
-            sub_category_id = ''.join(random.choices(string.digits, k=10))
+            sub_category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not SubCategory.objects.filter(is_active=True, sub_category_id=sub_category_id).exists():
                 return sub_category_id
 
     def generate_category_id(self):
         while True:
-            category_id = ''.join(random.choices(string.digits, k=10))
+            category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not Category.objects.filter(is_active=True, category_id=category_id).exists():
                 return category_id

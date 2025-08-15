@@ -127,7 +127,7 @@ class CategoryViewSet(viewsets.ViewSet):
 
     def generate_category_id(self):
         while True:
-            category_id = ''.join(random.choices(string.digits, k=10))
+            category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not Category.objects.filter(is_active=True, category_id=category_id).exists():
                 return category_id
 
@@ -239,7 +239,7 @@ class SubCategoryViewSet(viewsets.ViewSet):
 
     def generate_sub_category_id(self):
         while True:
-            sub_category_id = ''.join(random.choices(string.digits, k=10))
+            sub_category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not SubCategory.objects.filter(is_active=True, sub_category_id=sub_category_id).exists():
                 return sub_category_id
 
@@ -365,7 +365,7 @@ class ProductViewSet(viewsets.ViewSet):
 
     def generate_product_id(self):
         while True:
-            product_id = ''.join(random.choices(string.digits, k=10))
+            product_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not Product.objects.filter(is_active=True, product_id=product_id).exists():
                 return product_id
 
@@ -825,7 +825,7 @@ class ProductVariationViewSet(viewsets.ViewSet):
 
     def generate_product_variation_id(self):
         while True:
-            product_variation_id = ''.join(random.choices(string.digits, k=10))
+            product_variation_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not ProductVariation.objects.filter(is_active=True, product_variation_id=product_variation_id).exists():
                 return product_variation_id
 

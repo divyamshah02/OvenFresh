@@ -20,9 +20,3 @@ if __name__ == "__main__":
     print(f"Encoded Text: {encoded_text}")
     print(f"Decoded Text: {decoded_text}")
     
-    
-    RAZORPAY_KEY_ID = base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ=")
-    RAZORPAY_KEY_SECRET = base64_to_text("UkFYTXVZcGs2TEJkejcxTnBtTjRrVUdP")
-
-    print(RAZORPAY_KEY_ID)
-    print(RAZORPAY_KEY_SECRET)
