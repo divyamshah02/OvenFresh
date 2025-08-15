@@ -770,7 +770,7 @@ class UserViewSet(viewsets.ViewSet):
 
     def generate_user_id(self, role_code):
         while True:
-            user_id = ''.join(random.choices(string.digits, k=10))
+            user_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             user_id = role_code + user_id
             if not User.objects.filter(is_active=True, user_id=user_id).exists():
                 return user_id

@@ -19,6 +19,7 @@ router.register(r'account', AccountViewSet, basename='account')
 
 router.register(r'admin-template', AdminTemplateViewSet, basename='admin-template')
 router.register(r'admin-dashboard', AdminDashboardViewSet, basename='admin-dashboard')
+router.register(r'admin-home-cms', AdminHomeCmsViewSet, basename='admin-home-cms')
 router.register(r'admin-cms', AdminCmsViewSet, basename='admin-cms')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')
@@ -38,6 +39,9 @@ router.register(r'admin-review', AdminReviewsViewSet, basename='admin-review')
 
 router.register(r'delivery-login', DeliveryLoginViewSet, basename='delivery-login')
 router.register(r'delivery-dashobard', DeliveryDashboardViewSet, basename='delivery-dashobard')
+
+
+router.register(r'import-product', ImportProductsViewSet, basename='import-product')
 
 # # Delivery URLs
 # path('delivery/login/', DeliveryLoginViewSet.as_view({'get': 'list'}), name='delivery-login'),

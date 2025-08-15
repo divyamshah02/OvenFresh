@@ -126,8 +126,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # RAZORPAY_KEY_SECRET = base64_to_text("MFBaRUlRNVZMVjJlb0ZqYmhCcU9CZHVv")
 
 # Divyam
-RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfWER3WVdFNGxpY1BEcHU=")
-RAZORPAY_KEY_SECRET = base64_to_text("WnBBMmVqTGdZcU42emh0Z1pRU3k1TXBI")
+# RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfWER3WVdFNGxpY1BEcHU=")
+# RAZORPAY_KEY_SECRET = base64_to_text("WnBBMmVqTGdZcU42emh0Z1pRU3k1TXBI")
+
+RAZORPAY_KEY_ID = base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ=")
+RAZORPAY_KEY_SECRET = base64_to_text("UkFYTXVZcGs2TEJkejcxTnBtTjRrVUdP")
+
 
 # LOGGING = {
 #     'version': 1,
