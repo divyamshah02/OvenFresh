@@ -7,14 +7,14 @@ let variations_url = null
 let category__id = null
 
 let currentPage = 1
-const itemsPerPage = 10
+const itemsPerPage = 40
 let totalItems = 0
 let currentFilters = {
   search: "",
   category: "",
   sub_category: "",
   status: "",
-  sortBy: "created_desc",
+  sortBy: "created_asc",
 }
 
 let allProducts = []
@@ -466,7 +466,7 @@ function updateSelectedCount() {
 
 // Update updateStats function to use correct field names
 function updateStats() {
-  const totalProducts = allProducts.length
+  const totalProducts = totalItems
   const activeProducts = allProducts.filter((p) => p.is_active === true).length
   const inactiveProducts = allProducts.filter((p) => p.is_active === false).length
   const totalCategories = allCategories.length
