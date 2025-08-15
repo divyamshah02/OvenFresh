@@ -36,7 +36,7 @@ class UserViewSet(viewsets.ViewSet):
 
     def generate_user_id(self, role_code):
         while True:
-            uid = role_code + ''.join(random.choices(string.digits, k=10))
+            uid = role_code + random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not User.objects.filter(user_id=uid).exists():
                 return uid
 

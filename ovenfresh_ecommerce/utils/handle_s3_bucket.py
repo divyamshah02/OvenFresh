@@ -23,15 +23,15 @@ def upload_file_to_s3(uploaded_file, folder="uploads"):
     try:
         # AWS S3 configuration
         region_name = 'eu-north-1'
-        bucket_name = 'sankievents'
+        bucket_name = 'ovenfresh2025'
         
         if not bucket_name:
             raise ValueError("AWS_STORAGE_BUCKET_NAME not configured in settings")
         
         s3_client = boto3.client(
             "s3",
-            aws_access_key_id=base64_to_text('QUtJQTVJSk9YQlFVVEVFNU9NSkI='),
-            aws_secret_access_key=base64_to_text('TlIwblU5T0oyQ0lkQm1nRkFXMEk4RTRiT01na3NEVXVPQnJJTU5iNQ=='),
+            aws_access_key_id=base64_to_text('QUtJQTNIT1lCSjM1REczNVVYQUY='),
+            aws_secret_access_key=base64_to_text('bjdZQ1QzODNVV1hoRksvOXFBL2t1T3F0d0tSRnJlQTgxcG1mYmdZVA=='),
             region_name=region_name
         )
         

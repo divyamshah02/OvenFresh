@@ -12,12 +12,11 @@ def base64_to_text(b64_text):
 
 if __name__ == "__main__":
     # Example usage
-    original_text = "Hello, World!"
+    original_text = "Hello world"
     encoded_text = text_to_base64(original_text)
     decoded_text = base64_to_text(encoded_text)
 
     print(f"Original Text: {original_text}")
     print(f"Encoded Text: {encoded_text}")
     print(f"Decoded Text: {decoded_text}")
-    
     

@@ -7,14 +7,14 @@ let variations_url = null
 let category__id = null
 
 let currentPage = 1
-const itemsPerPage = 10
+const itemsPerPage = 40
 let totalItems = 0
 let currentFilters = {
   search: "",
   category: "",
   sub_category: "",
   status: "",
-  sortBy: "created_desc",
+  sortBy: "created_asc",
 }
 
 let allProducts = []
@@ -229,13 +229,13 @@ function createProductRow(product) {
         <td>${createdDate}</td>
         <td>
             <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewProduct(${product.product_id})" title="View Details">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewProduct('${product.product_id}')" title="View Details">
                     <i class="fas fa-eye"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editProduct(${product.product_id})" title="Edit">
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editProduct('${product.product_id}')" title="Edit">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${product.product_id})" title="Delete">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${product.product_id}')" title="Delete">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -466,7 +466,7 @@ function updateSelectedCount() {
 
 // Update updateStats function to use correct field names
 function updateStats() {
-  const totalProducts = allProducts.length
+  const totalProducts = totalItems
   const activeProducts = allProducts.filter((p) => p.is_active === true).length
   const inactiveProducts = allProducts.filter((p) => p.is_active === false).length
   const totalCategories = allCategories.length
@@ -480,8 +480,9 @@ function updateStats() {
 
 async function viewProduct(productId) {
   try {
+    console.log("Loading product details for ID:", productId)
     const [success, result] = await callApi("GET", `${products_url}?product_id=${productId}`)
-
+    console.log("Product details result:", result)
     if (success && result.success) {
       const product = result.data
       showProductDetails(product)

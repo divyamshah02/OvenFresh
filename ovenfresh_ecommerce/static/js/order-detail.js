@@ -269,8 +269,8 @@ async function processPayment() {
         name: "OvenFresh",
         description: "Order Payment",
         order_id: orderData.payment_id,
-        callback_url: `http://127.0.0.1:8000/order-success/?order_id=${orderData.order_id}`,
-        // callback_url: `https://ovenfresh.pythonanywhere.com/order-success/?order_id=${orderData.order_id}`,
+        // callback_url: `http://127.0.0.1:8000/order-success/?order_id=${orderData.order_id}`,
+        callback_url: `https://ovenfresh.pythonanywhere.com/order-success/?order_id=${orderData.order_id}`,
         notes: {
           order_receipt: orderData.order_id,
         },
@@ -312,7 +312,8 @@ async function processPayment() {
 
 function downloadInvoice() {
   // Implement invoice download functionality
-  showNotification("Invoice download feature coming soon!", "info")
+  
+  window.location.href = `/order-api/generate-invoice/?order_id=${order_id}`
 }
 
 // function showCancelOrderModal() {

@@ -29,6 +29,7 @@ class Product(models.Model):  # Meta information
     product_id = models.CharField(max_length=20, unique=True)  # 10-digit
     category_id = models.CharField(max_length=20)
     sub_category_id = models.CharField(max_length=20, blank=True, null=True)
+    sub_category_id_list = models.JSONField(default=[], blank=True, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     sku = models.CharField(max_length=20, null=True, blank=True)

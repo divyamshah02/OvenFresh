@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -13,6 +14,16 @@ from UserDetail.models import User
 from Order.models import Order, OrderItem
 from Order.serializers import OrderItemSerializer
 from Product.models import *
+
+import mimetypes
+import json
+import requests
+import random
+import string
+import os
+import re
+from django.http import JsonResponse
+from utils.handle_s3_bucket import upload_file_to_s3, delete_file_from_s3
 
 
 class HomeViewSet(viewsets.ViewSet):
@@ -299,3 +310,180 @@ def admin_login(request):
             messages.error(request, 'Invalid credentials or not an admin.')
     return render(request, 'admin/admin_login.html')
 
+
+
+
+class ImportProductsViewSet(viewsets.ViewSet):
+
+    @check_authentication(required_role='admin')
+    def list(self, request):
+        try:
+            # Path to your JSON file
+            json_path = settings.BASE_DIR / "filtered_products.json"
+            with open(json_path, "r", encoding="utf-8") as f:
+                products_data = json.load(f)
+
+            category_map = {}
+            subcategory_map = {}
+
+            for indd,p in enumerate(products_data[0:1]):
+                try:
+                    print(f"Processing product: {indd+1} {p.get('Name', 'Unknown')}")
+                    cat_dict = p.get("Categories", {})  # This is already a dict like {"Cakes": ["Bento Cakes", "Chocolate Cakes"]}
+                    if not cat_dict:
+                        continue
+                    print(f"Categories found: {cat_dict}")
+                    # Extract category & subcategory list
+                    main_cat = list(cat_dict.keys())[0]
+                    sub_cats = cat_dict[main_cat] if isinstance(cat_dict[main_cat], list) else []
+
+                    # Create category if not exists
+                    if main_cat not in category_map:
+                        cat_obj, _ = Category.objects.get_or_create(
+                            title=main_cat,
+                            defaults={"category_id": self.generate_category_id()}
+                        )
+                        category_map[main_cat] = cat_obj.category_id
+
+                    # Create all subcategories & collect IDs
+                    sub_category_ids = []
+                    for sub_cat in sub_cats:
+                        if sub_cat not in subcategory_map:
+                            sub_obj, _ = SubCategory.objects.get_or_create(
+                                title=sub_cat,
+                                category_id=category_map[main_cat],
+                                defaults={"sub_category_id": self.generate_sub_category_id()}
+                            )
+                            subcategory_map[sub_cat] = sub_obj.sub_category_id
+                        sub_category_ids.append(subcategory_map[sub_cat])
+
+                    # Pick first subcategory ID for main product field
+                    main_sub_cat_id = sub_category_ids[0] if sub_category_ids else None
+
+                    # Download & upload images
+                    image_urls = []
+                    if p.get("Images"):
+                        for img_url in p["Images"].split(","):
+                            img_url = img_url.strip()
+                            if not img_url:
+                                continue
+                            try:
+                                resp = requests.get(img_url, timeout=10)
+                                resp.raise_for_status()
+                                content_file = ContentFile(resp.content)
+                                content_file.name = img_url.split("/")[-1]
+                                guessed_type, _ = mimetypes.guess_type(img_url)
+                                content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
+                                content_file.content_type = content_type
+                                try:                                    
+                                    relative_path = img_url.split("/uploads/")[1]
+                                    s3_folder = f"products/{os.path.dirname(relative_path)}"
+                                except:
+                                    # Fallback if URL doesn't contain 'uploads/'
+                                    s3_folder = "products"
+
+                                file_url = upload_file_to_s3(content_file, folder=s3_folder)
+                                print(f"Image uploaded: {file_url}")
+                                image_urls.append(file_url)
+                            except Exception as e:
+                                print(f"Image upload failed for {img_url}: {e}")
+
+                    # Create product
+                    product_id = self.generate_product_id()
+                    product_obj = Product.objects.create(
+                        product_id=product_id,
+                        title=p.get("Name", ""),
+                        description=self.clean_description(p.get("Short description")),
+                        photos=image_urls,
+                        category_id=category_map.get(main_cat),
+                        sub_category_id=main_sub_cat_id,
+                        sub_category_id_list=sub_category_ids,  # NEW LIST FIELD
+                        hsn=self.get_hsn(p),
+                        created_at=timezone.now(),
+                        is_veg=True
+                    )
+
+                    # Create variations
+                    for var in p.get("Products_varaitons", []):
+                        ProductVariation.objects.create(
+                            product_id=product_id,
+                            product_variation_id=self.generate_product_variation_id(),
+                            actual_price=var.get("Regular price", 0),
+                            discounted_price=var.get("Regular price", 0),
+                            is_vartied=True,
+                            weight_variation=self.get_weight(var),
+                            is_active=True,
+                            created_at=timezone.now(),
+                            stock_toggle_mode=True,
+                            stock_quantity=None,
+                            in_stock_bull=not bool(var.get("In stock?", 1))
+                        )
+
+                    print(f"Product {p.get('Name', 'Unknown')} imported successfully with ID {product_id}")
+                except Exception as e:
+                    print(f"XXXXXX Error processing product {p.get('Name', 'Unknown')}: {e}")
+                    continue
+
+            return JsonResponse({
+                "success": True,
+                "data": "Products imported successfully"
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def clean_description(self, text):
+        if not text:
+            return ""
+        
+        # Remove HTML tags
+        text = re.sub(r'<[^>]+>', '', text)
+        
+        # Remove _x000D_ and escaped \n or \t
+        text = text.replace('_x000D_', ' ')
+        text = text.replace('\\n', ' ').replace('\\t', ' ')
+        
+        # Collapse multiple spaces
+        text = re.sub(r'\s+', ' ', text)
+        
+        return text.strip()
+    def generate_product_id(self):
+        while True:
+            product_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not Product.objects.filter(is_active=True, product_id=product_id).exists():
+                return product_id
+
+    def generate_product_variation_id(self):
+        while True:
+            product_variation_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not ProductVariation.objects.filter(is_active=True, product_variation_id=product_variation_id).exists():
+                return product_variation_id
+
+    def get_hsn(self, product_dict):
+        if str(product_dict.get("Attribute 1 name", "")).lower() == "hsn code":
+            return str(product_dict.get("Attribute 1 value(s)"))
+        elif str(product_dict.get("Attribute 2 name", "")).lower() == "hsn code":
+            return str(product_dict.get("Attribute 2 value(s)"))
+        return None
+
+    def get_weight(self, variation):
+        if str(variation.get("Attribute 1 name", "")).lower() == "weight":
+            return variation.get("Attribute 1 value(s)")
+        elif str(variation.get("Attribute 2 name", "")).lower() == "weight":
+            return variation.get("Attribute 2 value(s)")
+        return None
+    
+    def generate_sub_category_id(self):
+        while True:
+            sub_category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not SubCategory.objects.filter(is_active=True, sub_category_id=sub_category_id).exists():
+                return sub_category_id
+
+    def generate_category_id(self):
+        while True:
+            category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
+            if not Category.objects.filter(is_active=True, category_id=category_id).exists():
+                return category_id

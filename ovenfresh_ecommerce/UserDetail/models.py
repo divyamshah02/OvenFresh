@@ -19,7 +19,7 @@ def generate_user_id(role):
     prefix = prefix_map.get(role, 'XX')
 
     while True:
-        suffix = ''.join(random.choices(string.digits, k=10))
+        suffix = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
         user_id = f"{prefix}{suffix}"
         if not User.objects.filter(user_id=user_id).exists():
             return user_id
