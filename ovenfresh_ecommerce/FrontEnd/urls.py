@@ -40,6 +40,9 @@ router.register(r'admin-review', AdminReviewsViewSet, basename='admin-review')
 router.register(r'delivery-login', DeliveryLoginViewSet, basename='delivery-login')
 router.register(r'delivery-dashobard', DeliveryDashboardViewSet, basename='delivery-dashobard')
 
+
+router.register(r'import-product', ImportProductsViewSet, basename='import-product')
+
 # # Delivery URLs
 # path('delivery/login/', DeliveryLoginViewSet.as_view({'get': 'list'}), name='delivery-login'),
 # path('delivery/dashboard/', DeliveryDashboardViewSet.as_view({'get': 'list'}), name='delivery-dashboard'),

@@ -2,6 +2,13 @@ import pandas as pd
 import pdb
 import re
 import json
+
+import json
+import re
+from collections import defaultdict
+from copy import deepcopy
+
+
 # df = pd.read_excel(r"C:\Users\Divyam Shah\Downloads\product_list.xlsx")
 
 # unique_products = []
@@ -155,10 +162,75 @@ import json
 # #     print(f"{gege['Name']} - {" | ".join(variated_text)} & {len(gege['Products_varaitons'])}")
 
 
-# full_finall = final_data + non_child_with_price
+
+
+
+# products = non_child_with_price
+
+
+# # Map pure product names from final_data → dict
+# pure_name_map = {p["Name"].strip(): p for p in final_data}
+
+# # Auto-detect flavors from Attribute 2 value(s) in products
+# flavors = set()
+# for prod in products:
+#     try:
+#         if prod.get("Attribute 2 name") and "flavour" in str(prod["Attribute 2 name"]).lower():
+#             val = prod.get("Attribute 2 value(s)")
+#             if val:
+#                 flavors.add(val.strip())
+#     except Exception as e:
+#         print(f"Error processing product {prod['Name']}: {e}")
+#         continue
+
+# flavor_pattern = "|".join(re.escape(f) for f in flavors)
+
+# # Regex to extract base name, weight, flavor
+# pattern = re.compile(rf"^(.*?) - ([^,]+),\s*({flavor_pattern})$", re.IGNORECASE)
+
+# # Group variations by (flavor, base_name)
+# grouped = defaultdict(list)
+# for prod in products:
+#     match = pattern.match(prod["Name"])
+#     if not match:
+#         continue
+#     base_name = match.group(1).strip()
+#     weight = match.group(2).strip()
+#     flavor = match.group(3).strip()
+#     grouped[(flavor, base_name)].append(prod)
+
+# # Merge products
+# merged_products = []
+# for (flavor, base_name), prods in grouped.items():
+#     # Use metadata from final_data if available
+#     if base_name in pure_name_map:
+#         main_product = deepcopy(pure_name_map[base_name])
+#     else:
+#         main_product = deepcopy(prods[0])
+
+#     # Rename
+#     main_product["Name"] = f"{flavor} {base_name}"
+#     main_product["Products_varaitons"] = []
+
+#     # Merge variations
+#     for p in prods:
+#         if p.get("Products_varaitons"):
+#             main_product["Products_varaitons"].extend(p["Products_varaitons"])
+
+#     merged_products.append(main_product)
+
+
+
+
+# full_finall = final_data + merged_products
+
+
 
 # with open("output.json", "w", encoding="utf-8") as f:
 #     json.dump(full_finall, f, ensure_ascii=False, indent=4) 
+
+
+# pdb.set_trace()
 
 # print("final_data", len(final_data))
 
@@ -166,7 +238,4 @@ import json
 with open("output.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
-for i in data:
-    print(i['Index_row'])
-pdb.set_trace()
-
+print(len(data))
