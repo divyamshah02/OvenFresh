@@ -46,3 +46,18 @@
   @keyframes l12 { 
     100%{transform: rotate(.5turn)}
   }
+
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e3e3e3 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

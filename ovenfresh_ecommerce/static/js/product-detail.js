@@ -137,11 +137,18 @@ function renderProductDetails(product) {
   // Update product images
   if (product.photos && product.photos.length > 0) {
     const mainImage = document.getElementById("main-product-image")
+    const mainLoader = document.getElementById("main-image-loader")
     const thumbnailContainer = document.querySelector(".thumbnail-images .row")
 
     if (mainImage) {
       mainImage.src = product.photos[0]
       mainImage.alt = product.title
+
+      // Show image when loaded, hide loader
+      mainImage.onload = () => {
+        mainLoader.classList.add("d-none")
+        mainImage.classList.remove("d-none")
+      }
     }
 
     if (thumbnailContainer) {

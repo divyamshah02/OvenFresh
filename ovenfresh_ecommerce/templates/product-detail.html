@@ -66,33 +66,24 @@
                     <div class="col-lg-6">
                         <!-- Product Images -->
                         <div class="product-images">
-                            <div class="main-image mb-3">
+                            <div class="main-image mb-3 position-relative">
+                                <div id="main-image-loader" class="skeleton-loader w-100 rounded-4" 
+                                    style="aspect-ratio: 1 / 1;"></div>
                                 <img 
-                                    src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                    alt="Chocolate Truffle Cake" 
-                                    class="img-fluid rounded-4 shadow w-100"
+                                    src=""
+                                    alt="Product Image"
+                                    class="img-fluid rounded-4 shadow w-100 d-none"
                                     id="main-product-image"
                                     style="aspect-ratio: 1 / 1; object-fit: cover;"
                                 >
                             </div>
                             <div class="thumbnail-images">
-                                <div class="row g-2">
-                                    <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                             alt="View 1" class="img-fluid rounded thumbnail-img active" onclick="changeMainImage(this.src)">
-                                    </div>
-                                    <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                             alt="View 2" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
-                                    </div>
-                                    <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                             alt="View 3" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
-                                    </div>
-                                    <div class="col-3">
-                                        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1089&q=80" 
-                                             alt="View 4" class="img-fluid rounded thumbnail-img" onclick="changeMainImage(this.src)">
-                                    </div>
+                                <div class="row g-2" id="thumbnail-container">
+                                    <!-- Loading placeholders -->
+                                    <div class="col-3"><div class="skeleton-loader rounded" style="aspect-ratio: 1 / 1;"></div></div>
+                                    <div class="col-3"><div class="skeleton-loader rounded" style="aspect-ratio: 1 / 1;"></div></div>
+                                    <div class="col-3"><div class="skeleton-loader rounded" style="aspect-ratio: 1 / 1;"></div></div>
+                                    <div class="col-3"><div class="skeleton-loader rounded" style="aspect-ratio: 1 / 1;"></div></div>
                                 </div>
                             </div>
                         </div>
