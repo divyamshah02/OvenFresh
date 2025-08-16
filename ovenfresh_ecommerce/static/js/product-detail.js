@@ -137,11 +137,18 @@ function renderProductDetails(product) {
   // Update product images
   if (product.photos && product.photos.length > 0) {
     const mainImage = document.getElementById("main-product-image")
+    const mainLoader = document.getElementById("main-image-loader")
     const thumbnailContainer = document.querySelector(".thumbnail-images .row")
 
     if (mainImage) {
       mainImage.src = product.photos[0]
       mainImage.alt = product.title
+
+      // Show image when loaded, hide loader
+      mainImage.onload = () => {
+        mainLoader.classList.add("d-none")
+        mainImage.classList.remove("d-none")
+      }
     }
 
     if (thumbnailContainer) {
@@ -403,7 +410,7 @@ function renderRelatedProducts(products) {
                                 <a href="#" class="btn-product-action" onclick="quickAddToCart(${product.product_id}, ${product.product_variation_id || "null"})">
                                     <i class="fas fa-shopping-cart"></i>
                                 </a>
-                                <a href="/product-detail.html?product_id=${product.product_id}" class="btn-product-action">
+                                <a href="/product-detail?product_id=${product.product_id}" class="btn-product-action">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
@@ -822,6 +829,29 @@ async function quickAddToCart(productId, variationId = null) {
 function addToWishlist(productId) {
   // Implement wishlist functionality
   showNotification("Added to wishlist!", "success")
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get product ID from DOM (example using data attribute)
+    const productContainer = document.querySelector('[data-product-id]');
+    if (!productContainer) return;
+
+    const productId = productContainer.dataset.productId;
+    fetchRatingSummary(productId);
+});
+
+function fetchRatingSummary(productId) {
+    fetch(`/product-api/reviews/?product_id=${productId}&summary=true`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateProductRating(
+                    data.data.average_rating,
+                    data.data.total_reviews
+                );
+            }
+        })
+        .catch(error => console.error('Error fetching ratings:', error));
 }
 
 // Utility functions
