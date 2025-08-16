@@ -403,7 +403,7 @@ function renderRelatedProducts(products) {
                                 <a href="#" class="btn-product-action" onclick="quickAddToCart(${product.product_id}, ${product.product_variation_id || "null"})">
                                     <i class="fas fa-shopping-cart"></i>
                                 </a>
-                                <a href="product-detail.html?product_id=${product.product_id}" class="btn-product-action">
+                                <a href="/product-detail.html?product_id=${product.product_id}" class="btn-product-action">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
