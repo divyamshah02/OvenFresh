@@ -1737,6 +1737,7 @@ class ReviewsViewSet(viewsets.ViewSet):
     def list(self, request):
         """Get approved reviews for a product"""
         product_id = request.query_params.get('product_id')
+        summary_only = request.query_params.get('summary') == 'true'
         
         if not product_id:
             return Response({
@@ -1759,6 +1760,19 @@ class ReviewsViewSet(viewsets.ViewSet):
         # Calculate average rating
         avg_rating = reviews.aggregate(avg_rating=models.Avg('ratings'))['avg_rating']
         avg_rating = round(avg_rating, 1) if avg_rating else 0
+        total_reviews = reviews.count()
+
+        if summary_only:
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {
+                    "total_reviews": total_reviews,
+                    "average_rating": avg_rating
+                },
+                "error": None
+            }, status=status.HTTP_200_OK)
         
         return Response({
             "success": True,
@@ -1766,7 +1780,7 @@ class ReviewsViewSet(viewsets.ViewSet):
             "user_unauthorized": False,
             "data": {
                 "reviews": serializer.data,
-                "total_reviews": reviews.count(),
+                "total_reviews": total_reviews,
                 "average_rating": avg_rating
             },
             "error": None
