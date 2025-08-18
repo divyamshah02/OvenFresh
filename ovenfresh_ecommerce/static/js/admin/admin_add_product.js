@@ -143,6 +143,13 @@ async function AdminAddProduct(
     mobileToggle.addEventListener("click", toggleMobileSidebar)
   }
 
+   const actualPriceInput = document.getElementById("actualPrice");
+    const discountedPriceInput = document.getElementById("discountedPrice");
+
+    actualPriceInput.addEventListener("input", () => {
+        discountedPriceInput.value = actualPriceInput.value;
+    });
+    
   // Load saved theme
   loadSavedTheme()
 }
@@ -299,6 +306,7 @@ async function loadProductData() {
     document.getElementById("productSku").value = Res.data.sku
     document.getElementById("productHSN").value = Res.data.hsn
     document.getElementById("productFeatures").value = Res.data.features
+    document.getElementById("productTags").value = Res.data.tags
     document.getElementById("productSpecialNote").value = Res.data.special_note 
     document.getElementById("productIngredients").value = Res.data.ingredients
     document.getElementById("productAllergens").value = Res.data.allergen_information
@@ -340,6 +348,7 @@ async function loadProductData() {
     }
 
     document.getElementById("submitProductBtn").innerHTML = '<i class="fas fa-save me-1"></i> Update Product'
+    document.getElementById("page-heading-custom").innerText = 'Update Product'
   }
 }
 
@@ -564,6 +573,7 @@ async function createProductMeta(is_update = false) {
   formData.append("title", title)
   formData.append("description", document.getElementById("productDesc").value)
   formData.append("features", document.getElementById("productFeatures").value);
+  formData.append("tags", document.getElementById("productTags").value);
   formData.append("sku", document.getElementById("productSku").value);
   formData.append("hsn", document.getElementById("productHSN").value);
   formData.append("special_note", document.getElementById("productSpecialNote").value);

@@ -715,7 +715,7 @@ async function AddToCart(variationId, quantity, additionalData) {
     const bodyData = {
       product_id: product_id,
       product_variation_id: product_variation_id,
-      qty: qty,
+      quantity: qty,
       ...additionalData,
     }
 
@@ -804,7 +804,7 @@ async function buyNow() {
   // Prepare checkout data
   const checkoutData = {
     delivery_date: deliveryDate,
-    delivery_time: deliveryTime,
+    timeslot_id: deliveryTime,
     pincode: pincode,
   }
 

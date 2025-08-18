@@ -119,6 +119,10 @@ function populatePaymentInfo() {
         <p class="mb-1"><strong>Status:</strong> <span class="badge bg-${paymentClass}">${paymentStatus}</span></p>
         <p class="mb-0"><strong>Amount:</strong> ₹${Number.parseFloat(orderData.total_amount).toFixed(2)}</p>
         ${orderData.payment_id ? `<p class="mb-0"><small>ID: ${orderData.payment_id}</small></p>` : ""}
+        ${orderData.different_billing_address ? `<p class="mb-0 mt-1"><strong>Blling Info:</strong></p>
+        <small>${orderData.billing_first_name} ${orderData.billing_last_name}</small><br>
+        <small>+91 ${orderData.billing_phone}</small><br>
+        <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}        
     `
 }
 

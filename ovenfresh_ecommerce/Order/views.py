@@ -1119,6 +1119,16 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'payment_id': order.razorpay_payment_id,
                 'payment_received': order.payment_received,
                 'is_cod': order.is_cod,
+
+                # Billing information
+                'different_billing_address': order.different_billing_address,
+                'billing_first_name': order.billing_first_name,
+                'billing_last_name': order.billing_last_name,
+                'billing_address': order.billing_address,
+                'billing_city': order.billing_city,
+                'billing_pincode': order.billing_pincode,
+                'billing_phone': order.billing_phone,
+                'billing_alternate_phone': order.billing_alternate_phone,
                 
                 # Order details
                 'total_amount': float(order.total_amount),

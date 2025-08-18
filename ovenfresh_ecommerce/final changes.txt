@@ -1,29 +1,29 @@
 homepage dynamic / responsive
 shop page loading
-product page image skeleton or place holder 
-product page top reviews dynamic
-product page free delivery txt to be changed
-product page - add tags option in db nad same in page
-change special ingredients text
-make the ingredients part dynamic
-product page related products section not working (href)
-product page add to cart qty selected
-cart page delviery free part to be removed
-checkout page timeslot not auto selecting
-checkout page remove the type of address question
-checkout page remvoe the space of heading and shipping info form
-when slected to pay online than scroll up to secure pay
-order detail page contact support should also show the numbers 
+XX product page image skeleton or place holder 
+XX product page top reviews dynamic
+XX product page free delivery txt to be changed
+XX product page - add tags option in db and same in page
+XX change special ingredients text
+XX make the ingredients part dynamic
+XX product page related products section not working (href)
+XX product page add to cart qty selected
+XX cart page delviery free part to be removed
+XX checkout page timeslot not auto selecting
+XX checkout page remove the type of address question
+XX checkout page remvoe the space of heading and shipping info form
+XX when slected to pay online than scroll up to secure pay
+XX order detail page contact support should also show the numbers 
 
 
 Admin
-all orders page add color what depicts box
-all orders page remove bulk options
+XX all orders page add color what depicts box
+XX all orders page remove bulk options
 
 add the order status wise pages as well in nav
 
 
-order detail page not showing the billign address
+XX order detail page not showing the billign address
 order detail page KOT update 
 
 

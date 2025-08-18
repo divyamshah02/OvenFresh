@@ -265,6 +265,7 @@ class ProductViewSet(viewsets.ViewSet):
             storage_instructions = data.get("storage_instructions")
             sku = data.get("sku")
             hsn = data.get("hsn")
+            tags = data.get("tags")
 
 
             if not title or not category_id:
@@ -339,6 +340,7 @@ class ProductViewSet(viewsets.ViewSet):
                 storage_instructions=storage_instructions,
                 hsn=hsn,
                 sku=sku,
+                tags=tags,
                 created_at=timezone.now()
             )
             new_product.save()
@@ -422,6 +424,7 @@ class ProductViewSet(viewsets.ViewSet):
         storage_instructions = data.get("storage_instructions")
         sku = data.get("sku")
         hsn = data.get("hsn")
+        tags = data.get("tags")
 
         if not product_id or not title or not category_id:
             return Response({
@@ -493,7 +496,7 @@ class ProductViewSet(viewsets.ViewSet):
         product_obj.storage_instructions = storage_instructions
         product_obj.sku = sku
         product_obj.hsn = hsn
-
+        product_obj.tags = tags
 
         # If new images are uploaded, add them to existing photos
         if new_image_urls:
