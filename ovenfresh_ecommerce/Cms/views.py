@@ -105,7 +105,7 @@ class HeroBannerViewSet(viewsets.ViewSet):
             }, status=404)
 
 class ProductSectionViewSet(viewsets.ViewSet):
-    @handle_exceptions
+    # @handle_exceptions
     def list(self, request):
         """Get all active product sections"""
         sections = ProductSection.objects.filter(is_active=True)
@@ -120,6 +120,7 @@ class ProductSectionViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def create(self, request):
         """Create new product section"""
+        print(request.data)
         serializer = ProductSectionSerializer(data=request.data)
         if serializer.is_valid():
             section = serializer.save()
@@ -149,6 +150,7 @@ class ProductSectionViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
         """Update product section"""
         try:
+            print(request.data)
             section = ProductSection.objects.get(pk=pk)
             serializer = ProductSectionSerializer(section, data=request.data, partial=True)
             if serializer.is_valid():
@@ -319,6 +321,25 @@ class DeliveryPolicyViewSet(viewsets.ViewSet):
                 "error": "Policy not found"
             }, status=404)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete delivery policy"""
+        try:
+            policy = DeliveryPolicy.objects.get(pk=pk)
+            policy.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except DeliveryPolicy.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Policy not found"
+            }, status=404)
+
 class HomepageCategoryViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -375,6 +396,25 @@ class HomepageCategoryViewSet(viewsets.ViewSet):
                 "error": "Category not found"
             }, status=404)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete homepage category"""
+        try:
+            category = HomepageCategory.objects.get(pk=pk)
+            category.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except HomepageCategory.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Category not found"
+            }, status=404)
+
 class VideoContentViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -405,6 +445,51 @@ class VideoContentViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update video content"""
+        try:
+            video = VideoContent.objects.get(pk=pk)
+            serializer = VideoContentSerializer(video, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except VideoContent.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Video not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete video content"""
+        try:
+            video = VideoContent.objects.get(pk=pk)
+            video.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except VideoContent.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Video not found"
+            }, status=404)
+
 class FeatureViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -434,6 +519,51 @@ class FeatureViewSet(viewsets.ViewSet):
             "data": None,
             "error": serializer.errors
         }, status=400)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update feature"""
+        try:
+            feature = Feature.objects.get(pk=pk)
+            serializer = FeatureSerializer(feature, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except Feature.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Feature not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete feature"""
+        try:
+            feature = Feature.objects.get(pk=pk)
+            feature.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except Feature.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Feature not found"
+            }, status=404)
 
 class AboutSectionViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -471,6 +601,51 @@ class AboutSectionViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update about section"""
+        try:
+            about = AboutSection.objects.get(pk=pk)
+            serializer = AboutSectionSerializer(about, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except AboutSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "About section not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete about section"""
+        try:
+            about = AboutSection.objects.get(pk=pk)
+            about.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except AboutSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "About section not found"
+            }, status=404)
+
 class ClientLogoViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -500,6 +675,51 @@ class ClientLogoViewSet(viewsets.ViewSet):
             "data": None,
             "error": serializer.errors
         }, status=400)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update client logo"""
+        try:
+            logo = ClientLogo.objects.get(pk=pk)
+            serializer = ClientLogoSerializer(logo, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except ClientLogo.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Logo not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete client logo"""
+        try:
+            logo = ClientLogo.objects.get(pk=pk)
+            logo.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except ClientLogo.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Logo not found"
+            }, status=404)
 
 class FooterContentViewSet(viewsets.ViewSet):
     @handle_exceptions

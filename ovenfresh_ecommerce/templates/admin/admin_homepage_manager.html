@@ -377,6 +377,328 @@
     <!-- Modals will be added here dynamically -->
     <div id="modal-container"></div>
 
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Video Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="videoForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="videoTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="videoTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="videoOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="videoOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="videoDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="videoDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="videoUrl" class="form-label">Video URL *</label>
+                            <input type="url" class="form-control" id="videoUrl" required>
+                            <div class="form-text">YouTube, Vimeo, or direct video file URL</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="videoThumbnail" class="form-label">Thumbnail Image URL</label>
+                            <input type="url" class="form-control" id="videoThumbnail">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="videoActive" checked>
+                                <label class="form-check-label" for="videoActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveVideoBtn">Save Video</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Modal -->
+    <div class="modal fade" id="featureModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Feature</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="featureForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="featureTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="featureTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="featureOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="featureOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="featureIcon" class="form-label">Icon Class *</label>
+                            <input type="text" class="form-control" id="featureIcon" placeholder="fas fa-star" required>
+                            <div class="form-text">Use Font Awesome icon classes (e.g., fas fa-star, fas fa-truck, etc.)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="featureDescription" class="form-label">Description *</label>
+                            <textarea class="form-control" id="featureDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="featureActive" checked>
+                                <label class="form-check-label" for="featureActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveFeatureBtn">Save Feature</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section Modal -->
+    <div class="modal fade" id="aboutSectionModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit About Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="aboutSectionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="aboutTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutSubtitle" class="form-label">Subtitle</label>
+                                <input type="text" class="form-control" id="aboutSubtitle">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="aboutDescription" class="form-label">Description *</label>
+                            <textarea class="form-control" id="aboutDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutImage" class="form-label">Main Image URL</label>
+                                <input type="url" class="form-control" id="aboutImage">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="aboutButtonText" class="form-label">Button Text</label>
+                                <input type="text" class="form-control" id="aboutButtonText" value="Learn More">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="aboutButtonLink" class="form-label">Button Link</label>
+                            <input type="url" class="form-control" id="aboutButtonLink">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="aboutActive" checked>
+                                <label class="form-check-label" for="aboutActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveAboutSectionBtn">Save About Section</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Logo Modal -->
+    <div class="modal fade" id="clientLogoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Client Logo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clientLogoForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="clientLogoCompanyName" class="form-label">Company Name *</label>
+                                <input type="text" class="form-control" id="clientLogoCompanyName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="clientLogoOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="clientLogoOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoImage" class="form-label">Logo Image URL *</label>
+                            <input type="url" class="form-control" id="clientLogoImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoWebsite" class="form-label">Company Website</label>
+                            <input type="url" class="form-control" id="clientLogoWebsite">
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientLogoDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="clientLogoDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="clientLogoActive" checked>
+                                <label class="form-check-label" for="clientLogoActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveClientLogoBtn">Save Client Logo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Policy Modal -->
+    <div class="modal fade" id="deliveryPolicyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Delivery Policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deliveryPolicyForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="deliveryPolicyTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="deliveryPolicyOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyType" class="form-label">Policy Type *</label>
+                                <select class="form-select" id="deliveryPolicyType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="same_day">Same Day Delivery</option>
+                                    <option value="midnight">Midnight Delivery</option>
+                                    <option value="express">Express Delivery</option>
+                                    <option value="standard">Standard Delivery</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyIcon" class="form-label">Icon Class</label>
+                                <input type="text" class="form-control" id="deliveryPolicyIcon" placeholder="fas fa-truck">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deliveryPolicyDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="deliveryPolicyDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyCountdownHour" class="form-label">Countdown Hour (24h format)</label>
+                                <input type="number" class="form-control" id="deliveryPolicyCountdownHour" min="0" max="23">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="deliveryPolicyCountdownMinute" class="form-label">Countdown Minute</label>
+                                <input type="number" class="form-control" id="deliveryPolicyCountdownMinute" min="0" max="59" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="deliveryPolicyActive" checked>
+                                <label class="form-check-label" for="deliveryPolicyActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveDeliveryPolicyBtn">Save Policy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Homepage Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add/Edit Homepage Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="categoryTitle" class="form-label">Title *</label>
+                                <input type="text" class="form-control" id="categoryTitle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="categoryOrder" class="form-label">Display Order</label>
+                                <input type="number" class="form-control" id="categoryOrder" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="categoryDescription" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryImage" class="form-label">Image URL *</label>
+                            <input type="url" class="form-control" id="categoryImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryLink" class="form-label">Link URL</label>
+                            <input type="url" class="form-control" id="categoryLink">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="categoryActive" checked>
+                                <label class="form-check-label" for="categoryActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save Category</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
 

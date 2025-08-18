@@ -1,3 +1,8 @@
+// Global variables for tracking current editing state
+let currentEditingItem = null
+let currentEditingType = null
+
+// API URLs (will be set by initialization)
 let csrf_token = null
 let heroBannersUrl = null
 let deliveryPolicyUrl = null
@@ -26,6 +31,128 @@ const homepageData = {
   allCategories: [],
   allSubcategories: [],
   allProducts: [],
+}
+
+function showDeliveryPolicyModal(policy = null) {
+  currentEditingItem = policy
+  currentEditingType = "delivery_policy"
+
+  if (policy) {
+    document.getElementById("deliveryPolicyTitle").value = policy.title
+    document.getElementById("deliveryPolicyType").value = policy.policy_type
+    document.getElementById("deliveryPolicyIcon").value = policy.icon || ""
+    document.getElementById("deliveryPolicyDescription").value = policy.description || ""
+    document.getElementById("deliveryPolicyCountdownHour").value = policy.countdown_hours || ""
+    document.getElementById("deliveryPolicyCountdownMinute").value = policy.countdown_minutes || ""
+    document.getElementById("deliveryPolicyOrder").value = policy.order
+    document.getElementById("deliveryPolicyActive").checked = policy.is_active
+  } else {
+    document.getElementById("deliveryPolicyForm").reset()
+    document.getElementById("deliveryPolicyActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("deliveryPolicyModal"))
+  modal.show()
+}
+
+function showHomepageCategoryModal(category = null) {
+  currentEditingItem = category
+  currentEditingType = "homepage_category"
+
+  if (category) {
+    document.getElementById("categoryTitle").value = category.title
+    document.getElementById("categoryDescription").value = category.description || ""
+    document.getElementById("categoryImage").value = category.image
+    document.getElementById("categoryLink").value = category.category_link || ""
+    document.getElementById("categoryOrder").value = category.order
+    document.getElementById("categoryActive").checked = category.is_active
+  } else {
+    document.getElementById("categoryForm").reset()
+    document.getElementById("categoryActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("categoryModal"))
+  modal.show()
+}
+
+function showVideoModal(video = null) {
+  currentEditingItem = video
+  currentEditingType = "video"
+
+  if (video) {
+    document.getElementById("videoTitle").value = video.title
+    document.getElementById("videoDescription").value = video.description || ""
+    document.getElementById("videoUrl").value = video.video_url
+    document.getElementById("videoThumbnail").value = video.thumbnail_url || ""
+    document.getElementById("videoOrder").value = video.order
+    document.getElementById("videoActive").checked = video.is_active
+  } else {
+    document.getElementById("videoForm").reset()
+    document.getElementById("videoActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("videoModal"))
+  modal.show()
+}
+
+function showFeatureModal(feature = null) {
+  currentEditingItem = feature
+  currentEditingType = "feature"
+
+  if (feature) {
+    document.getElementById("featureTitle").value = feature.title
+    document.getElementById("featureIcon").value = feature.icon
+    document.getElementById("featureDescription").value = feature.description
+    document.getElementById("featureOrder").value = feature.order
+    document.getElementById("featureActive").checked = feature.is_active
+  } else {
+    document.getElementById("featureForm").reset()
+    document.getElementById("featureActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("featureModal"))
+  modal.show()
+}
+
+function showAboutModal(about = null) {
+  currentEditingItem = about
+  currentEditingType = "about_section"
+
+  if (about) {
+    document.getElementById("aboutTitle").value = about.title
+    document.getElementById("aboutSubtitle").value = about.subtitle || ""
+    document.getElementById("aboutDescription").value = about.description_1 || ""
+    document.getElementById("aboutImage").value = about.main_image || ""
+    document.getElementById("aboutButtonText").value = about.button_text || ""
+    document.getElementById("aboutButtonLink").value = about.button_link || ""
+    document.getElementById("aboutActive").checked = about.is_active
+  } else {
+    document.getElementById("aboutSectionForm").reset()
+    document.getElementById("aboutActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("aboutSectionModal"))
+  modal.show()
+}
+
+function showClientLogoModal(logo = null) {
+  currentEditingItem = logo
+  currentEditingType = "client_logo"
+
+  if (logo) {
+    document.getElementById("clientLogoCompanyName").value = logo.company_name
+    document.getElementById("clientLogoImage").value = logo.logo_url
+    document.getElementById("clientLogoWebsite").value = logo.website_url || ""
+    document.getElementById("clientLogoDescription").value = logo.description || ""
+    document.getElementById("clientLogoOrder").value = logo.order
+    document.getElementById("clientLogoActive").checked = logo.is_active
+  } else {
+    document.getElementById("clientLogoForm").reset()
+    document.getElementById("clientLogoActive").checked = true
+  }
+
+  const modal = new bootstrap.Modal(document.getElementById("clientLogoModal"))
+  modal.show()
 }
 
 async function InitializeHomepageManager(
@@ -304,7 +431,7 @@ function renderDeliveryPolicy() {
             <td>
                 ${
                   policy.countdown_hours !== null
-                    ? `<small class="text-muted">${String(policy.countdown_hours).padStart(2, "0")}:${String(policy.countdown_minutes).padStart(2, "0")}:${String(policy.countdown_seconds).padStart(2, "0")}</small>`
+                    ? `<small class="text-muted">${String(policy.countdown_hours).padStart(2, "0")}:${String(policy.countdown_minutes).padStart(2, "0")}:${String(policy.countdown_seconds || 0).padStart(2, "0")}</small>`
                     : '<small class="text-muted">No countdown</small>'
                 }
             </td>
@@ -450,10 +577,8 @@ function renderVideos() {
       (video) => `
         <div class="d-flex justify-content-between align-items-center border-bottom py-2">
             <div>
-                <span class="badge bg-info me-2">${video.position_display || video.position}</span>
-                <small class="text-muted">
-                    ${video.video_url ? "Video Content" : "Text Content"}
-                </small>
+                <h6 class="mb-1">${video.title}</h6>
+                <small class="text-muted">${video.description || ""}</small>
             </div>
             <div class="btn-group btn-group-sm">
                 <button class="btn btn-outline-primary" onclick="editVideo(${video.id})">
@@ -514,14 +639,14 @@ function renderAboutSection() {
   container.innerHTML = `
         <div class="row">
             <div class="col-md-3">
-                <img src="${about.main_image}" alt="About Image" class="img-fluid rounded">
+                ${about.main_image ? `<img src="${about.main_image}" alt="About Image" class="img-fluid rounded">` : '<div class="bg-light p-3 rounded text-center text-muted">No Image</div>'}
             </div>
             <div class="col-md-9">
                 <h5>${about.title}</h5>
-                <h6 class="text-muted">${about.subtitle}</h6>
-                <p class="mb-2">${about.description_1.substring(0, 100)}...</p>
+                ${about.subtitle ? `<h6 class="text-muted">${about.subtitle}</h6>` : ""}
+                <p class="mb-2">${about.description_1 ? about.description_1.substring(0, 100) + "..." : "No description"}</p>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-info me-2">${about.years_experience}+ Years Experience</span>
+                    ${about.years_experience ? `<span class="badge bg-info me-2">${about.years_experience}+ Years Experience</span>` : ""}
                     <span class="badge ${about.is_active ? "bg-success" : "bg-secondary"}">
                         ${about.is_active ? "Active" : "Inactive"}
                     </span>
@@ -698,6 +823,82 @@ async function deleteDeliveryPolicy(id) {
     } catch (error) {
       console.error("Error deleting policy:", error)
       showNotification("Error deleting policy.", "error")
+    }
+  }
+}
+
+async function deleteHomepageCategory(id) {
+  if (confirm("Are you sure you want to delete this category?")) {
+    try {
+      const [success, result] = await callApi("DELETE", `${categoriesUrl}${id}/`, null, csrf_token)
+      if (success && result.success) {
+        showNotification("Category deleted successfully!", "success")
+        await loadHomepageCategories()
+        renderHomepageCategories()
+        updateStats()
+      } else {
+        showNotification("Error deleting category.", "error")
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error)
+      showNotification("Error deleting category.", "error")
+    }
+  }
+}
+
+async function deleteVideo(id) {
+  if (confirm("Are you sure you want to delete this video?")) {
+    try {
+      const [success, result] = await callApi("DELETE", `${videosUrl}${id}/`, null, csrf_token)
+      if (success && result.success) {
+        showNotification("Video deleted successfully!", "success")
+        await loadVideos()
+        renderVideos()
+        updateStats()
+      } else {
+        showNotification("Error deleting video.", "error")
+      }
+    } catch (error) {
+      console.error("Error deleting video:", error)
+      showNotification("Error deleting video.", "error")
+    }
+  }
+}
+
+async function deleteFeature(id) {
+  if (confirm("Are you sure you want to delete this feature?")) {
+    try {
+      const [success, result] = await callApi("DELETE", `${featuresUrl}${id}/`, null, csrf_token)
+      if (success && result.success) {
+        showNotification("Feature deleted successfully!", "success")
+        await loadFeatures()
+        renderFeatures()
+        updateStats()
+      } else {
+        showNotification("Error deleting feature.", "error")
+      }
+    } catch (error) {
+      console.error("Error deleting feature:", error)
+      showNotification("Error deleting feature.", "error")
+    }
+  }
+}
+
+async function deleteClientLogo(id) {
+  if (confirm("Are you sure you want to delete this client logo?")) {
+    try {
+      const [success, result] = await callApi("DELETE", `${clientLogosUrl}${id}/`, null, csrf_token)
+      if (success && result.success) {
+        showNotification("Client logo deleted successfully!", "success")
+        await loadClientLogos()
+        renderClientLogos()
+        updateStats()
+      } else {
+        showNotification("Error deleting client logo.", "error")
+      }
+    } catch (error) {
+      console.error("Error deleting client logo:", error)
+      showNotification("Error deleting client logo.", "error")
     }
   }
 }
@@ -896,7 +1097,9 @@ function showProductSectionModal(section = null) {
                                             <select class="form-select form-select-sm" id="productCategoryFilter" onchange="filterProducts()">
                                                 <option value="">All Categories</option>
                                                 ${homepageData.allCategories
-                                                  .map((cat) => `<option value="${cat.category_id}">${cat.title}</option>`)
+                                                  .map(
+                                                    (cat) => `<option value="${cat.category_id}">${cat.title}</option>`,
+                                                  )
                                                   .join("")}
                                             </select>
                                         </div>
@@ -1016,9 +1219,9 @@ function handleCategoryChange(selectedCategoryId = null, selectedSubcategoryId =
     const subcategories = homepageData.allSubcategories.filter((sub) => sub.category_id == categoryId)
     subcategories.forEach((sub) => {
       const option = document.createElement("option")
-      option.value = subsub_category_id
+      option.value = sub.sub_category_id
       option.textContent = sub.title
-      if (selectedSubcategoryId && subsub_category_id == selectedSubcategoryId) {
+      if (selectedSubcategoryId && sub.sub_category_id == selectedSubcategoryId) {
         option.selected = true
       }
       subcategorySelect.appendChild(option)
@@ -1037,9 +1240,9 @@ function loadCustomProducts(section = null) {
       (product) => `
     <div class="form-check product-item" data-category="${product.category_name}" data-subcategory="${product.sub_category_name || ""}" data-name="${product.title}">
       <input class="form-check-input" type="checkbox" value="${product.product_id}" id="product_${product.product_id}" 
-             ${selectedProducts.includes(product.id.toString()) ? "checked" : ""} onchange="updateSelectedProductsCount()">
+             ${selectedProducts.includes(product.id ? product.id.toString() : product.product_id.toString()) ? "checked" : ""} onchange="updateSelectedProductsCount()">
       <label class="form-check-label d-flex align-items-center" for="product_${product.product_id}">
-        <img src="${product.photos[0]}" alt="${product.title}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+        <img src="${product.photos && product.photos[0] ? product.photos[0] : "/placeholder.svg?height=40&width=40"}" alt="${product.title}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
         <div>
           <div class="fw-medium">${product.title}</div>
           <small class="text-muted">₹${product.actual_price} - ${product.category_name}</small>
@@ -1072,7 +1275,7 @@ function filterProducts() {
   productItems.forEach((item) => {
     const matchesCategory = !categoryFilter || item.dataset.category == categoryFilter
     const matchesSubcategory = !subcategoryFilter || item.dataset.subcategory == subcategoryFilter
-    const matchesSearch = !searchTerm || item.dataset.name.includes(searchTerm)
+    const matchesSearch = !searchTerm || item.dataset.name.toLowerCase().includes(searchTerm)
 
     item.style.display = matchesCategory && matchesSubcategory && matchesSearch ? "block" : "none"
   })
@@ -1196,9 +1399,9 @@ function showProductSectionViewModal(section) {
                                 (product) => `
                                 <div class="col-md-3 mb-3">
                                     <div class="card">
-                                        <img src="${product.image}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                        <img src="${product.photos[0]}" class="card-img-top" style="height: 200px; object-fit: cover;">
                                         <div class="card-body">
-                                            <h6 class="card-title">${product.name}</h6>
+                                            <h6 class="card-title">${product.title}</h6>
                                             <p class="card-text">
                                                 <small class="text-muted">${product.category_name}</small><br>
                                                 <strong>₹${product.price}</strong>
@@ -1227,6 +1430,297 @@ function showProductSectionViewModal(section) {
   document.getElementById("modal-container").innerHTML = modalHtml
   const modal = new bootstrap.Modal(document.getElementById("productSectionViewModal"))
   modal.show()
+}
+
+// Save functions for other modals
+async function saveDeliveryPolicy() {
+  const formData = {
+    title: document.getElementById("deliveryPolicyTitle").value,
+    policy_type: document.getElementById("deliveryPolicyType").value,
+    icon: document.getElementById("deliveryPolicyIcon").value,
+    description: document.getElementById("deliveryPolicyDescription").value,
+    countdown_hours: Number.parseInt(document.getElementById("deliveryPolicyCountdownHour").value) || 0,
+    countdown_minutes: Number.parseInt(document.getElementById("deliveryPolicyCountdownMinute").value) || 0,
+    order: Number.parseInt(document.getElementById("deliveryPolicyOrder").value),
+    is_active: document.getElementById("deliveryPolicyActive").checked,
+  }
+
+  try {
+    let response
+    if (currentEditingItem && currentEditingType === "delivery_policy") {
+      response = await fetch(`${deliveryPolicyUrl}${currentEditingItem.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(deliveryPolicyUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("Delivery policy saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("deliveryPolicyModal")).hide()
+      await loadDeliveryPolicy()
+      renderDeliveryPolicy()
+      updateStats()
+    } else {
+      showNotification("Error saving delivery policy.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving delivery policy:", error)
+    showNotification("Error saving delivery policy.", "error")
+  }
+}
+
+async function saveHomepageCategory() {
+  const formData = {
+    title: document.getElementById("categoryTitle").value,
+    description: document.getElementById("categoryDescription").value,
+    image: document.getElementById("categoryImage").value,
+    category_link: document.getElementById("categoryLink").value,
+    order: Number.parseInt(document.getElementById("categoryOrder").value),
+    is_active: document.getElementById("categoryActive").checked,
+  }
+
+  try {
+    let response
+    if (currentEditingItem && currentEditingType === "homepage_category") {
+      response = await fetch(`${categoriesUrl}${currentEditingItem.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(categoriesUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("Category saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("categoryModal")).hide()
+      await loadHomepageCategories()
+      renderHomepageCategories()
+      updateStats()
+    } else {
+      showNotification("Error saving category.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving category:", error)
+    showNotification("Error saving category.", "error")
+  }
+}
+
+async function saveVideo() {
+  const formData = {
+    title: document.getElementById("videoTitle").value,
+    description: document.getElementById("videoDescription").value,
+    video_url: document.getElementById("videoUrl").value,
+    thumbnail_url: document.getElementById("videoThumbnail").value,
+    order: Number.parseInt(document.getElementById("videoOrder").value),
+    is_active: document.getElementById("videoActive").checked,
+  }
+
+  try {
+    let response
+    if (currentEditingItem && currentEditingType === "video") {
+      response = await fetch(`${videosUrl}${currentEditingItem.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(videosUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("Video saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("videoModal")).hide()
+      await loadVideos()
+      renderVideos()
+      updateStats()
+    } else {
+      showNotification("Error saving video.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving video:", error)
+    showNotification("Error saving video.", "error")
+  }
+}
+
+async function saveFeature() {
+  const formData = {
+    title: document.getElementById("featureTitle").value,
+    icon: document.getElementById("featureIcon").value,
+    description: document.getElementById("featureDescription").value,
+    order: Number.parseInt(document.getElementById("featureOrder").value),
+    is_active: document.getElementById("featureActive").checked,
+  }
+
+  try {
+    let response
+    if (currentEditingItem && currentEditingType === "feature") {
+      response = await fetch(`${featuresUrl}${currentEditingItem.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(featuresUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("Feature saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("featureModal")).hide()
+      await loadFeatures()
+      renderFeatures()
+      updateStats()
+    } else {
+      showNotification("Error saving feature.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving feature:", error)
+    showNotification("Error saving feature.", "error")
+  }
+}
+
+async function saveAboutSection() {
+  const formData = {
+    title: document.getElementById("aboutTitle").value,
+    subtitle: document.getElementById("aboutSubtitle").value,
+    description_1: document.getElementById("aboutDescription").value,
+    description_2: document.getElementById("aboutDescription").value, // Using same for both
+    main_image: document.getElementById("aboutImage").value,
+    button_text: document.getElementById("aboutButtonText").value,
+    button_link: document.getElementById("aboutButtonLink").value,
+    is_active: document.getElementById("aboutActive").checked,
+  }
+
+  try {
+    let response
+    if (homepageData.about && homepageData.about.id) {
+      response = await fetch(`${aboutUrl}${homepageData.about.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(aboutUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("About section saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("aboutSectionModal")).hide()
+      await loadAboutSection()
+      renderAboutSection()
+    } else {
+      showNotification("Error saving about section.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving about section:", error)
+    showNotification("Error saving about section.", "error")
+  }
+}
+
+async function saveClientLogo() {
+  const formData = {
+    company_name: document.getElementById("clientLogoCompanyName").value,
+    logo_url: document.getElementById("clientLogoImage").value,
+    website_url: document.getElementById("clientLogoWebsite").value,
+    description: document.getElementById("clientLogoDescription").value,
+    order: Number.parseInt(document.getElementById("clientLogoOrder").value),
+    is_active: document.getElementById("clientLogoActive").checked,
+  }
+
+  try {
+    let response
+    if (currentEditingItem && currentEditingType === "client_logo") {
+      response = await fetch(`${clientLogosUrl}${currentEditingItem.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    } else {
+      response = await fetch(clientLogosUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf_token,
+        },
+        body: JSON.stringify(formData),
+      })
+    }
+
+    const data = await response.json()
+    if (data.success) {
+      showNotification("Client logo saved successfully!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("clientLogoModal")).hide()
+      await loadClientLogos()
+      renderClientLogos()
+      updateStats()
+    } else {
+      showNotification("Error saving client logo.", "error")
+    }
+  } catch (error) {
+    console.error("Error saving client logo:", error)
+    showNotification("Error saving client logo.", "error")
+  }
 }
 
 // Utility functions
@@ -1279,33 +1773,41 @@ function showNotification(message, type = "info") {
   })
 }
 
-// Placeholder functions for other modals (implement as needed)
-function showDeliveryPolicyModal(policy = null) {
-  // Implementation similar to hero banner modal
-  showNotification("Delivery policy modal not implemented yet", "info")
-}
+// Event listeners for modal save buttons
+document.addEventListener("DOMContentLoaded", () => {
+  // Delivery Policy Modal
+  const saveDeliveryPolicyBtn = document.getElementById("saveDeliveryPolicyBtn")
+  if (saveDeliveryPolicyBtn) {
+    saveDeliveryPolicyBtn.addEventListener("click", saveDeliveryPolicy)
+  }
 
-function showHomepageCategoryModal(category = null) {
-  // Implementation similar to hero banner modal
-  showNotification("Homepage category modal not implemented yet", "info")
-}
+  // Category Modal
+  const saveCategoryBtn = document.getElementById("saveCategoryBtn")
+  if (saveCategoryBtn) {
+    saveCategoryBtn.addEventListener("click", saveHomepageCategory)
+  }
 
-function showVideoModal(video = null) {
-  // Implementation for video modal
-  showNotification("Video modal not implemented yet", "info")
-}
+  // Video Modal
+  const saveVideoBtn = document.getElementById("saveVideoBtn")
+  if (saveVideoBtn) {
+    saveVideoBtn.addEventListener("click", saveVideo)
+  }
 
-function showFeatureModal(feature = null) {
-  // Implementation for feature modal
-  showNotification("Feature modal not implemented yet", "info")
-}
+  // Feature Modal
+  const saveFeatureBtn = document.getElementById("saveFeatureBtn")
+  if (saveFeatureBtn) {
+    saveFeatureBtn.addEventListener("click", saveFeature)
+  }
 
-function showAboutModal(about = null) {
-  // Implementation for about modal
-  showNotification("About modal not implemented yet", "info")
-}
+  // About Section Modal
+  const saveAboutSectionBtn = document.getElementById("saveAboutSectionBtn")
+  if (saveAboutSectionBtn) {
+    saveAboutSectionBtn.addEventListener("click", saveAboutSection)
+  }
 
-function showClientLogoModal(logo = null) {
-  // Implementation for client logo modal
-  showNotification("Client logo modal not implemented yet", "info")
-}
+  // Client Logo Modal
+  const saveClientLogoBtn = document.getElementById("saveClientLogoBtn")
+  if (saveClientLogoBtn) {
+    saveClientLogoBtn.addEventListener("click", saveClientLogo)
+  }
+})

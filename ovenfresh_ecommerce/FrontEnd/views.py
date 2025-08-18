@@ -31,8 +31,8 @@ class HomeViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         # Use the CMS-controlled homepage
-        return render(request, 'home.html')
-        # return render(request, 'home_dynamic.html')
+        # return render(request, 'home.html')
+        return render(request, 'home_dynamic.html')
 
 class ShopViewSet(viewsets.ViewSet):
 

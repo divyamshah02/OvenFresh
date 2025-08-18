@@ -384,12 +384,12 @@ function renderProductSections() {
 
     // Get products based on section type
     let products = []
-    if (section.section_type === "custom" && section.items) {
-      products = section.items.map((item) => item.product_details).filter((p) => p && p.is_active)
-    } else if (section.dynamic_products) {
-      products = section.dynamic_products.filter((p) => p && p.is_active)
-    }
-
+    // if (section.section_type === "custom" && section.items) {
+    //   products = section.items.map((item) => item.product_details).filter((p) => p && p.is_active)
+    // } else if (section.dynamic_products) {
+    //   products = section.dynamic_products.filter((p) => p && p.is_active)
+    // }
+    products = section.dynamic_products.filter((p) => p && p.is_active)
     // Limit products to max_products
     products = products.slice(0, section.max_products)
 
