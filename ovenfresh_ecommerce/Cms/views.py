@@ -9,25 +9,14 @@ from .serializers import *
 
 from .migrate_data import *
 from .clear_data import *
-# Decorator functions (assuming these exist in your project)
-def handle_exceptions(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            return Response({"success": False, "error": str(e)}, status=500)
-    return wrapper
+from utils.handle_s3_bucket import upload_file_to_s3
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
+from utils.decorators import handle_exceptions, check_authentication
 
-def check_authentication(required_role=None):
-    def decorator(func):
-        def wrapper(self, request, *args, **kwargs):
-            if not request.user.is_authenticated:
-                return Response({"success": False, "user_not_logged_in": True, "error": "Authentication required"}, status=401)
-            if required_role and getattr(request.user, 'role', None) != required_role:
-                return Response({"success": False, "user_unauthorized": True, "error": "Unauthorized"}, status=403)
-            return func(self, request, *args, **kwargs)
-        return wrapper
-    return decorator
+
+# Decorator functions (assuming these exist in your project)
 
 class HeroBannerViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -750,6 +739,47 @@ class FooterContentViewSet(viewsets.ViewSet):
             "data": None,
             "error": serializer.errors
         }, status=400)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class FileUploadView(viewsets.ViewSet):
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """Upload file to S3 and return URL"""
+        if 'file' not in request.FILES:
+            return Response({
+                "success": False,
+                "error": "No file provided"
+            }, status=400)
+        
+        uploaded_file = request.FILES['file']
+        folder = request.POST.get('folder', 'homepage_images')
+        
+        # Validate file type
+        allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        
+        # if file_extension not in allowed_extensions:
+        #     return Response({
+        #         "success": False,
+        #         "error": f"Invalid file type: {uploaded_file.name}. Only JPG, PNG, and WebP are allowed."
+        #     }, status=400)
+        
+        try:
+            # Upload to S3
+            file_url = upload_file_to_s3(uploaded_file, folder=folder)
+            print(f"File uploaded to S3: {file_url}")
+            return Response({
+                "success": True,
+                "file_url": file_url,
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            return Response({
+                "success": False,
+                "error": f"Failed to upload file: {str(e)}"
+            }, status=500)
 
 def test(request):
     start_migrations_personl()

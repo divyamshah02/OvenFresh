@@ -2,10 +2,10 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class HeroBanner(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True, null=True)
     subtitle = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    image = models.URLField()
+    image = models.CharField(max_length=255)
     button_text = models.CharField(max_length=50, default="Shop Now")
     button_link = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -47,7 +47,7 @@ class DeliveryPolicy(models.Model):
 class HomepageCategory(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    image = models.URLField()
+    image = models.CharField(max_length=255)
     category_link = models.URLField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
@@ -68,7 +68,7 @@ class VideoContent(models.Model):
     ]
     
     position = models.CharField(max_length=20, choices=VIDEO_POSITIONS)
-    video_url = models.URLField(blank=True, null=True)
+    video_url = models.CharField(max_length=255, blank=True, null=True)
     text_content = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -95,10 +95,10 @@ class AboutSection(models.Model):
     title = models.CharField(max_length=200, default="Baking with Love Since 1993")
     description_1 = models.TextField()
     description_2 = models.TextField()
-    main_image = models.URLField()
+    main_image = models.CharField(max_length=255)
     years_experience = models.PositiveIntegerField(default=30)
     button_text = models.CharField(max_length=50, default="Explore Our Products")
-    button_link = models.URLField(default="/shop/")
+    button_link = models.CharField(max_length=255, default="/shop/")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -171,8 +171,8 @@ class ProductSectionItem(models.Model):
 
 class ClientLogo(models.Model):
     company_name = models.CharField(max_length=100)
-    logo_url = models.URLField()
-    website_url = models.URLField(blank=True, null=True)
+    logo_url = models.CharField(max_length=255)
+    website_url = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

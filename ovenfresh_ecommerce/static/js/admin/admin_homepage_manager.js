@@ -33,6 +33,32 @@ const homepageData = {
   allProducts: [],
 }
 
+async function uploadFileToS3(file, folder = "homepage_images") {
+  const formData = new FormData()
+  formData.append("file", file)
+  formData.append("folder", folder)
+
+  try {
+    const response = await fetch("/cms-api/upload-file/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrf_token,
+      },
+      body: formData,
+    })
+
+    const result = await response.json()
+    if (result.success) {
+      return result.file_url
+    } else {
+      throw new Error(result.error || "Upload failed")
+    }
+  } catch (error) {
+    console.error("File upload error:", error)
+    throw error
+  }
+}
+
 function showDeliveryPolicyModal(policy = null) {
   currentEditingItem = policy
   currentEditingType = "delivery_policy"
@@ -577,7 +603,7 @@ function renderVideos() {
       (video) => `
         <div class="d-flex justify-content-between align-items-center border-bottom py-2">
             <div>
-                <h6 class="mb-1">${video.title}</h6>
+                <h6 class="mb-1">${video.position_display}</h6>
                 <small class="text-muted">${video.description || ""}</small>
             </div>
             <div class="btn-group btn-group-sm">
@@ -937,8 +963,8 @@ function showHeroBannerModal(banner = null) {
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">Title *</label>
-                                        <input type="text" class="form-control" name="title" value="${banner ? banner.title : ""}" required>
+                                        <label class="form-label">Title</label>
+                                        <input type="text" class="form-control" name="title" value="${banner ? banner.title : ""}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -955,6 +981,8 @@ function showHeroBannerModal(banner = null) {
                             <div class="mb-3">
                                 <label class="form-label">Image URL *</label>
                                 <input type="url" class="form-control" name="image" value="${banner ? banner.image : ""}" required>
+                                <label class="form-label">Or Upload Image</label>
+                                <input type="file" class="form-control" name="image_file">
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -1290,11 +1318,24 @@ async function saveHeroBanner(id = null) {
   const form = document.getElementById("heroBannerForm")
   const formData = new FormData(form)
 
+  const imageFile = form.querySelector('input[name="image_file"]').files[0]
+  let imageUrl = formData.get("image")
+
+  if (imageFile) {
+    try {
+      showNotification("Uploading image...", "info")
+      imageUrl = await uploadFileToS3(imageFile, "hero_banners")
+    } catch (error) {
+      showNotification("Error uploading image: " + error.message, "error")
+      return
+    }
+  }
+
   const data = {
     title: formData.get("title"),
     subtitle: formData.get("subtitle"),
     description: formData.get("description"),
-    image: formData.get("image"),
+    image: imageUrl,
     button_text: formData.get("button_text"),
     button_link: formData.get("button_link"),
     order: Number.parseInt(formData.get("order")),
@@ -1484,10 +1525,23 @@ async function saveDeliveryPolicy() {
 }
 
 async function saveHomepageCategory() {
+  const categoryImageFile = document.getElementById("categoryImageFile").files[0]
+  let categoryImageUrl = document.getElementById("categoryImage").value
+
+  if (categoryImageFile) {
+    try {
+      showNotification("Uploading image...", "info")
+      categoryImageUrl = await uploadFileToS3(categoryImageFile, "homepage_categories")
+    } catch (error) {
+      showNotification("Error uploading image: " + error.message, "error")
+      return
+    }
+  }
+
   const formData = {
     title: document.getElementById("categoryTitle").value,
     description: document.getElementById("categoryDescription").value,
-    image: document.getElementById("categoryImage").value,
+    image: categoryImageUrl,
     category_link: document.getElementById("categoryLink").value,
     order: Number.parseInt(document.getElementById("categoryOrder").value),
     is_active: document.getElementById("categoryActive").checked,
@@ -1532,11 +1586,24 @@ async function saveHomepageCategory() {
 }
 
 async function saveVideo() {
+  const thumbnailFile = document.getElementById("videoThumbnailFile").files[0]
+  let thumbnailUrl = document.getElementById("videoThumbnail").value
+
+  if (thumbnailFile) {
+    try {
+      showNotification("Uploading thumbnail...", "info")
+      thumbnailUrl = await uploadFileToS3(thumbnailFile, "video_thumbnails")
+    } catch (error) {
+      showNotification("Error uploading thumbnail: " + error.message, "error")
+      return
+    }
+  }
+
   const formData = {
     title: document.getElementById("videoTitle").value,
     description: document.getElementById("videoDescription").value,
     video_url: document.getElementById("videoUrl").value,
-    thumbnail_url: document.getElementById("videoThumbnail").value,
+    thumbnail_url: thumbnailUrl,
     order: Number.parseInt(document.getElementById("videoOrder").value),
     is_active: document.getElementById("videoActive").checked,
   }
@@ -1627,12 +1694,25 @@ async function saveFeature() {
 }
 
 async function saveAboutSection() {
+  const aboutImageFile = document.getElementById("aboutImageFile").files[0]
+  let aboutImageUrl = document.getElementById("aboutImage").value
+
+  if (aboutImageFile) {
+    try {
+      showNotification("Uploading image...", "info")
+      aboutImageUrl = await uploadFileToS3(aboutImageFile, "about_section")
+    } catch (error) {
+      showNotification("Error uploading image: " + error.message, "error")
+      return
+    }
+  }
+
   const formData = {
     title: document.getElementById("aboutTitle").value,
     subtitle: document.getElementById("aboutSubtitle").value,
     description_1: document.getElementById("aboutDescription").value,
     description_2: document.getElementById("aboutDescription").value, // Using same for both
-    main_image: document.getElementById("aboutImage").value,
+    main_image: aboutImageUrl,
     button_text: document.getElementById("aboutButtonText").value,
     button_link: document.getElementById("aboutButtonLink").value,
     is_active: document.getElementById("aboutActive").checked,
@@ -1676,9 +1756,22 @@ async function saveAboutSection() {
 }
 
 async function saveClientLogo() {
+  const logoFile = document.getElementById("clientLogoImageFile").files[0]
+  let logoUrl = document.getElementById("clientLogoImage").value
+
+  if (logoFile) {
+    try {
+      showNotification("Uploading logo...", "info")
+      logoUrl = await uploadFileToS3(logoFile, "client_logos")
+    } catch (error) {
+      showNotification("Error uploading logo: " + error.message, "error")
+      return
+    }
+  }
+
   const formData = {
     company_name: document.getElementById("clientLogoCompanyName").value,
-    logo_url: document.getElementById("clientLogoImage").value,
+    logo_url: logoUrl,
     website_url: document.getElementById("clientLogoWebsite").value,
     description: document.getElementById("clientLogoDescription").value,
     order: Number.parseInt(document.getElementById("clientLogoOrder").value),

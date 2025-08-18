@@ -91,6 +91,42 @@
             </div>
         </section>
 
+        <!-- Dynamic Videos Section -->
+        <section id="videos">
+            <div class="py-4">
+                <div class="container py-0">
+                    <div class="d-flex flex-column flex-lg-row">
+
+                        <!-- Left Video -->
+                        <div
+                            class="col-12 col-lg-4 d-flex justify-content-center align-items-center overflow-hidden p-0">
+                            <video id="videoLeft" class="video-portrait" autoplay muted loop
+                                playsinline></video>
+                        </div>
+
+                        <!-- Center Card -->
+                        <div class="col-12 col-lg-4 d-flex justify-content-center align-items-center p-4">
+                            <div class="card border-0 p-4 rounded-4 shadow-lg w-100 bg-light text-dark text-center">
+                                <h3 class="card-title" id="videoTextCenter"
+                                    style="font-family: 'Dancing Script', cursive; font-size: 1.8rem;">
+                                    “Here is Every bite is a celebration,<br>Every petals whisper poetry”
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Right Video -->
+                        <div
+                            class="col-12 col-lg-4 d-flex justify-content-center align-items-center overflow-hidden p-0">
+                            <video id="videoRight" class="video-portrait" autoplay muted loop
+                                playsinline></video>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- Dynamic Features Section -->
         <section id="features" class="py-5">
             <div class="container">
@@ -103,7 +139,7 @@
         </section>
 
         <!-- Dynamic About Section -->
-        <section id="about" class="py-5">
+        <section id="about" class="py-5" style="display: none;">
             <div class="container" id="about-container">
                 <!-- Dynamic about section will be loaded here -->
             </div>
@@ -225,8 +261,9 @@
         HomeDynamic(
             csrfToken,
             "/cms-api/hero-banners/",
-            "/cms-api/delivery-policies/",
+            "/cms-api/delivery-policy/",
             "/cms-api/homepage-categories/",
+            "/cms-api/video-content/",
             "/cms-api/features/",
             "/cms-api/about-section/",
             "/cms-api/product-sections/",

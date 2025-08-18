@@ -2,6 +2,7 @@ let csrf_token = null
 let hero_banners_url = null
 let delivery_policies_url = null
 let homepage_categories_url = null
+let videos_url = null
 let features_url = null
 let about_section_url = null
 let product_sections_url = null
@@ -12,6 +13,7 @@ let heroBannersData = []
 let deliveryPoliciesData = []
 let homepageCategoriesData = []
 let featuresData = []
+let videosData = []
 let aboutSectionData = null
 let productSectionsData = []
 let clientLogosData = []
@@ -21,6 +23,7 @@ function HomeDynamic(
   heroBannersUrlParam,
   deliveryPoliciesUrlParam,
   homepageCategoriesUrlParam,
+  videosUrlParam,
   featuresUrlParam,
   aboutSectionUrlParam,
   productSectionsUrlParam,
@@ -30,6 +33,7 @@ function HomeDynamic(
   hero_banners_url = heroBannersUrlParam
   delivery_policies_url = deliveryPoliciesUrlParam
   homepage_categories_url = homepageCategoriesUrlParam
+  videos_url = videosUrlParam
   features_url = featuresUrlParam
   about_section_url = aboutSectionUrlParam
   product_sections_url = productSectionsUrlParam
@@ -49,6 +53,7 @@ async function loadAllSections() {
       loadHeroBanners(),
       loadDeliveryPolicies(),
       loadHomepageCategories(),
+      loadVideos(),
       loadFeatures(),
       loadAboutSection(),
       loadProductSections(),
@@ -101,18 +106,20 @@ function renderHeroBanners() {
     carouselItem.className = `carousel-item${index === 0 ? " active" : ""}`
 
     carouselItem.innerHTML = `
-            <div class="seasonal-slide" style="background-image: url('${banner.image}')">
-                <div class="carousel-caption text-start">
-                    <h3>${banner.title}</h3>
-                    ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}
-                    ${
-                      banner.button_text && banner.button_link
-                        ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
-                        : ""
-                    }
-                </div>
-            </div>
-        `
+      <div class="seasonal-slide">
+        <img src="${banner.image}" alt="${banner.title}">
+        <div class="carousel-caption text-start">
+          <h3>${banner.title}</h3>
+          ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}
+          ${
+            banner.button_text && banner.button_link
+              ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
+
 
     carouselInner.appendChild(carouselItem)
   })
@@ -247,6 +254,35 @@ function renderHomepageCategories() {
     container.appendChild(categoryElement)
   })
 }
+
+async function loadVideos() {
+  try {
+    const response = await fetch(videos_url)
+    const data = await response.json()
+
+    if (data.success && data.data) {
+      videosData = data.data
+      renderVideos()
+    }
+  } catch (error) {
+    console.error("Error loading features:", error)
+  }
+}
+
+function renderVideos() {
+  videosData.forEach((video) => {
+    if (video.position == "left") {
+      document.getElementById("videoLeft").src = video.video_url
+    }
+    else if (video.position == "right") {
+      document.getElementById("videoRight").src = video.video_url
+    }
+    else if (video.position == "center_text") {
+      document.getElementById("videoTextCenter").innerText = video.text_content
+    }
+  })
+}
+
 
 async function loadFeatures() {
   try {

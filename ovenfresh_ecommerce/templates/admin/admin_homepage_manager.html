@@ -407,8 +407,10 @@
                             <div class="form-text">YouTube, Vimeo, or direct video file URL</div>
                         </div>
                         <div class="mb-3">
-                            <label for="videoThumbnail" class="form-label">Thumbnail Image URL</label>
-                            <input type="url" class="form-control" id="videoThumbnail">
+                            <label for="videoThumbnail" class="form-label">Thumbnail Image</label>
+                            <input type="file" class="form-control" id="videoThumbnailFile" accept="image/*">
+                            <div class="form-text">Upload thumbnail image (JPG, PNG, or WebP)</div>
+                            <input type="hidden" id="videoThumbnail">
                         </div>
                         <div class="mb-3">
                             <div class="form-check">
@@ -501,8 +503,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="aboutImage" class="form-label">Main Image URL</label>
-                                <input type="url" class="form-control" id="aboutImage">
+                                <label for="aboutImage" class="form-label">Main Image</label>
+                                <input type="file" class="form-control" id="aboutImageFile" accept="image/*">
+                                <div class="form-text">Upload main image (JPG, PNG, or WebP)</div>
+                                <input type="hidden" id="aboutImage">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="aboutButtonText" class="form-label">Button Text</label>
@@ -552,8 +556,10 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="clientLogoImage" class="form-label">Logo Image URL *</label>
-                            <input type="url" class="form-control" id="clientLogoImage" required>
+                            <label for="clientLogoImage" class="form-label">Logo Image *</label>
+                            <input type="file" class="form-control" id="clientLogoImageFile" accept="image/*" required>
+                            <div class="form-text">Upload logo image (JPG, PNG, or WebP)</div>
+                            <input type="hidden" id="clientLogoImage">
                         </div>
                         <div class="mb-3">
                             <label for="clientLogoWebsite" class="form-label">Company Website</label>
@@ -674,8 +680,10 @@
                             <textarea class="form-control" id="categoryDescription" rows="2"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="categoryImage" class="form-label">Image URL *</label>
-                            <input type="url" class="form-control" id="categoryImage" required>
+                            <label for="categoryImage" class="form-label">Image *</label>
+                            <input type="file" class="form-control" id="categoryImageFile" accept="image/*" required>
+                            <div class="form-text">Upload category image (JPG, PNG, or WebP)</div>
+                            <input type="hidden" id="categoryImage">
                         </div>
                         <div class="mb-3">
                             <label for="categoryLink" class="form-label">Link URL</label>
