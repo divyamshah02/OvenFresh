@@ -1,4 +1,4 @@
-homepage dynamic / responsive
+XX homepage dynamic / responsive
 shop page loading
 XX product page image skeleton or place holder 
 XX product page top reviews dynamic
@@ -21,7 +21,7 @@ XX all orders page add color what depicts box
 XX all orders page remove bulk options
 
 add the order status wise pages as well in nav
-
+KOT
 
 XX order detail page not showing the billign address
 order detail page KOT update 
