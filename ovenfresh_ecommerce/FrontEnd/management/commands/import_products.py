@@ -27,18 +27,25 @@ import re
 from django.http import JsonResponse
 from utils.handle_s3_bucket import upload_file_to_s3, delete_file_from_s3
 
+import unicodedata
+
+
 class Command(BaseCommand):
     help = "Import products from JSON file into the database"
 
     def handle(self, *args, **options):
-        json_path = settings.BASE_DIR / "filtered_products.json"
+        json_path = settings.BASE_DIR / "output_updated.json"
         with open(json_path, "r", encoding="utf-8") as f:
             products_data = json.load(f)
 
         category_map = {}
         subcategory_map = {}
 
-        for indd, p in enumerate(products_data, start=1):
+        slugs = []
+        slug_counts = {}
+
+
+        for indd, p in enumerate(products_data[0:1], start=1):
             try:
                 self.stdout.write(f"Processing {indd}/{len(products_data)}: {p.get('Name', 'Unknown')}")
 
@@ -47,7 +54,7 @@ class Command(BaseCommand):
                     continue
                 main_cat = list(cat_dict.keys())[0]
                 sub_cats = cat_dict[main_cat] if isinstance(cat_dict[main_cat], list) else []
-                self.stdout.write(f"Categories found: {cat_dict}")
+                self.stdout.write(f"    Categories found: {cat_dict}")
                 # Category
                 if main_cat not in category_map:
                     cat_obj, _ = Category.objects.get_or_create(
@@ -87,21 +94,38 @@ class Command(BaseCommand):
                             content_file.content_type = content_type
                             try:
                                 relative_path = img_url.split("/uploads/")[1]
-                                s3_folder = f"products/{os.path.dirname(relative_path)}"
+                                s3_folder = f"New_Website_products/{os.path.dirname(relative_path)}"
                             except:
-                                s3_folder = "products"
+                                s3_folder = "New_Website_products"
                             file_url = upload_file_to_s3(content_file, folder=s3_folder)
                             self.stdout.write(f"    Image uploaded: {file_url}")
                             image_urls.append(file_url)
                         except Exception as e:
                             self.stderr.write(f"    XX - Image upload failed for {img_url}: {e}")
 
+
+                name = p.get("Name", "")
+                base_slug = self.slugify(name)
+
+                # Check for duplicates
+                if base_slug in slug_counts:
+                    slug_counts[base_slug] += 1
+                    final_slug = f"{base_slug}-{slug_counts[base_slug]}"
+                else:
+                    slug_counts[base_slug] = 0
+                    final_slug = base_slug
+
+                slugs.append(final_slug)                
+
                 # Product
                 product_id = self.generate_product_id()
                 Product.objects.create(
                     product_id=product_id,
                     title=p.get("Name", ""),
-                    description=self.clean_description(p.get("Short description")),
+                    tags=p.get("Tags", ""),
+                    slug = final_slug,
+                    short_description=self.clean_description(p.get("Short description")),
+                    description=self.clean_description(p.get("Description")),
                     photos=image_urls,
                     category_id=category_map.get(main_cat),
                     sub_category_id=main_sub_cat_id,
@@ -124,7 +148,7 @@ class Command(BaseCommand):
                         created_at=timezone.now(),
                         stock_toggle_mode=True,
                         stock_quantity=None,
-                        in_stock_bull=not bool(var.get("In stock?", 1))
+                        in_stock_bull=bool(var.get("In stock?", 1))
                     )
 
                 self.stdout.write(self.style.SUCCESS(f"✅ Imported: {p.get('Name', 'Unknown')}"))
@@ -139,6 +163,20 @@ class Command(BaseCommand):
         text = re.sub(r'<[^>]+>', '', text)
         text = text.replace('_x000D_', ' ').replace('\\n', ' ').replace('\\t', ' ')
         return re.sub(r'\s+', ' ', text).strip()
+
+    def slugify(self, value):
+        """
+        Convert string to URL slug:
+        - Lowercase
+        - Remove accents
+        - Replace non-alphanumeric with hyphens
+        - Collapse multiple hyphens
+        """
+        value = str(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
+        value = re.sub(r'[^a-zA-Z0-9]+', '-', value)
+        value = value.strip('-').lower()
+        return value
 
     def generate_product_id(self):
         while True:

@@ -32,6 +32,7 @@ class Product(models.Model):  # Meta information
     sub_category_id_list = models.JSONField(default=[], blank=True, null=True)
     title = models.CharField(max_length=255)
     tags = models.CharField(max_length=255, default="", null=True, blank=True)  # Comma-separated tags
+    short_description = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     sku = models.CharField(max_length=20, null=True, blank=True)
     hsn = models.CharField(max_length=20, null=True, blank=True)
@@ -45,6 +46,7 @@ class Product(models.Model):  # Meta information
     allergen_information = models.TextField(blank=True, null=True)
     storage_instructions = models.TextField(blank=True, null=True)
     is_extras = models.BooleanField(default=False)  # True if product is an extra item (like sauces, etc.)
+    slug = models.CharField(max_length=255, unique=True, blank=True, null=True)  # Slug for SEO
 
     def __str__(self):
         return f"{self.product_id} - {self.title}"
