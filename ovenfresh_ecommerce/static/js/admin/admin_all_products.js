@@ -792,6 +792,7 @@ function getToastIcon(type) {
 }
 
 function populateSubCategoryFilter(categoryId) {
+  console.log(categoryId)
   const subCategoryFilter = document.getElementById("subCategoryFilter")
   subCategoryFilter.innerHTML = '<option value="">All Sub Categories</option>'
   categoryId = Number(categoryId)
@@ -801,7 +802,8 @@ function populateSubCategoryFilter(categoryId) {
     return
   }
 
-  const selectedCategory = allCategories.find((cat) => cat.category_id === categoryId)
+  const selectedCategory = allCategories.find((cat) => cat.category_id == categoryId)
+  console.log(selectedCategory)
   if (selectedCategory && selectedCategory.subcategories) {
     subCategoryFilter.disabled = false
     selectedCategory.subcategories.forEach((subCategory) => {

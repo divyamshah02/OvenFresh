@@ -51,7 +51,7 @@ async function loadAllSections() {
   try {
     await Promise.all([
       loadHeroBanners(),
-      loadDeliveryPolicies(),
+      // loadDeliveryPolicies(),
       loadHomepageCategories(),
       loadVideos(),
       loadFeatures(),
@@ -252,7 +252,43 @@ function renderHomepageCategories() {
     }
 
     container.appendChild(categoryElement)
+
+    
   })
+
+  const scrollable = document.getElementById('scrollable');
+  const dotsContainer = document.querySelector('.dashboard-dots-container');
+  const cards = document.querySelectorAll('.dashboard-main-card');
+
+  // Create dots based on the number of cards
+  cards.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dashboard-dot');
+      if (index === 0) dot.classList.add('active');
+      dotsContainer.appendChild(dot);
+  });
+
+  const dots = document.querySelectorAll('.dashboard-dot');
+
+  // Update dots on scroll
+  scrollable.addEventListener('scroll', () => {
+      const scrollLeft = scrollable.scrollLeft;
+      const scrollWidth = scrollable.scrollWidth - scrollable.clientWidth;
+
+      // Calculate the active dot
+      const activeIndex = Math.round(
+          (scrollLeft / scrollWidth) * (dots.length - 1)
+      );
+
+      dots.forEach((dot, index) => {
+          if (index === activeIndex) {
+              dot.classList.add('active');
+          } else {
+              dot.classList.remove('active');
+          }
+      });
+  });
+
 }
 
 async function loadVideos() {
@@ -428,6 +464,7 @@ function renderProductSections() {
     products = section.dynamic_products.filter((p) => p && p.is_active)
     // Limit products to max_products
     products = products.slice(0, section.max_products)
+    console.log(products)
 
     sectionElement.innerHTML = `
             <div class="container">
@@ -460,35 +497,21 @@ function renderProductSections() {
                           section.show_add_to_cart
                             ? `
                             <div class="product-actions">
-                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
-                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
-                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-eye"></i></a>
                             </div>
                         `
                             : ""
                         }
                     </div>
                     <div class="product-body">
-                        <h5>${product.title}</h5>
-                        ${
-                          section.show_rating
-                            ? `
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="ms-2">(${Math.floor(Math.random() * 50) + 10})</span>
-                            </div>
-                        `
-                            : ""
-                        }
+                        <h5>${product.title}</h5>                        
                         ${
                           section.show_price
                             ? `
                             <div class="product-price">
-                                <span class="price">₹${product.price || "0.00"}</span>
+                                <span class="price">₹${product.product_variation[0].actual_price || "0.00"}</span>
                             </div>
                         `
                             : ""
@@ -496,6 +519,21 @@ function renderProductSections() {
                     </div>
                 </div>
             `
+
+            // ${
+            //     section.show_rating
+            //       ? `
+            //       <div class="product-rating mb-2">
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star-half-alt"></i>
+            //           <span class="ms-2">(${Math.floor(Math.random() * 50) + 10})</span>
+            //       </div>
+            //   `
+            //       : ""
+            //   }
 
       productsContainer.appendChild(productElement)
     })

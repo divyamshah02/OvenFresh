@@ -105,7 +105,7 @@ class ProductSectionSerializer(serializers.ModelSerializer):
 
         if obj.section_type == 'category_based':
             if obj.subcategory_id:
-                products = products.filter(subcategory_id=obj.subcategory_id)
+                products = products.filter(sub_category_id=obj.subcategory_id)
             elif obj.category_id:
                 products = products.filter(category_id=obj.category_id)
 

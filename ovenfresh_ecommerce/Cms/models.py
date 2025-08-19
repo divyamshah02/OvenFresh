@@ -48,7 +48,7 @@ class HomepageCategory(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     image = models.CharField(max_length=255)
-    category_link = models.URLField(blank=True, null=True)
+    category_link = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
