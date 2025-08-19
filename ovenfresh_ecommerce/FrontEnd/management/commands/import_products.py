@@ -45,7 +45,7 @@ class Command(BaseCommand):
         slug_counts = {}
 
 
-        for indd, p in enumerate(products_data[0:1], start=1):
+        for indd, p in enumerate(products_data, start=1):
             try:
                 self.stdout.write(f"Processing {indd}/{len(products_data)}: {p.get('Name', 'Unknown')}")
 
@@ -150,6 +150,7 @@ class Command(BaseCommand):
                         stock_quantity=None,
                         in_stock_bull=bool(var.get("In stock?", 1))
                     )
+                    self.stdout.write(f"    Weight Variation: {self.get_weight(var)}")
 
                 self.stdout.write(self.style.SUCCESS(f"✅ Imported: {p.get('Name', 'Unknown')}"))
 
@@ -210,8 +211,13 @@ class Command(BaseCommand):
         return None
 
     def get_weight(self, var):
+        weight_var = ""
         if str(var.get("Attribute 1 name", "")).lower() == "weight":
-            return var.get("Attribute 1 value(s)")
+            weight_var = var.get("Attribute 1 value(s)")
         elif str(var.get("Attribute 2 name", "")).lower() == "weight":
-            return var.get("Attribute 2 value(s)")
-        return None
+            weight_var = var.get("Attribute 2 value(s)")
+        if weight_var == "" or weight_var is None:
+            return "1 piece"
+        else:
+            return weight_var
+
