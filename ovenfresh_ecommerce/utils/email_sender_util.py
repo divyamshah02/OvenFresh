@@ -137,7 +137,7 @@ def send_order_conf_email(smtp_host, smtp_port, smtp_user, smtp_password, to_ema
                   support@ovenfresh.in
                 </a>
               </p>
-              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2023 OvenFresh. All rights reserved.</p>
+              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2025 OvenFresh. All rights reserved.</p>
               <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">
                 <a href="{{website_url}}" style="color:#3b2f2f; text-decoration:none;">ovenfresh.in</a>
               </p>
@@ -307,7 +307,7 @@ def send_order_delivered_email(smtp_host, smtp_port, smtp_user, smtp_password, t
                   support@ovenfresh.in
                 </a>
               </p>
-              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2023 OvenFresh. All rights reserved.</p>
+              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2025 OvenFresh. All rights reserved.</p>
               <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">
                 <a href="{{website_url}}" style="color:#3b2f2f; text-decoration:none;">ovenfresh.in</a>
               </p>
@@ -477,7 +477,7 @@ def send_out_for_delivery_email(smtp_host, smtp_port, smtp_user, smtp_password, 
                   support@ovenfresh.in
                 </a>
               </p>
-              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2023 OvenFresh. All rights reserved.</p>
+              <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">&copy; 2025 OvenFresh. All rights reserved.</p>
               <p style="margin:5px 0; color:#ecf0f1; font-size:13px;">
                 <a href="{{website_url}}" style="color:#3b2f2f; text-decoration:none;">ovenfresh.in</a>
               </p>
@@ -618,30 +618,30 @@ def prepare_and_send_order_email(order_id, type):
         # Send email
         if type == "order_confirmed":
             send_order_conf_email(
-                smtp_host="smtp.gmail.com",
+                smtp_host="smtp.titan.email",
                 smtp_port=465,
-                smtp_user="spandan.shah2003@gmail.com",
-                smtp_password="ureg wefc jyop bqun",
+                smtp_user="feedback@ovenfresh.in",
+                smtp_password="Deepa@2025",
                 to_email=order.email,
                 subject=f"Your Ovenfresh Order #{order.order_id} Confirmation!",
                 order_data=order_data
             )
         elif type == "out_for_delivery":
             send_out_for_delivery_email(
-                smtp_host="smtp.gmail.com",
+                smtp_host="smtp.titan.email",
                 smtp_port=465,
-                smtp_user="spandan.shah2003@gmail.com",
-                smtp_password="ureg wefc jyop bqun",
+                smtp_user="feedback@ovenfresh.in",
+                smtp_password="Deepa@2025",
                 to_email=order.email,
                 subject=f"Your Ovenfresh Order #{order.order_id} is Out for Delivery!",
                 order_data=order_data
             )
         elif type == "delivered":
             send_order_delivered_email(
-                smtp_host="smtp.gmail.com",
+                smtp_host="smtp.titan.email",
                 smtp_port=465,
-                smtp_user="spandan.shah2003@gmail.com",
-                smtp_password="ureg wefc jyop bqun",
+                smtp_user="feedback@ovenfresh.in",
+                smtp_password="Deepa@2025",
                 to_email=order.email,
                 subject=f"Your Ovenfresh Order #{order.order_id} Delivered Successfully!",
                 order_data=order_data

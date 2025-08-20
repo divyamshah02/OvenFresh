@@ -481,11 +481,11 @@ function populateKOTData() {
   document.getElementById("kot-date").textContent = formatDate(orderData.created_at)
 
   // Populate customer details
-  document.getElementById("kot-customer-details").innerHTML = `
-        <p><strong>${orderData.first_name} ${orderData.last_name}</strong></p>
-        <p>${orderData.phone}</p>
-        <p>${orderData.email}</p>
-    `
+  // document.getElementById("kot-customer-details").innerHTML = `
+  //       <p><strong>${orderData.first_name} ${orderData.last_name}</strong></p>
+  //       <p>${orderData.phone}</p>
+  //       <p>${orderData.email}</p>
+  //   `
 
   // Populate delivery details
   document.getElementById("kot-delivery-details").innerHTML = `
@@ -525,32 +525,37 @@ function generateKOTPDF() {
   doc.text("KITCHEN ORDER TICKET (KOT)", 20, 20)
 
   doc.setFontSize(14)
-  doc.text("OvenFresh Bakery", 20, 35)
+  doc.text("Order Details", 20, 35)
 
   doc.setFontSize(12)
-  doc.text(`Order ID: ${orderData.order_id}`, 20, 50)
-  doc.text(`Date: ${formatDate(orderData.created_at)}`, 120, 50)
+  doc.text(`Order ID: ${orderData.order_id}`, 20, 42)
+  doc.text(`Date: ${formatDate(orderData.created_at)}`, 20, 49)
 
   // Customer details
-  doc.text("Customer Details:", 20, 70)
-  doc.text(`Name: ${orderData.first_name} ${orderData.last_name}`, 20, 85)
-  doc.text(`Phone: ${orderData.phone}`, 20, 95)
+  // doc.text("Customer Details:", 20, 70)
+  // doc.text(`Name: ${orderData.first_name} ${orderData.last_name}`, 20, 85)
+  // doc.text(`Phone: ${orderData.phone}`, 20, 95)
 
   // Delivery details
-  doc.text("Delivery Details:", 120, 70)
-  doc.text(`Date: ${formatDate(orderData.delivery_date)}`, 120, 85)
-  doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 120, 95)
+  doc.setFontSize(14)
+  doc.text("Delivery Details:", 20, 64)
+  doc.setFontSize(12)
+  doc.text(`Date: ${formatDate(orderData.delivery_date)}`, 20, 71)
+  doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 20, 78)
 
   // Order items
-  doc.text("Order Items:", 20, 115)
-  let yPosition = 130
+  doc.setFontSize(14)
+  doc.text("Order Items:", 20, 93)
+  doc.setFontSize(12)
+
+  let yPosition = 100
 
   orderData.order_items.forEach((item) => {
     doc.text(`${item.quantity}x ${item.product_name}`, 20, yPosition)
     if (item.variation_name && item.variation_name !== "Standard") {
       doc.text(`(${item.variation_name})`, 120, yPosition)
     }
-    yPosition += 10
+    yPosition += 7
   })
 
   // Special instructions

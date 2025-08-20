@@ -12,15 +12,12 @@
                 <!-- Logo -->
                 <!-- <a class="navbar-brand fw-bold" href="#">LOGO</a> -->
                 <img src="/static/img/logo.png" alt="" onclick="location.href='/'" class="navbar-brand logo-img" style="cursor: pointer;">
-
+                
                 <!-- Search Center -->
                 <form class="d-none d-md-flex mx-auto navbar-search" role="search">
-                    <!-- <input class="form-control me-2 rounded-5 border-3 border-black navbar-search-input"
-                        type="search" placeholder="Search..." aria-label="Search">
-                    <button class="btn of-btn-primary rounded-5" type="submit"><i class="bi bi-search"></i></button> -->
-                    <div class="search-wrapper mx-auto">
+                    <div class="search-wrapper mx-auto position-relative">
                         <i class="bi bi-search"></i>
-                        <input type="text" class="form-control" placeholder="Search on Ovenfresh.in">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search on Ovenfresh.in" autocomplete="off">
                     </div>
                 </form>
 

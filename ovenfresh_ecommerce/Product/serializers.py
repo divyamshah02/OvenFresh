@@ -73,6 +73,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return representation
 
+class SearchProductSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ["product_id", "title", "slug", "thumbnail"]
+
+    def get_thumbnail(self, obj):
+        return obj.photos[0] if obj.photos else None
+
 class AllProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

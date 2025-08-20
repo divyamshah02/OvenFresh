@@ -2011,3 +2011,21 @@ class AdminReviewsViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": "Review not found."
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class SearchViewSet(viewsets.ViewSet):
+    def list(self, request):
+        query = request.query_params.get("q", "").strip()
+        if not query:
+            return Response({"success": True, "data": []}, status=status.HTTP_200_OK)
+
+        products = Product.objects.filter(
+            Q(title__icontains=query) | 
+            Q(tags__icontains=query) |
+            Q(short_description__icontains=query)
+        ).filter(is_active=True)[:10]  # limit 10 results
+
+        data = SearchProductSerializer(products, many=True).data
+        return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
+    
+
