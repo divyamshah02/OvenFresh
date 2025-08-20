@@ -17,6 +17,7 @@ let cartItems = []
 
 async function InitializeProductDetail(
   csrfTokenParam,
+  productId,
   productDetailUrlParam,
   pincodeCheckUrlParam,
   cartListUrlParam,
@@ -32,7 +33,7 @@ async function InitializeProductDetail(
 
   // Get product ID from URL parameters
   const urlParams = new URLSearchParams(window.location.search)
-  const productId = urlParams.get("product_id") || urlParams.get("id")
+  // const productId = urlParams.get("product_id") || urlParams.get("id")
 
   if (!productId) {
     showNotification("Product not found.", "error")
@@ -50,27 +51,27 @@ async function InitializeProductDetail(
     showNotification("Error loading product details.", "error")
   }
 
-  document.getElementById("toppers").addEventListener("change", function () {
-    const selectedOption = this.options[this.selectedIndex];
+  // document.getElementById("toppers").addEventListener("change", function () {
+  //   const selectedOption = this.options[this.selectedIndex];
     
-    const selectedProductVariationId = selectedOption.value;
-    const product_id = selectedOption.getAttribute("data-product_id");
+  //   const selectedProductVariationId = selectedOption.value;
+  //   const product_id = selectedOption.getAttribute("data-product_id");
 
-    if (selectedProductVariationId) {
-      ExtraAddToCart(product_id, selectedProductVariationId, 1)
-    }
-  })
+  //   if (selectedProductVariationId) {
+  //     ExtraAddToCart(product_id, selectedProductVariationId, 1)
+  //   }
+  // })
 
-  document.getElementById("greetind_cards").addEventListener("change", function () {
-    const selectedOption = this.options[this.selectedIndex];
+  // document.getElementById("greetind_cards").addEventListener("change", function () {
+  //   const selectedOption = this.options[this.selectedIndex];
     
-    const selectedProductVariationId = selectedOption.value;
-    const product_id = selectedOption.getAttribute("data-product_id");
+  //   const selectedProductVariationId = selectedOption.value;
+  //   const product_id = selectedOption.getAttribute("data-product_id");
 
-    if (selectedProductVariationId) {
-      ExtraAddToCart(product_id, selectedProductVariationId, 1)
-    }
-  })
+  //   if (selectedProductVariationId) {
+  //     ExtraAddToCart(product_id, selectedProductVariationId, 1)
+  //   }
+  // })
 }
 
 async function loadProductData(productId) {
@@ -121,6 +122,20 @@ async function loadProductData(productId) {
     showNotification("Error loading product details.", "error")
   }
 }
+
+function handleDropdownChange(elementId) {
+  const dropdown = document.getElementById(elementId);
+  if (!dropdown) return; // safeguard if element doesn't exist
+
+  const selectedOption = dropdown.options[dropdown.selectedIndex];
+  const selectedProductVariationId = selectedOption.value;
+  const product_id = selectedOption.getAttribute("data-product_id");
+
+  if (selectedProductVariationId && selectedProductVariationId.trim() !== "") {
+    ExtraAddToCart(product_id, selectedProductVariationId, 1);
+  }
+}
+
 
 function addMetaInfo(){
   let metaData = `
@@ -456,7 +471,7 @@ function renderRelatedProducts(products) {
                                 <a href="#" class="btn-product-action" onclick="quickAddToCart(${product.product_id}, ${product.product_variation_id || "null"})">
                                     <i class="fas fa-shopping-cart"></i>
                                 </a>
-                                <a href="/product-detail?product_id=${product.product_id}" class="btn-product-action">
+                                <a href="/product/${product.slug}" class="btn-product-action">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
@@ -767,6 +782,9 @@ async function AddToCart(variationId, quantity, additionalData) {
 
     const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token)
     if (success && result.success) {
+      handleDropdownChange("toppers");
+      handleDropdownChange("greetind_cards");
+      
       showNotification("Item added to cart!", "success")
       // Refresh cart if we're on cart page
       if (document.getElementById("cart-items")) {

@@ -34,7 +34,7 @@ class Command(BaseCommand):
     help = "Import products from JSON file into the database"
 
     def handle(self, *args, **options):
-        json_path = settings.BASE_DIR / "output_updated.json"
+        json_path = settings.BASE_DIR / "new_toppers.json"
         with open(json_path, "r", encoding="utf-8") as f:
             products_data = json.load(f)
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
         slug_counts = {}
 
 
-        for indd, p in enumerate(products_data, start=1):
+        for indd, p in enumerate(products_data[0:0], start=1):
             try:
                 self.stdout.write(f"Processing {indd}/{len(products_data)}: {p.get('Name', 'Unknown')}")
 
@@ -78,30 +78,30 @@ class Command(BaseCommand):
                 main_sub_cat_id = sub_category_ids[0] if sub_category_ids else None
 
                 # Images
-                image_urls = []
-                if p.get("Images"):
-                    for img_url in p["Images"].split(","):
-                        img_url = img_url.strip()
-                        if not img_url:
-                            continue
-                        try:
-                            resp = requests.get(img_url, timeout=10)
-                            resp.raise_for_status()
-                            content_file = ContentFile(resp.content)
-                            content_file.name = img_url.split("/")[-1]
-                            guessed_type, _ = mimetypes.guess_type(img_url)
-                            content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
-                            content_file.content_type = content_type
-                            try:
-                                relative_path = img_url.split("/uploads/")[1]
-                                s3_folder = f"New_Website_products/{os.path.dirname(relative_path)}"
-                            except:
-                                s3_folder = "New_Website_products"
-                            file_url = upload_file_to_s3(content_file, folder=s3_folder)
-                            self.stdout.write(f"    Image uploaded: {file_url}")
-                            image_urls.append(file_url)
-                        except Exception as e:
-                            self.stderr.write(f"    XX - Image upload failed for {img_url}: {e}")
+                image_urls = ["https://ovenfresh2025.s3.eu-north-1.amazonaws.com/products/placeholder(8).png"]
+                # if p.get("Images"):
+                #     for img_url in p["Images"].split(","):
+                #         img_url = img_url.strip()
+                #         if not img_url:
+                #             continue
+                #         try:
+                #             resp = requests.get(img_url, timeout=10)
+                #             resp.raise_for_status()
+                #             content_file = ContentFile(resp.content)
+                #             content_file.name = img_url.split("/")[-1]
+                #             guessed_type, _ = mimetypes.guess_type(img_url)
+                #             content_type = guessed_type or resp.headers.get("Content-Type", "application/octet-stream")
+                #             content_file.content_type = content_type
+                #             try:
+                #                 relative_path = img_url.split("/uploads/")[1]
+                #                 s3_folder = f"New_Website_products/{os.path.dirname(relative_path)}"
+                #             except:
+                #                 s3_folder = "New_Website_products"
+                #             file_url = upload_file_to_s3(content_file, folder=s3_folder)
+                #             self.stdout.write(f"    Image uploaded: {file_url}")
+                #             image_urls.append(file_url)
+                #         except Exception as e:
+                #             self.stderr.write(f"    XX - Image upload failed for {img_url}: {e}")
 
 
                 name = p.get("Name", "")
@@ -132,7 +132,8 @@ class Command(BaseCommand):
                     sub_category_id_list=sub_category_ids,
                     hsn=self.get_hsn(p),
                     created_at=timezone.now(),
-                    is_veg=True
+                    is_veg=True,
+                    is_extras=True,
                 )
 
                 # Variations

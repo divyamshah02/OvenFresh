@@ -488,7 +488,7 @@ function renderProductSections() {
       productElement.className = "col-md-6 col-lg-3 d-flex"
 
       productElement.innerHTML = `
-                <div class="product-card h-100" onclick="goToProductDetail(${product.product_id})">
+                <div class="product-card h-100" onclick="goToProductDetail('${product.slug}')">
                     <div class="product-img">
                         ${product.is_featured ? '<span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2">Hot Selling</span>' : ""}
                         <img src="${product.photos && product.photos.length ? product.photos[0] : "https://via.placeholder.com/300x300"}" 
@@ -497,9 +497,9 @@ function renderProductSections() {
                           section.show_add_to_cart
                             ? `
                             <div class="product-actions">
-                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-heart"></i></a>
-                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
-                                <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-eye"></i></a>
                             </div>
                         `
                             : ""
@@ -546,8 +546,8 @@ function shortenText(text, maxLength = 20) {
   return text.substring(0, maxLength) + "...";
 }
 
-function goToProductDetail(productId) {
-  window.location.href = `/product-detail/?product_id=${productId}`
+function goToProductDetail(productSlug) {
+  window.location.href = `/product/${productSlug}`
 }
 
 async function loadClientLogos() {

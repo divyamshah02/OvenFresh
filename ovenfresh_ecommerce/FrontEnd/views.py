@@ -61,6 +61,13 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+
+        product_slug = request.query_params.get('product_slug')
+        product_id = None
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+            product_id = product_obj.product_id if product_obj else None
+
         get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
         for topper in get_toppers:
@@ -90,6 +97,49 @@ class ProductDetailViewSet(viewsets.ViewSet):
         data = {
             "get_toppers": toppers,
             "get_cards": cards,
+            "product_id": product_id,
+        }
+        return render(request, 'product-detail.html', data)
+
+    @handle_exceptions
+    def retrieve(self, request, pk):
+
+        product_slug = pk
+        product_id = None
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+            product_id = product_obj.product_id if product_obj else None
+
+        get_toppers = Product.objects.filter(sub_category_id="8746472697")
+        toppers = []
+        for topper in get_toppers:
+            temp_topper = {
+                "product_id": topper.product_id,
+                "title": topper.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=topper.product_id)
+            if product_variations.exists():
+                temp_topper["actual_price"] = product_variations.first().actual_price
+                temp_topper["product_variation_id"] = product_variations.first().product_variation_id
+            toppers.append(temp_topper)
+
+        get_cards = Product.objects.filter(sub_category_id="4437657422")
+        cards = []
+        for card in get_cards:
+            temp_card = {
+                "product_id": card.product_id,
+                "title": card.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=card.product_id)
+            if product_variations.exists():
+                temp_card["actual_price"] = product_variations.first().actual_price
+                temp_card["product_variation_id"] = product_variations.first().product_variation_id
+            cards.append(temp_card)
+
+        data = {
+            "get_toppers": toppers,
+            "get_cards": cards,
+            "product_id": product_id,
         }
         return render(request, 'product-detail.html', data)
 

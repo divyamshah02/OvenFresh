@@ -374,6 +374,7 @@ class ProductViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         product_id = request.query_params.get('product_id')
+        product_slug = request.query_params.get('product_slug')
 
         if not product_id:
             return Response({
@@ -384,7 +385,11 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": "Missing product_id."
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        product_obj = Product.objects.filter(product_id=product_id).first()
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+        else:
+            product_obj = Product.objects.filter(product_id=product_id).first()
+
         if not product_obj:
             return Response({
                 "success": False,
@@ -591,7 +596,6 @@ class ProductViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": f"Failed to delete image: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class AllProductsViewSet(viewsets.ViewSet):
 

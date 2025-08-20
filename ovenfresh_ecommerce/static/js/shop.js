@@ -267,14 +267,14 @@ function createProductCard(product) {
 
   return `
         <div class="col-md-6 col-lg-3">
-            <div class="product-card" onclick="goToProductDetail(${product.product_id})">
+            <div class="product-card" onclick="goToProductDetail('${product.slug}')">
                 <div class="product-img">
                     ${badge}
                     <img src="${productImage}" alt="${product.title}" class="img-fluid">
                     <div class="product-actions">
                         <a href="#" class="btn-product-action" onclick="event.stopPropagation(); toggleWishlist(${product.product_id})"><i class="fas fa-heart"></i></a>
                         <a href="#" class="btn-product-action" onclick="event.stopPropagation(); AddToCart(${product.product_id}, ${product.product_variation_id})"><i class="fas fa-shopping-cart"></i></a>
-                        <a href="/product-detail/?product_id=${product.product_id}" class="btn-product-action" onclick="event.stopPropagation()"><i class="fas fa-eye"></i></a>
+                        <a href="/product/${product.slug}" class="btn-product-action" onclick="event.stopPropagation()"><i class="fas fa-eye"></i></a>
                     </div>
                 </div>
                 <div class="product-body">
@@ -293,8 +293,8 @@ function createProductCard(product) {
 }
 
 // Navigate to product detail page
-function goToProductDetail(productId) {
-  window.location.href = `/product-detail/?product_id=${productId}`
+function goToProductDetail(productSlug) {
+  window.location.href = `/product/${productSlug}`
 }
 
 // Toggle wishlist (placeholder function)

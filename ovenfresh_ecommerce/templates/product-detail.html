@@ -809,6 +809,7 @@
             const csrfToken = "{{ csrf_token }}";
             await InitializeProductDetail(
                 csrfToken,
+                "{{product_id}}",
                 "{% url 'product-list' %}",
                 "{% url 'check-pincode-list' %}",
                 "{% url 'cart-api-list' %}",
