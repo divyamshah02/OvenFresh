@@ -553,3 +553,17 @@ class ImportProductsViewSet(viewsets.ViewSet):
             category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not Category.objects.filter(is_active=True, category_id=category_id).exists():
                 return category_id
+
+
+
+def update_pincode_charges(request):
+    all_pincodes = Pincode.objects.all()
+    for pincode in all_pincodes:
+        new_charges = {"6": {"charges": 100, "available": True}, "7": {"charges": 0, "available": True}, "8": {"charges": 80, "available": True}, "9": {"charges": 80, "available": True}, "10": {"charges": 80, "available": True}, "11": {"charges": 100, "available": True}}
+        print(pincode.delivery_charge)
+        pincode.delivery_charge = new_charges
+        pincode.save()
+    
+    return JsonResponse({"status": "success", "message": "Pincode charges updated successfully."})
+        
+

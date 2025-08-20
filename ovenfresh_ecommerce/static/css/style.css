@@ -733,9 +733,8 @@ body {
     overflow: hidden;
     box-shadow: var(--box-shadow);
     transition: var(--transition);
-
-    /* border: 3px solid var(--of-primary-color); */
     border: 3px solid #588157;
+
     display: flex;
     flex-direction: column;
     height: 100%;

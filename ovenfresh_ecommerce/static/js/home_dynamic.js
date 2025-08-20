@@ -485,10 +485,10 @@ function renderProductSections() {
     const productsContainer = document.getElementById(`products-container-${section.id}`)
     products.forEach((product) => {
       const productElement = document.createElement("div")
-      productElement.className = "col-md-6 col-lg-3 d-flex"
+      productElement.className = "col-md-6 col-lg-3"
 
       productElement.innerHTML = `
-                <div class="product-card h-100" onclick="goToProductDetail('${product.slug}')">
+                <div class="product-card d-flex flex-column h-100" onclick="goToProductDetail('${product.slug}')">
                     <div class="product-img">
                         ${product.is_featured ? '<span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2">Hot Selling</span>' : ""}
                         <img src="${product.photos && product.photos.length ? product.photos[0] : "https://via.placeholder.com/300x300"}" 

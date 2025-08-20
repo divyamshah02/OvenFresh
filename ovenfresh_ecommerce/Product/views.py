@@ -1492,8 +1492,8 @@ class CheckPincodeViewSet(viewsets.ViewSet):
             temp_timeslot_dict = {
                 "timeslot_id": timeslot,
                 "timeslot_name": timeslot_detail.time_slot_title,     
-                "start_time": timeslot_detail.start_time,
-                "end_time": timeslot_detail.end_time,
+                "start_time": datetime.strptime(str(timeslot_detail.end_time), "%H:%M").time().strftime("%I:%M %p"),
+                "end_time": datetime.strptime(str(timeslot_detail.start_time), "%H:%M").time().strftime("%I:%M %p"),
                 "delivery_charge": timeslots_data[timeslot]['charges'],
                 "available": timeslots_data[timeslot]['available'],
             }
