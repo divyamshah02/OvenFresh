@@ -26,6 +26,7 @@ from io import BytesIO
 from utils.razorpay_utils import *
 from utils.decorators import *
 
+from utils.email_sender_util import prepare_and_send_order_email
 
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib import colors
@@ -300,6 +301,8 @@ class OrderViewSet(viewsets.ViewSet):
                     # "total_amount": paisa_amount,
                     "razorpay_key_id": settings.RAZORPAY_KEY_ID,
                 })
+        else:
+            prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
 
         return Response({
             "success": True, 
@@ -462,6 +465,7 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
                         order.razorpay_payment_id = payment_id
 
                     order.save()
+                    prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
                     
                     return Response({
                         "success": True, 

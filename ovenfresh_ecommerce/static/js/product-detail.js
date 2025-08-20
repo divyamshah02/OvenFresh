@@ -78,6 +78,7 @@ async function loadProductData(productId) {
     const [success, result] = await callApi("GET", `${product_detail_url}?product_id=${productId}`)
     if (success && result.success) {
       const data = result.data
+      console.log(data)
 
       // Set current product data
       currentProduct = {
@@ -95,11 +96,12 @@ async function loadProductData(productId) {
         storage_instructions: data.storage_instructions || "",
         category_name: data.category_name,
         sub_category_name: data.sub_category_name,
+        tags: data.tags || '',
       }
 
       // Set variations
       currentVariations = data.product_variation || []
-
+      addMetaInfo()
       // Render all components
       renderProductDetails(currentProduct)
       renderVariationOptions(currentVariations)
@@ -118,6 +120,50 @@ async function loadProductData(productId) {
     console.error("Error loading product data:", error)
     showNotification("Error loading product details.", "error")
   }
+}
+
+function addMetaInfo(){
+  let metaData = `
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>${currentProduct.title} | Ovenfresh</title>
+  <meta name="description" content="${currentProduct.description}" />
+  <meta name="keywords" content="${currentProduct.tags}" />
+  <meta name="author" content="Ovenfresh" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:title" content="${currentProduct.title} | Ovenfresh" />
+  <meta property="og:description" content="${currentProduct.description}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="${currentProduct.photos[0]}" />
+  <meta property="og:site_name" content="Ovenfresh" />
+  <meta property="og:locale" content="en_US" />
+`
+  document.getElementById("metaDataEle").innerHTML = document.getElementById("metaDataEle").innerHTML + metaData
+}
+
+function addMetaInfo_new(currentProduct) {
+  document.title = `${currentProduct.title} | Ovenfresh`;
+
+  function addTag(tagName, attrs) {
+    let tag = document.createElement(tagName);
+    for (let key in attrs) tag.setAttribute(key, attrs[key]);
+    document.head.appendChild(tag);
+  }
+
+  addTag("meta", { name: "description", content: currentProduct.description });
+  addTag("meta", { name: "keywords", content: currentProduct.tags });
+  addTag("meta", { name: "author", content: "Ovenfresh" });
+
+  addTag("meta", { property: "og:title", content: `${currentProduct.title} | Ovenfresh` });
+  addTag("meta", { property: "og:description", content: currentProduct.description });
+  addTag("meta", { property: "og:type", content: "website" });
+  addTag("meta", { property: "og:image", content: currentProduct.photos[0] });
+  addTag("meta", { property: "og:site_name", content: "Ovenfresh" });
+  addTag("meta", { property: "og:locale", content: "en_US" });
 }
 
 async function loadTimeslots() {

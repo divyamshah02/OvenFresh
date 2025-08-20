@@ -20,9 +20,9 @@
                             <h5>Useful Links</h5>
                             <ul class="list-unstyled mt-2">
                                 <li><a href="{% url 'home-list' %}">About Us</a></li>
-                                <li><a href="{% url 'home-list' %}">Our Services</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Terms & Conditions</a></li>
+                                <li><a href="{% url 'shop-list' %}">Shop</a></li>
+                                <li><a href="{% url 'refund-policy-list' %}">Refund Policy</a></li>
+                                <!-- <li><a href="#">Terms & Conditions</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -57,16 +57,132 @@
                             </div>
                             <div class="contact-item">
                                 <i class="fas fa-phone"></i>
-                                <span>+91 8433991502</span>
+                                <a href="tel:8433991502">+91 8433991502</a>
                             </div>
                             <div class="contact-item">
                                 <i class="fas fa-envelope"></i>
-                                <span>info@ovenfresh.in</span>
+                                <a href="mailto:info@ovenfresh.in">info@ovenfresh.in</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <hr class="my-4">
+                <hr class="mt-4">
+                <div class="container py-2 text-dark">
+                    <div class="location-links">
+                        <h5 class="fw-bold">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over Western
+                            Mumbai</h5>
+                        <p>
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Churchgate-West">Churchgate West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Churchgate-East">Churchgate East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Marine-Lines-West">Marine Lines West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Marine-Lines-East">Marine Lines East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Charni-Road-West">Charni Road West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Charni-Road-East">Charni Road East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Grant-Road-West">Grant Road West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Grant-Road-East">Grant Road East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mumbai-Central-West">Mumbai Central West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mumbai-Central-East">Mumbai Central East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahalaxmi-West">Mahalaxmi West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahalaxmi-East">Mahalaxmi East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Lower-Parel-West">Lower Parel West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Lower-Parel-East">Lower Parel East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Prabhadevi-West">Prabhadevi West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Prabhadevi-East">Prabhadevi East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Dadar-East">Dadar East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Dadar-West">Dadar West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Matunga">Matunga</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Matunga-Road">Matunga Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahim-West">Mahim West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahim-East">Mahim East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Bandra-West">Bandra West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Bandra-East">Bandra East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Khar-Road-West">Khar Road West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Khar-Road-East">Khar Road East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Santacruz-East">Santacruz East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Santacruz-West">Santacruz West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Ville-Parle-West">Ville Parle West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Ville-Parle-East">Ville Parle East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Andheri-West">Andheri West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Andheri-East">Andheri East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Jogeshwari-West">Jogeshwari West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Jogeshwari-East">Jogeshwari East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Goregaon-West">Goregaon West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Goregaon-East">Goregaon East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Malad-East">Malad East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Malad-West">Malad West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Kandivali-East">Kandivali East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Kandivali-West">Kandivali West</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Borivali-East">Borivali East</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Borivali-Wes">Borivali West</a>
+                        </p>
+
+                        <h5 class="fw-bold mt-4">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over
+                            Central Mumbai</h5>
+                        <p>
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-CSMT">CSMT</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Masjid">Masjid</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Sandhurst-Road">Sandhurst Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Byculla">Byculla</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Chinchpokli">Chinchpokli</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Currey-Road">Currey Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Parel">Parel</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Dadar">Dadar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Matunga">Matunga</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Sion">Sion</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Kurla">Kurla</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Vidhyavihar">Vidhyavihar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Ghatkopar">Ghatkopar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Vikhroli">Vikhroli</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Kanjur-Marg">Kanjur Marg</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Bhandup">Bhandup</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Nahur">Nahur</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mulund">Mulund</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Than">Thane</a>
+                        </p>
+
+                        <h5 class="fw-bold mt-4">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over
+                            Metro line</h5>
+                        <p>
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Versova">Versova</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-D-N-Nagar">D N Nagar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Azad-Nagar">Azad Nagar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-J-B-Nagar">J B Nagar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Chakala">Chakala</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Marol-Naka">Marol Naka</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Saki-Naka">Saki Naka</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Asalpha">Asalpha</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Jagruti-Naga">Jagruti Nagar</a>
+                        </p>
+
+                        <h5 class="fw-bold mt-4">Send Gifts online with same day delivery and midnight delivery in
+                            Mumbai</h5>
+                        <p>
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Churchgate">Churchgate</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Marine-Lines">Marine Lines</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Charni-Road">Charni Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Grant-Road">Grant Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mumbai-Central">Mumbai Central</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahalaxmi">Mahalaxmi</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Lower-Parel">Lower Parel</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Prabhadevi">Prabhadevi</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Dadar">Dadar</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Matunga-Road">Matunga Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Mahim">Mahim</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Bandra">Bandra</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Khar-Road">Khar Road</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Santacruz">Santacruz</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Vile-Parle">Vile Parle</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Andheri">Andheri</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Jogeshwari">Jogeshwari</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Ram-Mandir">Ram Mandir</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Goregaon">Goregaon</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Malad">Malad</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Kandivali">Kandivali</a> |
+                            <a href="{% url 'shop-list' %}Online-Cake-Delivery-in-Borival">Borivali</a>
+                        </p>
+                    </div>
+                </div>
+                <hr class="mb-4">
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-0">&copy; 2025 Oven Fresh. All rights reserved.</p>
@@ -75,122 +191,6 @@
                         <p class="mb-0">Made with <i class="fas fa-heart text-danger"></i> by Oven Fresh Team</p>
                     </div>
                 </div>
-                                <hr class="mt-4 mb-3">
-                <div class="container py-4 text-dark">
-                    <div class="location-links">
-                        <h5 class="fw-bold">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over Western
-                            Mumbai</h5>
-                        <p>
-                            <a href="#">Churchgate West</a> |
-                            <a href="#">Churchgate East</a> |
-                            <a href="#">Marine Lines West</a> |
-                            <a href="#">Marine Lines East</a> |
-                            <a href="#">Charni Road West</a> |
-                            <a href="#">Charni Road East</a> |
-                            <a href="#">Grant Road West</a> |
-                            <a href="#">Grant Road East</a> |
-                            <a href="#">Mumbai Central West</a> |
-                            <a href="#">Mumbai Central East</a> |
-                            <a href="#">Mahalaxmi West</a> |
-                            <a href="#">Mahalaxmi East</a> |
-                            <a href="#">Lower Parel West</a> |
-                            <a href="#">Lower Parel East</a> |
-                            <a href="#">Prabhadevi West</a> |
-                            <a href="#">Prabhadevi East</a> |
-                            <a href="#">Dadar East</a> |
-                            <a href="#">Dadar West</a> |
-                            <a href="#">Matunga</a> |
-                            <a href="#">Matunga Road</a> |
-                            <a href="#">Mahim West</a> |
-                            <a href="#">Mahim East</a> |
-                            <a href="#">Bandra West</a> |
-                            <a href="#">Bandra East</a> |
-                            <a href="#">Khar Road West</a> |
-                            <a href="#">Khar Road East</a> |
-                            <a href="#">Santacruz East</a> |
-                            <a href="#">Santacruz West</a> |
-                            <a href="#">Ville Parle West</a> |
-                            <a href="#">Ville Parle East</a> |
-                            <a href="#">Andheri West</a> |
-                            <a href="#">Andheri East</a> |
-                            <a href="#">Jogeshwari West</a> |
-                            <a href="#">Jogeshwari East</a> |
-                            <a href="#">Goregaon West</a> |
-                            <a href="#">Goregaon East</a> |
-                            <a href="#">Malad East</a> |
-                            <a href="#">Malad West</a> |
-                            <a href="#">Kandivali East</a> |
-                            <a href="#">Kandivali West</a> |
-                            <a href="#">Borivali East</a> |
-                            <a href="#">Borivali West</a>
-                        </p>
-
-                        <h5 class="fw-bold mt-4">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over
-                            Central Mumbai</h5>
-                        <p>
-                            <a href="#">CSMT</a> |
-                            <a href="#">Masjid</a> |
-                            <a href="#">Sandhurst Road</a> |
-                            <a href="#">Byculla</a> |
-                            <a href="#">Chinchpokli</a> |
-                            <a href="#">Currey Road</a> |
-                            <a href="#">Parel</a> |
-                            <a href="#">Dadar</a> |
-                            <a href="#">Matunga</a> |
-                            <a href="#">Sion</a> |
-                            <a href="#">Kurla</a> |
-                            <a href="#">Vidhyavihar</a> |
-                            <a href="#">Ghatkopar</a> |
-                            <a href="#">Vikhroli</a> |
-                            <a href="#">Kanjur Marg</a> |
-                            <a href="#">Bhandup</a> |
-                            <a href="#">Nahur</a> |
-                            <a href="#">Mulund</a> |
-                            <a href="#">Thane</a>
-                        </p>
-
-                        <h5 class="fw-bold mt-4">Send Cakes, Flowers, Chocolates, Hampers and Gift Combos to all over
-                            Metro line</h5>
-                        <p>
-                            <a href="#">Versova</a> |
-                            <a href="#">D N Nagar</a> |
-                            <a href="#">Azad Nagar</a> |
-                            <a href="#">J B Nagar</a> |
-                            <a href="#">Chakala</a> |
-                            <a href="#">Marol Naka</a> |
-                            <a href="#">Saki Naka</a> |
-                            <a href="#">Asalpha</a> |
-                            <a href="#">Jagruti Nagar</a>
-                        </p>
-
-                        <h5 class="fw-bold mt-4">Send Gifts online with same day delivery and midnight delivery in
-                            Mumbai</h5>
-                        <p>
-                            <a href="#">Churchgate</a> |
-                            <a href="#">Marine Lines</a> |
-                            <a href="#">Charni Road</a> |
-                            <a href="#">Grant Road</a> |
-                            <a href="#">Mumbai Central</a> |
-                            <a href="#">Mahalaxmi</a> |
-                            <a href="#">Lower Parel</a> |
-                            <a href="#">Prabhadevi</a> |
-                            <a href="#">Dadar</a> |
-                            <a href="#">Matunga Road</a> |
-                            <a href="#">Mahim</a> |
-                            <a href="#">Bandra</a> |
-                            <a href="#">Khar Road</a> |
-                            <a href="#">Santacruz</a> |
-                            <a href="#">Vile Parle</a> |
-                            <a href="#">Andheri</a> |
-                            <a href="#">Jogeshwari</a> |
-                            <a href="#">Ram Mandir</a> |
-                            <a href="#">Goregaon</a> |
-                            <a href="#">Malad</a> |
-                            <a href="#">Kandivali</a> |
-                            <a href="#">Borivali</a>
-                        </p>
-                    </div>
-                </div>
-
+                <hr class="mt-4 mb-3">
             </div>
         </footer>

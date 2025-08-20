@@ -34,18 +34,34 @@ class HomeViewSet(viewsets.ViewSet):
         # return render(request, 'home.html')
         return render(request, 'home_dynamic.html')
 
-class ShopViewSet(viewsets.ViewSet):
+class PolicyViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+        return render(request, 'policy.html')
+
+class ShopViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):        
         return render(request, 'shop.html')
+
+    @handle_exceptions
+    def retrieve(self, request, pk):
+        data = {}
+        if pk:
+            print(pk)
+            data = {
+                'pk': str(pk).replace("-", " "),
+            }
+        return render(request, 'shop.html', data)
 
 
 class ProductDetailViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
-        get_toppers = Product.objects.filter(sub_category_id="9234546814")
+        get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
         for topper in get_toppers:
             temp_topper = {
@@ -58,7 +74,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
                 temp_topper["product_variation_id"] = product_variations.first().product_variation_id
             toppers.append(temp_topper)
 
-        get_cards = Product.objects.filter(sub_category_id="3622759923")
+        get_cards = Product.objects.filter(sub_category_id="4437657422")
         cards = []
         for card in get_cards:
             temp_card = {

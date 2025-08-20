@@ -269,6 +269,48 @@
             "/cms-api/client-logos/"
         );
     </script>
+
+    <script>
+        // Simple countdown timer simulation
+        function updateCountdown(elementId, hours, minutes, seconds) {
+            const countdownElement = document.getElementById(elementId);
+
+            // Update the countdown every second
+            const interval = setInterval(() => {
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    if (minutes > 0) {
+                        minutes--;
+                        seconds = 59;
+                    } else {
+                        if (hours > 0) {
+                            hours--;
+                            minutes = 59;
+                            seconds = 59;
+                        } else {
+                            clearInterval(interval);
+                            countdownElement.textContent = "00:00:00";
+                            return;
+                        }
+                    }
+                }
+
+                // Format the time
+                const formattedHours = hours.toString().padStart(2, '0');
+                const formattedMinutes = minutes.toString().padStart(2, '0');
+                const formattedSeconds = seconds.toString().padStart(2, '0');
+
+                countdownElement.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+            }, 1000);
+        }
+
+        // Initialize the countdowns
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCountdown('same-day-countdown', 5, 4, 54);
+            updateCountdown('midnight-countdown', 6, 14, 54);
+        });
+    </script>
 </body>
 
 </html>

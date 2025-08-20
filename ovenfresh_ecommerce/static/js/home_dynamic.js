@@ -485,10 +485,10 @@ function renderProductSections() {
     const productsContainer = document.getElementById(`products-container-${section.id}`)
     products.forEach((product) => {
       const productElement = document.createElement("div")
-      productElement.className = "col-md-6 col-lg-3"
+      productElement.className = "col-md-6 col-lg-3 d-flex"
 
       productElement.innerHTML = `
-                <div class="product-card">
+                <div class="product-card h-100" onclick="goToProductDetail(${product.product_id})">
                     <div class="product-img">
                         ${product.is_featured ? '<span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2">Hot Selling</span>' : ""}
                         <img src="${product.photos && product.photos.length ? product.photos[0] : "https://via.placeholder.com/300x300"}" 
@@ -506,7 +506,7 @@ function renderProductSections() {
                         }
                     </div>
                     <div class="product-body">
-                        <h5>${product.title}</h5>                        
+                        <h5>${product.title}</h5>
                         ${
                           section.show_price
                             ? `
@@ -538,6 +538,16 @@ function renderProductSections() {
       productsContainer.appendChild(productElement)
     })
   })
+}
+
+function shortenText(text, maxLength = 20) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+}
+
+function goToProductDetail(productId) {
+  window.location.href = `/product-detail/?product_id=${productId}`
 }
 
 async function loadClientLogos() {
