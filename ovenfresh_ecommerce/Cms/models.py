@@ -121,10 +121,7 @@ class AboutFeature(models.Model):
 
 class ProductSection(models.Model):
     SECTION_TYPES = [
-        ('featured', 'Featured Products'),
-        ('bestsellers', 'Best Sellers'),
         ('new_arrivals', 'New Arrivals'),
-        ('trending', 'Trending Now'),
         ('category_based', 'Category Based'),
         ('custom', 'Custom Selection'),
     ]

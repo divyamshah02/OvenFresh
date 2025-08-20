@@ -32,6 +32,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/loader.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 </head>
 
 <body>
@@ -341,7 +343,24 @@
     <script src="/static/js/api_caller.js"></script>
     <script src="/static/js/checkout.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Example: dates to disable (could be injected from Django template)
+            const unavailableDates = [
+            // "2025-08-25",
+            // "2025-08-30"
+            ];
+
+            flatpickr("#deliveryDate", {
+            dateFormat: "Y-m-d",   // ensures value = YYYY-MM-DD
+            minDate: "today",      // today & future allowed
+            disable: unavailableDates // block specific dates
+            });
+    });
+    </script>
     <script>
         const csrfToken = "{{ csrf_token }}";
         InitializeCheckout(

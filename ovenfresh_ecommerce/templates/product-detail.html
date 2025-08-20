@@ -32,6 +32,9 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/loader.css">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
 </head>
 
 <body>
@@ -209,8 +212,10 @@
                                 </div>
                                 <div class="row m-0 p-0 g-3" style="display: none;" id="delivery_options">
                                     <div class="col-md-6">
-                                        <label for="delivery-date" class="form-label">Delivery Date:</label>
-                                        <input type="date" class="form-control" id="delivery-date">
+                                        <!-- <label for="delivery-date" class="form-label">Delivery Date:</label>
+                                        <input type="date" class="form-control" id="delivery-date"> -->
+                                        <label for="delivery-date" class="form-label">Select Delivery Date</label>
+                                        <input type="text" class="form-control" id="delivery-date" placeholder="Choose a date">
                                     </div>
                                     <div class="col-md-6">                                        
                                         <label for="timeslot" class="form-label">Time Slots:</label>
@@ -724,6 +729,8 @@
     <script src="/static/js/loader.js"></script>
     <script src="/static/js/product-detail.js"></script>
     <script src="/static/js/api_caller.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
     <style>
         .thumbnail-img {
@@ -803,6 +810,22 @@
             padding-bottom: 2rem;
         }
     </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Example: dates to disable (could be injected from Django template)
+            const unavailableDates = [
+            // "2025-08-25",
+            // "2025-08-30"
+            ];
+
+            flatpickr("#delivery-date", {
+            dateFormat: "Y-m-d",   // ensures value = YYYY-MM-DD
+            minDate: "today",      // today & future allowed
+            disable: unavailableDates // block specific dates
+            });
+    });
+    </script>
 
     <script>
         window.onload = async function () {

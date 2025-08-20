@@ -1064,10 +1064,7 @@ function showProductSectionModal(section = null) {
                                     <div class="mb-3">
                                         <label class="form-label">Section Type *</label>
                                         <select class="form-select" name="section_type" onchange="handleSectionTypeChange()" required>
-                                            <option value="featured" ${section && section.section_type === "featured" ? "selected" : ""}>Featured Products</option>
-                                            <option value="bestsellers" ${section && section.section_type === "bestsellers" ? "selected" : ""}>Best Sellers</option>
                                             <option value="new_arrivals" ${section && section.section_type === "new_arrivals" ? "selected" : ""}>New Arrivals</option>
-                                            <option value="trending" ${section && section.section_type === "trending" ? "selected" : ""}>Trending Now</option>
                                             <option value="category_based" ${section && section.section_type === "category_based" ? "selected" : ""}>Category Based</option>
                                             <option value="custom" ${section && section.section_type === "custom" ? "selected" : ""}>Custom Selection</option>
                                         </select>
