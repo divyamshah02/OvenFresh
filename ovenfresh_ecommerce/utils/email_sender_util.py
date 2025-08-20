@@ -585,7 +585,7 @@ def prepare_and_send_order_email(order_id, type):
         order_data = {
             "customer_name": f"{order.first_name} {order.last_name}",
             "order_number": order.order_id,
-            "order_link": f"http://127.0.0.1:8000/order-detail/?order_id={order.order_id}",
+            "order_link": f"https://ovenfresh.pythonanywhere.com/order-detail/?order_id={order.order_id}",
             "order_date": order.created_at.strftime("%B %d, %Y"),
             "items": email_items,
             "subtotal": subtotal,
@@ -610,7 +610,7 @@ def prepare_and_send_order_email(order_id, type):
             "shipping_zip": order.pincode_id,
             "shipping_state": "",
             "shipping_phone": order.phone,
-            "website_url": "http://127.0.0.1:8000/shop",  # Add your website URL
+            "website_url": "https://ovenfresh.pythonanywhere.com/shop",  # Add your website URL
             "driver_name": driver_name,
             "driver_phone": driver_phone
         }
