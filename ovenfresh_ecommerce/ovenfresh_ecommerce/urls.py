@@ -3,6 +3,18 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from .views import *
+from django.contrib.sitemaps.views import sitemap
+
+from .sitemaps import *
+
+
+sitemaps = {
+    "products": ProductSitemap,
+    "categories": CategorySitemap,
+     "locations": LocationSitemap,  # ✅ new
+}
+
 
 urlpatterns = [
     path('django-admin/', admin.site.urls),
@@ -16,5 +28,11 @@ urlpatterns = [
     path('product-api/', include('Product.urls')),
     path('analytics-api/', include('Analytics.urls')),
     path('cms-api/', include('Cms.urls')),
+
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    path("robots.txt", robots_txt),
     
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# ✅ custom 404 handler
+handler404 = "ovenfresh_ecommerce.views.custom_404"

@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.sitemaps",
     'rest_framework',
     'UserDetail',
     'Cart',
@@ -121,41 +122,33 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Spandan
-# RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfaUpJM3RCR2puVDRIbG0=")
-# RAZORPAY_KEY_SECRET = base64_to_text("MFBaRUlRNVZMVjJlb0ZqYmhCcU9CZHVv")
-
-# Divyam
-# RAZORPAY_KEY_ID = base64_to_text("cnpwX3Rlc3RfWER3WVdFNGxpY1BEcHU=")
-# RAZORPAY_KEY_SECRET = base64_to_text("WnBBMmVqTGdZcU42emh0Z1pRU3k1TXBI")
-
 RAZORPAY_KEY_ID = base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ=")
 RAZORPAY_KEY_SECRET = base64_to_text("UkFYTXVZcGs2TEJkejcxTnBtTjRrVUdP")
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'ERROR',
-#             'class': 'logging.FileHandler',
-#             'filename': 'django_errors.log',
-#         },
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file', 'console'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         },
-#         'ovenfresh': {
-#             'handlers': ['file', 'console'],
-#             'level': 'DEBUG',
-#         },
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'django_errors.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'ovenfresh': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+        },
+    },
+}

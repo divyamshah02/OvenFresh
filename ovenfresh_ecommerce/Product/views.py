@@ -19,6 +19,8 @@ import random
 import string
 from datetime import datetime
 import os
+from django.http import JsonResponse
+
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -650,7 +652,46 @@ class AllProductsViewSet(viewsets.ViewSet):
         else:
             product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
+        
         product_data = AllProductSerializer(product_obj, many=True)
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": product_data.data,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
+class ShopAllProductsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        category = request.query_params.get('category')
+        subcategory = request.query_params.get('sub_category')
+
+        if subcategory:
+            subcategory_data = SubCategory.objects.filter(title__icontains=subcategory).first()
+            sub_category_id = subcategory_data.sub_category_id
+            if sub_category_id:                
+                product_obj = Product.objects.filter(sub_category_id=sub_category_id, is_extras=False, is_active=True)
+            else:
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
+
+        elif category:
+            category_data = Category.objects.filter(title__icontains=category).first()
+            category_id = category_data.category_id
+            if category_id:                
+                product_obj = Product.objects.filter(category_id=category_id, is_extras=False, is_active=True)
+            else:
+                product_obj = Product.objects.filter(is_extras=False, is_active=True)
+
+        else:
+            product_obj = Product.objects.filter(is_extras=False, is_active=True)
+
+        
+        product_data = ShopProductSerializer(product_obj, many=True)
 
 
         return Response({
@@ -2056,4 +2097,51 @@ class SearchViewSet(viewsets.ViewSet):
         data = SearchProductSerializer(products, many=True).data
         return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
     
+
+def generate_unique_slug(value):
+        """
+        Generate a unique slug for Product model:
+        - Clean title -> slug
+        - If slug exists, append counter
+        - Returns unique slug string
+        """
+
+        # Step 1: Basic slugify
+        value = str(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
+        value = re.sub(r'[^a-zA-Z0-9]+', '-', value)
+        base_slug = value.strip('-').lower()
+
+        slug = base_slug
+        counter = 1
+
+        # Step 2: Check uniqueness in Product model
+        while Product.objects.filter(slug=slug, is_active=True).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        return slug
+    
+
+def test(request):
+    print("hello")
+    all_prod = Product.objects.filter(slug="")
+    ff = []
+    for prod in all_prod:
+        try:
+            if prod.slug == "" or None:
+                prod_cc = Product.objects.get(id=prod.id)
+                prod_cc.slug = generate_unique_slug(prod.title)
+                prod_cc.save()
+                ff.append(f"Updated {prod_cc.title}")
+        except:
+            pass
+    
+    return JsonResponse({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": ff,
+            "error": None
+        })
 

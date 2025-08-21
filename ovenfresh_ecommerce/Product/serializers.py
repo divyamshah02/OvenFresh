@@ -147,17 +147,14 @@ class ShopProductSerializer(serializers.ModelSerializer):
         
         # Add variations information
         if 'product_id' in representation:
-            variations = ProductVariation.objects.filter(product_id=representation['product_id'])
-            representation['variations'] = ProductVariationDetailSerializer(variations, many=True).data
-            representation['variations_count'] = variations.count()
+            variations = ProductVariation.objects.filter(product_id=representation['product_id']).first()            
             
-            # Get first variation for price display
-            first_variation = variations.first()
-            if first_variation:
-                representation['product_variation_id'] = first_variation.product_variation_id
-                representation['actual_price'] = first_variation.actual_price
-                representation['discounted_price'] = first_variation.discounted_price
-                representation['weight'] = first_variation.weight_variation
+            # Get first variation for price display            
+            if variations:
+                representation['product_variation_id'] = variations.product_variation_id
+                representation['actual_price'] = variations.actual_price
+                representation['discounted_price'] = variations.discounted_price
+                representation['weight'] = variations.weight_variation
             else:
                 representation['product_variation_id'] = None
                 representation['actual_price'] = "0"
