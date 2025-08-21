@@ -511,7 +511,7 @@ function renderProductSections() {
                           section.show_price
                             ? `
                             <div class="product-price">
-                                <span class="price">₹${product.product_variation[0].actual_price || "0.00"}</span>
+                                <span class="price">₹${product.actual_price || "0.00"}</span>
                             </div>
                         `
                             : ""

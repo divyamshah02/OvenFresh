@@ -120,7 +120,7 @@ class ProductSectionSerializer(serializers.ModelSerializer):
         # Limit products based on max_products setting
         products = products[:obj.max_products]
 
-        return ProductSerializer(products, many=True).data
+        return ShopProductSerializer(products, many=True).data
 
 class ClientLogoSerializer(serializers.ModelSerializer):
     class Meta:
