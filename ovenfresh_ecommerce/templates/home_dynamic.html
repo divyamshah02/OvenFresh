@@ -388,11 +388,40 @@
             }, 1000);
         }
 
-        // Initialize the countdowns
+        function getRemainingTime(targetHour, targetMinute) {
+            const now = new Date();
+            const nowIST = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+
+            // const nowIST = new Date();
+            // nowIST.setHours(17, 0, 0, 0);
+
+            const target = new Date(nowIST);
+            target.setHours(targetHour, targetMinute, 0, 0);
+
+            let diff = (target - nowIST) / 1000; // in seconds
+            if (diff < 0) diff = 0; // already passed
+
+            const hours = Math.floor(diff / 3600);
+            const minutes = Math.floor((diff % 3600) / 60);
+            const seconds = Math.floor(diff % 60);
+
+            return [hours, minutes, seconds];
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            updateCountdown('same-day-countdown', 5, 4, 54);
-            updateCountdown('midnight-countdown', 6, 14, 54);
+            // Same-day cutoff → 9:00 PM IST
+            const [h1, m1, s1] = getRemainingTime(19, 0);
+            updateCountdown('same-day-countdown', h1, m1, s1);
+
+            // Midnight cutoff → 10:45 PM IST
+            const [h2, m2, s2] = getRemainingTime(21, 0);
+            updateCountdown('midnight-countdown', h2, m2, s2);
         });
+        // // Initialize the countdowns
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     updateCountdown('same-day-countdown', 5, 4, 54);
+        //     updateCountdown('midnight-countdown', 6, 14, 54);
+        // });
     </script>
 </body>
 
