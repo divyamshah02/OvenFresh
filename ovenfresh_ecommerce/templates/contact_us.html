@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oven Fresh</title>
+    <title>Contact Us - Oven Fresh</title>
 
     <!-- Import BootStrap CSS Library -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -32,6 +32,76 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/loader.css">
+    
+    <style>
+        .contact-info {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            height: 100%;
+        }
+        
+        .contact-info h3 {
+            color: #b2a878;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .contact-detail {
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-detail i {
+            color: #b2a878;
+            font-size: 1.2rem;
+            width: 30px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: #b2a878;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background-color: #9c8e67;
+            transform: translateY(-3px);
+        }
+        
+        .contact-form {
+            padding: 2rem;
+        }
+        
+        .form-control:focus {
+            border-color: #b2a878;
+            box-shadow: 0 0 0 0.25rem rgba(178, 168, 120, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: #b2a878;
+            border-color: #b2a878;
+            padding: 0.7rem 2rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #9c8e67;
+            border-color: #9c8e67;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-info {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -45,57 +115,97 @@
         {% include 'nav.html' %}
         <!-- ##### ##### End Nav Section ##### ##### -->
 
-        <div class="container my-5">
-            <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-4">Our Policies</h2>
-
-                <!-- Refund and Cancellation Policy -->
-                <section class="mb-5">
-                <h4 class="text-primary">Refund and Cancellation Policy</h4>
-                <p>Since cakes are perishable goods and made to order, we generally do not provide refunds. However, refunds will be issued in the following cases:</p>
-                <ul>
-                    <li>If the cake or hamper is received in a damaged condition.</li>
-                    <li>If items are missing from the hamper.</li>
-                    <li>If the products received are expired.</li>
-                    <li>If the cake is stale or has an unpleasant smell.</li>
-                </ul>
-                <p><strong>Note:</strong> Customers must provide proof (such as photos) of any issues to qualify for a refund. If a customer claims the cake has an unpleasant smell and has discarded it, we will require the cake to be returned to our cloud kitchen for evidence testing. Refunds will not be considered if the cake has been thrown away.</p>
-                <p>No refunds will be issued for wrong addresses, unavailable recipients, or other causes beyond our control. Once an order is placed, it cannot be canceled.</p>
-                </section>
-
-                <!-- Copyright Policy -->
-                <section class="mb-5">
-                <h4 class="text-primary">Copyright Policy</h4>
-                <p>All content on this website, including logos, graphics, text, and design, is the property of Ovenfresh. No part of this content may be copied, downloaded, uploaded, published, or transmitted without prior written permission from Ovenfresh.</p>
-                </section>
-
-                <!-- Modification of Terms -->
-                <section class="mb-5">
-                <h4 class="text-primary">Modification of Terms &amp; Conditions</h4>
-                <p>Ovenfresh may modify the terms and conditions (“Terms”) of the service at any time without prior notification. The revised version will be available on the site. If you do not agree with the revised terms, you should stop using the site. By continuing to use the site, you agree to the published Terms.</p>
-                </section>
-
-                <!-- Complaints and Claims -->
-                <section class="mb-5">
-                <h4 class="text-primary">Complaints and Claims</h4>
-                <p>To be eligible for a refund or replacement, customers must notify our customer service department of any issues within 15 hours of delivery. Claims lodged after this period may not be considered.</p>
-                <p>If you have any questions or concerns regarding our policy or your privacy, please feel free to email us at <a href="mailto:ovenfreshretail01@gmail.com">ovenfreshretail01@gmail.com</a>. By placing an order, the customer unconditionally accepts the terms and conditions provided here and elsewhere on the site.</p>
-                </section>
-
-                <!-- Delivery Policy -->
-                <section>
-                <h4 class="text-primary">Delivery Policy</h4>
-                <ul>
-                    <li>Due to the restricted shelf life and potential for melting, we will contact the recipient to ensure availability at the delivery address. Surprise deliveries are not permitted.</li>
-                    <li>We deliver all 365 days of the year (including Sundays and public holidays).</li>
-                    <li>Deliveries are limited to locations within Mumbai City, within the toll naka.</li>
-                    <li>Please provide a regular street address with nearby landmarks for faster delivery.</li>
-                    <li>All deliveries will be executed within the specified time slots. If a delivery is made outside this timeframe, it does not entitle the customer to compensation.</li>
-                </ul>
-                </section>
-
+        <!-- Flash Messages -->
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="container my-5">
+            <div class="row">
+                <!-- Left Side - Contact Information -->
+                <div class="col-lg-5 mb-4">
+                    <div class="contact-info">
+                        <h3>Connect With Us</h3>
+                        <p class="mb-4">It is very important to us to keep in touch with you, so we are always ready to answer any question that interests you. Shoot!</p>
+                        
+                        <div class="contact-detail d-flex align-items-start">
+                            <i class="fas fa-envelope mt-2"></i>
+                            <div class="ms-3">
+                                <h5>Email</h5>
+                                <p>info@ovenfresh.in</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-detail d-flex align-items-start">
+                            <i class="fas fa-phone mt-2"></i>
+                            <div class="ms-3">
+                                <h5>Phone</h5>
+                                <p>+91 84339 91502</p>
+                                <p>+91 80801 46666 (9.00 am to 8.00 pm IST)</p>
+                                <p>+91 84339 91502</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-detail d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt mt-2"></i>
+                            <div class="ms-3">
+                                <h5>Address</h5>
+                                <p>Kiran Building, 4/68, Ranade Rd, Chandrakant Dhuru Wadi, Dadar, Mumbai, Maharashtra 400028.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side - Contact Form -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm">
+                        <div class="card-body contact-form">
+                            <h3 class="text-center mb-4">Send us a Message</h3>
+                            
+                            <form id="contactForm" method="POST" action="{% url 'contact-us-list' %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="firstName" name="first_name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="lastName" name="last_name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email Address *</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Mobile Number *</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                                        <div class="form-text">10 digits without any spaces or special characters</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -114,40 +224,61 @@
     <script src="/static/js/loader.js"></script>
     <script src="/static/js/api_caller.js"></script>
 
-        <!-- Search Dropdown (global, outside navbar/menu) -->
+    <!-- Search Dropdown (global, outside navbar/menu) -->
     <div id="search-results" class="search-dropdown"></div>
     <script>
+        // Phone number validation
+        document.getElementById('phone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            const phone = document.getElementById('phone').value;
+            if (phone.length !== 10) {
+                e.preventDefault();
+                alert('Please enter a valid 10-digit phone number');
+                document.getElementById('phone').focus();
+            }
+        });
+
+        // Existing search functionality
         const searchInput = document.getElementById("search-input");
         const resultsBox = document.getElementById("search-results");
 
         let debounceTimer;
-        searchInput.addEventListener("input", function () {
-            clearTimeout(debounceTimer);
-            const query = this.value.trim();
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
 
-            if (query.length < 2) {
-                resultsBox.style.display = "none";
-                return;
-            }
-
-            debounceTimer = setTimeout(async () => {
-                const response = await fetch(`/product-api/product-search/?q=${query}`);
-                const result = await response.json();
-
-                if (result.success && result.data.length > 0) {
-                    resultsBox.innerHTML = result.data.map(product => `
-                        <div class="result-item" onclick="window.location='/product/${product.slug}/'">
-                            <img src="${product.thumbnail || '/static/no-image.png'}" alt="${product.title}">
-                            <span>${product.title}</span>
-                        </div>
-                    `).join("");
-                    resultsBox.style.display = "block";
-                } else {
-                    resultsBox.innerHTML = "<div class='p-2 text-muted'>No results found</div>";
-                    resultsBox.style.display = "block";
+                if (query.length < 2) {
+                    resultsBox.style.display = "none";
+                    return;
                 }
-            }, 300); // debounce 300ms
-        });
+
+                debounceTimer = setTimeout(async () => {
+                    const response = await fetch(`/product-api/product-search/?q=${query}`);
+                    const result = await response.json();
+
+                    if (result.success && result.data.length > 0) {
+                        resultsBox.innerHTML = result.data.map(product => `
+                            <div class="result-item" onclick="window.location='/product/${product.slug}/'">
+                                <img src="${product.thumbnail || '/static/no-image.png'}" alt="${product.title}">
+                                <span>${product.title}</span>
+                            </div>
+                        `).join("");
+                        resultsBox.style.display = "block";
+                    } else {
+                        resultsBox.innerHTML = "<div class='p-2 text-muted'>No results found</div>";
+                        resultsBox.style.display = "block";
+                    }
+                }, 300); // debounce 300ms
+            });
+        }
         
         const searchResults = document.getElementById("search-results");
 
@@ -168,15 +299,16 @@
         }
 
         // Example: show dropdown (replace with your fetch logic)
-        searchInput.addEventListener("input", () => {
-            if (searchInput.value.trim().length > 0) {
-                searchResults.style.display = "block";
-                positionDropdown();
-            } else {
-                searchResults.style.display = "none";
-            }
-        });
-
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+                if (searchInput.value.trim().length > 0) {
+                    searchResults.style.display = "block";
+                    positionDropdown();
+                } else {
+                    searchResults.style.display = "none";
+                }
+            });
+        }
     </script>
 
     <script>
@@ -271,6 +403,17 @@
             updateCountdown('same-day-countdown', 5, 4, 54);
             updateCountdown('midnight-countdown', 6, 14, 54);
         });
+    </script>
+
+    <script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function () {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+        let bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+        });
+    }, 5000); // 5000 = 5 seconds
     </script>
 </body>
 

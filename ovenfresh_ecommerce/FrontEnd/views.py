@@ -4,10 +4,13 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
+from django.contrib.messages import get_messages
+from django.utils.decorators import method_decorator
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+from utils.email_sender_util import prepare_and_send_contact_us_email
 from utils.decorators import handle_exceptions, check_authentication
 
 from UserDetail.models import User
@@ -44,7 +47,31 @@ class ContactUsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+        storage = get_messages(request)
+        for message in storage:
+            pass
         return render(request, 'contact_us.html')
+
+    @handle_exceptions
+    @method_decorator(csrf_exempt)
+    def create(self, request):
+        # Process the form data
+        contact_us_form_data = {
+            'first_name': request.POST.get('first_name'),
+            'last_name': request.POST.get('last_name'),
+            'email': request.POST.get('email'),
+            'phone': request.POST.get('phone'),
+            'message': request.POST.get('message')
+        }
+
+        # print("Contact form submission:", contact_us_form_data)
+        prepare_and_send_contact_us_email(contact_us_form_data)
+
+        # Add a success message
+        messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
+
+        # Redirect to the contact us page
+        return redirect('contact-us-list')
 
 class ShopViewSet(viewsets.ViewSet):
 
