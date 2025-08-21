@@ -25,7 +25,7 @@
                         <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <h1 class="h2">Add New Product</h1>
+                        <h1 class="h2" id="page-heading-custom">Add New Product</h1>
                     </div>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="dropdown">
@@ -90,6 +90,9 @@
                                 <div class="mb-3 mt-3">
                                 <label for="productFeatures" class="form-label">Key Features</label>
                                 <textarea class="form-control" id="productFeatures" rows="2" placeholder="e.g. Three layers of moist chocolate sponge cake..."></textarea>
+                                <div class="mb-3 mt-3">
+                                <label for="productTags" class="form-label">Tags (Comma seperated)</label>
+                                <input type="text" class="form-control" id="productTags" placeholder="e.g. Cakes, Chocolate cakes"></input>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-6">
@@ -98,7 +101,13 @@
                                 </div>   
                                 <div class="col-6">
                                     <label for="productHSN" class="form-label">HSN</label>
-                                    <input type="text" class="form-control" id="productHSN" placeholder="Enter Product HSN">                                
+                                    <select class="form-select" id="productHSN">
+                                            <option value="190590">Cakes - 190590</option>
+                                            <option value="180610">Hampers - 180610</option>
+                                            <option value="190531">Cookies - 190531</option>                                            
+                                            <option value="60310">Flowers - 60310</option>                                            
+                                        </select>
+                                    <!-- <input type="text" class="form-control" id="productHSN" placeholder="Enter Product HSN">                                 -->
                                 </div>                                
                             </div>
                             <div class="mb-3">
@@ -159,23 +168,25 @@
                         <div class="card-body">
                             <form>
                                 <div class="row mb-3">
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <label for="quantity" class="form-label">Quantity</label>
                                         <input type="number" class="form-control" id="quantity" placeholder="e.g. 500" step="0.01">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <label for="uom" class="form-label">Unit (UOM)</label>
                                         <select class="form-select" id="uom">
                                             <option value="">Select Unit</option>
                                             <option value="kg">Kilogram (kg)</option>
-                                            <option value="gm">Gram (gm)</option>
+                                            <option value="gm">Gram (gm)</option>                                            
                                             <option value="lb">Pound (lb)</option>
                                             <option value="oz">Ounce (oz)</option>
                                             <option value="piece">Piece</option>
                                             <option value="pack">Pack</option>
+                                            <option value="gms">Grams (gms)</option>
                                             <option value="box">Box</option>
                                             <option value="ltr">Liter (ltr)</option>
                                             <option value="ml">Milliliter (ml)</option>
+                                            <option value="Kg">Kilogram (kg)</option>
                                             <option value="dozen">Dozen</option>
                                         </select>
                                     </div>
@@ -186,7 +197,7 @@
                                             <input type="number" class="form-control" id="actualPrice" placeholder="e.g. 1000">
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" style="display: none !important;">
                                         <label for="discountedPrice" class="form-label">Discounted Price</label>
                                         <div class="input-group">
                                             <span class="input-group-text">₹</span>

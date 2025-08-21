@@ -7,6 +7,8 @@ from django.db import models
 
 from django.utils import timezone
 
+import re
+import unicodedata
 from .models import *
 from .serializers import *
 
@@ -265,6 +267,7 @@ class ProductViewSet(viewsets.ViewSet):
             storage_instructions = data.get("storage_instructions")
             sku = data.get("sku")
             hsn = data.get("hsn")
+            tags = data.get("tags")
 
 
             if not title or not category_id:
@@ -323,7 +326,7 @@ class ProductViewSet(viewsets.ViewSet):
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             product_id = self.generate_product_id()
-
+            
             new_product = Product(
                 product_id=product_id,
                 title=title,
@@ -339,6 +342,8 @@ class ProductViewSet(viewsets.ViewSet):
                 storage_instructions=storage_instructions,
                 hsn=hsn,
                 sku=sku,
+                tags=tags,
+                slug=self.generate_unique_slug(title),
                 created_at=timezone.now()
             )
             new_product.save()
@@ -363,6 +368,30 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def generate_unique_slug(self, value):
+        """
+        Generate a unique slug for Product model:
+        - Clean title -> slug
+        - If slug exists, append counter
+        - Returns unique slug string
+        """
+
+        # Step 1: Basic slugify
+        value = str(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
+        value = re.sub(r'[^a-zA-Z0-9]+', '-', value)
+        base_slug = value.strip('-').lower()
+
+        slug = base_slug
+        counter = 1
+
+        # Step 2: Check uniqueness in Product model
+        while Product.objects.filter(slug=slug, is_active=True).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        return slug
+    
     def generate_product_id(self):
         while True:
             product_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
@@ -372,6 +401,7 @@ class ProductViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         product_id = request.query_params.get('product_id')
+        product_slug = request.query_params.get('product_slug')
 
         if not product_id:
             return Response({
@@ -382,7 +412,11 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": "Missing product_id."
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        product_obj = Product.objects.filter(product_id=product_id).first()
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+        else:
+            product_obj = Product.objects.filter(product_id=product_id).first()
+
         if not product_obj:
             return Response({
                 "success": False,
@@ -422,6 +456,7 @@ class ProductViewSet(viewsets.ViewSet):
         storage_instructions = data.get("storage_instructions")
         sku = data.get("sku")
         hsn = data.get("hsn")
+        tags = data.get("tags")
 
         if not product_id or not title or not category_id:
             return Response({
@@ -493,7 +528,7 @@ class ProductViewSet(viewsets.ViewSet):
         product_obj.storage_instructions = storage_instructions
         product_obj.sku = sku
         product_obj.hsn = hsn
-
+        product_obj.tags = tags
 
         # If new images are uploaded, add them to existing photos
         if new_image_urls:
@@ -589,7 +624,6 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": f"Failed to delete image: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -617,6 +651,7 @@ class AllProductsViewSet(viewsets.ViewSet):
             product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         product_data = AllProductSerializer(product_obj, many=True)
+
 
         return Response({
             "success": True,
@@ -1485,8 +1520,8 @@ class CheckPincodeViewSet(viewsets.ViewSet):
             temp_timeslot_dict = {
                 "timeslot_id": timeslot,
                 "timeslot_name": timeslot_detail.time_slot_title,     
-                "start_time": timeslot_detail.start_time,
-                "end_time": timeslot_detail.end_time,
+                "start_time": datetime.strptime(str(timeslot_detail.end_time), "%H:%M").time().strftime("%I:%M %p"),
+                "end_time": datetime.strptime(str(timeslot_detail.start_time), "%H:%M").time().strftime("%I:%M %p"),
                 "delivery_charge": timeslots_data[timeslot]['charges'],
                 "available": timeslots_data[timeslot]['available'],
             }
@@ -2004,3 +2039,21 @@ class AdminReviewsViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": "Review not found."
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class SearchViewSet(viewsets.ViewSet):
+    def list(self, request):
+        query = request.query_params.get("q", "").strip()
+        if not query:
+            return Response({"success": True, "data": []}, status=status.HTTP_200_OK)
+
+        products = Product.objects.filter(
+            Q(title__icontains=query) | 
+            Q(tags__icontains=query) |
+            Q(short_description__icontains=query)
+        ).filter(is_active=True)[:10]  # limit 10 results
+
+        data = SearchProductSerializer(products, many=True).data
+        return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
+    
+

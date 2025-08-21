@@ -9,25 +9,14 @@ from .serializers import *
 
 from .migrate_data import *
 from .clear_data import *
-# Decorator functions (assuming these exist in your project)
-def handle_exceptions(func):
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            return Response({"success": False, "error": str(e)}, status=500)
-    return wrapper
+from utils.handle_s3_bucket import upload_file_to_s3
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
+from utils.decorators import handle_exceptions, check_authentication
 
-def check_authentication(required_role=None):
-    def decorator(func):
-        def wrapper(self, request, *args, **kwargs):
-            if not request.user.is_authenticated:
-                return Response({"success": False, "user_not_logged_in": True, "error": "Authentication required"}, status=401)
-            if required_role and getattr(request.user, 'role', None) != required_role:
-                return Response({"success": False, "user_unauthorized": True, "error": "Unauthorized"}, status=403)
-            return func(self, request, *args, **kwargs)
-        return wrapper
-    return decorator
+
+# Decorator functions (assuming these exist in your project)
 
 class HeroBannerViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -105,7 +94,7 @@ class HeroBannerViewSet(viewsets.ViewSet):
             }, status=404)
 
 class ProductSectionViewSet(viewsets.ViewSet):
-    @handle_exceptions
+    # @handle_exceptions
     def list(self, request):
         """Get all active product sections"""
         sections = ProductSection.objects.filter(is_active=True)
@@ -120,6 +109,7 @@ class ProductSectionViewSet(viewsets.ViewSet):
     @check_authentication(required_role="admin")
     def create(self, request):
         """Create new product section"""
+        print(request.data)
         serializer = ProductSectionSerializer(data=request.data)
         if serializer.is_valid():
             section = serializer.save()
@@ -149,6 +139,7 @@ class ProductSectionViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
         """Update product section"""
         try:
+            print(request.data)
             section = ProductSection.objects.get(pk=pk)
             serializer = ProductSectionSerializer(section, data=request.data, partial=True)
             if serializer.is_valid():
@@ -319,6 +310,25 @@ class DeliveryPolicyViewSet(viewsets.ViewSet):
                 "error": "Policy not found"
             }, status=404)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete delivery policy"""
+        try:
+            policy = DeliveryPolicy.objects.get(pk=pk)
+            policy.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except DeliveryPolicy.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Policy not found"
+            }, status=404)
+
 class HomepageCategoryViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -375,6 +385,25 @@ class HomepageCategoryViewSet(viewsets.ViewSet):
                 "error": "Category not found"
             }, status=404)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete homepage category"""
+        try:
+            category = HomepageCategory.objects.get(pk=pk)
+            category.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except HomepageCategory.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Category not found"
+            }, status=404)
+
 class VideoContentViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -405,6 +434,51 @@ class VideoContentViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update video content"""
+        try:
+            video = VideoContent.objects.get(pk=pk)
+            serializer = VideoContentSerializer(video, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except VideoContent.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Video not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete video content"""
+        try:
+            video = VideoContent.objects.get(pk=pk)
+            video.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except VideoContent.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Video not found"
+            }, status=404)
+
 class FeatureViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -434,6 +508,51 @@ class FeatureViewSet(viewsets.ViewSet):
             "data": None,
             "error": serializer.errors
         }, status=400)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update feature"""
+        try:
+            feature = Feature.objects.get(pk=pk)
+            serializer = FeatureSerializer(feature, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except Feature.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Feature not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete feature"""
+        try:
+            feature = Feature.objects.get(pk=pk)
+            feature.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except Feature.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Feature not found"
+            }, status=404)
 
 class AboutSectionViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -471,6 +590,51 @@ class AboutSectionViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update about section"""
+        try:
+            about = AboutSection.objects.get(pk=pk)
+            serializer = AboutSectionSerializer(about, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except AboutSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "About section not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete about section"""
+        try:
+            about = AboutSection.objects.get(pk=pk)
+            about.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except AboutSection.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "About section not found"
+            }, status=404)
+
 class ClientLogoViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -501,6 +665,51 @@ class ClientLogoViewSet(viewsets.ViewSet):
             "error": serializer.errors
         }, status=400)
 
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """Update client logo"""
+        try:
+            logo = ClientLogo.objects.get(pk=pk)
+            serializer = ClientLogoSerializer(logo, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "data": serializer.data,
+                    "error": None
+                })
+            return Response({
+                "success": False,
+                "data": None,
+                "error": serializer.errors
+            }, status=400)
+        except ClientLogo.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Logo not found"
+            }, status=404)
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def destroy(self, request, pk=None):
+        """Delete client logo"""
+        try:
+            logo = ClientLogo.objects.get(pk=pk)
+            logo.delete()
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            })
+        except ClientLogo.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Logo not found"
+            }, status=404)
+
 class FooterContentViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
@@ -530,6 +739,47 @@ class FooterContentViewSet(viewsets.ViewSet):
             "data": None,
             "error": serializer.errors
         }, status=400)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class FileUploadView(viewsets.ViewSet):
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """Upload file to S3 and return URL"""
+        if 'file' not in request.FILES:
+            return Response({
+                "success": False,
+                "error": "No file provided"
+            }, status=400)
+        
+        uploaded_file = request.FILES['file']
+        folder = request.POST.get('folder', 'homepage_images')
+        
+        # Validate file type
+        allowed_extensions = ['jpg', 'jpeg', 'png', 'webp']
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        
+        # if file_extension not in allowed_extensions:
+        #     return Response({
+        #         "success": False,
+        #         "error": f"Invalid file type: {uploaded_file.name}. Only JPG, PNG, and WebP are allowed."
+        #     }, status=400)
+        
+        try:
+            # Upload to S3
+            file_url = upload_file_to_s3(uploaded_file, folder=folder)
+            print(f"File uploaded to S3: {file_url}")
+            return Response({
+                "success": True,
+                "file_url": file_url,
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            return Response({
+                "success": False,
+                "error": f"Failed to upload file: {str(e)}"
+            }, status=500)
 
 def test(request):
     start_migrations_personl()

@@ -26,6 +26,7 @@ from io import BytesIO
 from utils.razorpay_utils import *
 from utils.decorators import *
 
+from utils.email_sender_util import prepare_and_send_order_email
 
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib import colors
@@ -300,6 +301,8 @@ class OrderViewSet(viewsets.ViewSet):
                     # "total_amount": paisa_amount,
                     "razorpay_key_id": settings.RAZORPAY_KEY_ID,
                 })
+        else:
+            prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
 
         return Response({
             "success": True, 
@@ -462,6 +465,7 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
                         order.razorpay_payment_id = payment_id
 
                     order.save()
+                    prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
                     
                     return Response({
                         "success": True, 
@@ -1119,6 +1123,16 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'payment_id': order.razorpay_payment_id,
                 'payment_received': order.payment_received,
                 'is_cod': order.is_cod,
+
+                # Billing information
+                'different_billing_address': order.different_billing_address,
+                'billing_first_name': order.billing_first_name,
+                'billing_last_name': order.billing_last_name,
+                'billing_address': order.billing_address,
+                'billing_city': order.billing_city,
+                'billing_pincode': order.billing_pincode,
+                'billing_phone': order.billing_phone,
+                'billing_alternate_phone': order.billing_alternate_phone,
                 
                 # Order details
                 'total_amount': float(order.total_amount),
@@ -1447,16 +1461,14 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
                 "success": False,
                 "error": str(e)
             }, status=500)
-    
+
     def generate_invoice_pdf(self, order, order_items):
         """
-        Generate PDF invoice using ReportLab
+        Generate PDF invoice styled exactly like Invoice (2).pdf
         """
-        # Create temporary file
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
         temp_file.close()
-        
-        # Create PDF document
+
         doc = SimpleDocTemplate(
             temp_file.name,
             pagesize=A4,
@@ -1465,207 +1477,142 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
             topMargin=30,
             bottomMargin=30
         )
-        
-        # Container for PDF elements
+
         elements = []
-        
-        # Get styles
         styles = getSampleStyleSheet()
-        
-        # Custom styles
-        company_style = ParagraphStyle(
-            'CompanyStyle',
-            parent=styles['Normal'],
-            fontSize=10,
-            leading=12,
-            alignment=TA_LEFT
-        )
-        
-        customer_style = ParagraphStyle(
-            'CustomerStyle',
-            parent=styles['Normal'],
-            fontSize=10,
-            leading=12,
-            alignment=TA_RIGHT
-        )
-        
-        order_number_style = ParagraphStyle(
-            'OrderNumberStyle',
-            parent=styles['Heading1'],
-            fontSize=16,
-            alignment=TA_CENTER,
-            spaceAfter=20
-        )
-        
-        # Company and Customer Info Table
-        company_info = f"""
-        <b>Ovenfresh Catering Service</b><br/>
-        Shop No. 123, Food Street<br/>
-        Near Subway Station, Andheri<br/>
-        Mumbai 400058<br/>
-        <br/>
-        Contact: +91 9876543210<br/>
-        Email: orders@ovenfresh.in<br/>
-        GST No: 27AABCO1234C1Z5<br/>
-        FSSAI: 12345678901234<br/>
-        State Name: Maharashtra, Code: 27<br/>
-        Order Date: {order.created_at.strftime('%B %d, %Y')}
-        """
-        
-        customer_info = f"""
-        <b>Bill To:</b><br/>
+        normal = styles["Normal"]
+        bold = ParagraphStyle("Bold", parent=styles["Normal"], fontName="Helvetica-Bold", fontSize=11)
+
+        # ---------------- Logo + Brand ----------------
+        logo_path = os.path.join(settings.BASE_DIR, "static", "img", "logo.png")
+        if os.path.exists(logo_path):
+            logo = Image(logo_path, width=1.2*inch, height=1.2*inch)
+            logo.hAlign = "CENTER"
+            elements.append(logo)
+
+        brand = Paragraph("<b>Ovenfresh</b>", ParagraphStyle("Brand", parent=bold, alignment=TA_CENTER, fontSize=14))
+        elements.append(brand)
+        elements.append(Spacer(1, 10))
+
+        # ---------------- Invoice Title ----------------
+        title = Paragraph("<b>Tax Invoice / Bill of Supply / Cash Memo</b> &nbsp;&nbsp;&nbsp; ovenfresh.in", bold)
+        elements.append(title)
+        elements.append(Spacer(1, 20))
+
+        # ---------------- Shipping, Billing (Left) + Sold By (Right) ----------------
+        shipping_block = f"""
+        <b>Shipping Address</b><br/>
         {order.first_name} {order.last_name}<br/>
         {order.delivery_address}<br/>
-        <br/>
-        Phone: {order.phone}<br/>
-        Email: {order.email}<br/>
-        <br/>
-        <b>Delivery Date:</b> {order.delivery_date.strftime('%B %d, %Y')}
+        {order.email}<br/>
+        {order.phone}<br/><br/>
+        <b>Order Number:</b> {order.order_id}<br/>
+        <b>Order Date:</b> {order.created_at.strftime('%B %d, %Y')}<br/><br/>
+        <b>Billing Address</b><br/>
+        {(order.billing_first_name or order.first_name)} {(order.billing_last_name or order.last_name)}<br/>
+        {order.billing_address or order.delivery_address}<br/>
+        {order.billing_city or ''} {order.billing_pincode or ''}<br/>
+        {order.email}<br/>
+        {order.billing_phone or order.phone}
         """
-        
-        # Create header table
-        header_data = [
-            [
-                Paragraph(company_info, company_style),
-                Paragraph(customer_info, customer_style)
-            ]
-        ]
-        
-        header_table = Table(header_data, colWidths=[4*inch, 4*inch])
-        header_table.setStyle(TableStyle([
-            
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+
+        sold_by_block = """
+        <b>Sold By</b><br/>
+        AVRONSAA WEBFOODS PRIVATE LTD<br/>
+        Unit No. 210 2nd floor,<br/>
+        Mahim Industrial Estate,<br/>
+        Off Cadel Road Mahim,<br/>
+        Mumbai-400016<br/>
+        GST No: 27AAUCA4280D1ZI<br/>
+        FSSAI NO: 11521004000462<br/>
+        State Name: Maharashtra, Code: 27<br/>
+        Contact: +91-8080-146666<br/>
+        Email: online@ovenfresh.in
+        """
+
+        addr_table = Table(
+            [[Paragraph(shipping_block, normal), Paragraph(sold_by_block, normal)]],
+            colWidths=[4.2*inch, 3.8*inch]
+        )
+        addr_table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("ALIGN", (0, 0), (0, 0), "LEFT"),
+            ("ALIGN", (1, 0), (1, 0), "RIGHT"),
         ]))
-        
+        elements.append(addr_table)
+        elements.append(Spacer(1, 25))
 
-        logo_path = os.path.join(settings.BASE_DIR, 'static', 'img',  'logo.png')  # update to correct path
-        if os.path.exists(logo_path):
-            logo = Image(logo_path, width=1*inch, height=1*inch)
-            logo.hAlign = 'CENTER'
-            elements.append(logo)
-            elements.append(Spacer(1, 20))
+        # ---------------- Items Table ----------------
+        items_data = [["Sr. No.", "Description", "Amount (incl GST)"]]
 
-            
-        elements.append(header_table)
-        elements.append(Spacer(1, 20))
-        
-        # Order Number
-        order_number = Paragraph(f"Order Number: {order.order_id}", order_number_style)
-        elements.append(order_number)
-        elements.append(Spacer(1, 20))
-        
-        # Items Table Header
-        items_data = [['Sr. No.', 'Description', 'Amount (incl GST)']]
-        
-        # Add order items
-        total_amount = Decimal('0.00')
         for idx, item in enumerate(order_items, 1):
             try:
                 product = Product.objects.get(product_id=item.product_id)
                 variation = ProductVariation.objects.get(product_variation_id=item.product_variation_id)
-                
-                description = f"{product.title} - {variation.weight_variation} (Qty: {item.quantity})"
-                amount = f"₹{item.final_amount}"
-                
-                items_data.append([str(idx), description, amount])
-                total_amount += item.final_amount
-                
+                description = f"{product.title} {variation.weight_variation}"
             except (Product.DoesNotExist, ProductVariation.DoesNotExist):
-                items_data.append([str(idx), "Product not found", f"₹{item.final_amount}"])
-                total_amount += item.final_amount
-        
-        # Add delivery charges if any
+                description = "Product not found"
+
+            items_data.append([str(idx), description, f"{item.final_amount}/-"])
+
+        # Delivery charges
         if order.delivery_charge and order.delivery_charge > 0:
-            items_data.append([
-                str(len(items_data)),
-                "Delivery Charges",
-                f"₹{order.delivery_charge}"
-            ])
-            total_amount += order.delivery_charge
-        
-        # Add discount if any
-        if hasattr(order, 'coupon_discount') and order.coupon_discount:
-            discount_amount = Decimal(str(order.coupon_discount))
-            if discount_amount > 0:
-                items_data.append([
-                    str(len(items_data)),
-                    f"Discount ({order.coupon_code})",
-                    f"-₹{discount_amount}"
-                ])
-                total_amount -= discount_amount
-        
-        # Add empty row for spacing
-        items_data.append(['', '', ''])
-        
-        # Add total row
-        items_data.append(['', 'Total', f"₹{order.total_amount}"])
-        
-        # Create items table
-        items_table = Table(items_data, colWidths=[0.8*inch, 5*inch, 1.5*inch])
+            items_data.append(["", "Delivery Charges", f"{order.delivery_charge}/-"])
+
+        # Discount
+        if order.coupon_discount:
+            items_data.append(["", f"Discount ({order.coupon_code})", f"-{order.coupon_discount}/-"])
+
+        # Taxes
+        items_data.append(["", "CGST (9%)", f"{order.tax_amount}/-"])
+        items_data.append(["", "SGST (9%)", f"{order.tax_amount}/-"])
+
+        # Total
+        items_data.append(["", "Total", f"{order.total_amount}/-"])
+
+        items_table = Table(items_data, colWidths=[0.8*inch, 5.7*inch, 1.3*inch])
         items_table.setStyle(TableStyle([
-            # Header row styling
-            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('ALIGN', (2, 0), (2, -1), 'RIGHT'),  # Amount column right aligned
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            
-            # Data rows styling
-            ('FONTNAME', (0, 1), (-1, -3), 'Helvetica'),
-            ('FONTSIZE', (0, 1), (-1, -3), 9),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -3), [colors.white, colors.lightgrey]),
-            
-            # Total row styling
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, -1), (-1, -1), 12),
-            ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
-            
-            # Grid lines
-            ('GRID', (0, 0), (-1, -2), 1, colors.black),
-            ('LINEBELOW', (0, -1), (-1, -1), 2, colors.black),
-            
-            # Padding
-            ('LEFTPADDING', (0, 0), (-1, -1), 6),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
-            ('TOPPADDING', (0, 0), (-1, -1), 6),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("GRID", (0, 0), (-1, -1), 0.6, colors.black),
+            ("ALIGN", (2, 1), (2, -1), "RIGHT"),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("FONTSIZE", (0, 0), (-1, -1), 10),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+            ("TOPPADDING", (0, 0), (-1, 0), 8),
         ]))
-        
         elements.append(items_table)
-        elements.append(Spacer(1, 30))
-        
-        # Amount in words
+        elements.append(Spacer(1, 20))
+
+        # ---------------- Amount in Words ----------------
         amount_words = self.number_to_words(float(order.total_amount))
-        amount_text = Paragraph(f"<b>Amount in words:</b><br/>{amount_words} only", company_style)
-        elements.append(amount_text)
-        elements.append(Spacer(1, 40))
-        
-        # Footer
-        footer_data = [
-            [
-                Paragraph("<b>From Ovenfresh</b>", company_style),
-                Paragraph("<b>Authorized Signatory</b>", customer_style)
-            ]
-        ]
-        
-        footer_table = Table(footer_data, colWidths=[4*inch, 4*inch])
+        elements.append(Paragraph(f"<b>Amount in words:</b> {amount_words} only", normal))
+        elements.append(Spacer(1, 30))
+
+        # ---------------- Footer ----------------
+        footer_table = Table([
+            [Paragraph("<b>From Ovenfresh</b>", normal),
+            Paragraph("<b>Authorized Signatory</b>", normal)]
+        ], colWidths=[4*inch, 4*inch])
         footer_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ("ALIGN", (0, 0), (0, 0), "LEFT"),
+            ("ALIGN", (1, 0), (1, 0), "RIGHT"),
         ]))
-        
         elements.append(footer_table)
-        
+        elements.append(Spacer(1, 20))
+
+        # ---------------- Declaration ----------------
+        declaration = """
+        <b>Declaration:</b><br/>
+        We declare that this invoice shows the actual price of the foods described and that all particulars are true and correct. 
+        All disputes subject to Mumbai jurisdiction only.
+        """
+        elements.append(Paragraph(declaration, normal))
+
         # Build PDF
         doc.build(elements)
-        
         return temp_file.name
-    
+
     def number_to_words(self, number):
         """
         Convert number to words (Indian numbering system)

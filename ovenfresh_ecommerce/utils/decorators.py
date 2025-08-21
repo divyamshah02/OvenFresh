@@ -65,7 +65,7 @@ def handle_exceptions(view_func):
                 exc_info=True
             )
             # logger.error(ex, exc_info=True)
-            # print(ex)
+            print(ex)
             return Response(
                 {
                     "success": False,

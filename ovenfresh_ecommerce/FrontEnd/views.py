@@ -31,21 +31,50 @@ class HomeViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         # Use the CMS-controlled homepage
-        return render(request, 'home.html')
-        # return render(request, 'home_dynamic.html')
+        # return render(request, 'home.html')
+        return render(request, 'home_dynamic.html')
+
+class PolicyViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'policy.html')
+
+class ContactUsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'contact_us.html')
 
 class ShopViewSet(viewsets.ViewSet):
 
     @handle_exceptions
-    def list(self, request):
+    def list(self, request):        
         return render(request, 'shop.html')
+
+    @handle_exceptions
+    def retrieve(self, request, pk):
+        data = {}
+        if pk:
+            print(pk)
+            data = {
+                'pk': str(pk).replace("-", " "),
+            }
+        return render(request, 'shop.html', data)
 
 
 class ProductDetailViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
-        get_toppers = Product.objects.filter(sub_category_id="9234546814")
+
+        product_slug = request.query_params.get('product_slug')
+        product_id = None
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+            product_id = product_obj.product_id if product_obj else None
+
+        get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
         for topper in get_toppers:
             temp_topper = {
@@ -58,7 +87,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
                 temp_topper["product_variation_id"] = product_variations.first().product_variation_id
             toppers.append(temp_topper)
 
-        get_cards = Product.objects.filter(sub_category_id="3622759923")
+        get_cards = Product.objects.filter(sub_category_id="4437657422")
         cards = []
         for card in get_cards:
             temp_card = {
@@ -74,6 +103,49 @@ class ProductDetailViewSet(viewsets.ViewSet):
         data = {
             "get_toppers": toppers,
             "get_cards": cards,
+            "product_id": product_id,
+        }
+        return render(request, 'product-detail.html', data)
+
+    @handle_exceptions
+    def retrieve(self, request, pk):
+
+        product_slug = pk
+        product_id = None
+        if product_slug:
+            product_obj = Product.objects.filter(slug=product_slug).first()
+            product_id = product_obj.product_id if product_obj else None
+
+        get_toppers = Product.objects.filter(sub_category_id="8746472697")
+        toppers = []
+        for topper in get_toppers:
+            temp_topper = {
+                "product_id": topper.product_id,
+                "title": topper.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=topper.product_id)
+            if product_variations.exists():
+                temp_topper["actual_price"] = product_variations.first().actual_price
+                temp_topper["product_variation_id"] = product_variations.first().product_variation_id
+            toppers.append(temp_topper)
+
+        get_cards = Product.objects.filter(sub_category_id="4437657422")
+        cards = []
+        for card in get_cards:
+            temp_card = {
+                "product_id": card.product_id,
+                "title": card.title,
+            }
+            product_variations = ProductVariation.objects.filter(product_id=card.product_id)
+            if product_variations.exists():
+                temp_card["actual_price"] = product_variations.first().actual_price
+                temp_card["product_variation_id"] = product_variations.first().product_variation_id
+            cards.append(temp_card)
+
+        data = {
+            "get_toppers": toppers,
+            "get_cards": cards,
+            "product_id": product_id,
         }
         return render(request, 'product-detail.html', data)
 
@@ -487,3 +559,17 @@ class ImportProductsViewSet(viewsets.ViewSet):
             category_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
             if not Category.objects.filter(is_active=True, category_id=category_id).exists():
                 return category_id
+
+
+
+def update_pincode_charges(request):
+    all_pincodes = Pincode.objects.all()
+    for pincode in all_pincodes:
+        new_charges = {"6": {"charges": 100, "available": True}, "7": {"charges": 0, "available": True}, "8": {"charges": 80, "available": True}, "9": {"charges": 80, "available": True}, "10": {"charges": 80, "available": True}, "11": {"charges": 100, "available": True}}
+        print(pincode.delivery_charge)
+        pincode.delivery_charge = new_charges
+        pincode.save()
+    
+    return JsonResponse({"status": "success", "message": "Pincode charges updated successfully."})
+        
+

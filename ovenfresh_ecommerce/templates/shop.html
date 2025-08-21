@@ -81,6 +81,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <h1 class="display-4 fw-bold" id="page-title">Our Shop</h1>
+                        <h6 class="display-6 text-md-nowrap">{{pk}}</h6>
                         <p class="lead" id="page-description">Discover our delicious collection of cakes, chocolates, and gifts</p>
                     </div>
                     <div class="col-md-6">
@@ -191,82 +192,7 @@
         </section>
 
         <!-- Footer -->
-        <footer id="contact" class="pt-5 pb-3">
-            <div class="container">
-                <div class="row g-4">
-                    <div class="col-lg-3">
-                        <div class="footer-info">
-                            <img src="/static/img/ovenfresh-logo-min.webp" alt="">
-                            <p>For Cake shopping in Mumbai, Thane & Navi Mumbai, OvenFresh is the cake shop you can rely
-                                on for a wonderful experience. Ovenfresh is a cakeshop that sells Eggless cakes online
-                                with on time delivery.</p>
-                            <div class="social-links mt-3">
-                                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                                <a href="#" class="social-icon"><i class="fab fa-pinterest"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="footer-links">
-                            <h5 class="mb-4">Useful Links</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="/">Contact Us</a></li>
-                                <li><a href="#about">Register Complaint</a></li>
-                                <li><a href="/shop/">Track your Order</a></li>
-                                <li><a href="#contact">Refund and Cancellation Policy</a></li>
-                                <li><a href="/shop/">About Us</a></li>
-                                <li><a href="#contact">FAQ</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="footer-links">
-                            <h5 class="mb-4">Quick Links</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="/shop/?category=cakes">Cakes</a></li>
-                                <li><a href="/shop/?category=gifts">Gifting</a></li>
-                                <li><a href="/shop/?category=flowers">Flowers</a></li>
-                                <li><a href="/shop/?category=chocolates">Chocolates</a></li>
-                                <li><a href="/shop/?category=cookies">Cookies</a></li>
-                                <li><a href="#">Blog</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-6">
-                        <div class="footer-contact">
-                            <h5 class="mb-4">Contact Us</h5>
-                            <p><i class="fas fa-map-marker-alt me-2"></i> Mumbai</p>
-                            <p><i class="fas fa-phone-alt me-2"></i> +91 xxx xxx xxxx</p>
-                            <p><i class="fas fa-envelope me-2"></i> info@ovenfresh.in</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-contact">
-                            <h5 class="mb-4">Newsletter</h5>
-                            <p>Don't miss our future updates! Get Subscribed Today!</p>
-                            <input type="text" class="form-control" name="" id="" placeholder="Email">
-                            <button class="btn btn-dark w-100 of-bg-primary mt-3">Submit</button>
-                        </div>
-                    </div>
-                </div>
-                <hr class="mt-4 mb-3">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p class="mb-md-0">&copy; 2025 OvenFresh. All Rights Reserved.</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <p class="mb-0">
-                            <a href="#" class="me-3">Privacy Policy</a>
-                            <a href="#" class="me-3">Terms of Service</a>
-                            <a href="#">FAQ</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
+        {% include 'footer.html' %}
     </div>
 
     <!-- Import BootStrap JavaScript Library -->
@@ -280,6 +206,71 @@
     <script src="/static/js/loader.js"></script>
     <script src="/static/js/shop.js"></script>
     <script src="/static/js/api_caller.js"></script>
+
+        <!-- Search Dropdown (global, outside navbar/menu) -->
+    <div id="search-results" class="search-dropdown"></div>
+    <script>
+        const searchInput = document.getElementById("search-input");
+        const resultsBox = document.getElementById("search-results");
+
+        let debounceTimer;
+        searchInput.addEventListener("input", function () {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                resultsBox.style.display = "none";
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                const response = await fetch(`/product-api/product-search/?q=${query}`);
+                const result = await response.json();
+
+                if (result.success && result.data.length > 0) {
+                    resultsBox.innerHTML = result.data.map(product => `
+                        <div class="result-item" onclick="window.location='/product/${product.slug}/'">
+                            <img src="${product.thumbnail || '/static/no-image.png'}" alt="${product.title}">
+                            <span>${product.title}</span>
+                        </div>
+                    `).join("");
+                    resultsBox.style.display = "block";
+                } else {
+                    resultsBox.innerHTML = "<div class='p-2 text-muted'>No results found</div>";
+                    resultsBox.style.display = "block";
+                }
+            }, 300); // debounce 300ms
+        });
+        
+        const searchResults = document.getElementById("search-results");
+
+        function positionDropdown() {
+            if (!searchInput) return;
+            const rect = searchInput.getBoundingClientRect();
+
+            searchResults.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            searchResults.style.left = `${rect.left + window.scrollX}px`;
+            searchResults.style.width = `${rect.width}px`;
+        }
+
+        // Reposition on scroll/resize/focus
+        window.addEventListener("resize", positionDropdown);
+        window.addEventListener("scroll", positionDropdown);
+        if (searchInput) {
+            searchInput.addEventListener("focus", positionDropdown);
+        }
+
+        // Example: show dropdown (replace with your fetch logic)
+        searchInput.addEventListener("input", () => {
+            if (searchInput.value.trim().length > 0) {
+                searchResults.style.display = "block";
+                positionDropdown();
+            } else {
+                searchResults.style.display = "none";
+            }
+        });
+
+    </script>
 
     <script>
         const csrfToken = "{{ csrf_token }}";

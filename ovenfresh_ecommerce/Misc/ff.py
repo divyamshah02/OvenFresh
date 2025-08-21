@@ -1,32 +1,22 @@
 import json
-import pdb
 import unicodedata
-
-with open("filtered_products.json", "r", encoding="utf-8") as f:
-    products = json.load(f)
-
-category_lines = []
-for p in products:
-    
-    category_string = p.get("Categories", "")
-    if not category_string:
-        continue
-    category_lines.append(category_string)
-    # parts = [c.strip() for c in category_string.split(">")]
-    # main_cat = parts[0]
-    # sub_cat = parts[1] if len(parts) > 1 else None
-
-
-    # pdb.set_trace()
-
 
 def normalize_text(text):
     # Normalize unicode (remove accents) and strip spaces
     text = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode('utf-8')
     return text.strip()
 
-for line in category_lines:
-    parts = [normalize_text(p) for p in line.split(",") if p.strip()]
+# Load products
+with open("output (1).json", "r", encoding="utf-8") as f:
+    products = json.load(f)
+
+for p in products:
+    category_string = p.get("Categories", "")
+    if not category_string:
+        p["Categories"] = None
+        continue
+
+    parts = [normalize_text(x) for x in category_string.split(",") if x.strip()]
     main_category = None
     subcategories = []
 
@@ -41,4 +31,11 @@ for line in category_lines:
             if main_category is None:
                 main_category = part
 
-    print(json.dumps({main_category: subcategories}, ensure_ascii=False))
+    # Replace Categories with dict like your print
+    p["Categories"] = {main_category: subcategories}
+
+# Save to new JSON
+with open("output_updated.json", "w", encoding="utf-8") as f:
+    json.dump(products, f, ensure_ascii=False, indent=2)
+
+print("✅ Categories replaced and saved to output_updated.json")

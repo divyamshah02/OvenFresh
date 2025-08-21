@@ -1114,7 +1114,7 @@ function validateShippingForm() {
     "email",
     "phone",
     "address",
-    "addressName",
+    // "addressName",
     "city",
     "pincode",
     "deliveryDate",
@@ -1231,6 +1231,7 @@ function showPaymentOverview(orderData) {
 
   // Store payment data for processing
   currentPaymentData = orderData
+  centerRazorpayButton()
 }
 
 function processRazorpayPayment() {
@@ -1329,4 +1330,13 @@ function showNotification(message, type = "info") {
       notification.remove()
     }
   }, 5000)
+}
+
+function centerRazorpayButton() {
+    const btn = document.getElementById("razorpay-payment-btn");
+    if (!btn) return;
+
+    // Apply styles to center it
+    btn.scrollIntoView({behavior: "smooth", block: "center"});
+
 }

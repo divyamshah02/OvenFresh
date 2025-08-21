@@ -2,6 +2,7 @@ let csrf_token = null
 let hero_banners_url = null
 let delivery_policies_url = null
 let homepage_categories_url = null
+let videos_url = null
 let features_url = null
 let about_section_url = null
 let product_sections_url = null
@@ -12,6 +13,7 @@ let heroBannersData = []
 let deliveryPoliciesData = []
 let homepageCategoriesData = []
 let featuresData = []
+let videosData = []
 let aboutSectionData = null
 let productSectionsData = []
 let clientLogosData = []
@@ -21,6 +23,7 @@ function HomeDynamic(
   heroBannersUrlParam,
   deliveryPoliciesUrlParam,
   homepageCategoriesUrlParam,
+  videosUrlParam,
   featuresUrlParam,
   aboutSectionUrlParam,
   productSectionsUrlParam,
@@ -30,6 +33,7 @@ function HomeDynamic(
   hero_banners_url = heroBannersUrlParam
   delivery_policies_url = deliveryPoliciesUrlParam
   homepage_categories_url = homepageCategoriesUrlParam
+  videos_url = videosUrlParam
   features_url = featuresUrlParam
   about_section_url = aboutSectionUrlParam
   product_sections_url = productSectionsUrlParam
@@ -47,8 +51,9 @@ async function loadAllSections() {
   try {
     await Promise.all([
       loadHeroBanners(),
-      loadDeliveryPolicies(),
+      // loadDeliveryPolicies(),
       loadHomepageCategories(),
+      loadVideos(),
       loadFeatures(),
       loadAboutSection(),
       loadProductSections(),
@@ -101,18 +106,20 @@ function renderHeroBanners() {
     carouselItem.className = `carousel-item${index === 0 ? " active" : ""}`
 
     carouselItem.innerHTML = `
-            <div class="seasonal-slide" style="background-image: url('${banner.image}')">
-                <div class="carousel-caption text-start">
-                    <h3>${banner.title}</h3>
-                    ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}
-                    ${
-                      banner.button_text && banner.button_link
-                        ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
-                        : ""
-                    }
-                </div>
-            </div>
-        `
+      <div class="seasonal-slide">
+        <img src="${banner.image}" alt="${banner.title}">
+        <div class="carousel-caption text-start">
+          <h3>${banner.title}</h3>
+          ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}
+          ${
+            banner.button_text && banner.button_link
+              ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
+              : ""
+          }
+        </div>
+      </div>
+    `;
+
 
     carouselInner.appendChild(carouselItem)
   })
@@ -245,8 +252,73 @@ function renderHomepageCategories() {
     }
 
     container.appendChild(categoryElement)
+
+    
+  })
+
+  const scrollable = document.getElementById('scrollable');
+  const dotsContainer = document.querySelector('.dashboard-dots-container');
+  const cards = document.querySelectorAll('.dashboard-main-card');
+
+  // Create dots based on the number of cards
+  cards.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dashboard-dot');
+      if (index === 0) dot.classList.add('active');
+      dotsContainer.appendChild(dot);
+  });
+
+  const dots = document.querySelectorAll('.dashboard-dot');
+
+  // Update dots on scroll
+  scrollable.addEventListener('scroll', () => {
+      const scrollLeft = scrollable.scrollLeft;
+      const scrollWidth = scrollable.scrollWidth - scrollable.clientWidth;
+
+      // Calculate the active dot
+      const activeIndex = Math.round(
+          (scrollLeft / scrollWidth) * (dots.length - 1)
+      );
+
+      dots.forEach((dot, index) => {
+          if (index === activeIndex) {
+              dot.classList.add('active');
+          } else {
+              dot.classList.remove('active');
+          }
+      });
+  });
+
+}
+
+async function loadVideos() {
+  try {
+    const response = await fetch(videos_url)
+    const data = await response.json()
+
+    if (data.success && data.data) {
+      videosData = data.data
+      renderVideos()
+    }
+  } catch (error) {
+    console.error("Error loading features:", error)
+  }
+}
+
+function renderVideos() {
+  videosData.forEach((video) => {
+    if (video.position == "left") {
+      document.getElementById("videoLeft").src = video.video_url
+    }
+    else if (video.position == "right") {
+      document.getElementById("videoRight").src = video.video_url
+    }
+    else if (video.position == "center_text") {
+      document.getElementById("videoTextCenter").innerText = video.text_content
+    }
   })
 }
+
 
 async function loadFeatures() {
   try {
@@ -384,14 +456,15 @@ function renderProductSections() {
 
     // Get products based on section type
     let products = []
-    if (section.section_type === "custom" && section.items) {
-      products = section.items.map((item) => item.product_details).filter((p) => p && p.is_active)
-    } else if (section.dynamic_products) {
-      products = section.dynamic_products.filter((p) => p && p.is_active)
-    }
-
+    // if (section.section_type === "custom" && section.items) {
+    //   products = section.items.map((item) => item.product_details).filter((p) => p && p.is_active)
+    // } else if (section.dynamic_products) {
+    //   products = section.dynamic_products.filter((p) => p && p.is_active)
+    // }
+    products = section.dynamic_products.filter((p) => p && p.is_active)
     // Limit products to max_products
     products = products.slice(0, section.max_products)
+    console.log(products)
 
     sectionElement.innerHTML = `
             <div class="container">
@@ -415,7 +488,7 @@ function renderProductSections() {
       productElement.className = "col-md-6 col-lg-3"
 
       productElement.innerHTML = `
-                <div class="product-card">
+                <div class="product-card d-flex flex-column h-100" onclick="goToProductDetail('${product.slug}')">
                     <div class="product-img">
                         ${product.is_featured ? '<span class="badge bg-danger position-absolute top-0 end-0 mt-2 me-2">Hot Selling</span>' : ""}
                         <img src="${product.photos && product.photos.length ? product.photos[0] : "https://via.placeholder.com/300x300"}" 
@@ -424,9 +497,9 @@ function renderProductSections() {
                           section.show_add_to_cart
                             ? `
                             <div class="product-actions">
-                                <a href="#" class="btn-product-action"><i class="fas fa-heart"></i></a>
-                                <a href="#" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
-                                <a href="#" class="btn-product-action"><i class="fas fa-eye"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-heart"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-shopping-cart"></i></a>
+                                <a href="/product/${product.slug}" class="btn-product-action"><i class="fas fa-eye"></i></a>
                             </div>
                         `
                             : ""
@@ -435,24 +508,10 @@ function renderProductSections() {
                     <div class="product-body">
                         <h5>${product.title}</h5>
                         ${
-                          section.show_rating
-                            ? `
-                            <div class="product-rating mb-2">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="ms-2">(${Math.floor(Math.random() * 50) + 10})</span>
-                            </div>
-                        `
-                            : ""
-                        }
-                        ${
                           section.show_price
                             ? `
                             <div class="product-price">
-                                <span class="price">₹${product.price || "0.00"}</span>
+                                <span class="price">₹${product.product_variation[0].actual_price || "0.00"}</span>
                             </div>
                         `
                             : ""
@@ -461,9 +520,34 @@ function renderProductSections() {
                 </div>
             `
 
+            // ${
+            //     section.show_rating
+            //       ? `
+            //       <div class="product-rating mb-2">
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star"></i>
+            //           <i class="fas fa-star-half-alt"></i>
+            //           <span class="ms-2">(${Math.floor(Math.random() * 50) + 10})</span>
+            //       </div>
+            //   `
+            //       : ""
+            //   }
+
       productsContainer.appendChild(productElement)
     })
   })
+}
+
+function shortenText(text, maxLength = 20) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+}
+
+function goToProductDetail(productSlug) {
+  window.location.href = `/product/${productSlug}`
 }
 
 async function loadClientLogos() {
