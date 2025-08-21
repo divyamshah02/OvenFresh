@@ -40,6 +40,12 @@ class PolicyViewSet(viewsets.ViewSet):
     def list(self, request):
         return render(request, 'policy.html')
 
+class ContactUsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'contact_us.html')
+
 class ShopViewSet(viewsets.ViewSet):
 
     @handle_exceptions

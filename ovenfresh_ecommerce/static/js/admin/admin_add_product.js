@@ -898,10 +898,9 @@ async function loadExistingVariations() {
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th>Weight</th>
-                            <th>Actual Price</th>
-                            <th>Discounted Price</th>
-                            <th>Actions</th>
+                            <th class="text-start">Weight</th>
+                            <th class="text-center">Actual Price</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="variationTableBody">
@@ -916,20 +915,21 @@ async function loadExistingVariations() {
   const tableBody = document.getElementById("variationTableBody")
 
   result.data.forEach((variation) => {
+    if (variation.stock_toggle_mode) {
+      inStock = variation.in_stock_bull === true;
+    } else {
+      inStock = variation.stock_quantity > 0;
+    }
+    const rowClass = inStock ? "" : "table-danger"; 
     const row = document.createElement("tr")
+    row.className = rowClass
     row.innerHTML = `
-            <td><span class="badge bg-light text-dark">${variation.weight_variation}</span></td>
-            <td>₹${variation.actual_price}</td>
-            <td>₹${variation.discounted_price}</td>
-            <td>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-primary" onclick='copyAvailability(${JSON.stringify(variation)})'>
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                    <button class="btn btn-sm btn-outline-warning" onclick='copyAvailability(${JSON.stringify(variation)}, true)'>
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                </div>
+            <td class="text-start"><span class="badge bg-light text-dark">${variation.weight_variation}</span></td>
+            <td class="text-center">₹${variation.actual_price}</td>            
+            <td class="text-end">            
+                <button class="btn btn-sm btn-outline-primary" onclick='copyAvailability(${JSON.stringify(variation)}, true)'>
+                    <i class="fas fa-edit"></i> Edit
+                </button>            
             </td>
         `
     tableBody.appendChild(row)

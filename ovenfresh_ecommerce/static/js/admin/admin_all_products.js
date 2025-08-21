@@ -196,7 +196,9 @@ function createProductRow(product) {
   const categoryName = product.category_name || "Unknown"
   const variationsCount = product.variations_count || 0
   const priceRange = calculatePriceRange(product.variations || [])
-  const status = getProductStatus(product)
+  const ProductStatus = getProductStatusForRow(product)
+  console.log(ProductStatus)
+  const status = ProductStatus[1]
   const createdDate = new Date(product.created_at || Date.now()).toLocaleDateString()
 
   row.innerHTML = `
@@ -225,7 +227,7 @@ function createProductRow(product) {
             <span class="badge bg-info">${variationsCount} variations</span>
         </td>
         <td>${priceRange}</td>
-        <td>${getStatusBadge(status)}</td>
+        <td><span class="badge bg-${ProductStatus[0]}">${ProductStatus[1]}</span></td>
         <td>${createdDate}</td>
         <td>
             <div class="btn-group">
@@ -258,6 +260,58 @@ function getProductStatus(product) {
   const hasActiveVariations = product.variations.some((v) => v.is_active !== false)
   return hasActiveVariations ? "active" : "inactive"
 }
+
+function getProductStatusForRow(product) {
+  if (!product.is_active) {
+    return ["danger", "inactive"];
+  }
+
+  if (!product.variations || product.variations.length === 0) {
+    return ["danger", "inactive"];
+  }
+
+  const stockStatus = product.variations.reduce(
+    (acc, v) => {
+      if (v.is_active === false) return acc; // skip inactive variations
+      let inStock = false;
+
+      if (v.stock_toggle_mode) {
+        inStock = v.in_stock_bull === true;
+      } else {
+        inStock = v.stock_quantity > 0;
+      }
+
+      if (inStock) {
+        acc.inStock++;
+      } else {
+        acc.outOfStock++;
+      }
+
+      return acc;
+    },
+    { inStock: 0, outOfStock: 0 }
+  );
+
+  const hasActiveVariations = product.variations.some((v) => v.is_active !== false);
+
+  if (!hasActiveVariations) {
+    return ["danger", "inactive"];
+  }
+  if (stockStatus.inStock > 0 && stockStatus.outOfStock === 0) {
+    return ["success", "In stock"];
+  }
+
+  if (stockStatus.inStock === 0 && stockStatus.outOfStock > 0) {
+    return ["danger", "Out of stock"];
+  }
+
+  if (stockStatus.inStock > 0 && stockStatus.outOfStock > 0) {
+    return ["warning", `${stockStatus.outOfStock} Variation out of stock`];
+  }
+
+  return ["danger", "inactive"]; // fallback (shouldn’t normally reach here)
+}
+
 
 // Update calculatePriceRange function
 function calculatePriceRange(variations) {
@@ -502,7 +556,7 @@ function showProductDetails(product) {
   // Get category name
   const category = allCategories.find((cat) => cat.category_id === product.category_id)
   const categoryName = category ? category.title : "Unknown"
-
+  // const ProductStatus = getProductStatusForRow(product)
   modalBody.innerHTML = `
         <div class="row">
             <div class="col-md-4">
@@ -522,11 +576,8 @@ function showProductDetails(product) {
                     </div>
                 </div>
                 
-                <div class="row mb-3">
-                    <div class="col-sm-6">
-                        <strong>Status:</strong> ${getStatusBadge(getProductStatus(product))}
-                    </div>
-                    <div class="col-sm-6">
+                <div class="row mb-3">                    
+                    <div class="col-12">
                         <strong>Variations:</strong> ${(product.product_variation || []).length}
                     </div>
                 </div>
@@ -545,17 +596,28 @@ function showProductDetails(product) {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${product.product_variation
-                                  .map(
-                                    (variation) => `
-                                    <tr>
-                                        <td>${variation.weight_variation}</td>
-                                        <td>₹${variation.actual_price}</td>
-                                        <td>₹${variation.discounted_price}</td>
+                              ${product.product_variation
+                                .map((v) => {
+                                  let inStock = false;
+
+                                  if (v.stock_toggle_mode) {
+                                    inStock = v.in_stock_bull === true;
+                                  } else {
+                                    inStock = v.stock_quantity > 0;
+                                  }
+
+                                  // apply class if out of stock
+                                  const rowClass = inStock ? "" : "table-danger"; 
+
+                                  return `
+                                    <tr class="${rowClass}">
+                                      <td>${v.weight_variation}</td>
+                                      <td>₹${v.actual_price}</td>
+                                      <td>₹${v.discounted_price}</td>
                                     </tr>
-                                `,
-                                  )
-                                  .join("")}
+                                  `;
+                                })
+                                .join("")}
                             </tbody>
                         </table>
                     </div>
@@ -565,7 +627,9 @@ function showProductDetails(product) {
             </div>
         </div>
     `
-
+    // <div class="col-sm-6">
+    //       <strong>Status:</strong> <span class="badge bg-${ProductStatus[0]}">${ProductStatus[1]}</span>
+    //   </div>
   // Set edit button action
   document.getElementById("editProductBtn").onclick = () => {
     modal.hide()

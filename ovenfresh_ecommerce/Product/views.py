@@ -7,6 +7,8 @@ from django.db import models
 
 from django.utils import timezone
 
+import re
+import unicodedata
 from .models import *
 from .serializers import *
 
@@ -324,7 +326,7 @@ class ProductViewSet(viewsets.ViewSet):
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             product_id = self.generate_product_id()
-
+            
             new_product = Product(
                 product_id=product_id,
                 title=title,
@@ -341,6 +343,7 @@ class ProductViewSet(viewsets.ViewSet):
                 hsn=hsn,
                 sku=sku,
                 tags=tags,
+                slug=self.generate_unique_slug(title),
                 created_at=timezone.now()
             )
             new_product.save()
@@ -365,6 +368,30 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def generate_unique_slug(self, value):
+        """
+        Generate a unique slug for Product model:
+        - Clean title -> slug
+        - If slug exists, append counter
+        - Returns unique slug string
+        """
+
+        # Step 1: Basic slugify
+        value = str(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('utf-8')
+        value = re.sub(r'[^a-zA-Z0-9]+', '-', value)
+        base_slug = value.strip('-').lower()
+
+        slug = base_slug
+        counter = 1
+
+        # Step 2: Check uniqueness in Product model
+        while Product.objects.filter(slug=slug, is_active=True).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        return slug
+    
     def generate_product_id(self):
         while True:
             product_id = random.choice('123456789') + ''.join(random.choices(string.digits, k=9))
@@ -624,6 +651,7 @@ class AllProductsViewSet(viewsets.ViewSet):
             product_obj = Product.objects.filter(is_extras=False, is_active=True)
 
         product_data = AllProductSerializer(product_obj, many=True)
+
 
         return Response({
             "success": True,
