@@ -208,6 +208,9 @@ body {
 }
 
 /* Order status background colors */
+.status-pending {
+    background-color: rgba(232, 42, 42, 0.434);
+}
 .status-placed {
     background-color: white;
 }
@@ -222,6 +225,29 @@ body {
 }
 .status-delivered {
     background-color: #98fb987f; /* Pastel green */
+}
+
+.status-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+    font-size: 14px;
+    align-items: center;
+}
+
+.status-legend div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    display: inline-block;
 }
 
 

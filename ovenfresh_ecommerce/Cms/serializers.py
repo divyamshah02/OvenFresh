@@ -101,25 +101,25 @@ class ProductSectionSerializer(serializers.ModelSerializer):
     
     def get_dynamic_products(self, obj):
         """Get products based on section type and category/subcategory selection"""
-        products = Product.objects.filter(is_active=True)
-        
+        # products = Product.objects.filter(is_active=True)
+
         if obj.section_type == 'category_based':
             if obj.subcategory_id:
-                products = products.filter(subcategory_id=obj.subcategory_id)
+                products = Product.objects.filter(sub_category_id=obj.subcategory_id)[:obj.max_products]
             elif obj.category_id:
-                products = products.filter(category_id=obj.category_id)
-        elif obj.section_type == 'featured':
-            products = products.filter(is_featured=True)
-        # elif obj.section_type == 'bestsellers':
-        #     products = products.order_by('-reviews_count')
+                products = Product.objects.filter(category_id=obj.category_id)[:obj.max_products]
+
         elif obj.section_type == 'new_arrivals':
-            products = products.order_by('-created_at')
-        # elif obj.section_type == 'trending':
-        #     products = products.order_by('-rating', '-reviews_count')
-        
+            products = Product.objects.order_by('-created_at')[:obj.max_products]
+
+        elif obj.section_type == 'custom':
+            # Fetch from ProductSectionItem
+            product_ids = obj.items.filter(is_active=True).values_list('product_id', flat=True)
+            products = Product.objects.filter(product_id__in=product_ids)[:obj.max_products]
+
         # Limit products based on max_products setting
         products = products[:obj.max_products]
-        
+
         return ProductSerializer(products, many=True).data
 
 class ClientLogoSerializer(serializers.ModelSerializer):

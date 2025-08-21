@@ -8,7 +8,9 @@ router = DefaultRouter()
 router.register(r'', HomeViewSet, basename='home')
 # router.register(r'login', HomeViewSet, basename='login')
 router.register(r'shop', ShopViewSet, basename='shop')
-router.register(r'product-detail', ProductDetailViewSet, basename='product-detail')
+router.register(r'refund-policy', PolicyViewSet, basename='refund-policy')
+router.register(r'contact-us', ContactUsViewSet, basename='contact-us')
+router.register(r'product', ProductDetailViewSet, basename='product-detail')
 router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'checkout', CheckoutViewSet, basename='checkout')
 
@@ -52,4 +54,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path("payment-success-callback/", payment_success_callback, name="payment-success-callback"),
     path('admin-login/', admin_login, name='admin_login'),
+    # path('update-pincodes/', update_pincode_charges, name='update-pincodes'),
 ]

@@ -314,6 +314,9 @@ function renderOrders() {
   ordersData.forEach((order) => {
     const row = document.createElement("tr")
     switch (order.status.toLowerCase()) {
+      case "not_placed":
+        row.classList.add("status-pending");
+        break;
       case "placed":
         row.classList.add("status-placed");
         break;
@@ -344,7 +347,7 @@ function renderOrders() {
             <td>${formatDate(order.created_at)}</td>
             <td>
                 <div class="fw-medium">${order.first_name} - ${order.phone}</div>
-                <div class="small text-muted">#${order.order_id}</div>
+                <div class="small">#${order.order_id}</div>
             </td>
             <td>
               ${order.items.map(
@@ -353,7 +356,7 @@ function renderOrders() {
             </td>
             <td>
                 <div>${formatDate(order.delivery_date)}</div>
-                <div class="small text-muted">${order.timeslot_name_time || "No Timeslot"}</div>
+                <div class="small">${order.timeslot_name_time || "No Timeslot"}</div>
             </td>
             <td>
                 ${order.delivery_partner_name_number ?

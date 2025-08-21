@@ -73,10 +73,62 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return representation
 
+class SearchProductSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ["product_id", "title", "slug", "thumbnail"]
+
+    def get_thumbnail(self, obj):
+        return obj.photos[0] if obj.photos else None
+
 class AllProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Add category information
+        if 'category_id' in representation:        
+            category_data = Category.objects.filter(category_id=representation['category_id']).first()
+            representation['category_name'] = category_data.title if category_data else "Unknown"
+
+        # Add subcategory information
+        if 'sub_category_id' in representation and representation['sub_category_id']:        
+            sub_category_data = SubCategory.objects.filter(sub_category_id=representation['sub_category_id']).first()
+            representation['sub_category_name'] = sub_category_data.title if sub_category_data else "Unknown"
+        else:
+            representation['sub_category_name'] = None
+        
+        # Add variations information
+        if 'product_id' in representation:
+            variations = ProductVariation.objects.filter(product_id=representation['product_id'])
+            representation['variations'] = ProductVariationDetailSerializer(variations, many=True).data
+            representation['variations_count'] = variations.count()
+            
+            # Get first variation for price display
+            first_variation = variations.first()
+            if first_variation:
+                representation['product_variation_id'] = first_variation.product_variation_id
+                representation['actual_price'] = first_variation.actual_price
+                representation['discounted_price'] = first_variation.discounted_price
+                representation['weight'] = first_variation.weight_variation
+            else:
+                representation['product_variation_id'] = None
+                representation['actual_price'] = "0"
+                representation['discounted_price'] = "0"
+                representation['weight'] = "N/A"
+
+        return representation
+
+
+class ShopProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['product_id', 'category_id', 'sub_category_id', 'title', 'photos', 'slug']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

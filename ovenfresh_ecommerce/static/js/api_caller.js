@@ -38,11 +38,12 @@ async function callApi(method, url, bodyData = null, csrfToken = '', media_uploa
 
         try {
             const data = await response.json();
+            console.log('API Response:', data);
             return [true, data];
         }
         catch(error) {
             console.log('Error in parsing JSON:', error);
-            window.location.href=`/login/`;            
+            // window.location.href=`/login/`;            
         }
         
     } catch (error) {

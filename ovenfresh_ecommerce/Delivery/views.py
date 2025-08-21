@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from utils.email_sender_util import prepare_and_send_order_email
 from utils.decorators import handle_exceptions, check_authentication
 from UserDetail.models import User
 from Order.models import Order, OrderItem
@@ -300,6 +301,12 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
             # Append new photos to existing delivery photos
             if image_urls:
                 order.delivery_photos += image_urls
+
+            prepare_and_send_order_email(order_id=order.order_id, type="delivered")
+
+        elif status_type == "out_for_delivery":
+            # Send email notification for delivery completion
+            prepare_and_send_order_email(order_id=order.order_id, type="out_for_delivery")
 
         order.status = status_type
         order.save()

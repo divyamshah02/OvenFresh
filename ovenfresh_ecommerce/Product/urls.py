@@ -28,6 +28,8 @@ router.register(r'apply-coupon', ApplyCouponViewSet, basename='apply-coupon')
 router.register(r'reviews', ReviewsViewSet, basename='reviews')
 router.register(r'admin-reviews', AdminReviewsViewSet, basename='admin-reviews')
 
+router.register(r'product-search', SearchViewSet, basename='product-search')
+
 urlpatterns = [
     path('', include(router.urls)),
 ]

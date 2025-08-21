@@ -17,6 +17,7 @@ let cartItems = []
 
 async function InitializeProductDetail(
   csrfTokenParam,
+  productId,
   productDetailUrlParam,
   pincodeCheckUrlParam,
   cartListUrlParam,
@@ -32,7 +33,7 @@ async function InitializeProductDetail(
 
   // Get product ID from URL parameters
   const urlParams = new URLSearchParams(window.location.search)
-  const productId = urlParams.get("product_id") || urlParams.get("id")
+  // const productId = urlParams.get("product_id") || urlParams.get("id")
 
   if (!productId) {
     showNotification("Product not found.", "error")
@@ -50,27 +51,27 @@ async function InitializeProductDetail(
     showNotification("Error loading product details.", "error")
   }
 
-  document.getElementById("toppers").addEventListener("change", function () {
-    const selectedOption = this.options[this.selectedIndex];
+  // document.getElementById("toppers").addEventListener("change", function () {
+  //   const selectedOption = this.options[this.selectedIndex];
     
-    const selectedProductVariationId = selectedOption.value;
-    const product_id = selectedOption.getAttribute("data-product_id");
+  //   const selectedProductVariationId = selectedOption.value;
+  //   const product_id = selectedOption.getAttribute("data-product_id");
 
-    if (selectedProductVariationId) {
-      ExtraAddToCart(product_id, selectedProductVariationId, 1)
-    }
-  })
+  //   if (selectedProductVariationId) {
+  //     ExtraAddToCart(product_id, selectedProductVariationId, 1)
+  //   }
+  // })
 
-  document.getElementById("greetind_cards").addEventListener("change", function () {
-    const selectedOption = this.options[this.selectedIndex];
+  // document.getElementById("greetind_cards").addEventListener("change", function () {
+  //   const selectedOption = this.options[this.selectedIndex];
     
-    const selectedProductVariationId = selectedOption.value;
-    const product_id = selectedOption.getAttribute("data-product_id");
+  //   const selectedProductVariationId = selectedOption.value;
+  //   const product_id = selectedOption.getAttribute("data-product_id");
 
-    if (selectedProductVariationId) {
-      ExtraAddToCart(product_id, selectedProductVariationId, 1)
-    }
-  })
+  //   if (selectedProductVariationId) {
+  //     ExtraAddToCart(product_id, selectedProductVariationId, 1)
+  //   }
+  // })
 }
 
 async function loadProductData(productId) {
@@ -78,6 +79,7 @@ async function loadProductData(productId) {
     const [success, result] = await callApi("GET", `${product_detail_url}?product_id=${productId}`)
     if (success && result.success) {
       const data = result.data
+      console.log(data)
 
       // Set current product data
       currentProduct = {
@@ -95,11 +97,12 @@ async function loadProductData(productId) {
         storage_instructions: data.storage_instructions || "",
         category_name: data.category_name,
         sub_category_name: data.sub_category_name,
+        tags: data.tags || '',
       }
 
       // Set variations
       currentVariations = data.product_variation || []
-
+      addMetaInfo()
       // Render all components
       renderProductDetails(currentProduct)
       renderVariationOptions(currentVariations)
@@ -118,6 +121,64 @@ async function loadProductData(productId) {
     console.error("Error loading product data:", error)
     showNotification("Error loading product details.", "error")
   }
+}
+
+function handleDropdownChange(elementId) {
+  const dropdown = document.getElementById(elementId);
+  if (!dropdown) return; // safeguard if element doesn't exist
+
+  const selectedOption = dropdown.options[dropdown.selectedIndex];
+  const selectedProductVariationId = selectedOption.value;
+  const product_id = selectedOption.getAttribute("data-product_id");
+
+  if (selectedProductVariationId && selectedProductVariationId.trim() !== "") {
+    ExtraAddToCart(product_id, selectedProductVariationId, 1);
+  }
+}
+
+
+function addMetaInfo(){
+  let metaData = `
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>${currentProduct.title} | Ovenfresh</title>
+  <meta name="description" content="${currentProduct.description}" />
+  <meta name="keywords" content="${currentProduct.tags}" />
+  <meta name="author" content="Ovenfresh" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:title" content="${currentProduct.title} | Ovenfresh" />
+  <meta property="og:description" content="${currentProduct.description}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="${currentProduct.photos[0]}" />
+  <meta property="og:site_name" content="Ovenfresh" />
+  <meta property="og:locale" content="en_US" />
+`
+  document.getElementById("metaDataEle").innerHTML = document.getElementById("metaDataEle").innerHTML + metaData
+}
+
+function addMetaInfo_new(currentProduct) {
+  document.title = `${currentProduct.title} | Ovenfresh`;
+
+  function addTag(tagName, attrs) {
+    let tag = document.createElement(tagName);
+    for (let key in attrs) tag.setAttribute(key, attrs[key]);
+    document.head.appendChild(tag);
+  }
+
+  addTag("meta", { name: "description", content: currentProduct.description });
+  addTag("meta", { name: "keywords", content: currentProduct.tags });
+  addTag("meta", { name: "author", content: "Ovenfresh" });
+
+  addTag("meta", { property: "og:title", content: `${currentProduct.title} | Ovenfresh` });
+  addTag("meta", { property: "og:description", content: currentProduct.description });
+  addTag("meta", { property: "og:type", content: "website" });
+  addTag("meta", { property: "og:image", content: currentProduct.photos[0] });
+  addTag("meta", { property: "og:site_name", content: "Ovenfresh" });
+  addTag("meta", { property: "og:locale", content: "en_US" });
 }
 
 async function loadTimeslots() {
@@ -410,7 +471,7 @@ function renderRelatedProducts(products) {
                                 <a href="#" class="btn-product-action" onclick="quickAddToCart(${product.product_id}, ${product.product_variation_id || "null"})">
                                     <i class="fas fa-shopping-cart"></i>
                                 </a>
-                                <a href="/product-detail?product_id=${product.product_id}" class="btn-product-action">
+                                <a href="/product/${product.slug}" class="btn-product-action">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             </div>
@@ -715,12 +776,15 @@ async function AddToCart(variationId, quantity, additionalData) {
     const bodyData = {
       product_id: product_id,
       product_variation_id: product_variation_id,
-      qty: qty,
+      quantity: qty,
       ...additionalData,
     }
 
     const [success, result] = await callApi("POST", cart_list_url, bodyData, csrf_token)
     if (success && result.success) {
+      handleDropdownChange("toppers");
+      handleDropdownChange("greetind_cards");
+      
       showNotification("Item added to cart!", "success")
       // Refresh cart if we're on cart page
       if (document.getElementById("cart-items")) {
@@ -804,7 +868,7 @@ async function buyNow() {
   // Prepare checkout data
   const checkoutData = {
     delivery_date: deliveryDate,
-    delivery_time: deliveryTime,
+    timeslot_id: deliveryTime,
     pincode: pincode,
   }
 

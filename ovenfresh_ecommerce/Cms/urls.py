@@ -18,6 +18,8 @@ router.register(r'categories', CategoryViewSet, basename='cms-categories')
 router.register(r'subcategories', SubCategoryViewSet, basename='cms-subcategories')
 router.register(r'products', ProductViewSet, basename='cms-products')
 
+router.register(r'upload-file', FileUploadView, basename='upload-file')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('test/', test, name='cms_test'),
