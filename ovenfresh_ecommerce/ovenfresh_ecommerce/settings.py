@@ -13,6 +13,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+APPEND_SLASH = True
+
 
 # Feature Flags
 ENABLE_PINCODE_LOGIC = False  # Set to True to enable pincode-based availability
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ovenfresh_ecommerce.middleware.FrontendRewriteMiddleware',
 ]
 
 ROOT_URLCONF = 'ovenfresh_ecommerce.urls'

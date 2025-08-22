@@ -1,17 +1,8 @@
 from django.http import HttpResponse, HttpResponsePermanentRedirect
-
+from django.shortcuts import redirect
 
 def custom_404(request, exception=None):
-    path = request.path
-
-    # Handle old WordPress category URLs
-    if path.startswith("/product-category/"):
-        new_path = path.replace("/product-category/", "/shop/", 1)
-        return HttpResponsePermanentRedirect(new_path)
-
-    # Fallback → homepage
-    return HttpResponsePermanentRedirect("/")
-
+    return redirect('/')
 
 def robots_txt(request):
     content = """

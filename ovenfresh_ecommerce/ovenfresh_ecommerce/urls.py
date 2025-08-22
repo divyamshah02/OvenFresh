@@ -33,6 +33,3 @@ urlpatterns = [
     path("robots.txt", robots_txt),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-# ✅ custom 404 handler
-handler404 = "ovenfresh_ecommerce.views.custom_404"
