@@ -33,7 +33,7 @@ async function checkLoginStatus() {
 
     if (success && result.success) {
       // Already logged in, redirect to dashboard
-      window.location.href = "/delivery-dashobard/"
+      window.location.href = "/delivery-dashboard/"
     }
   } catch (error) {
     // Not logged in, stay on login page
@@ -71,7 +71,7 @@ async function handleLogin() {
 
       // Redirect to dashboard after short delay
       setTimeout(() => {
-        window.location.href = "/delivery-dashobard/"
+        window.location.href = "/delivery-dashboard/"
       }, 1000)
     } else {
       throw new Error(result.error || "Login failed")

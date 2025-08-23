@@ -390,7 +390,7 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
             if user_id:
                 order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
             else:
-                order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
+                order = Order.objects.filter(order_id=order_id).first()
             if not order:
                 return Response({
                     "success": False, 
@@ -622,7 +622,8 @@ class OrderDetailViewSet(viewsets.ViewSet):
             if user_id:
                 order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
             else:
-                order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
+                # order = Order.objects.filter(order_id=order_id, session_id=session_id).first()
+                order = Order.objects.filter(order_id=order_id).first()
             if not order:
                 return Response({
                     "success": False, 
