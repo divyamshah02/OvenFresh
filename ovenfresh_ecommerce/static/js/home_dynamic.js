@@ -106,19 +106,19 @@ function renderHeroBanners() {
     carouselItem.className = `carousel-item${index === 0 ? " active" : ""}`
 
     carouselItem.innerHTML = `
-      <div class="seasonal-slide">
-        <img src="${banner.image}" alt="${banner.title}">
-        <div class="carousel-caption text-start">
-          <h3>${banner.title}</h3>
-          ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}
-          ${
-            banner.button_text && banner.button_link
-              ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
-              : ""
-          }
-        </div>
+      <div class="seasonal-slide" onclick="window.location='${banner.button_link}'">
+        <img src="${banner.image}" alt="${banner.title}">        
       </div>
     `;
+    // <div class="carousel-caption text-start">
+    //       <h3>${banner.title}</h3>
+    //       ${banner.subtitle ? `<p>${banner.subtitle}</p>` : ""}          
+    //     </div>
+    // ${
+    //         banner.button_text && banner.button_link
+    //           ? `<a href="${banner.button_link}" class="btn of-btn-primary rounded-pill">${banner.button_text}</a>`
+    //           : ""
+    //       }
 
 
     carouselInner.appendChild(carouselItem)

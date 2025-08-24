@@ -1263,9 +1263,9 @@ function loadCustomProducts(section = null) {
   container.innerHTML = homepageData.allProducts
     .map(
       (product) => `
-    <div class="form-check product-item" data-category="${product.category_name}" data-subcategory="${product.sub_category_name || ""}" data-name="${product.title}">
+    <div class="form-check product-item" data-category="${product.category_id}" data-subcategory="${product.sub_category_id || ""}" data-name="${product.title}">
       <input class="form-check-input" type="checkbox" value="${product.product_id}" id="product_${product.product_id}" 
-             ${selectedProducts.includes(product.id ? product.id.toString() : product.product_id.toString()) ? "checked" : ""} onchange="updateSelectedProductsCount()">
+             ${selectedProducts.includes(product.product_id ? product.product_id.toString() : product.product_id.toString()) ? "checked" : ""} onchange="updateSelectedProductsCount()">
       <label class="form-check-label d-flex align-items-center" for="product_${product.product_id}">
         <img src="${product.photos && product.photos[0] ? product.photos[0] : "/placeholder.svg?height=40&width=40"}" alt="${product.title}" class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
         <div>
@@ -1288,11 +1288,13 @@ function filterProducts() {
 
   // Update subcategory filter based on category
   if (categoryFilter) {
-    const subcategorySelect = document.getElementById("productSubcategoryFilter")
-    const subcategories = homepageData.allSubcategories.filter((sub) => sub.category_id == categoryFilter)
-    subcategorySelect.innerHTML =
-      '<option value="">All Subcategories</option>' +
-      subcategories.map((sub) => `<option value="${sub.sub_category_id}">${sub.title}</option>`).join("")
+    if (!subcategoryFilter) {
+      const subcategorySelect = document.getElementById("productSubcategoryFilter")
+      const subcategories = homepageData.allSubcategories.filter((sub) => sub.category_id == categoryFilter)
+      subcategorySelect.innerHTML =
+        '<option value="">All Subcategories</option>' +
+        subcategories.map((sub) => `<option value="${sub.sub_category_id}">${sub.title}</option>`).join("")
+    }
   }
 
   // Filter products
@@ -1442,7 +1444,7 @@ function showProductSectionViewModal(section) {
                                             <h6 class="card-title">${product.title}</h6>
                                             <p class="card-text">
                                                 <small class="text-muted">${product.category_name}</small><br>
-                                                <strong>₹${product.price}</strong>
+                                                <strong>₹${product.actual_price}</strong>
                                                 ${product.rating > 0 ? `<br><small>⭐ ${product.rating} (${product.reviews_count})</small>` : ""}
                                             </p>
                                         </div>
