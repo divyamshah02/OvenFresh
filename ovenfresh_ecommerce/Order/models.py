@@ -46,7 +46,7 @@ from django.db import models
 class Order(models.Model):
     order_id = models.CharField(max_length=20, unique=True)  # 10-digit custom ID
     user_id = models.CharField(max_length=20, null=True, blank=True)
-    session_id = models.CharField(max_length=20, null=True, blank=True)
+    session_id = models.CharField(max_length=40, null=True, blank=True)
     pincode_id = models.CharField(max_length=20)
     timeslot_id = models.CharField(max_length=20)
     
@@ -95,7 +95,8 @@ class Order(models.Model):
     order_note = models.TextField(null=True, blank=True)
     special_instructions = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    delivery_photos = models.JSONField(default=list)
+    delivery_photos = models.JSONField(default=list, blank=True, null=True)
+    transport_mode = models.CharField(max_length=255, blank=True, null=True, default="")
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
 
     def __str__(self):

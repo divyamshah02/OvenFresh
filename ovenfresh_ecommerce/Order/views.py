@@ -8,6 +8,8 @@ from django.db.models import Q, Sum, Count, F
 from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.db import transaction
+from django.utils import timezone
+
 
 from .models import *
 from .serializers import *
@@ -605,6 +607,86 @@ class PaymentStatusCheckViewSet(viewsets.ViewSet):
         return True
 
 
+class ConfirmPaymentViewSet(viewsets.ViewSet):
+
+    # @check_authentication(required_role="admin")  # restrict to admin for safety
+    @handle_exceptions
+    def list(self, request):
+        """
+        Check last 2 days' orders with pending Razorpay payments 
+        and update if payment is now completed.
+        """
+        try:
+            # Setup Razorpay client
+            if not hasattr(settings, 'RAZORPAY_KEY_ID') or not hasattr(settings, 'RAZORPAY_KEY_SECRET'):
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Payment gateway configuration error."
+                }, status=500)
+
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Filter orders from last 2 days, unpaid, razorpay
+            two_days_ago = timezone.now() - datetime.timedelta(days=2)
+            pending_orders = Order.objects.filter(
+                created_at__gte=two_days_ago,
+                payment_received=False,
+                payment_method="razorpay"
+            )
+
+            updated_orders = []
+            for order in pending_orders:
+                if not order.razorpay_order_id:
+                    continue
+
+                try:
+                    razorpay_order = client.order.fetch(order.razorpay_order_id)
+
+                    if razorpay_order['status'] == 'paid':
+                        order.payment_received = True
+                        if order.status == "not_placed":
+                            order.status = "placed"
+
+                        # Try to capture payment ID if available
+                        if 'payments' in razorpay_order:
+                            payments = client.order.payments(order.razorpay_order_id)
+                            if payments and 'items' in payments and payments['items']:
+                                order.razorpay_payment_id = payments['items'][0].get('id')
+
+                        order.save()
+                        prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
+
+                        updated_orders.append(order.order_id)
+
+                except razorpay.errors.BadRequestError:
+                    continue
+                except Exception:
+                    continue
+
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {
+                    "message": "Verification completed",
+                    "updated_orders": updated_orders
+                },
+                "error": None
+            }, status=200)
+
+        except Exception as e:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
 class OrderDetailViewSet(viewsets.ViewSet):
     
     @handle_exceptions
@@ -1161,6 +1243,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 # Photos and extra cost
                 'delivery_photos': order.delivery_photos if order.delivery_photos else [],
                 'extra_cost': float(order.extra_cost or 0),
+                'transport_mode': order.transport_mode,
             }
             
             return Response({
@@ -1565,8 +1648,12 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
             items_data.append(["", f"Discount ({order.coupon_code})", f"-{order.coupon_discount}/-"])
 
         # Taxes
-        items_data.append(["", "CGST (9%)", f"{order.tax_amount}/-"])
-        items_data.append(["", "SGST (9%)", f"{order.tax_amount}/-"])
+        try:
+            items_data.append(["", "CGST (9%)", f"{round(float(order.tax_amount)/2, 2)}/-"])
+            items_data.append(["", "SGST (9%)", f"{round(float(order.tax_amount)/2, 2)}/-"])
+        except:
+            items_data.append(["", "CGST (9%) + SGST (9%)", f"{order.tax_amount}/-"])
+        # items_data.append(["", "CGST (9%) + SGST (9%)", f"{order.tax_amount}/-"])
 
         # Total
         items_data.append(["", "Total", f"{order.total_amount}/-"])

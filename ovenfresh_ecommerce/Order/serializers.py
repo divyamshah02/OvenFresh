@@ -14,12 +14,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_product_title(self, obj):
-        products = self.context.get("products", {})
-        return products.get(obj.product_id)
+        product_data = Product.objects.filter(product_id=obj.product_id).first()
+        return product_data.title
 
     def get_weight_variation(self, obj):
-        variations = self.context.get("variations", {})
-        return variations.get(obj.product_variation_id)
+        product_data = ProductVariation.objects.filter(product_variation_id=obj.product_variation_id).first()
+        return product_data.weight_variation
 
 
 class OrderSerializer(serializers.ModelSerializer):

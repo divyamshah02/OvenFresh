@@ -343,8 +343,8 @@ function renderOrders() {
                     <input class="form-check-input order-checkbox" type="checkbox" 
                            data-order-id="${order.order_id}" ${isSelected ? "checked" : ""}>
                 </div>
-            </td>
-            <td>${formatDate(order.created_at)}</td>
+            </td>            
+            <td>${new Date(order.created_at).toLocaleString("en-IN", {year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"})}</td>
             <td>
                 <div class="fw-medium">${order.first_name} - ${order.phone}</div>
                 <div class="small">#${order.order_id}</div>
@@ -549,7 +549,7 @@ async function viewOrderQuick(orderId) {
                     </div>
                     <div class="col-md-6">
                         <h6 class="mb-2">Order Information</h6>
-                        <p class="mb-1"><strong>Date:</strong> ${formatDate(order.created_at)}</p>
+                        <p class="mb-1"><strong>Date:</strong> ${new Date(order.created_at).toLocaleString("en-IN", {year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"})}</p>
                         <p class="mb-1"><strong>Status:</strong> <span class="badge ${getOrderStatusBadgeClass(order.status)}">${getOrderStatusText(order.status)}</span></p>
                         <p class="mb-0"><strong>Payment:</strong> <span class="badge ${getPaymentStatusBadgeClass(order.payment_received, order.payment_method)}">${getPaymentStatusText(order.payment_received, order.payment_method)}</span></p>
                     </div>

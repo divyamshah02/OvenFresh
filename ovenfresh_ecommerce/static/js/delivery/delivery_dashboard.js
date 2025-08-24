@@ -9,6 +9,7 @@ let my_orders_url = null
 let dashboardData = null
 let pastOrders = []
 let currentCodOrder = null
+let currentOnlineOrder = null
 
 async function InitializeDeliveryDashboard(
   csrfTokenParam,
@@ -27,13 +28,8 @@ async function InitializeDeliveryDashboard(
 
   try {
     showLoading()
-
-    // Load dashboard data
     await loadDashboardData()
-
-    // Initialize event listeners
     initializeEventListeners()
-
     hideLoading()
   } catch (error) {
     console.error("Error initializing dashboard:", error)
@@ -45,13 +41,11 @@ async function InitializeDeliveryDashboard(
 async function loadDashboardData() {
   try {
     const [success, result] = await callApi("GET", dashboard_url)
-
     if (success && result.success) {
       dashboardData = result.data
       populateDashboard()
     } else {
       if (result.user_not_logged_in) {
-        // Redirect to login
         window.location.href = "/delivery-login/"
         return
       }
@@ -59,7 +53,6 @@ async function loadDashboardData() {
     }
   } catch (error) {
     console.error("Error loading dashboard:", error)
-    // Redirect to login on any authentication error
     window.location.href = "/delivery-login/"
   }
 }
@@ -67,7 +60,6 @@ async function loadDashboardData() {
 async function loadPastOrders() {
   try {
     const [success, result] = await callApi("GET", `${my_orders_url}?date=completed`)
-
     if (success && result.success) {
       pastOrders = result.data || []
       populateOrders("pastOrders", pastOrders)
@@ -81,27 +73,16 @@ async function loadPastOrders() {
 
 function populateDashboard() {
   if (!dashboardData) return
-
-  // Update user info
   document.getElementById("userName").textContent = dashboardData.user_info.name
-
-  // Update availability toggle
-  const availabilityToggle = document.getElementById("availabilityToggle")
-  availabilityToggle.checked = dashboardData.user_info.is_available
-
-  // Update stats
+  document.getElementById("availabilityToggle").checked = dashboardData.user_info.is_available
   document.getElementById("pendingCount").textContent = dashboardData.stats.pending_count
   document.getElementById("completedCount").textContent = dashboardData.stats.completed_today
-  // document.getElementById("todayEarnings").textContent = `₹${dashboardData.stats.today_earnings.toFixed(2)}`
-
-  // Populate orders
   populateOrders("todayOrders", dashboardData.today_orders)
   populateOrders("pendingOrders", dashboardData.pending_orders)
 }
 
 function populateOrders(containerId, orders) {
   const container = document.getElementById(containerId)
-
   if (!orders || orders.length === 0) {
     container.innerHTML = `
             <div class="text-center py-5">
@@ -112,7 +93,6 @@ function populateOrders(containerId, orders) {
         `
     return
   }
-
   container.innerHTML = orders.map((order) => createOrderCard(order)).join("")
 }
 
@@ -123,7 +103,6 @@ function createOrderCard(order) {
     ? '<span class="badge bg-warning text-dark">COD</span>'
     : '<span class="badge bg-success">Online</span>'
 
-  // Determine action buttons based on status
   let actionButtons = ""
   if (order.status === "ready") {
     actionButtons = `
@@ -132,7 +111,6 @@ function createOrderCard(order) {
             </button>
         `
   } else if (order.status === "out_for_delivery") {
-    // For COD orders, show collect cash button first
     if (order.is_cod) {
       actionButtons = `
                 <button class="btn btn-warning btn-sm" onclick="showCodModal('${order.order_id}', ${order.total_amount})">
@@ -140,15 +118,13 @@ function createOrderCard(order) {
                 </button>
             `
     } else {
-      // For online orders, directly mark as delivered
       actionButtons = `
-                <button class="btn btn-success btn-sm" onclick="updateOrderStatus('${order.order_id}', 'delivered')">
+                <button class="btn btn-success btn-sm" onclick="showOnlineModal('${order.order_id}')">
                     <i class="fas fa-check me-1"></i>Mark Delivered
                 </button>
             `
     }
   }
-  // Remove the delivered + COD condition since we handle it above
 
   return `
         <div class="card mb-3">
@@ -167,7 +143,6 @@ function createOrderCard(order) {
                     </div>
                 </div>
             </div>
-            
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
@@ -177,48 +152,20 @@ function createOrderCard(order) {
                             <i class="fas fa-phone me-1"></i>
                             <a href="tel:${order.customer_phone}" class="text-decoration-none">${order.customer_phone}</a>
                         </p>
-                        
-                        <h6><i class="fas fa-map-marker-alt me-2"></i>Delivery Address</h6>
+                        <h6><i class="fas fa-map-marker-alt me-2"></i>Delivery Address <a href="https://www.google.com/maps/search/${order.delivery_address}" target="_blank">(Maps)</a></h6>
                         <p class="mb-2">${order.delivery_address}</p>
-                        
-                        ${
-                          order.special_instructions
-                            ? `
-                            <h6><i class="fas fa-sticky-note me-2"></i>Special Instructions</h6>
-                            <p class="mb-2 text-info">${order.special_instructions}</p>
-                        `
-                            : ""
-                        }
+                        ${order.special_instructions ? `<h6><i class="fas fa-sticky-note me-2"></i>Special Instructions</h6><p class="mb-2 text-info">${order.special_instructions}</p>` : ""}
                     </div>
-                    
                     <div class="col-md-6">
                         <h6><i class="fas fa-shopping-bag me-2"></i>Order Items (${order.items_count})</h6>
                         <div class="mb-3">
-                            ${order.items
-                              .map(
-                                (item) => `
-                                <span class="badge bg-light text-dark me-1 mb-1">
-                                    ${item.quantity}x ${item.product_name || "Product"}
-                                </span>
-                            `,
-                              )
-                              .join("")}
+                            ${order.items.map(item => `<span class="badge bg-light text-dark me-1 mb-1">${item.quantity}x ${item.weight_variation} - ${item.product_title || "Product"}</span>`).join("")}
                         </div>
-                        
                         <div class="mb-3">
                             <h6><i class="fas fa-rupee-sign me-2"></i>Total Amount</h6>
                             <h4 class="text-primary mb-0">₹${order.total_amount.toFixed(2)}</h4>
                         </div>
-                        
-                        ${
-                          actionButtons
-                            ? `
-                            <div class="d-flex gap-2">
-                                ${actionButtons}
-                            </div>
-                        `
-                            : ""
-                        }
+                        ${actionButtons ? `<div class="d-flex gap-2">${actionButtons}</div>` : ""}
                     </div>
                 </div>
             </div>
@@ -227,17 +174,12 @@ function createOrderCard(order) {
 }
 
 function initializeEventListeners() {
-  // Availability toggle
   document.getElementById("availabilityToggle").addEventListener("change", async (e) => {
     await toggleAvailability(e.target.checked)
   })
-
-  // Tab change event to load past orders when history tab is clicked
   document.getElementById("history-tab").addEventListener("click", async () => {
     await loadPastOrders()
   })
-
-  // Auto refresh every 30 seconds
   setInterval(async () => {
     await loadDashboardData()
   }, 30000)
@@ -248,12 +190,9 @@ async function toggleAvailability(isAvailable) {
     const [success, result] = await callApi(
       "POST",
       availability_url,
-      {
-        is_available: isAvailable,
-      },
+      { is_available: isAvailable },
       csrf_token,
     )
-
     if (success && result.success) {
       showToast(result.data.message, "success")
     } else {
@@ -262,33 +201,18 @@ async function toggleAvailability(isAvailable) {
   } catch (error) {
     console.error("Error updating availability:", error)
     showToast("Error updating availability.", "error")
-
-    // Revert toggle
     document.getElementById("availabilityToggle").checked = !isAvailable
   }
 }
 
 async function updateOrderStatus(orderId, newStatus) {
-  if (!confirm(`Are you sure you want to mark this order as ${newStatus.replace("_", " ")}?`)) {
-    return
-  }
-
+  if (!confirm(`Are you sure you want to mark this order as ${newStatus.replace("_", " ")}?`)) return
   try {
     showLoading()
-
-    const [success, result] = await callApi(
-      "POST",
-      status_update_url,
-      {
-        order_id: orderId,
-        status: newStatus,
-      },
-      csrf_token,
-    )
-
+    const [success, result] = await callApi("POST", status_update_url, { order_id: orderId, status: newStatus }, csrf_token)
     if (success && result.success) {
       showToast(result.data.message, "success")
-      await loadDashboardData() // Refresh data
+      await loadDashboardData()
     } else {
       throw new Error(result.error || "Failed to update order status")
     }
@@ -302,20 +226,18 @@ async function updateOrderStatus(orderId, newStatus) {
 
 function showCodModal(orderId, amount) {
   currentCodOrder = { orderId, amount }
-
   document.getElementById("codOrderId").textContent = orderId
   document.getElementById("codAmount").textContent = `₹${amount.toFixed(2)}`
   document.getElementById("collectedAmount").value = amount.toFixed(2)
-
   const modal = new bootstrap.Modal(document.getElementById("codModal"))
   modal.show()
 }
 
 async function confirmCashCollection() {
   if (!currentCodOrder) return
-
   const collectedAmount = Number.parseFloat(document.getElementById("collectedAmount").value)
-  const extraCost = Number.parseFloat(document.getElementById("extraCost").value) || 0;
+  const extraCost = Number.parseFloat(document.getElementById("extraCost").value) || 0
+  const transportMode = document.getElementById("transportMode").value || ""
 
   if (isNaN(collectedAmount) || collectedAmount <= 0) {
     showToast("Please enter a valid amount.", "error")
@@ -324,46 +246,25 @@ async function confirmCashCollection() {
 
   try {
     showLoading()
-
-    // First confirm cash collection
-    const [success, result] = await callApi(
-      "POST",
-      confirm_cash_url,
-      {
-        order_id: currentCodOrder.orderId,
-        collected_amount: collectedAmount,
-        extra_cost: extraCost
-      },
-      csrf_token,
-    )
+    const [success, result] = await callApi("POST", confirm_cash_url, {
+      order_id: currentCodOrder.orderId,
+      collected_amount: collectedAmount,
+      extra_cost: extraCost,
+      transport_mode: transportMode
+    }, csrf_token)
 
     if (success && result.success) {
-      // Prepare form data for delivery status update with files
-      const formData = new FormData();
-      formData.append("order_id", currentCodOrder.orderId);
-      formData.append("status", "delivered");
-
-      // Add files to form data
-      const photoInput = document.getElementById("deliveryPhotos");
+      const formData = new FormData()
+      formData.append("order_id", currentCodOrder.orderId)
+      formData.append("status", "delivered")
+      const photoInput = document.getElementById("deliveryPhotos")
       for (let i = 0; i < photoInput.files.length; i++) {
-        formData.append("images", photoInput.files[i]);  // Use same field name
+        formData.append("images", photoInput.files[i])
       }
-
-      // After successful cash collection, mark order as delivered
-      const [deliverySuccess, deliveryResult] = await callApiMultipart(
-        "POST",
-        status_update_url,
-        formData,
-        csrf_token
-      );
-
+      const [deliverySuccess, deliveryResult] = await callApiMultipart("POST", status_update_url, formData, csrf_token)
       if (deliverySuccess && deliveryResult.success) {
         showToast("Cash collected and order marked as delivered!", "success")
-
-        // Close modal
         bootstrap.Modal.getInstance(document.getElementById("codModal")).hide()
-
-        // Refresh data
         await loadDashboardData()
       } else {
         showToast("Cash collected but failed to mark as delivered. Please try again.", "warning")
@@ -379,90 +280,80 @@ async function confirmCashCollection() {
   }
 }
 
+function showOnlineModal(orderId) {
+  currentOnlineOrder = { orderId }
+  document.getElementById("onlineOrderId").textContent = orderId
+  const modal = new bootstrap.Modal(document.getElementById("onlineModal"))
+  modal.show()
+}
+
+async function confirmOnlineDelivery() {
+  if (!currentOnlineOrder) return
+  const extraCost = Number.parseFloat(document.getElementById("onlineExtraCost").value) || 0
+  const transportMode = document.getElementById("onlineTransportMode").value || ""
+
+  try {
+    showLoading()
+    const formData = new FormData()
+    formData.append("order_id", currentOnlineOrder.orderId)
+    formData.append("status", "delivered")
+    formData.append("extra_cost", extraCost)
+    formData.append("transport_mode", transportMode)
+
+    const photoInput = document.getElementById("onlineDeliveryPhotos")
+    for (let i = 0; i < photoInput.files.length; i++) {
+      formData.append("images", photoInput.files[i])
+    }
+
+    const [success, result] = await callApiMultipart("POST", status_update_url, formData, csrf_token)
+    if (success && result.success) {
+      showToast("Online order marked as delivered!", "success")
+      bootstrap.Modal.getInstance(document.getElementById("onlineModal")).hide()
+      await loadDashboardData()
+    } else {
+      throw new Error(result.error || "Failed to complete delivery")
+    }
+  } catch (error) {
+    console.error("Error completing online delivery:", error)
+    showToast("Error completing delivery.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
 async function callApiMultipart(method, url, formData, csrfToken) {
   try {
-    const response = await fetch(url, {
-      method: method,
-      body: formData,
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-    });
-
-    const result = await response.json();
-    return [response.ok, result];
+    const response = await fetch(url, { method, body: formData, headers: { "X-CSRFToken": csrfToken } })
+    const result = await response.json()
+    return [response.ok, result]
   } catch (error) {
-    console.error("API call failed:", error);
-    return [false, { success: false, error: "Network error" }];
+    console.error("API call failed:", error)
+    return [false, { success: false, error: "Network error" }]
   }
 }
 
-function viewHistory() {
-  // Switch to history tab
-  document.getElementById("history-tab").click()
-}
-
+function viewHistory() { document.getElementById("history-tab").click() }
 async function logout() {
-  if (!confirm("Are you sure you want to logout?")) {
-    return
-  }
-
-  try {
-    // Call logout API if available
-    const [success, result] = await callApi("POST", "/user-api/logout-api/", {}, csrf_token)
-
-  } catch (error) {
-    console.log("Logout API error:", error)
-  }
-
-  // Redirect to login page
+  if (!confirm("Are you sure you want to logout?")) return
+  try { await callApi("POST", "/user-api/logout-api/", {}, csrf_token) } catch {}
   window.location.href = "/delivery-login/"
 }
 
-// Utility functions
 function getStatusClass(status) {
-  const statusClasses = {
-    placed: "bg-info",
-    preparing: "bg-warning text-dark",
-    ready: "bg-primary",
-    out_for_delivery: "bg-secondary",
-    delivered: "bg-success",
-  }
+  const statusClasses = { placed: "bg-info", preparing: "bg-warning text-dark", ready: "bg-primary", out_for_delivery: "bg-secondary", delivered: "bg-success" }
   return statusClasses[status] || "bg-info"
 }
-
 function getStatusText(status) {
-  const statusTexts = {
-    placed: "Order Placed",
-    preparing: "Preparing",
-    ready: "Ready for Pickup",
-    out_for_delivery: "Out for Delivery",
-    delivered: "Delivered",
-  }
+  const statusTexts = { placed: "Order Placed", preparing: "Preparing", ready: "Ready for Pickup", out_for_delivery: "Out for Delivery", delivered: "Delivered" }
   return statusTexts[status] || status
 }
-
 function formatDate(dateString) {
   const date = new Date(dateString)
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
 }
-
-function showLoading() {
-  const loader = document.getElementById("loader")
-  if (loader) loader.style.display = "flex"
-}
-
-function hideLoading() {
-  const loader = document.getElementById("loader")
-  if (loader) loader.style.display = "none"
-}
-
+function showLoading() { const loader = document.getElementById("loader"); if (loader) loader.style.display = "flex" }
+function hideLoading() { const loader = document.getElementById("loader"); if (loader) loader.style.display = "none" }
 function showToast(message, type = "info") {
-  // Create toast container if it doesn't exist
   let toastContainer = document.getElementById("toastContainer")
   if (!toastContainer) {
     toastContainer = document.createElement("div")
@@ -471,55 +362,22 @@ function showToast(message, type = "info") {
     toastContainer.style.zIndex = "9999"
     document.body.appendChild(toastContainer)
   }
-
-  // Create toast element
   const toastId = `toast-${Date.now()}`
   const toast = document.createElement("div")
   toast.className = `toast show border-0`
   toast.id = toastId
-
-  // Set toast background color based on type
-  const bgClass =
-    type === "error" ? "bg-danger" : type === "success" ? "bg-success" : type === "warning" ? "bg-warning" : "bg-info"
-
+  const bgClass = type === "error" ? "bg-danger" : type === "success" ? "bg-success" : type === "warning" ? "bg-warning" : "bg-info"
   toast.classList.add(bgClass, "text-white")
-
   toast.innerHTML = `
         <div class="toast-header bg-transparent text-white border-0">
-            <strong class="me-auto">
-                <i class="fas ${
-                  type === "error"
-                    ? "fa-exclamation-circle"
-                    : type === "success"
-                      ? "fa-check-circle"
-                      : type === "warning"
-                        ? "fa-exclamation-triangle"
-                        : "fa-info-circle"
-                } me-2"></i>
-                Notification
-            </strong>
+            <strong class="me-auto"><i class="fas ${type === "error" ? "fa-exclamation-circle" : type === "success" ? "fa-check-circle" : type === "warning" ? "fa-exclamation-triangle" : "fa-info-circle"} me-2"></i>Notification</strong>
             <small>Just now</small>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
         </div>
-        <div class="toast-body">
-            ${message}
-        </div>
+        <div class="toast-body">${message}</div>
     `
-
-  // Add toast to container
   toastContainer.appendChild(toast)
-
-  // Initialize Bootstrap toast
-  const bsToast = new bootstrap.Toast(toast, {
-    autohide: true,
-    delay: 5000,
-  })
-
-  // Show toast
+  const bsToast = new bootstrap.Toast(toast, { autohide: true, delay: 5000 })
   bsToast.show()
-
-  // Remove toast after it's hidden
-  toast.addEventListener("hidden.bs.toast", () => {
-    toast.remove()
-  })
+  toast.addEventListener("hidden.bs.toast", () => { toast.remove() })
 }

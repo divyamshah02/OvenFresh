@@ -251,6 +251,9 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
     def create(self, request):
         order_id = request.data.get("order_id")
         status_type = request.data.get("status")  # expected: "out_for_delivery" or "delivered"
+        
+        extra_cost = request.data.get("extra_cost", 0)
+        transport_mode = request.data.get("transport_mode", "")
 
         if status_type not in ["out_for_delivery", "delivered"]:
             return Response({
@@ -307,6 +310,10 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
         elif status_type == "out_for_delivery":
             # Send email notification for delivery completion
             prepare_and_send_order_email(order_id=order.order_id, type="out_for_delivery")
+
+        if order.is_cod == False:
+            order.extra_cost = extra_cost
+            order.transport_mode = transport_mode
 
         order.status = status_type
         order.save()
@@ -388,6 +395,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
         order_id = request.data.get("order_id")
         collected_amount = request.data.get("collected_amount")
         extra_cost = request.data.get("extra_cost", 0)
+        transport_mode = request.data.get("transport_mode", "")
 
         if not order_id:
             return Response({
@@ -434,6 +442,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
 
         order.payment_received = True
         order.extra_cost = extra_cost
+        order.transport_mode = transport_mode
         order.save()
 
         return Response({
