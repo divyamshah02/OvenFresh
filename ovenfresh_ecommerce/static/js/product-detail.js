@@ -102,7 +102,7 @@ async function loadProductData(productId) {
 
       // Set variations
       currentVariations = data.product_variation || []
-      addMetaInfo()
+      // addMetaInfo()
       // Render all components
       renderProductDetails(currentProduct)
       renderVariationOptions(currentVariations)

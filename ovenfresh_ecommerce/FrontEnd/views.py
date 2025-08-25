@@ -4,10 +4,13 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
+from django.contrib.messages import get_messages
+from django.utils.decorators import method_decorator
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+from utils.email_sender_util import prepare_and_send_contact_us_email
 from utils.decorators import handle_exceptions, check_authentication
 
 from UserDetail.models import User
@@ -44,7 +47,31 @@ class ContactUsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
     def list(self, request):
+        storage = get_messages(request)
+        for message in storage:
+            pass
         return render(request, 'contact_us.html')
+
+    @handle_exceptions
+    @method_decorator(csrf_exempt)
+    def create(self, request):
+        # Process the form data
+        contact_us_form_data = {
+            'first_name': request.POST.get('first_name'),
+            'last_name': request.POST.get('last_name'),
+            'email': request.POST.get('email'),
+            'phone': request.POST.get('phone'),
+            'message': request.POST.get('message')
+        }
+
+        # print("Contact form submission:", contact_us_form_data)
+        prepare_and_send_contact_us_email(contact_us_form_data)
+
+        # Add a success message
+        messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
+
+        # Redirect to the contact us page
+        return redirect('contact-us-list')
 
 class ShopViewSet(viewsets.ViewSet):
 
@@ -70,9 +97,12 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
         product_slug = request.query_params.get('product_slug')
         product_id = None
+        not_topper = True
         if product_slug:
             product_obj = Product.objects.filter(slug=product_slug).first()
             product_id = product_obj.product_id if product_obj else None
+            if product_obj.category_id == '6145109248':
+                not_topper = False 
 
         get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
@@ -104,6 +134,9 @@ class ProductDetailViewSet(viewsets.ViewSet):
             "get_toppers": toppers,
             "get_cards": cards,
             "product_id": product_id,
+            "not_topper": not_topper,
+            "product_obj": product_obj,
+            "product_photo": product_obj.photos[0]
         }
         return render(request, 'product-detail.html', data)
 
@@ -112,9 +145,12 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
         product_slug = pk
         product_id = None
+        not_topper = True
         if product_slug:
             product_obj = Product.objects.filter(slug=product_slug).first()
             product_id = product_obj.product_id if product_obj else None
+            if product_obj.category_id == '6145109248':
+                not_topper = False 
 
         get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
@@ -146,6 +182,9 @@ class ProductDetailViewSet(viewsets.ViewSet):
             "get_toppers": toppers,
             "get_cards": cards,
             "product_id": product_id,
+            "not_topper": not_topper,
+            "product_obj": product_obj,
+            "product_photo": product_obj.photos[0]
         }
         return render(request, 'product-detail.html', data)
 
@@ -572,4 +611,3 @@ def update_pincode_charges(request):
     
     return JsonResponse({"status": "success", "message": "Pincode charges updated successfully."})
         
-

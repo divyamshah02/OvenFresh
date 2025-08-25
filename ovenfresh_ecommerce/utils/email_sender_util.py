@@ -509,6 +509,73 @@ def send_out_for_delivery_email(smtp_host, smtp_port, smtp_user, smtp_password, 
         server.sendmail(smtp_user, to_email, msg.as_string())
 
 
+def send_contact_us_email(smtp_host, smtp_port, smtp_user, smtp_password, to_email, subject, contact_data):
+    html_template = '''
+<!DOCTYPE html>
+<html>
+  <body style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <tr>
+        <td style="text-align:center; padding-bottom:20px;">
+          <h2 style="margin:0; color:#333;">New Contact Request</h2>
+          <p style="margin:5px 0; color:#777;">Details submitted via contact form</p>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;">
+            <tr>
+              <td style="font-weight:bold; width:150px; color:#333;">First Name:</td>
+              <td>{{ first_name }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; color:#333;">Last Name:</td>
+              <td>{{ last_name }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; color:#333;">Email:</td>
+              <td><a href="mailto:{{ email }}">{{ email }}</a></td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; color:#333;">Phone:</td>
+              <td>{{ phone }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; color:#333; vertical-align:top;">Message:</td>
+              <td style="background:#f4f4f4; padding:10px; border-radius:5px;">{{ message }}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="text-align:center; padding-top:20px; font-size:12px; color:#aaa;">
+          This message was automatically generated from your website contact form.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+    '''
+    # Render HTML with dynamic data using Jinja2
+    template = Template(html_template)
+    html_content = template.render(**contact_data)
+    # print(html_content)
+    # Create email
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = smtp_user
+    msg["To"] = to_email
+
+    msg.attach(MIMEText(html_content, "html"))
+
+    # Send email
+    with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
+        server.login(smtp_user, smtp_password)
+        server.sendmail(smtp_user, to_email, msg.as_string())
+
 # TODO: (order_link) Change to actual order link
 def prepare_and_send_order_email(order_id, type):
     try:
@@ -585,7 +652,7 @@ def prepare_and_send_order_email(order_id, type):
         order_data = {
             "customer_name": f"{order.first_name} {order.last_name}",
             "order_number": order.order_id,
-            "order_link": f"https://ovenfresh.pythonanywhere.com/order-detail/?order_id={order.order_id}",
+            "order_link": f"https://www.ovenfresh.in/order-detail/?order_id={order.order_id}",
             "order_date": order.created_at.strftime("%B %d, %Y"),
             "items": email_items,
             "subtotal": subtotal,
@@ -610,7 +677,7 @@ def prepare_and_send_order_email(order_id, type):
             "shipping_zip": order.pincode_id,
             "shipping_state": "",
             "shipping_phone": order.phone,
-            "website_url": "https://ovenfresh.pythonanywhere.com/shop",  # Add your website URL
+            "website_url": "https://www.ovenfresh.in/shop",  # Add your website URL
             "driver_name": driver_name,
             "driver_phone": driver_phone
         }
@@ -655,3 +722,22 @@ def prepare_and_send_order_email(order_id, type):
     except Exception as e:
         print(f"Error sending email for order {order_id}: {str(e)}")
         return False
+
+#TODO: contact Email, change to actual contact email
+def prepare_and_send_contact_us_email(contact_data):
+    try:
+        send_contact_us_email(
+            smtp_host="smtp.titan.email",
+            smtp_port=465,
+            smtp_user="feedback@ovenfresh.in",
+            smtp_password="Deepa@2025",
+            to_email="divyamshah1234@gmail.com",
+            subject=f"Contact Us form Details by '{contact_data['first_name']}'!",
+            contact_data=contact_data
+            )
+        return True
+
+    except Exception as e:
+        print(f"Error sending contact us email: {str(e)}")
+        return False
+  

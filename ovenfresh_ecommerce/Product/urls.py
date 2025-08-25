@@ -10,6 +10,7 @@ router.register(r'sub-category', SubCategoryViewSet, basename='sub-category')
 
 router.register(r'product', ProductViewSet, basename='product')
 router.register(r'all-products', AllProductsViewSet, basename='all-products')
+router.register(r'all-shop-products', ShopAllProductsViewSet, basename='all-shop-products')
 router.register(r'product-variation', ProductVariationViewSet, basename='product-variation')
 router.register(r'availability-charges', AvailabilityChargesViewSet, basename='availability-charges')
 
@@ -32,4 +33,5 @@ router.register(r'product-search', SearchViewSet, basename='product-search')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('test_add_slug', test, name="test_add_slug")
 ]
