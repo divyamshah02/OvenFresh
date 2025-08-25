@@ -1223,6 +1223,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'tax_amount': tax_amount,
                 'delivery_charge': delivery_charge,
                 'discount_amount': discount_amount,
+                'is_corporate': order.is_corporate,
                 
                 # Coupon details
                 'coupon_code': getattr(order, 'coupon_code', None),
@@ -1251,7 +1252,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 "data": order_data,
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -1265,6 +1266,110 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=500)
 
+
+class AdminUpdateCorporateStatusViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update corporate status of an order
+        """
+        try:
+            data = request.data
+            order_id = data.get('order_id')
+            is_corporate = data.get('is_corporate', False)
+
+            # Get the order
+            order = Order.objects.get(order_id=order_id)
+
+            # Update corporate status
+            order.is_corporate = is_corporate
+            order.save()
+
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
+class AdminUpdateCorporateOrderViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update corporate order information with proportional price adjustments
+        """
+        try:
+            data = request.data
+            order_id = data.get('order_id')
+
+            # Get the order
+            order = Order.objects.get(order_id=order_id)
+
+            # Update order totals
+            order.subtotal_amount = str(data.get('subtotal', 0))
+            order.tax_amount = str(data.get('tax_amount', 0))
+            order.total_amount = data.get('total_amount', 0)
+            order.is_corporate = data.get('is_corporate', False)
+
+            # Update order items with new prices
+            for item_data in data.get('items', []):
+                index = item_data.get('index')
+                price = item_data.get('price', 0)
+                discount = item_data.get('discount', 0)
+                quantity = item_data.get('quantity', 1)
+                notes = item_data.get('notes', '')
+
+                # Get the order item
+                order_items = OrderItem.objects.filter(order_id=order_id)
+                if index < len(order_items):
+                    order_item = order_items[index]
+                    
+                    # Update the order item
+                    order_item.amount = price
+                    order_item.discount = discount
+                    order_item.final_amount = (price * quantity) - discount
+                    order_item.item_note = notes
+                    
+                    order_item.save()
+
+            # Save the order
+            order.save()
+
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
 
 class Old_AdminDeliveryPeronsViewSet(viewsets.ViewSet):
     @handle_exceptions

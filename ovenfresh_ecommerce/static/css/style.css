@@ -1023,3 +1023,50 @@ footer a:hover {
 .location-links a:hover {
     text-decoration: underline;
 }
+
+#corporateOrderModal .modal-xl {
+    max-width: 95%;
+}
+
+#corporateOrderModal .card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+}
+
+#corporateOrderModal .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+#corporateOrderModal .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+#corporate-total-preview {
+    font-size: 1.2rem;
+    color: #28a745;
+}
+
+#corporate-order-items-tbody td {
+    vertical-align: middle;
+}
+
+#reset-tax-btn {
+    transition: all 0.2s ease;
+}
+
+#reset-tax-btn:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-weight: 500;
+}

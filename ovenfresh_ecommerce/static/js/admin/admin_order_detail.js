@@ -11,6 +11,9 @@ let deliveryPersons = []
 let selectedDeliveryPerson = null
 let selectedCommission = 0;
 
+// Track if tax has been manually modified
+let isTaxManuallyModified = false;
+
 async function InitializeAdminOrderDetail(
   csrfTokenParam,
   orderIdParam,
@@ -113,6 +116,8 @@ function populatePaymentInfo() {
   const paymentInfo = document.getElementById("payment-info")
   const paymentStatus = orderData.payment_received ? "Paid" : "Pending"
   const paymentClass = orderData.payment_received ? "success" : "warning"
+  const isCorporate = orderData.is_corporate || false;
+  // console.log("Is Corporate Order:", isCorporate);
 
   paymentInfo.innerHTML = `
         <p class="mb-1"><strong>Method:</strong> ${orderData.payment_method.toUpperCase()}</p>
@@ -122,8 +127,254 @@ function populatePaymentInfo() {
         ${orderData.different_billing_address ? `<p class="mb-0 mt-1"><strong>Blling Info:</strong></p>
         <small>${orderData.billing_first_name} ${orderData.billing_last_name}</small><br>
         <small>+91 ${orderData.billing_phone}</small><br>
-        <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}        
-    `
+        <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" id="corporateOrderToggle" ${isCorporate ? 'checked' : ''}>
+          <label class="form-check-label" for="corporateOrderToggle">Corporate Order</label>
+        </div>
+        <div id="corporate-order-actions" class="mt-2" style="display: ${isCorporate ? 'block' : 'none'}">
+          <button class="btn btn-sm btn-outline-primary" id="updatePricingsBtn">
+            <i class="fas fa-edit me-1"></i> Update Pricings
+          </button>
+        </div>       
+    `;
+
+  // Add event listener for the toggle
+  document.getElementById('corporateOrderToggle').addEventListener('change', function() {
+    const isChecked = this.checked;
+    const actionsDiv = document.getElementById('corporate-order-actions');
+    
+    if (isChecked) {
+      actionsDiv.style.display = 'block';
+      // Update order status to corporate
+      updateCorporateStatus(true);
+    } else {
+      actionsDiv.style.display = 'none';
+      // Update order status to non-corporate
+      updateCorporateStatus(false);
+    }
+  });
+
+  // Add event listener for the update pricings button
+  document.getElementById('updatePricingsBtn').addEventListener('click', function() {
+    showCorporateOrderModal();
+  });
+}
+
+async function updateCorporateStatus(isCorporate) {
+  try {
+    showLoading();
+    
+    const requestData = {
+      order_id: orderData.order_id,
+      is_corporate: isCorporate
+    };
+    
+    // Call API to update the corporate status
+    const [success, result] = await callApi(
+      "POST", 
+      "/order-api/admin-update-corporate-status/", 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      orderData.is_corporate = isCorporate;
+      showNotification(`Order marked as ${isCorporate ? 'corporate' : 'non-corporate'} successfully!`, 'success');
+    } else {
+      throw new Error(result.error || "Failed to update corporate status");
+    }
+  } catch (error) {
+    console.error("Error updating corporate status:", error);
+    showNotification('Error updating corporate status: ' + error.message, 'error');
+    // Revert the toggle if the API call fails
+    document.getElementById('corporateOrderToggle').checked = !isCorporate;
+  } finally {
+    hideLoading();
+  }
+}
+
+function showCorporateOrderModal() {
+  // Reset the manual modification flag
+  isTaxManuallyModified = false;
+  
+  // Populate the modal with order items
+  populateCorporateOrderItems();
+
+  // Set original pricing values
+  document.getElementById('original-subtotal').textContent = `₹${orderData.subtotal.toFixed(2)}`;
+  document.getElementById('original-tax').textContent = `₹${orderData.tax_amount.toFixed(2)}`;
+  document.getElementById('original-total').textContent = `₹${orderData.total_amount.toFixed(2)}`;
+  
+  // Set corporate pricing inputs
+  document.getElementById('corporate-subtotal-input').value = orderData.subtotal.toFixed(2);
+  document.getElementById('corporate-tax-input').value = (orderData.subtotal * 0.18).toFixed(2);
+  
+  // Calculate and display initial corporate total
+  updateCorporateTotalPreview();
+  
+  // Add event listeners for input changes
+  document.getElementById('corporate-subtotal-input').addEventListener('input', handleSubtotalChange);
+  document.getElementById('corporate-tax-input').addEventListener('input', handleTaxInput);
+  document.getElementById('reset-tax-btn').addEventListener('click', resetTaxToDefault);
+
+  // Show the modal
+  const modal = new bootstrap.Modal(document.getElementById('corporateOrderModal'));
+  modal.show();
+}
+
+function handleSubtotalChange() {
+  const subtotalInput = document.getElementById('corporate-subtotal-input');
+  const newSubtotal = parseFloat(subtotalInput.value) || 0;
+  
+  // Only auto-update tax if it hasn't been manually modified
+  if (!isTaxManuallyModified) {
+    const calculatedTax = newSubtotal * 0.18;
+    document.getElementById('corporate-tax-input').value = calculatedTax.toFixed(2);
+  }
+  
+  updateCorporateTotalPreview();
+}
+
+function handleTaxInput() {
+  // Mark tax as manually modified when user changes it
+  isTaxManuallyModified = true;
+  updateCorporateTotalPreview();
+}
+
+function resetTaxToDefault() {
+  const subtotalInput = document.getElementById('corporate-subtotal-input');
+  const newSubtotal = parseFloat(subtotalInput.value) || 0;
+  
+  // Reset tax to 18% of subtotal
+  const calculatedTax = newSubtotal * 0.18;
+  document.getElementById('corporate-tax-input').value = calculatedTax.toFixed(2);
+  
+  // Reset the manual modification flag
+  isTaxManuallyModified = false;
+  
+  updateCorporateTotalPreview();
+}
+
+function populateCorporateOrderItems() {
+    const tbody = document.getElementById("corporate-order-items-tbody");
+    tbody.innerHTML = orderData.order_items
+        .map(
+            (item, index) => `
+            <tr data-item-index="${index}">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${item.product_image}" alt="${item.product_name}" 
+                             class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <div>
+                            <strong>${item.product_name}</strong>
+                            <br><small class="text-muted">ID: ${item.product_id}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>${item.variation_name || "Standard"}</td>
+                <td>${item.quantity}</td>
+                <td>₹${Number.parseFloat(item.amount).toFixed(2)}</td>
+                <td>₹${Number.parseFloat(item.discount).toFixed(2)}</td>
+                <td>₹${Number.parseFloat(item.final_amount).toFixed(2)}</td>
+            </tr>
+        `,
+        )
+        .join("");
+}
+
+function updateCorporateTotalPreview() {
+    const subtotalInput = document.getElementById('corporate-subtotal-input');
+    const taxInput = document.getElementById('corporate-tax-input');
+    
+    const newSubtotal = parseFloat(subtotalInput.value) || 0;
+    const newTax = parseFloat(taxInput.value) || 0;
+    const newTotal = newSubtotal + newTax;
+    
+    document.getElementById('corporate-total-preview').textContent = `₹${newTotal.toFixed(2)}`;
+}
+
+async function saveCorporateOrderChanges() {
+    try {
+        showLoading();
+        
+        const newSubtotal = parseFloat(document.getElementById('corporate-subtotal-input').value) || 0;
+        const newTax = parseFloat(document.getElementById('corporate-tax-input').value) || 0;
+        const newTotal = newSubtotal + newTax;
+        
+        // Calculate the ratio for proportional adjustment
+        const originalSubtotal = orderData.subtotal;
+        const ratio = originalSubtotal > 0 ? newSubtotal / originalSubtotal : 1;
+        
+        // Prepare updated items with proportional price adjustments
+        const updatedItems = orderData.order_items.map((item, index) => {
+            const originalItemTotal = (item.amount * item.quantity) - item.discount;
+            const newItemTotal = originalItemTotal * ratio;
+            const newItemAmount = (newItemTotal + item.discount) / item.quantity;
+            
+            return {
+                index: index,
+                variation: item.variation_name,
+                quantity: item.quantity,
+                price: newItemAmount,
+                discount: item.discount,
+                notes: item.item_note || ""
+            };
+        });
+        
+        // Prepare data for API call
+        const requestData = {
+            order_id: orderData.order_id,
+            is_corporate: true,
+            items: updatedItems,
+            subtotal: newSubtotal,
+            tax_amount: newTax,
+            total_amount: newTotal
+        };
+        
+        // Call API to update the order
+        const [success, result] = await callApi(
+            "POST", 
+            "/order-api/admin-update-corporate-order/", 
+            requestData,
+            csrf_token
+        );
+        
+        if (success && result.success) {
+            // Update the local order data with new values
+            updatedItems.forEach(updatedItem => {
+                const index = updatedItem.index;
+                if (orderData.order_items[index]) {
+                    orderData.order_items[index].amount = updatedItem.price;
+                    orderData.order_items[index].final_amount = 
+                        (updatedItem.price * updatedItem.quantity) - updatedItem.discount;
+                }
+            });
+            
+            orderData.subtotal = newSubtotal;
+            orderData.tax_amount = newTax;
+            orderData.total_amount = newTotal;
+            orderData.is_corporate = true;
+            
+            // Update the UI
+            populateOrderItems();
+            populateOrderSummary();
+            
+            // Show success message
+            showNotification('Corporate pricing updated successfully!', 'success');
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('corporateOrderModal'));
+            modal.hide();
+        } else {
+            throw new Error(result.error || "Failed to update corporate order");
+        }
+    } catch (error) {
+        console.error("Error saving corporate order changes:", error);
+        showNotification('Error saving corporate order changes: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
 }
 
 function populateDeliveryInfo() {

@@ -17,6 +17,8 @@ router.register(r'admin-order-briefe-api', AdminOrderBriefeViewSet, basename='ad
 router.register(r'admin-orders-export-api', AdminExportOrdersViewSet, basename='admin-orders-export-api')
 
 router.register(r'admin-order-detail-api', AdminOrderDetailViewSet, basename='admin-order-detail-api')
+router.register(r'admin-update-corporate-status', AdminUpdateCorporateStatusViewSet, basename='admin-update-corporate-status')
+router.register(r'admin-update-corporate-order', AdminUpdateCorporateOrderViewSet, basename='admin-update-corporate-order')
 router.register(r'admin-delivery-persons-api', AdminDeliveryPeronsViewSet, basename='admin-delivery-persons-api')
 router.register(r'admin-update-order-status-api', AdminUpdateOrderStatusViewSet, basename='admin-update-order-status-api')
 router.register(r'admin-assign-delivery-api', AdminAssignDeliveryPartnerViewSet, basename='admin-assign-delivery-api')

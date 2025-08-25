@@ -481,6 +481,96 @@
         </div>
     </div>
 
+    <!-- Corporate Order Modal -->
+    <div class="modal fade" id="corporateOrderModal" tabindex="-1" aria-labelledby="corporateOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="corporateOrderModalLabel">Corporate Order Pricing</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Adjust the subtotal value. Tax is automatically calculated at 18% but can be manually overridden if needed.
+                    </div>
+                    
+                    <!-- Pricing Controls -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Original Pricing</h6>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Subtotal:</span>
+                                        <span id="original-subtotal">₹${orderData.subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Tax (18%):</span>
+                                        <span id="original-tax">₹${orderData.tax_amount.toFixed(2)}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total:</span>
+                                        <span id="original-total">₹${orderData.total_amount.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Corporate Pricing</h6>
+                                    <div class="mb-2">
+                                        <label for="corporate-subtotal-input" class="form-label">Subtotal</label>
+                                        <input type="number" step="0.01" class="form-control" id="corporate-subtotal-input" 
+                                            value="${orderData.subtotal.toFixed(2)}" placeholder="Enter subtotal" min="0">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="corporate-tax-input" class="form-label">Tax Amount</label>
+                                        <div class="input-group">
+                                            <input type="number" step="0.01" class="form-control" id="corporate-tax-input" 
+                                                value="${(orderData.subtotal * 0.18).toFixed(2)}" placeholder="Enter tax amount" min="0">
+                                            <span class="input-group-text">18%</span>
+                                            <button class="btn btn-outline-secondary" type="button" id="reset-tax-btn" title="Reset to 18%">
+                                                <i class="fas fa-undo"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>New Total:</span>
+                                        <span id="corporate-total-preview">₹${(orderData.subtotal + (orderData.subtotal * 0.18)).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items Table (Read-only) -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Variation</th>
+                                    <th>Quantity</th>
+                                    <th>Price (₹)</th>
+                                    <th>Discount (₹)</th>
+                                    <th>Total (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corporate-order-items-tbody">
+                                <!-- Corporate order items will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCorporateOrderChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- KOT Print Section (Hidden) -->
     <div class="print-section" id="kot-print-section">
         <div class="kot-header">
