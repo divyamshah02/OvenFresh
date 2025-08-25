@@ -12,6 +12,8 @@ from django.db.models import Q, Count, Sum
 from utils.handle_s3_bucket import upload_file_to_s3
 import logging
 
+from Product.models import TimeSlot, Product, ProductVariation
+
 class DeliveryLoginViewSet(viewsets.ViewSet):
     """
     Delivery person login with email and plain text password
@@ -114,6 +116,8 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
             orders_data = []
             for order in orders:
                 items = OrderItem.objects.filter(order_id=order.order_id)
+                timeslot = TimeSlot.objects.filter(id=order.timeslot_id).first()
+                timeslot_txt = f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
                 orders_data.append({
                     "order_id": order.order_id,
                     "customer_name": f"{order.first_name} {order.last_name}",
@@ -128,6 +132,7 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
                     "special_instructions": order.special_instructions or "",
                     "items_count": items.count(),
                     "items": OrderItemSerializer(items, many=True).data,
+                    "timeslot": timeslot_txt,
                     "created_at": order.created_at
                 })
             return orders_data

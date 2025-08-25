@@ -156,6 +156,10 @@ function createOrderCard(order) {
                         <p class="mb-2">${order.delivery_address}</p>
                         ${order.special_instructions ? `<h6><i class="fas fa-sticky-note me-2"></i>Special Instructions</h6><p class="mb-2 text-info">${order.special_instructions}</p>` : ""}
                     </div>
+                    <div class="col-md-12">
+                    <h6><i class="fas fa-user me-2"></i>Timeslot Details</h6>
+                        <p class="mb-1">${order.timeslot}</p>
+                    </div>
                     <div class="col-md-6">
                         <h6><i class="fas fa-shopping-bag me-2"></i>Order Items (${order.items_count})</h6>
                         <div class="mb-3">
