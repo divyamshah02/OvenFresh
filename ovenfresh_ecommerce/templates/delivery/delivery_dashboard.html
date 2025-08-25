@@ -101,23 +101,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- <div class="col-md-4 mb-3">
-                        <div class="card stat-card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-subtitle mb-1">Today's Earnings</h6>
-                                        <h3 class="card-title mb-0" id="todayEarnings">₹0</h3>
-                                        <p class="small text-info mb-0">COD collections</p>
-                                    </div>
-                                    <div class="icon-container">
-                                        <i class="fas fa-rupee-sign"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
 
                 <!-- Filter Tabs -->
@@ -231,6 +214,12 @@
                         <div class="form-text">Additional charges collected (optional)</div>
                     </div>
 
+                    <div class="mb-3">
+                        <label for="transportMode" class="form-label">Mode of Transport</label>
+                        <input type="text" class="form-control" id="transportMode" placeholder="e.g. Bike, Rikshaw">
+                        <div class="form-text">Specify how the delivery was completed (optional)</div>
+                    </div>
+
                     <!-- Delivery Photo Upload Section -->
                     <div class="mb-3">
                         <label for="deliveryPhotos" class="form-label">Delivery Proof Photos</label>
@@ -251,6 +240,55 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Online Delivery Completion Modal -->
+    <div class="modal fade" id="onlineModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fas fa-check-circle me-2"></i>
+              Complete Online Paid Delivery
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center mb-3">
+              <h4>Order #<span id="onlineOrderId"></span></h4>
+            </div>
+
+            <div class="mb-3">
+              <label for="onlineExtraCost" class="form-label">Extra Expense (Cost)</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" class="form-control" id="onlineExtraCost" step="0.01" min="0" value="0">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="onlineTransportMode" class="form-label">Mode of Transport</label>
+              <input type="text" class="form-control" id="onlineTransportMode" placeholder="e.g. Bike, Rikshaw">
+            </div>
+
+            <div class="mb-3">
+              <label for="onlineDeliveryPhotos" class="form-label">Delivery Proof Photos</label>
+              <input class="form-control" type="file" id="onlineDeliveryPhotos" multiple accept="image/*">
+            </div>
+
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              After submitting, the order will be marked as delivered.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" onclick="confirmOnlineDelivery()">
+              <i class="fas fa-check me-2"></i>Complete Delivery
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Container -->

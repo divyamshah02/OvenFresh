@@ -103,9 +103,12 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
         product_slug = request.query_params.get('product_slug')
         product_id = None
+        not_topper = True
         if product_slug:
             product_obj = Product.objects.filter(slug=product_slug).first()
             product_id = product_obj.product_id if product_obj else None
+            if product_obj.category_id == '6145109248':
+                not_topper = False 
 
         get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
@@ -137,6 +140,9 @@ class ProductDetailViewSet(viewsets.ViewSet):
             "get_toppers": toppers,
             "get_cards": cards,
             "product_id": product_id,
+            "not_topper": not_topper,
+            "product_obj": product_obj,
+            "product_photo": product_obj.photos[0]
         }
         return render(request, 'product-detail.html', data)
 
@@ -145,9 +151,12 @@ class ProductDetailViewSet(viewsets.ViewSet):
 
         product_slug = pk
         product_id = None
+        not_topper = True
         if product_slug:
             product_obj = Product.objects.filter(slug=product_slug).first()
             product_id = product_obj.product_id if product_obj else None
+            if product_obj.category_id == '6145109248':
+                not_topper = False 
 
         get_toppers = Product.objects.filter(sub_category_id="8746472697")
         toppers = []
@@ -179,6 +188,9 @@ class ProductDetailViewSet(viewsets.ViewSet):
             "get_toppers": toppers,
             "get_cards": cards,
             "product_id": product_id,
+            "not_topper": not_topper,
+            "product_obj": product_obj,
+            "product_photo": product_obj.photos[0]
         }
         return render(request, 'product-detail.html', data)
 
@@ -605,4 +617,3 @@ def update_pincode_charges(request):
     
     return JsonResponse({"status": "success", "message": "Pincode charges updated successfully."})
         
-

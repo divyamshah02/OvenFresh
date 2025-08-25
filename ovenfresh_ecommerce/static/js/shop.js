@@ -88,6 +88,9 @@ function setupUIBasedOnParams() {
 
     // Load subcategories for this category
     loadSubcategoriesForCategory(urlParams.category)
+  } else if (urlParams.subcategory) {
+    categoryFilterContainer.style.display = "none"
+    subcategoryFilterContainer.style.display = "none"
   } else {
     // No URL params - show category filter, hide subcategory filter
     categoryFilterContainer.style.display = "block"

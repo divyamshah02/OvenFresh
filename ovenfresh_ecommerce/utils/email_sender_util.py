@@ -652,7 +652,7 @@ def prepare_and_send_order_email(order_id, type):
         order_data = {
             "customer_name": f"{order.first_name} {order.last_name}",
             "order_number": order.order_id,
-            "order_link": f"https://ovenfresh.pythonanywhere.com/order-detail/?order_id={order.order_id}",
+            "order_link": f"https://www.ovenfresh.in/order-detail/?order_id={order.order_id}",
             "order_date": order.created_at.strftime("%B %d, %Y"),
             "items": email_items,
             "subtotal": subtotal,
@@ -677,7 +677,7 @@ def prepare_and_send_order_email(order_id, type):
             "shipping_zip": order.pincode_id,
             "shipping_state": "",
             "shipping_phone": order.phone,
-            "website_url": "https://ovenfresh.pythonanywhere.com/shop",  # Add your website URL
+            "website_url": "https://www.ovenfresh.in/shop",  # Add your website URL
             "driver_name": driver_name,
             "driver_phone": driver_phone
         }
@@ -731,8 +731,8 @@ def prepare_and_send_contact_us_email(contact_data):
             smtp_port=465,
             smtp_user="feedback@ovenfresh.in",
             smtp_password="Deepa@2025",
-            to_email="feedback@ovenfresh.in",
-            subject=f"Contact Us form Details by '{contact_data}'!",
+            to_email="divyamshah1234@gmail.com",
+            subject=f"Contact Us form Details by '{contact_data['first_name']}'!",
             contact_data=contact_data
             )
         return True
@@ -740,3 +740,4 @@ def prepare_and_send_contact_us_email(contact_data):
     except Exception as e:
         print(f"Error sending contact us email: {str(e)}")
         return False
+  

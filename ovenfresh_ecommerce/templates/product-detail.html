@@ -35,6 +35,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 
+    <!-- Basic Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{{product_obj.title}} | Ovenfresh</title>
+    <meta name="description" content="{{product_obj.description}}" />
+    <meta name="keywords" content="{{product_obj.tags}}" />
+    <meta name="author" content="Ovenfresh" />
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:title" content="{{product_obj.title}} | Ovenfresh" />
+    <meta property="og:description" content="{{product_obj.description}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="{{product_photo}}" />
+    <meta property="og:site_name" content="Ovenfresh" />
+    <meta property="og:locale" content="en_US" />
+
 </head>
 
 <body>
@@ -95,8 +113,7 @@
                     <div class="col-lg-6">
                         <!-- Product Info -->
                         <div class="product-info">
-                            <div class="d-flex align-items-center mb-3" style="display: none !important;">
-                                <span class="badge bg-danger me-2">Hot Selling</span>
+                            <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-success" id="variationStockStatus">In Stock</span>
                             </div>
                             
@@ -154,7 +171,11 @@
                                         </div>
                                     </div> -->
                                 </div>
-                                <div class="row g-3">
+                                {% if not_topper == True %}
+                                <div class="row g-3 mb-3" style="display: none !important;">
+                                {% else %}
+                                <div class="row g-3 mb-3">
+                                {% endif %}
                                     <div class="col-12">
                                         <label for="weight" class="form-label">Greeting Cards</label>
                                         <select class="form-select" id="greetind_cards">
@@ -182,7 +203,8 @@
                                             <button class="btn of-btn-primary rounded-pill flex-fill mt-3 mt-md-0 text-nowrap" onclick="addToCart()">Check Pincode</button>
                                         </div>
                                     </div> -->
-
+                                </div>
+                                <div class="row g-3">
                                     <div class="col-6">
                                         <label for="weight" class="form-label">Weight:</label>
                                         <select class="form-select" id="weight">

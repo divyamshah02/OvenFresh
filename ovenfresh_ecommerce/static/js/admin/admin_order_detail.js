@@ -129,7 +129,7 @@ function populatePaymentInfo() {
 function populateDeliveryInfo() {
   const deliveryInfo = document.getElementById("delivery-info")
   deliveryInfo.innerHTML = `
-        <p class="mb-1"><strong>Date:</strong> ${formatDate(orderData.delivery_date)}</p>
+        <p class="mb-1"><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
         <p class="mb-1"><strong>Time:</strong> ${orderData.timeslot_name || "Not specified"}</p>
         <p class="mb-0"><strong>Address:</strong></p>
         <small>${orderData.delivery_address}</small>
@@ -215,6 +215,7 @@ function populateDeliveryPhotos() {
     // Populate total extra cost
     const extraCost = orderData.extra_cost || 0;
     document.getElementById("total-extra-cost").textContent = extraCost.toFixed(2);
+    document.getElementById("mode-transport").textContent = orderData.transport_mode;
 }
 
 function populateOrderTimeline() {
@@ -489,7 +490,7 @@ function populateKOTData() {
 
   // Populate delivery details
   document.getElementById("kot-delivery-details").innerHTML = `
-        <p><strong>Date:</strong> ${formatDate(orderData.delivery_date)}</p>
+        <p><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
         <p><strong>Time:</strong> ${orderData.timeslot_name || "Not specified"}</p>
         <p><strong>Address:</strong> ${orderData.delivery_address}</p>
     `
@@ -516,7 +517,7 @@ function populateKOTData() {
   document.getElementById("kot-kitchen-notes").innerHTML = document.getElementById("admin-notes").value || "None"
 }
 
-function generateKOTPDF() {
+function generateKOTPDF_old() {
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
 
@@ -540,7 +541,7 @@ function generateKOTPDF() {
   doc.setFontSize(14)
   doc.text("Delivery Details:", 20, 64)
   doc.setFontSize(12)
-  doc.text(`Date: ${formatDate(orderData.delivery_date)}`, 20, 71)
+  doc.text(`Date: ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}`, 20, 71)
   doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 20, 78)
 
   // Order items
@@ -569,6 +570,74 @@ function generateKOTPDF() {
   // Save the PDF
   doc.save(`KOT-${orderData.order_id}.pdf`)
 }
+
+function generateKOTPDF() {
+  const { jsPDF } = window.jspdf
+
+  // Define custom size for 75mm width thermal printer
+  // jsPDF works in "pt" by default (1 pt = 1/72 inch).
+  // But easier: use "mm" units
+  const pageWidth = 75 // mm
+  const pageHeight = 200 // mm (set big enough, it will auto-paginate if needed)
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [pageWidth, pageHeight]
+  })
+
+  // Add content to PDF
+  doc.setFontSize(14)
+  doc.text("KOT", 5, 10)
+
+  doc.setFontSize(12)
+  doc.text("Order Details", 5, 18)
+
+  doc.setFontSize(10)
+  doc.text(`Order ID: ${orderData.order_id}`, 5, 24)
+  doc.text(`Date: ${formatDate(orderData.created_at)}`, 5, 30)
+
+  // Delivery details
+  doc.setFontSize(12)
+  doc.text("Delivery Details:", 5, 40)
+  doc.setFontSize(10)
+  doc.text(
+    `Date: ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    })}`,
+    5,
+    46
+  )
+  doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 5, 52)
+
+  // Order items
+  doc.setFontSize(12)
+  doc.text("Order Items:", 5, 62)
+  doc.setFontSize(10)
+
+  let yPosition = 68
+  orderData.order_items.forEach((item) => {
+    doc.text(`${item.quantity}x ${item.product_name}`, 5, yPosition)
+    if (item.variation_name && item.variation_name !== "Standard") {
+      doc.text(`(${item.variation_name})`, 5, yPosition+4)
+    }
+    yPosition += 10
+  })
+
+  // Special instructions
+  if (orderData.special_instructions) {
+    yPosition += 8
+    doc.text("Special Instructions:", 5, yPosition)
+    yPosition += 6
+    doc.text(orderData.special_instructions, 5, yPosition)
+  }
+
+  // Save the PDF
+  doc.save(`KOT-${orderData.order_id}.pdf`)
+}
+
 
 function initializeEventListeners() {
   // Status select change

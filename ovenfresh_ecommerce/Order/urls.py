@@ -5,6 +5,8 @@ router = DefaultRouter()
 router.register(r'place-order-api', OrderViewSet, basename='place-order-api')
 router.register(r'confirm-order-api', ConfirmOrderViewSet, basename='confirm-order-api')
 router.register(r'payment_status_check', PaymentStatusCheckViewSet, basename='payment-status-check')
+router.register(r'confirm-payment-order-api', ConfirmPaymentViewSet, basename='confirm-payment-order-api')
+
 
 router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-api')
 router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')

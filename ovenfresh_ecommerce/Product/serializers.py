@@ -11,6 +11,8 @@ from .models import (
     Coupon
 )
 
+from django.db.models import Exists, OuterRef, Q
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -125,10 +127,10 @@ class AllProductSerializer(serializers.ModelSerializer):
         return representation
 
 
-class ShopProductSerializer(serializers.ModelSerializer):
+class ShopProductSerializerold(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['product_id', 'category_id', 'sub_category_id', 'title', 'photos', 'slug']
+        fields = ['product_id', 'category_id', 'sub_category_id', 'title', 'photos', 'slug', 'is_active']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -147,22 +149,106 @@ class ShopProductSerializer(serializers.ModelSerializer):
         
         # Add variations information
         if 'product_id' in representation:
-            variations = ProductVariation.objects.filter(product_id=representation['product_id'])
-            representation['variations'] = ProductVariationDetailSerializer(variations, many=True).data
-            representation['variations_count'] = variations.count()
+            variations = ProductVariation.objects.filter(product_id=representation['product_id']).first()            
             
-            # Get first variation for price display
-            first_variation = variations.first()
-            if first_variation:
-                representation['product_variation_id'] = first_variation.product_variation_id
-                representation['actual_price'] = first_variation.actual_price
-                representation['discounted_price'] = first_variation.discounted_price
-                representation['weight'] = first_variation.weight_variation
+            # Get first variation for price display            
+            if variations:
+                representation['product_variation_id'] = variations.product_variation_id
+                representation['actual_price'] = variations.actual_price
+                representation['discounted_price'] = variations.discounted_price
+                representation['weight'] = variations.weight_variation
             else:
                 representation['product_variation_id'] = None
                 representation['actual_price'] = "0"
                 representation['discounted_price'] = "0"
                 representation['weight'] = "N/A"
+
+        return representation
+
+
+class ShopProductSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source="category.title", default="Unknown")
+    sub_category_name = serializers.CharField(source="sub_category.title", default=None)
+
+    class Meta:
+        model = Product
+        fields = [
+            "product_id", "category_id", "sub_category_id",
+            "title", "photos", "slug", "is_active",
+            "category_name", "sub_category_name",
+        ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Only fetch one variation (LIMIT 1) for price display
+        variation = ProductVariation.objects.filter(product_id=instance.product_id).first()
+        if variation:
+            representation["product_variation_id"] = variation.product_variation_id
+            representation["actual_price"] = variation.actual_price
+            representation["discounted_price"] = variation.discounted_price
+            representation["weight"] = variation.weight_variation
+        else:
+            representation["product_variation_id"] = None
+            representation["actual_price"] = "0"
+            representation["discounted_price"] = "0"
+            representation["weight"] = "N/A"
+
+        return representation
+
+
+class ShopProductSerializerWithStatus(serializers.ModelSerializer):
+    category_name = serializers.CharField(source="category.title", default="Unknown")
+    sub_category_name = serializers.CharField(source="sub_category.title", default=None)
+
+    class Meta:
+        model = Product
+        fields = [
+            "product_id", "category_id", "sub_category_id", "title",
+            "photos", "slug", "is_active",
+            "category_name", "sub_category_name",
+        ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # --- First Variation for Display (fast LIMIT 1 query) ---
+        variation = ProductVariation.objects.filter(product_id=instance.product_id).first()
+        if variation:
+            representation["product_variation_id"] = variation.product_variation_id
+            representation["actual_price"] = variation.actual_price
+            representation["discounted_price"] = variation.discounted_price
+            representation["weight"] = variation.weight_variation
+        else:
+            representation["product_variation_id"] = None
+            representation["actual_price"] = "0"
+            representation["discounted_price"] = "0"
+            representation["weight"] = "N/A"
+
+        # --- Stock Status (single EXISTS query, O(1)) ---
+        qs = Product.objects.filter(id=instance.id).annotate(
+            has_stock=Exists(
+                ProductVariation.objects.filter(product_id=OuterRef("id")).filter(
+                    Q(stock_toggle_mode=True, in_stock_bull=True) |
+                    Q(stock_toggle_mode=False, stock_quantity__gt=0)
+                )
+            ),
+            has_out_of_stock=Exists(
+                ProductVariation.objects.filter(product_id=OuterRef("id")).exclude(
+                    Q(stock_toggle_mode=True, in_stock_bull=True) |
+                    Q(stock_toggle_mode=False, stock_quantity__gt=0)
+                )
+            )
+        ).values("has_stock", "has_out_of_stock").first()
+
+        if not qs["has_stock"]:
+            stock_status = "out_of_stock"
+        elif not qs["has_out_of_stock"]:
+            stock_status = "fully_in_stock"
+        else:
+            stock_status = "partially_in_stock"
+
+        representation["stock_status"] = stock_status
 
         return representation
 

@@ -12,6 +12,8 @@ from django.db.models import Q, Count, Sum
 from utils.handle_s3_bucket import upload_file_to_s3
 import logging
 
+from Product.models import TimeSlot, Product, ProductVariation
+
 class DeliveryLoginViewSet(viewsets.ViewSet):
     """
     Delivery person login with email and plain text password
@@ -114,6 +116,8 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
             orders_data = []
             for order in orders:
                 items = OrderItem.objects.filter(order_id=order.order_id)
+                timeslot = TimeSlot.objects.filter(id=order.timeslot_id).first()
+                timeslot_txt = f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
                 orders_data.append({
                     "order_id": order.order_id,
                     "customer_name": f"{order.first_name} {order.last_name}",
@@ -128,6 +132,7 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
                     "special_instructions": order.special_instructions or "",
                     "items_count": items.count(),
                     "items": OrderItemSerializer(items, many=True).data,
+                    "timeslot": timeslot_txt,
                     "created_at": order.created_at
                 })
             return orders_data
@@ -251,6 +256,9 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
     def create(self, request):
         order_id = request.data.get("order_id")
         status_type = request.data.get("status")  # expected: "out_for_delivery" or "delivered"
+        
+        extra_cost = request.data.get("extra_cost", 0)
+        transport_mode = request.data.get("transport_mode", "")
 
         if status_type not in ["out_for_delivery", "delivered"]:
             return Response({
@@ -307,6 +315,10 @@ class DeliveryStatusViewSet(viewsets.ViewSet):
         elif status_type == "out_for_delivery":
             # Send email notification for delivery completion
             prepare_and_send_order_email(order_id=order.order_id, type="out_for_delivery")
+
+        if order.is_cod == False:
+            order.extra_cost = extra_cost
+            order.transport_mode = transport_mode
 
         order.status = status_type
         order.save()
@@ -388,6 +400,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
         order_id = request.data.get("order_id")
         collected_amount = request.data.get("collected_amount")
         extra_cost = request.data.get("extra_cost", 0)
+        transport_mode = request.data.get("transport_mode", "")
 
         if not order_id:
             return Response({
@@ -434,6 +447,7 @@ class ConfirmCashViewSet(viewsets.ViewSet):
 
         order.payment_received = True
         order.extra_cost = extra_cost
+        order.transport_mode = transport_mode
         order.save()
 
         return Response({
