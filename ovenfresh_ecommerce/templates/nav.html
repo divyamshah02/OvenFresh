@@ -17,7 +17,7 @@
                 <form class="d-none d-md-flex mx-auto navbar-search" role="search">
                     <div class="search-wrapper mx-auto position-relative">
                         <i class="bi bi-search"></i>
-                        <input type="text" id="search-input" class="form-control" placeholder="Search on Ovenfresh.in" autocomplete="off">
+                        <input type="text" id="mobile-search-input" class="form-control" placeholder="Search on Ovenfresh.in" autocomplete="off">
                     </div>
                 </form>
 
@@ -118,6 +118,10 @@
             </div>
             <div class="offcanvas-body">
                 <ul class="nav flex-column">
+                    <div class="search-wrapper mx-auto position-relative">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="search-input" class="form-control" placeholder="Search on Ovenfresh.in" autocomplete="off">
+                    </div>
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}?category=Cakes">Cakes</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}?category=Gifting">Gifting</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'shop-list' %}?category=Flowers">Flowers</a></li>

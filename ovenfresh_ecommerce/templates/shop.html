@@ -207,71 +207,7 @@
     <script src="/static/js/shop.js"></script>
     <script src="/static/js/api_caller.js"></script>
 
-        <!-- Search Dropdown (global, outside navbar/menu) -->
-    <div id="search-results" class="search-dropdown"></div>
-    <script>
-        const searchInput = document.getElementById("search-input");
-        const resultsBox = document.getElementById("search-results");
-
-        let debounceTimer;
-        searchInput.addEventListener("input", function () {
-            clearTimeout(debounceTimer);
-            const query = this.value.trim();
-
-            if (query.length < 2) {
-                resultsBox.style.display = "none";
-                return;
-            }
-
-            debounceTimer = setTimeout(async () => {
-                const response = await fetch(`/product-api/product-search/?q=${query}`);
-                const result = await response.json();
-
-                if (result.success && result.data.length > 0) {
-                    resultsBox.innerHTML = result.data.map(product => `
-                        <div class="result-item" onclick="window.location='/product/${product.slug}/'">
-                            <img src="${product.thumbnail || '/static/no-image.png'}" alt="${product.title}">
-                            <span>${product.title}</span>
-                        </div>
-                    `).join("");
-                    resultsBox.style.display = "block";
-                } else {
-                    resultsBox.innerHTML = "<div class='p-2 text-muted'>No results found</div>";
-                    resultsBox.style.display = "block";
-                }
-            }, 300); // debounce 300ms
-        });
-        
-        const searchResults = document.getElementById("search-results");
-
-        function positionDropdown() {
-            if (!searchInput) return;
-            const rect = searchInput.getBoundingClientRect();
-
-            searchResults.style.top = `${rect.bottom + window.scrollY + 5}px`;
-            searchResults.style.left = `${rect.left + window.scrollX}px`;
-            searchResults.style.width = `${rect.width}px`;
-        }
-
-        // Reposition on scroll/resize/focus
-        window.addEventListener("resize", positionDropdown);
-        window.addEventListener("scroll", positionDropdown);
-        if (searchInput) {
-            searchInput.addEventListener("focus", positionDropdown);
-        }
-
-        // Example: show dropdown (replace with your fetch logic)
-        searchInput.addEventListener("input", () => {
-            if (searchInput.value.trim().length > 0) {
-                searchResults.style.display = "block";
-                positionDropdown();
-            } else {
-                searchResults.style.display = "none";
-            }
-        });
-
-    </script>
-
+    {% include 'search.html' %}
     <script>
         const csrfToken = "{{ csrf_token }}";
         Shop(
