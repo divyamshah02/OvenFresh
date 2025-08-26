@@ -11,6 +11,9 @@ router.register(r'confirm-payment-order-api', ConfirmPaymentViewSet, basename='c
 router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-api')
 router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')
 
+router.register(r'active-timeslots', ActiveTimeSlotsViewSet, basename='active-timeslots')
+router.register(r'admin-update-delivery-details', AdminUpdateDeliveryDetailsViewSet, basename='admin-update-delivery-details')
+
 router.register(r'admin-all-orders-api', AdminOrderListViewSet, basename='admin-all-orders-api')
 router.register(r'admin-create-order', AdminCreateOrderViewSet, basename='admin-create-order')
 router.register(r'admin-order-briefe-api', AdminOrderBriefeViewSet, basename='admin-order-briefe-api')

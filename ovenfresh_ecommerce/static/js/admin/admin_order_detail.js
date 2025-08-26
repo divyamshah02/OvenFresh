@@ -377,7 +377,7 @@ async function saveCorporateOrderChanges() {
     }
 }
 
-function populateDeliveryInfo() {
+function populateDeliveryInfo_old() {
   const deliveryInfo = document.getElementById("delivery-info")
   deliveryInfo.innerHTML = `
         <p class="mb-1"><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
@@ -391,6 +391,191 @@ function populateDeliveryInfo() {
             : '<p class="mt-2 mb-0 text-warning"><strong>No delivery person assigned</strong></p>'
         }
     `
+}
+
+function populateDeliveryInfo() {
+  const deliveryInfo = document.getElementById("delivery-info");
+  
+  deliveryInfo.innerHTML = `
+    <div id="delivery-display">
+      <p class="mb-1"><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
+      <p class="mb-1"><strong>Time:</strong> ${orderData.timeslot_name || "Not specified"}</p>
+      <p class="mb-0"><strong>Address:</strong></p>
+      <small>${orderData.delivery_address}</small>
+      ${
+        orderData.assigned_delivery_partner_name
+          ? `<p class="mt-2 mb-0"><strong>Assigned to:</strong> ${orderData.assigned_delivery_partner_name}</p>
+             <p class="mb-0"><strong>Commission:</strong> ${orderData.assigned_delivery_partner_commission || "0"}</p>`
+          : '<p class="mt-2 mb-0 text-warning"><strong>No delivery person assigned</strong></p>'
+      }
+      <div class="mt-3">
+        <button class="btn btn-sm btn-outline-primary" id="edit-delivery-btn">
+          <i class="fas fa-edit me-1"></i> Edit Delivery
+        </button>
+      </div>
+    </div>
+    <div id="delivery-edit" style="display: none;">
+      <div class="mb-2">
+        <label for="delivery-date-input" class="form-label">Delivery Date</label>
+        <input type="date" class="form-control" id="delivery-date-input" 
+               min="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="mb-2">
+        <label for="timeslot-select" class="form-label">Time Slot</label>
+        <select class="form-select" id="timeslot-select">
+          <option value="">Loading time slots...</option>
+        </select>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-sm btn-primary" id="save-delivery-btn">
+          <i class="fas fa-save me-1"></i> Save
+        </button>
+        <button class="btn btn-sm btn-secondary" id="cancel-delivery-btn">
+          <i class="fas fa-times me-1"></i> Cancel
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Set initial values
+  document.getElementById('delivery-date-input').value = orderData.delivery_date;
+  
+  // Add event listeners
+  document.getElementById('edit-delivery-btn').addEventListener('click', showDeliveryEditForm);
+  document.getElementById('save-delivery-btn').addEventListener('click', saveDeliveryDetails);
+  document.getElementById('cancel-delivery-btn').addEventListener('click', hideDeliveryEditForm);
+  document.getElementById('delivery-date-input').addEventListener('change', loadTimeSlotsForDate);
+  
+  // Load time slots for the current date
+  loadTimeSlotsForDate();
+}
+
+function showDeliveryEditForm() {
+  document.getElementById('delivery-display').style.display = 'none';
+  document.getElementById('delivery-edit').style.display = 'block';
+}
+
+function hideDeliveryEditForm() {
+  document.getElementById('delivery-display').style.display = 'block';
+  document.getElementById('delivery-edit').style.display = 'none';
+}
+
+async function loadTimeSlotsForDate() {
+  const dateInput = document.getElementById('delivery-date-input');
+  const timeslotSelect = document.getElementById('timeslot-select');
+  
+  if (!dateInput.value) return;
+  
+  try {
+    timeslotSelect.innerHTML = '<option value="">Loading time slots...</option>';
+    
+    const [success, result] = await callApi(
+      "GET", 
+      `/order-api/active-timeslots/?date=${dateInput.value}`,
+      null,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      const timeSlots = result.data;
+      
+      timeslotSelect.innerHTML = '';
+      if (timeSlots.length === 0) {
+        timeslotSelect.innerHTML = '<option value="">No time slots available</option>';
+        return;
+      }
+      
+      // Add options for each time slot
+      timeSlots.forEach(slot => {
+        const option = document.createElement('option');
+        option.value = slot.id;
+        option.textContent = `${slot.time_slot_title} (${slot.start_time} - ${slot.end_time})`;
+        
+        // Select the current time slot if it matches
+        if (orderData.timeslot_id === slot.id) {
+          option.selected = true;
+        }
+        
+        timeslotSelect.appendChild(option);
+      });
+    } else {
+      throw new Error(result.error || "Failed to load time slots");
+    }
+  } catch (error) {
+    console.error("Error loading time slots:", error);
+    timeslotSelect.innerHTML = '<option value="">Error loading time slots</option>';
+    showNotification('Error loading time slots: ' + error.message, 'error');
+  }
+}
+
+async function saveDeliveryDetails() {
+  try {
+    showLoading();
+    
+    const dateInput = document.getElementById('delivery-date-input');
+    const timeslotSelect = document.getElementById('timeslot-select');
+    
+    const deliveryDate = dateInput.value;
+    const timeslotId = timeslotSelect.value;
+    
+    if (!deliveryDate) {
+      showNotification('Please select a delivery date', 'error');
+      return;
+    }
+    
+    if (!timeslotId) {
+      showNotification('Please select a time slot', 'error');
+      return;
+    }
+    
+    // Check if the selected date is valid (not in the past)
+    const selectedDate = new Date(deliveryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+      showNotification('Delivery date cannot be in the past', 'error');
+      return;
+    }
+    
+    // Prepare data for API call
+    const requestData = {
+      order_id: orderData.order_id,
+      delivery_date: deliveryDate,
+      timeslot_id: timeslotId
+    };
+    
+    // Call API to update the delivery details
+    const [success, result] = await callApi(
+      "POST", 
+      "/order-api/admin-update-delivery-details/", 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      // Update the local order data
+      orderData.delivery_date = deliveryDate;
+      orderData.timeslot_id = timeslotId;
+      
+      // Update the timeslot name from the selected option
+      const selectedOption = timeslotSelect.options[timeslotSelect.selectedIndex];
+      orderData.timeslot_name = selectedOption.textContent;
+      
+      // Update the UI
+      populateDeliveryInfo();
+      
+      // Show success message
+      showNotification('Delivery details updated successfully!', 'success');
+    } else {
+      throw new Error(result.error || "Failed to update delivery details");
+    }
+  } catch (error) {
+    console.error("Error saving delivery details:", error);
+    showNotification('Error saving delivery details: ' + error.message, 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
 function populateOrderSummary() {
