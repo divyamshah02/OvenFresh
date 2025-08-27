@@ -47,6 +47,7 @@ class Product(models.Model):  # Meta information
     storage_instructions = models.TextField(blank=True, null=True)
     is_extras = models.BooleanField(default=False)  # True if product is an extra item (like sauces, etc.)
     slug = models.CharField(max_length=255, unique=True, blank=True, null=True)  # Slug for SEO
+    tax_rate = models.CharField(max_length=255, default="18")
 
     def __str__(self):
         return f"{self.product_id} - {self.title}"
@@ -57,6 +58,7 @@ class ProductVariation(models.Model):
     product_variation_id = models.CharField(max_length=20, unique=True)  # 10-digit
     actual_price = models.CharField(max_length=20)
     discounted_price = models.CharField(max_length=20)
+    base_price = models.CharField(max_length=20, blank=True, null=True)  # Price before tax
     is_vartied = models.BooleanField(default=True)
     weight_variation = models.CharField(max_length=100)  # E.g., "500g"
     is_active = models.BooleanField(default=True)
@@ -96,6 +98,23 @@ class ProductVariation(models.Model):
                 self.in_stock_bull = self.stock_quantity > 0
             else:
                 self.in_stock_bull = False
+        
+        # Calculate base_price if not set
+        if not self.base_price and self.actual_price:
+            try:
+                product = Product.objects.get(product_id=self.product_id)
+                tax_rate = product.tax_rate if product.tax_rate else "18"
+                
+                actual_price = float(self.actual_price)
+                if tax_rate == '0':
+                    self.base_price = str(round((actual_price, 2) + 0.05))
+                elif tax_rate == '5':
+                    self.base_price = str(round((actual_price * 100) / 105, 2) + 0.05)
+                else:  # 18% or default
+                    self.base_price = str(round((actual_price * 100) / 118, 2) + 0.05)
+            except (Product.DoesNotExist, ValueError):
+                # If product doesn't exist or price conversion fails, use actual_price
+                self.base_price = self.actual_price
         super().save(*args, **kwargs)
 
 class Reviews(models.Model):

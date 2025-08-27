@@ -26,6 +26,7 @@ router.register(r'admin-home-cms', AdminHomeCmsViewSet, basename='admin-home-cms
 router.register(r'admin-cms', AdminCmsViewSet, basename='admin-cms')
 router.register(r'admin-products', AdminAllProductViewSet, basename='admin-products')
 router.register(r'admin-add-product', AdminAddProductViewSet, basename='admin-add-product')
+router.register(r'admin-product-tax-rates', AdminProductTaxRateViewSet, basename='admin-product-tax-rates-frontend')
 router.register(r'admin-category', AdminManageCategoryViewSet, basename='admin-category')
 router.register(r'admin-pincodes', AdminPincodeViewSet, basename='admin-pincodes')
 router.register(r'admin-timeslot', AdminTimeslotViewSet, basename='admin-timeslot')
