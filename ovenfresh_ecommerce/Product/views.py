@@ -813,7 +813,7 @@ class AdminProductTaxRateViewSet(viewsets.ViewSet):
                 else:  # 18% or default
                     base_price = (actual_price * 100) / 118
                     
-                variation.base_price = str(round(base_price, 2) + 0.05)  # Round and add 0.05
+                variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
                 variation.save()
             
             return Response({

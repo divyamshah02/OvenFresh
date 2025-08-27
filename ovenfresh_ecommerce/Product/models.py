@@ -107,11 +107,11 @@ class ProductVariation(models.Model):
                 
                 actual_price = float(self.actual_price)
                 if tax_rate == '0':
-                    self.base_price = str(round((actual_price, 2) + 0.05))
+                    self.base_price = str(round(round(actual_price, 2) + 0.05, 2))
                 elif tax_rate == '5':
-                    self.base_price = str(round((actual_price * 100) / 105, 2) + 0.05)
+                    self.base_price = str(round(round((actual_price * 100) / 105, 2) + 0.05, 2))
                 else:  # 18% or default
-                    self.base_price = str(round((actual_price * 100) / 118, 2) + 0.05)
+                    self.base_price = str(round(round((actual_price * 100) / 118, 2) + 0.05, 2))
             except (Product.DoesNotExist, ValueError):
                 # If product doesn't exist or price conversion fails, use actual_price
                 self.base_price = self.actual_price
