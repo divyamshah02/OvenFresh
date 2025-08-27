@@ -11,6 +11,9 @@ let deliveryPersons = []
 let selectedDeliveryPerson = null
 let selectedCommission = 0;
 
+// Track if tax has been manually modified
+let isTaxManuallyModified = false;
+
 async function InitializeAdminOrderDetail(
   csrfTokenParam,
   orderIdParam,
@@ -113,6 +116,8 @@ function populatePaymentInfo() {
   const paymentInfo = document.getElementById("payment-info")
   const paymentStatus = orderData.payment_received ? "Paid" : "Pending"
   const paymentClass = orderData.payment_received ? "success" : "warning"
+  const isCorporate = orderData.is_corporate || false;
+  // console.log("Is Corporate Order:", isCorporate);
 
   paymentInfo.innerHTML = `
         <p class="mb-1"><strong>Method:</strong> ${orderData.payment_method.toUpperCase()}</p>
@@ -122,11 +127,257 @@ function populatePaymentInfo() {
         ${orderData.different_billing_address ? `<p class="mb-0 mt-1"><strong>Blling Info:</strong></p>
         <small>${orderData.billing_first_name} ${orderData.billing_last_name}</small><br>
         <small>+91 ${orderData.billing_phone}</small><br>
-        <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}        
-    `
+        <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" id="corporateOrderToggle" ${isCorporate ? 'checked' : ''}>
+          <label class="form-check-label" for="corporateOrderToggle">Corporate Order</label>
+        </div>
+        <div id="corporate-order-actions" class="mt-2" style="display: ${isCorporate ? 'block' : 'none'}">
+          <button class="btn btn-sm btn-outline-primary" id="updatePricingsBtn">
+            <i class="fas fa-edit me-1"></i> Update Pricings
+          </button>
+        </div>       
+    `;
+
+  // Add event listener for the toggle
+  document.getElementById('corporateOrderToggle').addEventListener('change', function() {
+    const isChecked = this.checked;
+    const actionsDiv = document.getElementById('corporate-order-actions');
+    
+    if (isChecked) {
+      actionsDiv.style.display = 'block';
+      // Update order status to corporate
+      updateCorporateStatus(true);
+    } else {
+      actionsDiv.style.display = 'none';
+      // Update order status to non-corporate
+      updateCorporateStatus(false);
+    }
+  });
+
+  // Add event listener for the update pricings button
+  document.getElementById('updatePricingsBtn').addEventListener('click', function() {
+    showCorporateOrderModal();
+  });
 }
 
-function populateDeliveryInfo() {
+async function updateCorporateStatus(isCorporate) {
+  try {
+    showLoading();
+    
+    const requestData = {
+      order_id: orderData.order_id,
+      is_corporate: isCorporate
+    };
+    
+    // Call API to update the corporate status
+    const [success, result] = await callApi(
+      "POST", 
+      "/order-api/admin-update-corporate-status/", 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      orderData.is_corporate = isCorporate;
+      showNotification(`Order marked as ${isCorporate ? 'corporate' : 'non-corporate'} successfully!`, 'success');
+    } else {
+      throw new Error(result.error || "Failed to update corporate status");
+    }
+  } catch (error) {
+    console.error("Error updating corporate status:", error);
+    showNotification('Error updating corporate status: ' + error.message, 'error');
+    // Revert the toggle if the API call fails
+    document.getElementById('corporateOrderToggle').checked = !isCorporate;
+  } finally {
+    hideLoading();
+  }
+}
+
+function showCorporateOrderModal() {
+  // Reset the manual modification flag
+  isTaxManuallyModified = false;
+  
+  // Populate the modal with order items
+  populateCorporateOrderItems();
+
+  // Set original pricing values
+  document.getElementById('original-subtotal').textContent = `₹${orderData.subtotal.toFixed(2)}`;
+  document.getElementById('original-tax').textContent = `₹${orderData.tax_amount.toFixed(2)}`;
+  document.getElementById('original-total').textContent = `₹${orderData.total_amount.toFixed(2)}`;
+  
+  // Set corporate pricing inputs
+  document.getElementById('corporate-subtotal-input').value = orderData.subtotal.toFixed(2);
+  document.getElementById('corporate-tax-input').value = (orderData.subtotal * 0.18).toFixed(2);
+  
+  // Calculate and display initial corporate total
+  updateCorporateTotalPreview();
+  
+  // Add event listeners for input changes
+  document.getElementById('corporate-subtotal-input').addEventListener('input', handleSubtotalChange);
+  document.getElementById('corporate-tax-input').addEventListener('input', handleTaxInput);
+  document.getElementById('reset-tax-btn').addEventListener('click', resetTaxToDefault);
+
+  // Show the modal
+  const modal = new bootstrap.Modal(document.getElementById('corporateOrderModal'));
+  modal.show();
+}
+
+function handleSubtotalChange() {
+  const subtotalInput = document.getElementById('corporate-subtotal-input');
+  const newSubtotal = parseFloat(subtotalInput.value) || 0;
+  
+  // Only auto-update tax if it hasn't been manually modified
+  if (!isTaxManuallyModified) {
+    const calculatedTax = newSubtotal * 0.18;
+    document.getElementById('corporate-tax-input').value = calculatedTax.toFixed(2);
+  }
+  
+  updateCorporateTotalPreview();
+}
+
+function handleTaxInput() {
+  // Mark tax as manually modified when user changes it
+  isTaxManuallyModified = true;
+  updateCorporateTotalPreview();
+}
+
+function resetTaxToDefault() {
+  const subtotalInput = document.getElementById('corporate-subtotal-input');
+  const newSubtotal = parseFloat(subtotalInput.value) || 0;
+  
+  // Reset tax to 18% of subtotal
+  const calculatedTax = newSubtotal * 0.18;
+  document.getElementById('corporate-tax-input').value = calculatedTax.toFixed(2);
+  
+  // Reset the manual modification flag
+  isTaxManuallyModified = false;
+  
+  updateCorporateTotalPreview();
+}
+
+function populateCorporateOrderItems() {
+    const tbody = document.getElementById("corporate-order-items-tbody");
+    tbody.innerHTML = orderData.order_items
+        .map(
+            (item, index) => `
+            <tr data-item-index="${index}">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${item.product_image}" alt="${item.product_name}" 
+                             class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                        <div>
+                            <strong>${item.product_name}</strong>
+                            <br><small class="text-muted">ID: ${item.product_id}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>${item.variation_name || "Standard"}</td>
+                <td>${item.quantity}</td>
+                <td>₹${Number.parseFloat(item.amount).toFixed(2)}</td>
+                <td>₹${Number.parseFloat(item.discount).toFixed(2)}</td>
+                <td>₹${Number.parseFloat(item.final_amount).toFixed(2)}</td>
+            </tr>
+        `,
+        )
+        .join("");
+}
+
+function updateCorporateTotalPreview() {
+    const subtotalInput = document.getElementById('corporate-subtotal-input');
+    const taxInput = document.getElementById('corporate-tax-input');
+    
+    const newSubtotal = parseFloat(subtotalInput.value) || 0;
+    const newTax = parseFloat(taxInput.value) || 0;
+    const newTotal = newSubtotal + newTax;
+    
+    document.getElementById('corporate-total-preview').textContent = `₹${newTotal.toFixed(2)}`;
+}
+
+async function saveCorporateOrderChanges() {
+    try {
+        showLoading();
+        
+        const newSubtotal = parseFloat(document.getElementById('corporate-subtotal-input').value) || 0;
+        const newTax = parseFloat(document.getElementById('corporate-tax-input').value) || 0;
+        const newTotal = newSubtotal + newTax;
+        
+        // Calculate the ratio for proportional adjustment
+        const originalSubtotal = orderData.subtotal;
+        const ratio = originalSubtotal > 0 ? newSubtotal / originalSubtotal : 1;
+        
+        // Prepare updated items with proportional price adjustments
+        const updatedItems = orderData.order_items.map((item, index) => {
+            const originalItemTotal = (item.amount * item.quantity) - item.discount;
+            const newItemTotal = originalItemTotal * ratio;
+            const newItemAmount = (newItemTotal + item.discount) / item.quantity;
+            
+            return {
+                index: index,
+                variation: item.variation_name,
+                quantity: item.quantity,
+                price: newItemAmount,
+                discount: item.discount,
+                notes: item.item_note || ""
+            };
+        });
+        
+        // Prepare data for API call
+        const requestData = {
+            order_id: orderData.order_id,
+            is_corporate: true,
+            items: updatedItems,
+            subtotal: newSubtotal,
+            tax_amount: newTax,
+            total_amount: newTotal
+        };
+        
+        // Call API to update the order
+        const [success, result] = await callApi(
+            "POST", 
+            "/order-api/admin-update-corporate-order/", 
+            requestData,
+            csrf_token
+        );
+        
+        if (success && result.success) {
+            // Update the local order data with new values
+            updatedItems.forEach(updatedItem => {
+                const index = updatedItem.index;
+                if (orderData.order_items[index]) {
+                    orderData.order_items[index].amount = updatedItem.price;
+                    orderData.order_items[index].final_amount = 
+                        (updatedItem.price * updatedItem.quantity) - updatedItem.discount;
+                }
+            });
+            
+            orderData.subtotal = newSubtotal;
+            orderData.tax_amount = newTax;
+            orderData.total_amount = newTotal;
+            orderData.is_corporate = true;
+            
+            // Update the UI
+            populateOrderItems();
+            populateOrderSummary();
+            
+            // Show success message
+            showNotification('Corporate pricing updated successfully!', 'success');
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('corporateOrderModal'));
+            modal.hide();
+        } else {
+            throw new Error(result.error || "Failed to update corporate order");
+        }
+    } catch (error) {
+        console.error("Error saving corporate order changes:", error);
+        showNotification('Error saving corporate order changes: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function populateDeliveryInfo_old() {
   const deliveryInfo = document.getElementById("delivery-info")
   deliveryInfo.innerHTML = `
         <p class="mb-1"><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
@@ -140,6 +391,191 @@ function populateDeliveryInfo() {
             : '<p class="mt-2 mb-0 text-warning"><strong>No delivery person assigned</strong></p>'
         }
     `
+}
+
+function populateDeliveryInfo() {
+  const deliveryInfo = document.getElementById("delivery-info");
+  
+  deliveryInfo.innerHTML = `
+    <div id="delivery-display">
+      <p class="mb-1"><strong>Date:</strong> ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })}</p>
+      <p class="mb-1"><strong>Time:</strong> ${orderData.timeslot_name || "Not specified"}</p>
+      <p class="mb-0"><strong>Address:</strong></p>
+      <small>${orderData.delivery_address}</small>
+      ${
+        orderData.assigned_delivery_partner_name
+          ? `<p class="mt-2 mb-0"><strong>Assigned to:</strong> ${orderData.assigned_delivery_partner_name}</p>
+             <p class="mb-0"><strong>Commission:</strong> ${orderData.assigned_delivery_partner_commission || "0"}</p>`
+          : '<p class="mt-2 mb-0 text-warning"><strong>No delivery person assigned</strong></p>'
+      }
+      <div class="mt-3">
+        <button class="btn btn-sm btn-outline-primary" id="edit-delivery-btn">
+          <i class="fas fa-edit me-1"></i> Edit Delivery
+        </button>
+      </div>
+    </div>
+    <div id="delivery-edit" style="display: none;">
+      <div class="mb-2">
+        <label for="delivery-date-input" class="form-label">Delivery Date</label>
+        <input type="date" class="form-control" id="delivery-date-input" 
+               min="${new Date().toISOString().split('T')[0]}">
+      </div>
+      <div class="mb-2">
+        <label for="timeslot-select" class="form-label">Time Slot</label>
+        <select class="form-select" id="timeslot-select">
+          <option value="">Loading time slots...</option>
+        </select>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-sm btn-primary" id="save-delivery-btn">
+          <i class="fas fa-save me-1"></i> Save
+        </button>
+        <button class="btn btn-sm btn-secondary" id="cancel-delivery-btn">
+          <i class="fas fa-times me-1"></i> Cancel
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Set initial values
+  document.getElementById('delivery-date-input').value = orderData.delivery_date;
+  
+  // Add event listeners
+  document.getElementById('edit-delivery-btn').addEventListener('click', showDeliveryEditForm);
+  document.getElementById('save-delivery-btn').addEventListener('click', saveDeliveryDetails);
+  document.getElementById('cancel-delivery-btn').addEventListener('click', hideDeliveryEditForm);
+  document.getElementById('delivery-date-input').addEventListener('change', loadTimeSlotsForDate);
+  
+  // Load time slots for the current date
+  loadTimeSlotsForDate();
+}
+
+function showDeliveryEditForm() {
+  document.getElementById('delivery-display').style.display = 'none';
+  document.getElementById('delivery-edit').style.display = 'block';
+}
+
+function hideDeliveryEditForm() {
+  document.getElementById('delivery-display').style.display = 'block';
+  document.getElementById('delivery-edit').style.display = 'none';
+}
+
+async function loadTimeSlotsForDate() {
+  const dateInput = document.getElementById('delivery-date-input');
+  const timeslotSelect = document.getElementById('timeslot-select');
+  
+  if (!dateInput.value) return;
+  
+  try {
+    timeslotSelect.innerHTML = '<option value="">Loading time slots...</option>';
+    
+    const [success, result] = await callApi(
+      "GET", 
+      `/order-api/active-timeslots/?date=${dateInput.value}`,
+      null,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      const timeSlots = result.data;
+      
+      timeslotSelect.innerHTML = '';
+      if (timeSlots.length === 0) {
+        timeslotSelect.innerHTML = '<option value="">No time slots available</option>';
+        return;
+      }
+      
+      // Add options for each time slot
+      timeSlots.forEach(slot => {
+        const option = document.createElement('option');
+        option.value = slot.id;
+        option.textContent = `${slot.time_slot_title} (${slot.start_time} - ${slot.end_time})`;
+        
+        // Select the current time slot if it matches
+        if (orderData.timeslot_id === slot.id) {
+          option.selected = true;
+        }
+        
+        timeslotSelect.appendChild(option);
+      });
+    } else {
+      throw new Error(result.error || "Failed to load time slots");
+    }
+  } catch (error) {
+    console.error("Error loading time slots:", error);
+    timeslotSelect.innerHTML = '<option value="">Error loading time slots</option>';
+    showNotification('Error loading time slots: ' + error.message, 'error');
+  }
+}
+
+async function saveDeliveryDetails() {
+  try {
+    showLoading();
+    
+    const dateInput = document.getElementById('delivery-date-input');
+    const timeslotSelect = document.getElementById('timeslot-select');
+    
+    const deliveryDate = dateInput.value;
+    const timeslotId = timeslotSelect.value;
+    
+    if (!deliveryDate) {
+      showNotification('Please select a delivery date', 'error');
+      return;
+    }
+    
+    if (!timeslotId) {
+      showNotification('Please select a time slot', 'error');
+      return;
+    }
+    
+    // Check if the selected date is valid (not in the past)
+    const selectedDate = new Date(deliveryDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+      showNotification('Delivery date cannot be in the past', 'error');
+      return;
+    }
+    
+    // Prepare data for API call
+    const requestData = {
+      order_id: orderData.order_id,
+      delivery_date: deliveryDate,
+      timeslot_id: timeslotId
+    };
+    
+    // Call API to update the delivery details
+    const [success, result] = await callApi(
+      "POST", 
+      "/order-api/admin-update-delivery-details/", 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {
+      // Update the local order data
+      orderData.delivery_date = deliveryDate;
+      orderData.timeslot_id = timeslotId;
+      
+      // Update the timeslot name from the selected option
+      const selectedOption = timeslotSelect.options[timeslotSelect.selectedIndex];
+      orderData.timeslot_name = selectedOption.textContent;
+      
+      // Update the UI
+      populateDeliveryInfo();
+      
+      // Show success message
+      showNotification('Delivery details updated successfully!', 'success');
+    } else {
+      throw new Error(result.error || "Failed to update delivery details");
+    }
+  } catch (error) {
+    console.error("Error saving delivery details:", error);
+    showNotification('Error saving delivery details: ' + error.message, 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
 function populateOrderSummary() {

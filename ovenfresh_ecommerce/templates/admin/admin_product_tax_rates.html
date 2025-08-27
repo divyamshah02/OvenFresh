@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Tax Rates - ShopAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin/styles.css">
+    <style>
+        .tax-rate-table th {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .variation-row {
+            background-color: #f8f9fa;
+        }
+        
+        .product-row {
+            background-color: #fff;
+            border-left: 4px solid #0d6efd;
+        }
+        
+        .tax-select {
+            min-width: 100px;
+        }
+        
+        .table-responsive {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body class="ovenfresh-theme">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% include 'admin/admin-nav.html' %}
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <button class="navbar-toggler d-md-none collapsed me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div>
+                            <h1 class="h2">Product Tax Rates</h1>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="/admin-dashboard/">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="/admin-all-products/">Products</a></li>
+                                    <li class="breadcrumb-item active">Tax Rates</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-outline-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" id="saveAllBtn">
+                                <i class="fas fa-save me-1"></i> Save All Changes
+                            </button>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> Admin
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="searchInput" class="form-label">Search Products</label>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Product name, ID...">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="categoryFilter" class="form-label">Category</label>
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                    <!-- Categories will be populated dynamically -->
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="subCategoryFilter" class="form-label">Sub Category</label>
+                                <select class="form-select" id="subCategoryFilter" disabled>
+                                    <option value="">All Sub Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-primary w-100" id="applyFiltersBtn">
+                                    <i class="fas fa-filter me-1"></i> Apply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Products & Tax Rates</h5>
+                        <span class="badge bg-primary" id="totalProducts">0 Products</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Loading Spinner -->
+                        <div id="loadingSpinner" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading products...</p>
+                        </div>
+
+                        <!-- Products Table -->
+                        <div class="table-responsive" id="productsTableContainer" style="display: none;">
+                            <table class="table table-hover tax-rate-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Sub Category</th>
+                                        <th>Tax Rate</th>
+                                        <th>Base Price</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No products found</h5>
+                            <p class="text-muted">Try adjusting your search criteria.</p>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-between align-items-center mt-4" id="paginationContainer" style="display: none;">
+                            <div>
+                                <span id="paginationInfo">Showing 0 to 0 of 0 entries</span>
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" id="pagination">
+                                    <!-- Pagination will be generated here -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/api_caller.js"></script>
+    <script src="/static/js/admin/admin_product_tax_rates.js"></script>
+
+    <script>
+    const csrfToken = "{{ csrf_token }}";
+    AdminProductTaxRates(
+        csrfToken,
+        "{% url 'admin-product-tax-rates-api-list' %}",
+        "{% url 'category-list' %}",
+        "{% url 'sub-category-list' %}"
+    );
+</script>
+</body>
+
+</html>

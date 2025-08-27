@@ -98,6 +98,8 @@ class Order(models.Model):
     delivery_photos = models.JSONField(default=list, blank=True, null=True)
     transport_mode = models.CharField(max_length=255, blank=True, null=True, default="")
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
+    
+    is_corporate = models.BooleanField(default=False)
 
     def __str__(self):
         return self.order_id
