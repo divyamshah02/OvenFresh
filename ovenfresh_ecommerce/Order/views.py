@@ -882,6 +882,99 @@ class OrderListViewSet(viewsets.ViewSet):
         }, status=200)
 
 
+class ActiveTimeSlotsViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        """
+        Get active time slots for a specific date
+        """
+        try:
+            date_str = request.query_params.get('date')
+            
+            # Get all active time slots
+            time_slots = TimeSlot.objects.filter(is_active=True)
+            
+            # Serialize the time slots
+            time_slots_data = []
+            for slot in time_slots:
+                time_slots_data.append({
+                    'id': str(slot.id),
+                    'time_slot_title': slot.time_slot_title,
+                    'start_time': slot.start_time,
+                    'end_time': slot.end_time,
+                    'delivery_charges': slot.delivery_charges
+                })
+            
+            return Response({
+                "success": True,
+                "data": time_slots_data,
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
+class AdminUpdateDeliveryDetailsViewSet(viewsets.ViewSet):
+    
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update delivery details of an order
+        """
+        try:
+            data = request.data
+            order_id = data.get('order_id')
+            delivery_date = data.get('delivery_date')
+            timeslot_id = data.get('timeslot_id')
+            
+            # Validate the date is not in the past
+            from datetime import date
+            if delivery_date and date.fromisoformat(delivery_date) < date.today():
+                return Response({
+                    "success": False,
+                    "data": None,
+                    "error": "Delivery date cannot be in the past"
+                }, status=400)
+            
+            # Get the order
+            order = Order.objects.get(order_id=order_id)
+            
+            # Update delivery details
+            if delivery_date:
+                order.delivery_date = delivery_date
+            if timeslot_id:
+                order.timeslot_id = timeslot_id
+            
+            order.save()
+            
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+            
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
 class AdminOrderListViewSet(viewsets.ViewSet):
     @handle_exceptions
     @check_authentication(required_role="admin")
@@ -1223,6 +1316,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'tax_amount': tax_amount,
                 'delivery_charge': delivery_charge,
                 'discount_amount': discount_amount,
+                'is_corporate': order.is_corporate,
                 
                 # Coupon details
                 'coupon_code': getattr(order, 'coupon_code', None),
@@ -1251,7 +1345,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 "data": order_data,
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -1265,6 +1359,110 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 "error": str(e)
             }, status=500)
 
+
+class AdminUpdateCorporateStatusViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update corporate status of an order
+        """
+        try:
+            data = request.data
+            order_id = data.get('order_id')
+            is_corporate = data.get('is_corporate', False)
+
+            # Get the order
+            order = Order.objects.get(order_id=order_id)
+
+            # Update corporate status
+            order.is_corporate = is_corporate
+            order.save()
+
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
+class AdminUpdateCorporateOrderViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update corporate order information with proportional price adjustments
+        """
+        try:
+            data = request.data
+            order_id = data.get('order_id')
+
+            # Get the order
+            order = Order.objects.get(order_id=order_id)
+
+            # Update order totals
+            order.subtotal_amount = str(data.get('subtotal', 0))
+            order.tax_amount = str(data.get('tax_amount', 0))
+            order.total_amount = data.get('total_amount', 0)
+            order.is_corporate = data.get('is_corporate', False)
+
+            # Update order items with new prices
+            for item_data in data.get('items', []):
+                index = item_data.get('index')
+                price = item_data.get('price', 0)
+                discount = item_data.get('discount', 0)
+                quantity = item_data.get('quantity', 1)
+                notes = item_data.get('notes', '')
+
+                # Get the order item
+                order_items = OrderItem.objects.filter(order_id=order_id)
+                if index < len(order_items):
+                    order_item = order_items[index]
+                    
+                    # Update the order item
+                    order_item.amount = price
+                    order_item.discount = discount
+                    order_item.final_amount = (price * quantity) - discount
+                    order_item.item_note = notes
+                    
+                    order_item.save()
+
+            # Save the order
+            order.save()
+
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
 
 class Old_AdminDeliveryPeronsViewSet(viewsets.ViewSet):
     @handle_exceptions

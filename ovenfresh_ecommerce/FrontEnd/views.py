@@ -320,6 +320,14 @@ class AdminAddProductViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_add_product.html')
 
 
+class AdminProductTaxRateViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_product_tax_rates.html')
+
+
 class AdminManageCategoryViewSet(viewsets.ViewSet):
 
     @handle_exceptions

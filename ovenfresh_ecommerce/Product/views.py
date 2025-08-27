@@ -664,6 +664,178 @@ class AllProductsViewSet(viewsets.ViewSet):
         }, status=status.HTTP_200_OK)
 
 
+class AdminProductTaxRateViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return self.get_product_tax_data(request)
+    
+    def get_product_tax_data(self, request):
+        try:
+            # Get pagination and filter parameters
+            page = int(request.GET.get('page', 1))
+            limit = int(request.GET.get('limit', 20))
+            search = request.GET.get('search', '')
+            category = request.GET.get('category', '')
+            sub_category = request.GET.get('sub_category', '')
+            
+            # Start with all active products
+            products = Product.objects.filter(is_active=True, is_extras=False)
+            
+            # Apply filters
+            if search:
+                products = products.filter(
+                    Q(title__icontains=search) | 
+                    Q(product_id__icontains=search) |
+                    Q(sku__icontains=search)
+                )
+            
+            if category:
+                category_data = Category.objects.filter(title__icontains=category).first()
+                if category_data:
+                    products = products.filter(category_id=category_data.category_id)
+            
+            if sub_category:
+                sub_category_data = SubCategory.objects.filter(title__icontains=sub_category).first()
+                if sub_category_data:
+                    products = products.filter(sub_category_id=sub_category_data.sub_category_id)
+            
+            # Get total count before pagination
+            total = products.count()
+            
+            # Apply pagination
+            start = (page - 1) * limit
+            end = start + limit
+            products = products[start:end]
+            
+            # Get all variations for these products
+            product_ids = [p.product_id for p in products]
+            variations = ProductVariation.objects.filter(product_id__in=product_ids, is_active=True)
+            
+            # Group variations by product_id
+            variations_dict = {}
+            for variation in variations:
+                if variation.product_id not in variations_dict:
+                    variations_dict[variation.product_id] = []
+                variations_dict[variation.product_id].append(variation)
+            
+            # Get all categories and subcategories for display
+            categories = Category.objects.filter(is_active=True)
+            sub_categories = SubCategory.objects.filter(is_active=True)
+            
+            # Prepare response data
+            product_data = []
+            for product in products:
+                # Get category and subcategory names
+                category_name = ""
+                sub_category_name = ""
+                
+                for cat in categories:
+                    if cat.category_id == product.category_id:
+                        category_name = cat.title
+                        break
+                
+                if product.sub_category_id:
+                    for sub_cat in sub_categories:
+                        if sub_cat.sub_category_id == product.sub_category_id:
+                            sub_category_name = sub_cat.title
+                            break
+                
+                product_data.append({
+                    'product_id': product.product_id,
+                    'title': product.title,
+                    'category_name': category_name,
+                    'sub_category_name': sub_category_name,
+                    'tax_rate': product.tax_rate or '18',  # Default to 18%
+                    'created_at': product.created_at,
+                    'variations': [
+                        {
+                            'product_variation_id': v.product_variation_id,
+                            'weight_variation': v.weight_variation,
+                            'actual_price': v.actual_price,
+                            'discounted_price': v.discounted_price,
+                            'stock_status': v.stock_status
+                        } for v in variations_dict.get(product.product_id, [])
+                    ]
+                })
+            
+            return Response({
+                "success": True,
+                "data": {
+                    "products": product_data,
+                    "total": total,
+                    "page": page,
+                    "limit": limit
+                },
+                "error": None
+            }, status=200)
+            
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+    
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def update(self, request, pk=None):
+        """
+        Update product tax rate
+        """
+        try:
+            product_id = pk
+            tax_rate = request.data.get('tax_rate')
+            
+            # Validate tax rate
+            if tax_rate not in ['0', '5', '18']:
+                return Response({
+                    "success": False,
+                    "data": None,
+                    "error": "Invalid tax rate. Must be 0, 5, or 18."
+                }, status=400)
+            
+            # Get the product
+            product = Product.objects.get(product_id=product_id)
+            
+            # Update tax rate
+            product.tax_rate = tax_rate
+            product.save()
+            
+            variations = ProductVariation.objects.filter(product_id=product_id)
+            for variation in variations:
+                actual_price = float(variation.actual_price)
+                if tax_rate == '0':
+                    base_price = actual_price
+                elif tax_rate == '5':
+                    base_price = (actual_price * 100) / 105
+                else:  # 18% or default
+                    base_price = (actual_price * 100) / 118
+                    
+                variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+                variation.save()
+            
+            return Response({
+                "success": True,
+                "data": None,
+                "error": None
+            }, status=200)
+            
+        except Product.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Product not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
 class ShopAllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
