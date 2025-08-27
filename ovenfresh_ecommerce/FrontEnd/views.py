@@ -37,6 +37,12 @@ class HomeViewSet(viewsets.ViewSet):
         # return render(request, 'home.html')
         return render(request, 'home_dynamic.html')
 
+class AboutUsViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        return render(request, 'about_us.html')
+
 class PolicyViewSet(viewsets.ViewSet):
 
     @handle_exceptions
