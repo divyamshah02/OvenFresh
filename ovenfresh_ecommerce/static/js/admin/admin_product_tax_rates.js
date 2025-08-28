@@ -4,7 +4,7 @@ let categories_url = null;
 let subcategories_url = null;
 
 let currentPage = 1;
-const itemsPerPage = 20;
+const itemsPerPage = 1600;
 let totalItems = 0;
 let currentFilters = {
     search: "",
@@ -169,7 +169,7 @@ async function loadProducts() {
     }
 }
 
-async function saveAllTaxRates() {
+async function saveAllTaxRates_old() {
     if (Object.keys(taxRateChanges).length === 0) {
         showToast('info', 'No Changes', 'No tax rate changes to save');
         return;
@@ -231,6 +231,7 @@ function renderProductsTable() {
     
     allProducts.forEach((product) => {
         // Product row
+        // taxRateChanges[product.product_id] = "18"
         const productRow = document.createElement('tr');
         productRow.className = 'product-row';
         productRow.innerHTML = `
@@ -309,7 +310,7 @@ function updateVariationPrices(productId, taxRate) {
         // Calculate and update the base price
         const basePrice = calculateBasePrice(actualPrice, taxRate);
         const basePriceCell = nextRow.querySelector('td:nth-child(3)');
-        basePriceCell.textContent = `₹${(+(basePrice.toFixed(2)) + 0.05).toFixed(2)}`;
+        basePriceCell.textContent = `New Base price - ₹${(+(basePrice.toFixed(2)) + 0.05).toFixed(2)}`;
         
         // Move to the next row
         nextRow = nextRow.nextElementSibling;
@@ -317,7 +318,7 @@ function updateVariationPrices(productId, taxRate) {
 
 }
 
-async function saveAllTaxRates() {
+async function saveAllTaxRates_old() {
     if (Object.keys(taxRateChanges).length === 0) {
         showToast('info', 'No Changes', 'No tax rate changes to save');
         return;
@@ -352,6 +353,38 @@ async function saveAllTaxRates() {
         hideLoading();
     }
 }
+
+
+async function saveAllTaxRates() {    
+    if (Object.keys(taxRateChanges).length === 0) {
+        showToast('info', 'No Changes', 'No tax rate changes to save');
+        return;
+    }
+    
+    showLoading('Saving tax rates...');
+    
+    try {
+        const bodyData = {
+            prod_data: taxRateChanges
+        }
+        const url = product_tax_rates_url;
+        const [success, result] = await callApi("POST", url, bodyData, csrf_token);
+        if (success) {
+            showToast('success', 'Success', 
+                `Tax rates for ${result.data.completed} of ${Object.keys(taxRateChanges).length} products saved`);
+        } else {
+            console.log('issue')
+            alert(`${result.error}`)
+        }
+        
+    } catch (error) {
+        console.error('Error saving tax rates:', error);
+        showToast('error', 'Error', 'Failed to save tax rates');
+    } finally {
+        hideLoading();
+    }
+}
+
 
 function updateProductCount() {
     document.getElementById('totalProducts').textContent = `${totalItems} Products`;
