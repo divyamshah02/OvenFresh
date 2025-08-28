@@ -311,6 +311,7 @@ async function loadProductData() {
     document.getElementById("productIngredients").value = Res.data.ingredients
     document.getElementById("productAllergens").value = Res.data.allergen_information
     document.getElementById("productStorage").value = Res.data.storage_instructions
+    document.getElementById("productTaxRate").value = Res.data.tax_rate || "18";
 
     // Fix: Use correct field names for category and subcategory selection
     const categorySelect = document.getElementById("categorySelect")
@@ -581,6 +582,7 @@ async function createProductMeta(is_update = false) {
   formData.append("allergen_information", document.getElementById("productAllergens").value);
   formData.append("storage_instructions", document.getElementById("productStorage").value);
   formData.append("is_veg", document.getElementById("productIsVeg").checked ? "true" : "false");
+  formData.append("tax_rate", document.getElementById("productTaxRate").value);
 
   formData.append("category_id", categoryId)
   formData.append("sub_category_id", subCategoryId)

@@ -270,6 +270,7 @@ class ProductViewSet(viewsets.ViewSet):
             sku = data.get("sku")
             hsn = data.get("hsn")
             tags = data.get("tags")
+            tax_rate = data.get("tax_rate", "18")
 
 
             if not title or not category_id:
@@ -346,6 +347,7 @@ class ProductViewSet(viewsets.ViewSet):
                 sku=sku,
                 tags=tags,
                 slug=self.generate_unique_slug(title),
+                tax_rate=tax_rate,
                 created_at=timezone.now()
             )
             new_product.save()
@@ -459,6 +461,7 @@ class ProductViewSet(viewsets.ViewSet):
         sku = data.get("sku")
         hsn = data.get("hsn")
         tags = data.get("tags")
+        tax_rate = data.get("tax_rate")
 
         if not product_id or not title or not category_id:
             return Response({
@@ -531,6 +534,8 @@ class ProductViewSet(viewsets.ViewSet):
         product_obj.sku = sku
         product_obj.hsn = hsn
         product_obj.tags = tags
+        if tax_rate is not None:
+            product_obj.tax_rate = tax_rate
 
         # If new images are uploaded, add them to existing photos
         if new_image_urls:
@@ -538,6 +543,13 @@ class ProductViewSet(viewsets.ViewSet):
             product_obj.photos = existing_photos + new_image_urls
 
         product_obj.save()
+
+        # If tax_rate changed, update all variations to recalculate base prices
+        if tax_rate is not None:
+            variations = ProductVariation.objects.filter(product_id=product_id)
+            for variation in variations:
+                variation.base_price = None
+                variation.save()
 
         return Response({
             "success": True,
@@ -839,13 +851,14 @@ class AdminProductTaxRateViewSet(viewsets.ViewSet):
             for variation in variations:
                 actual_price = float(variation.actual_price)
                 if tax_rate == '0':
-                    base_price = actual_price
+                    variation.base_price = actual_price
                 elif tax_rate == '5':
                     base_price = (actual_price * 100) / 105
+                    variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
                 else:  # 18% or default
                     base_price = (actual_price * 100) / 118
-                    
-                variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+                    variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+
                 variation.save()
             
             return Response({
@@ -903,13 +916,14 @@ class AdminProductTaxRateViewSet(viewsets.ViewSet):
                 for variation in variations:
                     actual_price = float(variation.actual_price)
                     if tax_rate == '0':
-                        base_price = actual_price
+                        variation.base_price = actual_price
                     elif tax_rate == '5':
                         base_price = (actual_price * 100) / 105
+                        variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
                     else:  # 18% or default
                         base_price = (actual_price * 100) / 118
-                        
-                    variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+                        variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+
                     variation.save()
                 completed+=1
             
@@ -2429,7 +2443,7 @@ def update_all_base_prices():
 
                 # calculate base price
                 if tax_rate == "0":
-                    base_price = round(round(actual_price, 2) + 0.05, 2)
+                    base_price = actual_price
                 elif tax_rate == "5":
                     base_price = round(round((actual_price * 100) / 105, 2) + 0.05, 2)
                 else:  # 18% or default
