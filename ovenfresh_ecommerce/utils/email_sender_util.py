@@ -731,7 +731,7 @@ def prepare_and_send_contact_us_email(contact_data):
             smtp_port=465,
             smtp_user="feedback@ovenfresh.in",
             smtp_password="Deepa@2025",
-            to_email="divyamshah1234@gmail.com",
+            to_email="feedback@ovenfresh.in",
             subject=f"Contact Us form Details by '{contact_data['first_name']}'!",
             contact_data=contact_data
             )

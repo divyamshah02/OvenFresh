@@ -14,7 +14,7 @@ router.register(r'admin-product-tax-rates-api', AdminProductTaxRateViewSet, base
 router.register(r'all-shop-products', ShopAllProductsViewSet, basename='all-shop-products')
 router.register(r'product-variation', ProductVariationViewSet, basename='product-variation')
 router.register(r'availability-charges', AvailabilityChargesViewSet, basename='availability-charges')
-router.register(r'product-maintenance', ProductMaintenanceViewSet, basename='product-maintenance')
+# router.register(r'product-maintenance', ProductMaintenanceViewSet, basename='product-maintenance')
 
 router.register(r'all-admin-products', AllProductsAdminViewSet, basename='all-admin-products')
 

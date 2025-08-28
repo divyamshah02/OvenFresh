@@ -382,6 +382,7 @@ async function saveAllTaxRates() {
         showToast('error', 'Error', 'Failed to save tax rates');
     } finally {
         hideLoading();
+        document.getElementById('refreshBtn').click()
     }
 }
 

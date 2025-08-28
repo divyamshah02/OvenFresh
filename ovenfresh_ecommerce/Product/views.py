@@ -626,6 +626,38 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": f"Failed to delete image: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def destroy(self, request, pk=None):
+        """
+        Soft delete product by marking it as inactive
+        """
+        try:
+            product = Product.objects.get(product_id=pk)
+            product.is_active = False
+            product.save()
+            
+            # Also deactivate all variations
+            ProductVariation.objects.filter(product_id=pk).update(is_active=False)
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Product deleted successfully"},
+                "error": None
+            }, status=status.HTTP_200_OK)
+            
+        except Product.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
 class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
