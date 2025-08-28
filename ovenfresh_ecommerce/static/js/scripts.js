@@ -81,13 +81,17 @@ function initializeNavigation() {
     
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(e) {
-        if (window.innerWidth < 768) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.navbar-toggler');
-            
-            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
-                closeMobileSidebar();
+        try {
+            if (window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar');
+                const toggle = document.querySelector('.navbar-toggler');
+                
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    closeMobileSidebar();
+                }
             }
+        } catch {
+            
         }
     });
 }
