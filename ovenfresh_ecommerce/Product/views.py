@@ -20,7 +20,7 @@ import string
 from datetime import datetime
 import os
 from django.http import JsonResponse
-
+from django.db import transaction
 
 
 class CategoryViewSet(viewsets.ViewSet):
@@ -626,6 +626,38 @@ class ProductViewSet(viewsets.ViewSet):
                 "error": f"Failed to delete image: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def destroy(self, request, pk=None):
+        """
+        Soft delete product by marking it as inactive
+        """
+        try:
+            product = Product.objects.get(product_id=pk)
+            product.is_active = False
+            product.save()
+            
+            # Also deactivate all variations
+            ProductVariation.objects.filter(product_id=pk).update(is_active=False)
+            
+            return Response({
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": {"message": "Product deleted successfully"},
+                "error": None
+            }, status=status.HTTP_200_OK)
+            
+        except Product.DoesNotExist:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
 class AllProductsViewSet(viewsets.ViewSet):
 
     @handle_exceptions
@@ -829,11 +861,68 @@ class AdminProductTaxRateViewSet(viewsets.ViewSet):
                 "error": "Product not found"
             }, status=404)
         except Exception as e:
+            print(e)
             return Response({
                 "success": False,
                 "data": None,
                 "error": str(e)
             }, status=500)
+
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Update product tax rate
+        """
+        prod_data = request.data.get('prod_data') 
+        completed = 0
+        failed = 0
+        for prod in prod_data.keys():
+            try:
+                print(prod)
+                product_id = prod
+                tax_rate = prod_data[prod]
+                
+                # Validate tax rate
+                if tax_rate not in ['0', '5', '18']:
+                    return Response({
+                        "success": False,
+                        "data": None,
+                        "error": "Invalid tax rate. Must be 0, 5, or 18."
+                    }, status=400)
+                
+                # Get the product
+                product = Product.objects.get(product_id=product_id)
+                
+                # Update tax rate
+                product.tax_rate = tax_rate
+                product.save()
+                
+                variations = ProductVariation.objects.filter(product_id=product_id)
+                for variation in variations:
+                    actual_price = float(variation.actual_price)
+                    if tax_rate == '0':
+                        base_price = actual_price
+                    elif tax_rate == '5':
+                        base_price = (actual_price * 100) / 105
+                    else:  # 18% or default
+                        base_price = (actual_price * 100) / 118
+                        
+                    variation.base_price = str(round(round(base_price, 2) + 0.05, 2))  # Round and add 0.05
+                    variation.save()
+                completed+=1
+            
+            except Exception as e:
+                print(e)
+                failed+=1
+
+
+        return Response({
+            "success": True,
+            "data": {'completed':completed, 'failed': failed},
+            "error": None
+        }, status=200)
 
 
 class ShopAllProductsViewSet(viewsets.ViewSet):
@@ -2316,4 +2405,62 @@ def test(request):
             "data": ff,
             "error": None
         })
+
+
+def update_all_base_prices():
+    """
+    Update base_price for all product variations based on actual_price and product.tax_rate.
+    Logic:
+      1. Round actual price to 2 decimals
+      2. Add 0.05
+      3. Round again to 2 decimals
+    """
+    updated_count = 0
+    errors = []
+
+    with transaction.atomic():
+        variations = ProductVariation.objects.all()
+        
+        for variation in variations:
+            try:
+                product = Product.objects.get(product_id=variation.product_id)
+                tax_rate = product.tax_rate or "18"
+                actual_price = float(variation.actual_price)
+
+                # calculate base price
+                if tax_rate == "0":
+                    base_price = round(round(actual_price, 2) + 0.05, 2)
+                elif tax_rate == "5":
+                    base_price = round(round((actual_price * 100) / 105, 2) + 0.05, 2)
+                else:  # 18% or default
+                    base_price = round(round((actual_price * 100) / 118, 2) + 0.05, 2)
+
+                variation.base_price = f"{base_price:.2f}"  # ensures always 2 decimal places
+                variation.save(update_fields=["base_price"])
+                updated_count += 1
+
+            except Product.DoesNotExist:
+                errors.append(f"Product not found for variation {variation.product_variation_id}")
+            except Exception as e:
+                errors.append(f"Error for variation {variation.product_variation_id}: {str(e)}")
+
+    return {"updated": updated_count, "errors": errors}
+
+class ProductMaintenanceViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        """
+        API endpoint to recalculate and update all product variation base prices
+        """
+        result = update_all_base_prices()
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": result,
+            "error": None
+        }, status=status.HTTP_200_OK)
+
+
 
