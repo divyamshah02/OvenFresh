@@ -107,7 +107,7 @@ class ProductVariation(models.Model):
                 
                 actual_price = float(self.actual_price)
                 if tax_rate == '0':
-                    self.base_price = str(round(round(actual_price, 2) + 0.05, 2))
+                    self.base_price = actual_price
                 elif tax_rate == '5':
                     self.base_price = str(round(round((actual_price * 100) / 105, 2) + 0.05, 2))
                 else:  # 18% or default
