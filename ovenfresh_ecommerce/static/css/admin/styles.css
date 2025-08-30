@@ -209,10 +209,10 @@ body {
 
 /* Order status background colors */
 .status-pending {
-    background-color: rgba(232, 42, 42, 0.434);
+  background-color: white;
 }
 .status-placed {
-    background-color: white;
+  background-color: rgba(232, 42, 42, 0.434);
 }
 .status-preparing {
     background-color: #f5f5dc; /* Beige pastel */
@@ -1205,3 +1205,19 @@ body {
 .accordion-button.collapsed:hover {
     background-color: var(--primary-hover); /* A subtle light green shade on hover */
 }
+
+@media (max-width: 991.98px) {
+  /* Make all tables responsive */
+  .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch; /* smooth scroll on mobile */
+  }
+  
+  /* Prevent text from breaking into multiple lines */
+  .table th, 
+  .table td {
+      white-space: nowrap;
+  }
+}
+

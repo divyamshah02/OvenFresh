@@ -22,7 +22,7 @@ class FrontendRewriteMiddleware:
         r"^(shop|payment-success-callback|refund-policy|contact-us|product|cart|checkout|order-success|order-detail|account"
         r"|admin-login|admin-dashboard|admin-home-cms|admin-cms|admin-products"
         r"|admin-add-product|admin-category|admin-pincodes|admin-timeslot|admin-coupon"
-        r"|admin-delivery-person|admin-all-orders|admin-add-order|admin-order-detail"
+        r"|admin-delivery-person|admin-all-confirmed-orders|admin-all-orders|admin-add-order|admin-order-detail"
         r"|admin-pincode-order|admin-review|delivery-login|delivery-dashboard|admin-product-tax-rates)"
     )
 

@@ -985,6 +985,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         # Get query parameters
         search = request.query_params.get('search', '')
         status = request.query_params.get('status', '')
+        confirmed = request.query_params.get('confirmed', None)
         payment_status = request.query_params.get('payment_status', '')
         payment_method = request.query_params.get('payment_method', '')
         delivery_date = request.query_params.get('delivery_date', '')
@@ -1014,6 +1015,9 @@ class AdminOrderListViewSet(viewsets.ViewSet):
                 Q(phone__icontains=search)
             )
         
+        if confirmed is not None:
+            orders_query = orders_query.filter(~Q(status="not_placed"))
+
         if status:
             orders_query = orders_query.filter(status=status)
         
@@ -1083,7 +1087,14 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         Get order statistics for the dashboard
         """
         # Get total orders count
-        total_orders = Order.objects.count()
+        # total_orders = Order.objects.count()
+        counts = Order.objects.aggregate(
+            total=Count("id"),
+            excluding_not_placed=Count("id", filter=~Q(status="not_placed"))
+        )
+
+        total_orders = counts["excluding_not_placed"]
+        all_orders = counts["total"]
         
         # Get today's orders count
         today = timezone.now().date()
@@ -1091,7 +1102,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         
         # Get pending delivery count (orders that are not delivered or cancelled)
         pending_delivery = Order.objects.filter(
-            ~Q(status='delivered') & ~Q(status='cancelled')
+            ~Q(status='delivered') & ~Q(status='not_placed')
         ).count()
         
         # Get total revenue
@@ -1278,6 +1289,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 })
             
             order_data = {
+                'order_number': order.order_number,
                 'order_id': order.order_id,
                 'status': order.status,
                 'created_at': order.created_at.isoformat(),

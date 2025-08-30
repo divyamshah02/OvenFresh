@@ -1010,11 +1010,9 @@ function generateKOTPDF_old() {
 function generateKOTPDF() {
   const { jsPDF } = window.jspdf
 
-  // Define custom size for 75mm width thermal printer
-  // jsPDF works in "pt" by default (1 pt = 1/72 inch).
-  // But easier: use "mm" units
+  // Page size for 75mm thermal printer
   const pageWidth = 75 // mm
-  const pageHeight = 200 // mm (set big enough, it will auto-paginate if needed)
+  const pageHeight = 200 // mm
 
   const doc = new jsPDF({
     orientation: "portrait",
@@ -1022,20 +1020,29 @@ function generateKOTPDF() {
     format: [pageWidth, pageHeight]
   })
 
-  // Add content to PDF
+  // Title
   doc.setFontSize(14)
   doc.text("KOT", 5, 10)
 
   doc.setFontSize(12)
   doc.text("Order Details", 5, 18)
 
+  // Start Y position
+  let y = 24
   doc.setFontSize(10)
-  doc.text(`Order ID: ${orderData.order_id}`, 5, 24)
-  doc.text(`Date: ${formatDate(orderData.created_at)}`, 5, 30)
+
+  // Order metadata
+  doc.text(`Order Number: #${orderData.order_number}`, 5, y)
+  y += 6
+  doc.text(`Order ID: ${orderData.order_id}`, 5, y)
+  y += 6
+  doc.text(`Date: ${formatDate(orderData.created_at)}`, 5, y)
+  y += 10
 
   // Delivery details
   doc.setFontSize(12)
-  doc.text("Delivery Details:", 5, 40)
+  doc.text("Delivery Details:", 5, y)
+  y += 6
   doc.setFontSize(10)
   doc.text(
     `Date: ${new Date(orderData.delivery_date).toLocaleDateString("en-IN", {
@@ -1044,30 +1051,36 @@ function generateKOTPDF() {
       day: "numeric"
     })}`,
     5,
-    46
+    y
   )
-  doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 5, 52)
+  y += 6
+  doc.text(`Time: ${orderData.timeslot_name || "Not specified"}`, 5, y)
+  y += 10
 
   // Order items
   doc.setFontSize(12)
-  doc.text("Order Items:", 5, 62)
+  doc.text("Order Items:", 5, y)
+  y += 6
   doc.setFontSize(10)
 
-  let yPosition = 68
   orderData.order_items.forEach((item) => {
-    doc.text(`${item.quantity}x ${item.product_name}`, 5, yPosition)
+    doc.text(`${item.quantity}x ${item.product_name}`, 5, y)
+    y += 5
     if (item.variation_name && item.variation_name !== "Standard") {
-      doc.text(`(${item.variation_name})`, 5, yPosition+4)
+      doc.text(`(${item.variation_name})`, 5, y)
+      y += 5
     }
-    yPosition += 10
+    y += 5 // space after each item
   })
 
   // Special instructions
   if (orderData.special_instructions) {
-    yPosition += 8
-    doc.text("Special Instructions:", 5, yPosition)
-    yPosition += 6
-    doc.text(orderData.special_instructions, 5, yPosition)
+    y += 4
+    doc.setFontSize(12)
+    doc.text("Special Instructions:", 5, y)
+    y += 6
+    doc.setFontSize(10)
+    doc.text(orderData.special_instructions, 5, y)
   }
 
   // Save the PDF

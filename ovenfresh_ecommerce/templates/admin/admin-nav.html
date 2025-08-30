@@ -46,6 +46,12 @@
                     </li>                    
                 </ul>
             </li>
+            <li class="nav-item" onclick="window.location=`{% url 'admin-all-confirmed-orders-list' %}`" style="cursor: pointer;">
+                <a class="nav-link">
+                    <i class="fas fa-cart-plus me-2"></i>
+                    Confirmed Orders
+                </a>
+            </li>
             <li class="nav-item" onclick="window.location=`{% url 'admin-all-orders-list' %}`" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-shopping-cart me-2"></i>
@@ -54,8 +60,8 @@
             </li>
             <li class="nav-item" onclick="window.location=`{% url 'admin-all-orders-list' %}?delivery_date=` + new Date().toISOString().split('T')[0]" style="cursor: pointer;">
                 <a class="nav-link">
-                    <i class="fas fa-shopping-cart me-2"></i>
-                    Toaday's Delivery
+                    <i class="fas fa-calendar-day me-2"></i>
+                    Today's Delivery
                 </a>
             </li>
             <li class="nav-item" onclick="window.location=`{% url 'admin-coupon-list' %}`" style="cursor: pointer;">

@@ -197,7 +197,6 @@ function createProductRow(product) {
   const variationsCount = product.variations_count || 0
   const priceRange = calculatePriceRange(product.variations || [])
   const ProductStatus = getProductStatusForRow(product)
-  console.log(ProductStatus)
   const status = ProductStatus[1]
   const createdDate = new Date(product.created_at || Date.now()).toLocaleDateString()
 
@@ -856,7 +855,6 @@ function getToastIcon(type) {
 }
 
 function populateSubCategoryFilter(categoryId) {
-  console.log(categoryId)
   const subCategoryFilter = document.getElementById("subCategoryFilter")
   subCategoryFilter.innerHTML = '<option value="">All Sub Categories</option>'
   categoryId = Number(categoryId)
@@ -867,7 +865,6 @@ function populateSubCategoryFilter(categoryId) {
   }
 
   const selectedCategory = allCategories.find((cat) => cat.category_id == categoryId)
-  console.log(selectedCategory)
   if (selectedCategory && selectedCategory.subcategories) {
     subCategoryFilter.disabled = false
     selectedCategory.subcategories.forEach((subCategory) => {

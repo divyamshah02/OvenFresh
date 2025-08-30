@@ -4,6 +4,7 @@ let order_detail_url = null
 let bulk_update_url = null
 let timeslots_url = null
 let export_orders_url = null
+let confirmed = null
 // let flatpickr = null // Declare flatpickr
 // let bootstrap = null // Declare bootstrap
 
@@ -40,12 +41,16 @@ function AdminAllOrders(
   orderDetailUrlParam,
   bulkUpdateUrlParam,
   timeslotsUrlParam,
+  exportUrlParam,
+  confirmedParam=null,
 ) {
   csrf_token = csrfTokenParam
   orders_list_url = ordersListUrlParam
   order_detail_url = orderDetailUrlParam
   bulk_update_url = bulkUpdateUrlParam
   timeslots_url = timeslotsUrlParam
+  export_orders_url = exportUrlParam
+  confirmed = confirmedParam
 
   // Initialize the page
   document.addEventListener("DOMContentLoaded", async () => {
@@ -258,6 +263,9 @@ async function loadOrders() {
       queryParams.append("date_from", filters.dateRange.start)
       queryParams.append("date_to", filters.dateRange.end)
     }
+    console.log("aeghbruogrbeaghuorabhoubohuaebhuogbhuo")
+    console.log(confirmed)
+    if (confirmed) queryParams.append("confirmed", true)
 
     const url = `${orders_list_url}?${queryParams.toString()}`
     const [success, result] = await callApi("GET", url)
@@ -338,12 +346,14 @@ function renderOrders() {
     const isSelected = selectedOrders.has(order.order_id)
 
     row.innerHTML = `
-            <td>
+            <td style="display: none !important;">
                 <div class="form-check">
                     <input class="form-check-input order-checkbox" type="checkbox" 
                            data-order-id="${order.order_id}" ${isSelected ? "checked" : ""}>
                 </div>
-            </td>            
+            </td>      
+            <td><b>${order.order_number? `#${order.order_number}`: "Not placed"}</b>
+            </td>      
             <td>${new Date(order.created_at).toLocaleString("en-IN", {year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"})}</td>
             <td>
                 <div class="fw-medium">${order.first_name} - ${order.phone}</div>
@@ -366,7 +376,7 @@ function renderOrders() {
             </td>
             <td>
                 <div class="fw-bold">₹${formatCurrency(order.total_amount)}</div>
-                <div class="small text-muted">${order.items.length} items</div>
+                <div class="small">${order.items.length} items</div>
             </td>
             <td>
                 <span class="badge ${getPaymentStatusBadgeClass(order.payment_received, order.payment_method)}">

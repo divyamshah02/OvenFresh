@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 
 # class Order(models.Model):
 #     order_id = models.CharField(max_length=20, unique=True)  # 10-digit custom ID
@@ -45,6 +45,7 @@ from django.db import models
 
 class Order(models.Model):
     order_id = models.CharField(max_length=20, unique=True)  # 10-digit custom ID
+    order_number = models.PositiveIntegerField(unique=True, null=True, blank=True)
     user_id = models.CharField(max_length=20, null=True, blank=True)
     session_id = models.CharField(max_length=40, null=True, blank=True)
     pincode_id = models.CharField(max_length=20)
@@ -100,6 +101,21 @@ class Order(models.Model):
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
     
     is_corporate = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        # When status is "placed" AND order_number is not yet assigned
+        if self.status == "placed" and self.order_number is None:
+            with transaction.atomic():
+                last_order_number = (
+                    Order.objects.select_for_update()
+                    .filter(order_number__isnull=False)
+                    .order_by("-order_number")
+                    .values_list("order_number", flat=True)
+                    .first()
+                )
+                self.order_number = (last_order_number + 1) if last_order_number else 3000
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.order_id
