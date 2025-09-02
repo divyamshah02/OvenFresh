@@ -321,6 +321,247 @@ class OrderViewSet(viewsets.ViewSet):
                 return order_id
 
 
+class AdminOrderViewSet(viewsets.ViewSet):
+    """
+    Admin viewset to create orders directly (without cart).
+    """
+    
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def create(self, request):
+        data = request.data
+
+        # Required fields
+        required = [
+            "first_name", "last_name", "email", "phone",
+            "address", "city", "pincode", "timeslot_id",
+            "delivery_date", "order_date", "payment_method", "items"
+        ]
+        if any(key not in data for key in required):
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Missing required fields."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        items = data.get("items", [])
+        if not items:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "No products added to the order."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate pincode & delivery slot
+        pincode_data = Pincode.objects.filter(pincode=data["pincode"]).first()
+        if not pincode_data:
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Invalid pincode."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        delivery_details = pincode_data.delivery_charge.get(str(data["timeslot_id"]), None)
+        if not delivery_details or not delivery_details.get("available", False):
+            return Response({
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
+                "error": "Delivery not available for this pincode and timeslot."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        delivery_charge = delivery_details.get("charges", 0)
+
+        # Subtotal
+        subtotal = 0
+        for item in items:
+            subtotal += float(item["price"]) * float(item["quantity"])
+
+        # Coupon handling
+        coupon_discount = 0
+        applied_coupon = None
+        coupon_code = data.get("coupon_code")
+
+        if coupon_code:
+            try:
+                coupon = Coupon.objects.get(
+                    coupon_code=coupon_code,
+                    is_active=True,
+                    valid_from__lte=timezone.now(),
+                    valid_until__gte=timezone.now()
+                )
+
+                if subtotal >= coupon.minimum_order_amount:
+                    if coupon.discount_type == "percentage":
+                        coupon_discount = min(
+                            (subtotal * float(coupon.discount_value) / 100),
+                            coupon.maximum_discount_amount or float("inf")
+                        )
+                    else:
+                        coupon_discount = min(coupon.discount_value, subtotal)
+
+                    applied_coupon = coupon
+                    coupon.usage_count += 1
+                    coupon.save()
+                else:
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": f"Minimum order amount for this coupon is ₹{coupon.minimum_order_amount}"
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+            except Coupon.DoesNotExist:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": "Invalid or expired coupon code."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Tax (18%)
+        tax_amount = (subtotal - coupon_discount) * 0.18
+
+        # Final total
+        total_amount = subtotal - coupon_discount + tax_amount + float(delivery_charge)
+
+        # Address
+        delivery_address = f"{data['address']}, {data['city']}, {data['pincode']}"
+
+        # Create order
+        order_id = self.generate_unique_order_id()
+        order = Order.objects.create(
+            created_at=data["order_date"],
+            order_id=order_id,
+            user_id=data.get("user_id", ""),  # optional
+            session_id="",
+            pincode_id=data["pincode"],
+            timeslot_id=data["timeslot_id"],
+
+            # Customer
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            phone=data["phone"],
+
+            # Shipping
+            delivery_date=data["delivery_date"],
+            delivery_address=delivery_address,
+            delivery_charge=delivery_charge,
+            shipping_address_id=data.get("shipping_address_id"),
+
+            # Billing
+            different_billing_address=data.get("different_billing_address", False),
+
+            # Status
+            status="placed" if data["payment_method"] == "cod" else "not_placed",
+            total_amount=str(total_amount),
+            subtotal_amount=str(subtotal),
+            tax_amount=str(tax_amount),
+            discount_amount=str(coupon_discount),
+
+            # Coupon
+            coupon_code=coupon_code,
+            coupon_discount=str(coupon_discount),
+
+            # Payment
+            payment_method=data["payment_method"],
+            is_cod=(data["payment_method"] == "cod"),
+            payment_received=False,
+
+            # Notes
+            special_instructions=data.get("special_instructions", ""),
+            order_note=data.get("order_note", "")
+        )
+
+        # Billing address if different
+        if data.get("different_billing_address") and data.get("billing_address"):
+            billing = data.get("billing_address", {})
+            order.billing_first_name = billing.get("first_name")
+            order.billing_last_name = billing.get("last_name")
+            order.billing_address = billing.get("address")
+            order.billing_city = billing.get("city")
+            order.billing_pincode = billing.get("pincode")
+            order.billing_phone = billing.get("phone")
+            order.billing_alternate_phone = billing.get("alternate_phone")
+            order.save()
+
+        # Order items
+        for item in items:
+            item_total = float(item["price"]) * float(item["quantity"])
+            item_discount = 0
+            if coupon_discount > 0:
+                item_discount = (item_total / subtotal) * coupon_discount
+
+            OrderItem.objects.create(
+                order_id=order.order_id,
+                product_id=item["product_id"],
+                product_variation_id=item["product_variation_id"],
+                quantity=item["quantity"],
+                amount=float(item["price"]),
+                discount=item_discount,
+                final_amount=item_total - item_discount
+            )
+
+            try:
+                variation = ProductVariation.objects.select_for_update().get(
+                    product_variation_id=item["product_variation_id"]
+                )
+                if not variation.stock_toggle_mode and variation.stock_quantity is not None:
+                    variation.update_stock(int(item["quantity"]))
+            except ProductVariation.DoesNotExist:
+                logger.error(f"Variation not found: {item['product_variation_id']}")
+
+        # Handle payment
+        response_data = {
+            "order_id": order.order_id,
+            "total_amount": total_amount,
+            "subtotal": subtotal,
+            "tax_amount": tax_amount,
+            "delivery_charge": delivery_charge,
+            "discount_amount": coupon_discount,
+            "coupon_applied": applied_coupon.coupon_code if applied_coupon else None
+        }
+
+        paisa_amount = float(total_amount) * 100
+        if not order.is_cod:
+            razorpay_order = create_razorpay_order(
+                order_id=order.order_id,
+                amount=paisa_amount,
+            )
+            if razorpay_order:
+                order.razorpay_order_id = razorpay_order["id"]
+                order.save()
+                response_data.update({
+                    "payment_id": razorpay_order["id"],
+                    "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+                })
+        # else:
+        #     prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
+
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": response_data,
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
+    def generate_unique_order_id(self):
+        while True:
+            order_id = get_random_string(10, allowed_chars="0123456789")
+            if not Order.objects.filter(order_id=order_id).exists():
+                return order_id
+
 class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
     @handle_exceptions
     @check_authentication(required_role="admin")
@@ -1604,6 +1845,60 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
                     "delivery_person_id": delivery_person_id,
                     "delivery_person_name": delivery_person.first_name,
                     "commission": commission
+                },
+                "error": None
+            }, status=200)
+            
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Order not found"
+            }, status=404)
+        except User.DoesNotExist:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": "Delivery person not found"
+            }, status=404)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "data": None,
+                "error": str(e)
+            }, status=500)
+
+
+class AdminUnAssignDeliveryPartnerViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def create(self, request):
+        """
+        Assign delivery person to order
+        """
+        try:
+            order_id = request.data.get('order_id')
+            
+            if not order_id:
+                return Response({
+                    "success": False,
+                    "data": None,
+                    "error": "Order ID and delivery person ID are required"
+                }, status=400)
+            
+            # Verify order exists
+            order = Order.objects.get(order_id=order_id)
+
+            # Assign delivery person
+            order.assigned_delivery_partner_id = ''
+            order.assigned_delivery_partner_commission = ''
+            order.save()
+            
+            return Response({
+                "success": True,
+                "data": {
+                    "order_id": order_id,
                 },
                 "error": None
             }, status=200)

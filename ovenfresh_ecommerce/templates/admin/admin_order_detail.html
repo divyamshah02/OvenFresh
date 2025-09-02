@@ -406,6 +406,10 @@
                                     <button class="btn btn-primary" onclick="openCommissionModal()">
                                         <i class="fas fa-user-check me-2"></i>Assign Selected Person
                                     </button>
+
+                                    <button class="btn btn-danger" onclick="if (confirm('Are you sure you want to unassign the selected person?')) UnassignDeliveryPerson()">
+                                        <i class="fas fa-user me-2"></i>UnAssign Selected Person
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -679,7 +683,8 @@
             "/order-api/admin-order-detail-api/",
             "/order-api/admin-delivery-persons-api/",
             "/order-api/admin-update-order-status-api/",
-            "/order-api/admin-assign-delivery-api/"
+            "/order-api/admin-assign-delivery-api/",
+            "/order-api/admin-unassign-delivery-api/"
         );
         toggle_loader();
     </script>

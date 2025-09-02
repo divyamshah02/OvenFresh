@@ -1,4 +1,5 @@
 from django.db import models, transaction
+from django.utils import timezone
 
 # class Order(models.Model):
 #     order_id = models.CharField(max_length=20, unique=True)  # 10-digit custom ID
@@ -95,7 +96,7 @@ class Order(models.Model):
     assigned_delivery_partner_commission = models.CharField(max_length=20, null=True, blank=True)
     order_note = models.TextField(null=True, blank=True)
     special_instructions = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True)  
     delivery_photos = models.JSONField(default=list, blank=True, null=True)
     transport_mode = models.CharField(max_length=255, blank=True, null=True, default="")
     extra_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=True, blank=True)
@@ -133,7 +134,7 @@ class OrderItem(models.Model):
 
     payment_id = models.CharField(max_length=100, null=True, blank=True)
     item_note = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True)  
 
     def __str__(self):
         return f"OrderItem ({self.order_id} - {self.product_id})"

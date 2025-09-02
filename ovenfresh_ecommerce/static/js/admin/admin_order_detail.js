@@ -4,6 +4,7 @@ let order_detail_url = null
 let delivery_persons_url = null
 let update_order_status_url = null
 let assign_delivery_person_url = null
+let unassign_delivery_person_url = null
 
 // Data storage
 let orderData = null
@@ -21,6 +22,7 @@ async function InitializeAdminOrderDetail(
   deliveryPersonsUrlParam,
   updateOrderStatusUrlParam,
   assignDeliveryPersonUrlParam,
+  unassignDeliveryPersonUrlParam,
 ) {
   csrf_token = csrfTokenParam
   order_id = orderIdParam
@@ -28,6 +30,7 @@ async function InitializeAdminOrderDetail(
   delivery_persons_url = deliveryPersonsUrlParam
   update_order_status_url = updateOrderStatusUrlParam
   assign_delivery_person_url = assignDeliveryPersonUrlParam
+  unassign_delivery_person_url = unassignDeliveryPersonUrlParam
 
   try {
     showLoading()
@@ -808,6 +811,33 @@ async function assignDeliveryPerson() {
       showNotification("Delivery person assigned successfully!", "success")
       await loadOrderDetails() // Refresh order details
       bootstrap.Modal.getInstance(document.getElementById("commissionModal")).hide();
+    } else {
+      throw new Error(result.error || "Failed to assign delivery person")
+    }
+  } catch (error) {
+    console.error("Error assigning delivery person:", error)
+    showNotification("Error assigning delivery person.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+async function UnassignDeliveryPerson() {
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      unassign_delivery_person_url,
+      {
+        order_id: order_id,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      showNotification("Delivery person UnAssigned successfully!", "success")
+      await loadOrderDetails() // Refresh order details
     } else {
       throw new Error(result.error || "Failed to assign delivery person")
     }

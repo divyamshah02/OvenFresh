@@ -8,7 +8,7 @@ class OrderAdmin(admin.ModelAdmin):
         'payment_method', 'total_amount', 'created_at'
     )
     list_filter = ('status', 'payment_received', 'payment_method', 'is_cod')
-    search_fields = ('order_id', 'user__name', 'delivery_address')
+    search_fields = ('order_id', 'order_number', 'first_name', 'last_name', 'delivery_address')
     # readonly_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)
 

@@ -7,6 +7,7 @@ router.register(r'confirm-order-api', ConfirmOrderViewSet, basename='confirm-ord
 router.register(r'payment_status_check', PaymentStatusCheckViewSet, basename='payment-status-check')
 router.register(r'confirm-payment-order-api', ConfirmPaymentViewSet, basename='confirm-payment-order-api')
 
+router.register(r'admin-place-order-api', AdminOrderViewSet, basename='admin-place-order-api')
 
 router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-api')
 router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')
@@ -25,6 +26,7 @@ router.register(r'admin-update-corporate-order', AdminUpdateCorporateOrderViewSe
 router.register(r'admin-delivery-persons-api', AdminDeliveryPeronsViewSet, basename='admin-delivery-persons-api')
 router.register(r'admin-update-order-status-api', AdminUpdateOrderStatusViewSet, basename='admin-update-order-status-api')
 router.register(r'admin-assign-delivery-api', AdminAssignDeliveryPartnerViewSet, basename='admin-assign-delivery-api')
+router.register(r'admin-unassign-delivery-api', AdminUnAssignDeliveryPartnerViewSet, basename='admin-unassign-delivery-api')
 
 router.register(r'kitchen_note', KitchenNoteViewSet, basename='kitchen-note')
 router.register(r'assign_delivery_partner', AssignDeliveryPartnerViewSet, basename='assign-delivery-partner')
