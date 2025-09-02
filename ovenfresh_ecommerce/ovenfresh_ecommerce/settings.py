@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.sitemaps",
+    "auditlog",
+    "ovenfresh_ecommerce.apps.OvenfreshEcommerceConfig",
     'rest_framework',
     'UserDetail',
     'Cart',
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "auditlog.middleware.AuditlogMiddleware",
     'ovenfresh_ecommerce.middleware.FrontendRewriteMiddleware',
 ]
 
@@ -82,6 +85,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # wait up to 20s before throwing "locked"
+        }
     }
 }
 

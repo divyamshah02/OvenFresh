@@ -8,26 +8,18 @@
             </button>
         </div>
         <ul class="nav flex-column mx-2">
-
-            <!-- Always visible -->
             <li class="nav-item" onclick="window.location=`{% url 'admin-dashboard-list' %}`" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-tachometer-alt me-2"></i>
                     Dashboard
                 </a>
             </li>
-
-            <!-- Homepage CMS -->
-            {% if request.user.email in "ronakmehta@ovenfresh.in,deepasugandh@ovenfresh.in,manishpoojari@ovenfresh.in" %}
             <li class="nav-item" onclick="window.location=`{% url 'admin-cms-list' %}`" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-house me-2"></i>
                     Homepage CMS
                 </a>
             </li>
-            {% endif %}
-
-            <!-- Products -->
             <li class="nav-item">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#products-submenu" role="button" aria-expanded="false" aria-controls="products-submenu">
                     <i class="fas fa-cogs me-2"></i>
@@ -37,14 +29,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin-products-list' %}">All Products</a>
                     </li>
-
-                    <!-- Product Tax Rates -->
-                    {% if request.user.email not in "manishpoojari@ovenfresh.in,adityagawde@ovenfresh.in,adhiraj@ovenfresh.in" %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin-product-tax-rates-frontend-list' %}">Product Tax Rates</a>
                     </li>
-                    {% endif %}
-
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admin-add-product-list' %}">Add Product</a>
                     </li>
@@ -59,8 +46,6 @@
                     </li>                    
                 </ul>
             </li>
-
-            <!-- Orders -->
             <li class="nav-item" onclick="window.location=`{% url 'admin-all-confirmed-orders-list' %}`" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-cart-plus me-2"></i>
@@ -79,8 +64,6 @@
                     Today's Delivery
                 </a>
             </li>
-
-            <!-- Other always visible -->
             <li class="nav-item" onclick="window.location=`{% url 'admin-coupon-list' %}`" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-ticket me-2"></i>

@@ -617,7 +617,12 @@ class UserViewSet(viewsets.ViewSet):
     @handle_exceptions
     # @check_authentication()
     def create(self, request):
-            name = request.data.get('name')
+            name = str(request.data.get('name')).split(' ')
+            first_name = str(name[0]).strip()
+            try:
+                last_name = str(name[1]).strip()
+            except:
+                last_name = ""
             password = request.data.get('password')
             contact_number = request.data.get('contact_number')
             email = request.data.get('email')
@@ -661,7 +666,8 @@ class UserViewSet(viewsets.ViewSet):
                     username = user_id,
                     password = password,
                     email=email,
-                    name=name,
+                    first_name=first_name,
+                    last_name=last_name,
                     contact_number=contact_number,
                     role=role,
                 )

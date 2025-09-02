@@ -1,97 +1,52 @@
 import requests
 import random
 from faker import Faker
-from datetime import datetime, timedelta
 
 fake = Faker()
 base_url = 'http://127.0.0.1:8000/'
+# base_url = 'https://ovenfresh.in/'
 
-def create_admin_user():
-    url = base_url + 'user/user-api/'
-
-    data = {
-        'name': 'Admin',
-        'password':'Admin@123',
-        'contact_number': '0987654321',
-        'email': 'admin@dynamiclabz.net',
-        'role': 'admin',  
-    }
-
-    response = requests.post(url, data=data)
-
-    return response
-
-def login_admin_user():
-    url = base_url + 'user/login-api/'
-
-    data = {
-        'email': 'admin@dynamiclabz.net',        
-        'password':'Admin@123',
-    }
-
-    response = requests.post(url, data=data)
-
-    return response
+used_numbers = set()  # to keep unique numbers
 
 
-#############################################
-def create_user(name, contact_number, email):
-    url = base_url + 'user/user-api/'
+def generate_unique_contact():
+    """Generate unique 10-digit contact number."""
+    while True:
+        number = str(random.randint(6000000000, 9999999999))
+        if number not in used_numbers:
+            used_numbers.add(number)
+            return number
+
+
+def create_admin_user(name, email, password="Admin@123"):
+    """Create an admin user with given details."""
+    url = base_url + 'user-api/user-api/'
 
     data = {
         'name': name,
-        'password': '12345',
-        'contact_number': contact_number,
+        'password': password,
+        'contact_number': generate_unique_contact(),
         'email': email,
-        'role': 'reseller',
+        'role': 'admin',
     }
 
     response = requests.post(url, data=data)
-
     return response
-
-def get_all_users():
-    url = base_url + 'user/get-all-user-api/'
-
-    response = requests.get(url)
-
-    return response
-
-def get_fake_users(count):
-    users = []
-    for _ in range(count):
-        user = {
-            "name": fake.name(),
-            "contact_number": str(random.randint(6000000000, 9999999999)),
-            "email": fake.email()
-        }
-        users.append(user)
-    return users
 
 
 if __name__ == '__main__':
-    print('Hello')
+    print("Creating Admin Users...")
 
-    # create_admin_user_respone = create_admin_user()
-    # print(create_admin_user_respone.text)
-    
-    login_admin_user_respone = login_admin_user()
-    print(login_admin_user_respone.text)
-    
+    users_to_create = [
+        {"name": "Ronak Mehta", "email": "ronakmehta@ovenfresh.in", "password": "Ronak@123"},
+        {"name": "Manish Poojari", "email": "manishpoojari@ovenfresh.in", "password": "Manish@123"},
+        {"name": "Deepa Sugandh", "email": "deepasugandh@ovenfresh.in", "password": "Deepa@123"},
+        {"name": "Aditya Gawde", "email": "adityagawde@ovenfresh.in", "password": "Aditya@123"},
+        {"name": "Adhiraj", "email": "adhiraj@ovenfresh.in", "password": "Adhiraj@123"},
+    ]
 
-    # Create fake users
-    # user_created = []
-    # users = get_fake_users(count=10)
-    # for user in users:
-    #     created_user = create_user(name=user['name'], contact_number=user['contact_number'], email=user['email'])
-    #     user_created.append(create_user)
-    
-    # Get all users
-    # all_users = get_all_users()
-    # print(all_users.text)
+    for user in users_to_create:
+        resp = create_admin_user(user["name"], user["email"], password=user["password"])
+        print(f"Created {user['email']} -> {resp.status_code} | {resp.text}")
 
-    import pdb; pdb.set_trace()
-    print('end')
-    
-    # create_event_respone = create_event()
-    # print(create_event_respone.text)
+    print("✅ All users created (if not already existing).")
