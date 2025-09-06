@@ -42,7 +42,7 @@ router.register(r'admin-review', AdminReviewsViewSet, basename='admin-review')
 
 
 
-router.register(r'delivery-login', DeliveryLoginViewSet, basename='delivery-login')
+router.register(r'delivery-login', DeliveryLoginViewSet, basename='delivery-login-frontend')
 router.register(r'delivery-dashboard', DeliveryDashboardViewSet, basename='delivery-dashboard')
 
 

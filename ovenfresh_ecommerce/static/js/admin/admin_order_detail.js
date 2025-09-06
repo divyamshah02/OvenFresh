@@ -73,7 +73,7 @@ function populateOrderDetails() {
   if (!orderData) return
 
   // Update page title and breadcrumb
-  document.getElementById("order-title").textContent = `Order #${orderData.order_id}`
+  document.getElementById("order-title").textContent = `Order #${orderData.order_number}`
   document.getElementById("breadcrumb-order-id").textContent = `Order #${orderData.order_id}`
   document.getElementById("order-date").textContent = `Placed on ${formatDate(orderData.created_at)}`
 
@@ -932,6 +932,10 @@ function downloadKOT() {
 
   // Generate PDF
   generateKOTPDF()
+}
+
+function downloadInvoice() {
+  window.location = `/order-api/generate-invoice/?order_id=${orderData.order_id}`
 }
 
 function printKOT() {
