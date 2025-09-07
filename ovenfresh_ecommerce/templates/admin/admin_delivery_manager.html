@@ -175,9 +175,9 @@
                                         <th>Name</th>
                                         <th>Contact</th>
                                         <th>Email</th>
-                                        <th>Vehicle</th>
                                         <th>Status</th>
                                         <th>Availability</th>
+                                        <th>Todays Deliveries</th>
                                         <th>Total Deliveries</th>
                                         <th>Actions</th>
                                     </tr>
@@ -325,6 +325,25 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Partner Info Modal -->
+    <div class="modal fade" id="partnerInfoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+            <h5 class="modal-title">
+            <i class="fas fa-user me-2"></i> Partner Details
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div id="partnerInfoContent">
+            <!-- Filled dynamically via JS -->
+            </div>
+        </div>
+        </div>
+    </div>
     </div>
 
     <!-- Toast Container -->

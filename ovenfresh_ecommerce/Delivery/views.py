@@ -523,44 +523,65 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
     """
     Admin ViewSet for complete delivery partner management (CRUD operations)
     """
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):
         """
-        Get all delivery partners with stats for admin dashboard
+        Get all delivery partners with stats + commission for admin dashboard
         """
-        # Get all delivery partners
         partners = User.objects.filter(role="delivery").order_by('-created_at')
-        
-        # Calculate statistics
+
         total_partners = partners.count()
         active_partners = partners.filter(is_active=True).count()
         available_partners = partners.filter(is_active=True, is_available=True).count()
-        
-        # Get partners with active orders (busy)
+
         busy_partners = partners.filter(
             is_active=True,
             user_id__in=Order.objects.filter(
-                status__in=["placed", "preparing", "ready", "out_for_delivery"]
+                ~Q(status="delivered")  # busy = anything not delivered
             ).values_list('assigned_delivery_partner_id', flat=True)
         ).count()
-        
-        # Format partner data with delivery stats
+
+        today = timezone.now().date()
+        first_day_of_month = today.replace(day=1)
+
+        # ----------- BULK ORDER STATS -----------
+        orders = Order.objects.values("assigned_delivery_partner_id").annotate(
+            # TOTAL
+            total_deliveries=Count("id"),
+            total_completed=Count("id", filter=Q(status="delivered")),
+            total_commission=Sum("assigned_delivery_partner_commission"),
+
+            # TODAY
+            today_deliveries=Count("id", filter=Q(delivery_date=today)),
+            today_completed=Count("id", filter=Q(delivery_date=today, status="delivered")),
+            today_commission=Sum(
+                "assigned_delivery_partner_commission",
+                filter=Q(delivery_date=today)
+            ),
+
+            # THIS MONTH
+            month_deliveries=Count(
+                "id",
+                filter=Q(delivery_date__gte=first_day_of_month, delivery_date__lte=today)
+            ),
+            month_completed=Count(
+                "id",
+                filter=Q(delivery_date__gte=first_day_of_month, delivery_date__lte=today, status="delivered")
+            ),
+            month_commission=Sum(
+                "assigned_delivery_partner_commission",
+                filter=Q(delivery_date__gte=first_day_of_month, delivery_date__lte=today)
+            ),
+        )
+
+        # Turn queryset into dict {partner_id: stats}
+        order_stats = {row["assigned_delivery_partner_id"]: row for row in orders}
+
         partners_data = []
         for partner in partners:
-            # Get delivery stats for each partner
-            total_deliveries = Order.objects.filter(
-                assigned_delivery_partner_id=partner.user_id,
-                status="delivered"
-            ).count()
-            
-            completed_today = Order.objects.filter(
-                assigned_delivery_partner_id=partner.user_id,
-                delivery_date=timezone.now().date(),
-                status="delivered"
-            ).count()
-            
+            stats = order_stats.get(partner.user_id, {})
             partners_data.append({
                 "user_id": partner.user_id,
                 "first_name": partner.first_name,
@@ -572,10 +593,21 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
                 "is_available": partner.is_available,
                 "plain_text_password": partner.plain_text_password or "",
                 "created_at": partner.created_at,
-                "total_deliveries": total_deliveries,
-                "completed_today": completed_today
+
+                # Delivery counts
+                "total_deliveries": stats.get("total_deliveries", 0),
+                "total_completed": stats.get("total_completed", 0),
+                "today_deliveries": stats.get("today_deliveries", 0),
+                "completed_today": stats.get("today_completed", 0),
+                "this_month_deliveries": stats.get("month_deliveries", 0),
+                "this_month_completed": stats.get("month_completed", 0),
+
+                # Commissions
+                "total_commission": stats.get("total_commission", 0) or 0,
+                "today_commission": stats.get("today_commission", 0) or 0,
+                "this_month_commission": stats.get("month_commission", 0) or 0,
             })
-        
+
         return Response({
             "success": True,
             "user_not_logged_in": False,
@@ -591,7 +623,7 @@ class AdminDeliveryPartnerManagementViewSet(viewsets.ViewSet):
             },
             "error": None
         }, status=200)
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def create(self, request):

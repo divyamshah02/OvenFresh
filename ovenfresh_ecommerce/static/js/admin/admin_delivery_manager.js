@@ -133,14 +133,7 @@ function displayPartners(partners) {
             <td>${partner.user_id}</td>
             <td>${partner.first_name} ${partner.last_name}</td>
             <td>${partner.contact_number}</td>
-            <td>${partner.email}</td>
-            <td>
-                ${
-                  partner.vehicle_type
-                    ? `${capitalizeFirst(partner.vehicle_type)} ${partner.vehicle_number || ""}`
-                    : '<span class="text-muted">Not specified</span>'
-                }
-            </td>
+            <td>${partner.email}</td>            
             <td>
                 <span class="badge ${partner.is_active ? "bg-success" : "bg-danger"}">
                     ${partner.is_active ? "Active" : "Inactive"}
@@ -155,9 +148,13 @@ function displayPartners(partners) {
                     : '<span class="badge bg-secondary">N/A</span>'
                 }
             </td>
+            <td>${partner.today_deliveries || 0}</td>
             <td>${partner.total_deliveries || 0}</td>
             <td>
                 <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-outline-info" onclick="viewPartnerInfo('${partner.user_id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-primary" onclick="editPartner('${partner.user_id}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -175,6 +172,43 @@ function displayPartners(partners) {
     `,
     )
     .join("")
+}
+
+function viewPartnerInfo(userId) {
+  const partner = deliveryPartners.find((p) => p.user_id === userId)
+  if (!partner) return
+
+  const content = `
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>ID:</strong> ${partner.user_id}</p>
+        <p><strong>Name:</strong> ${partner.first_name} ${partner.last_name}</p>
+        <p><strong>Email:</strong> ${partner.email}</p>
+        <p><strong>Contact:</strong> ${partner.contact_number}</p>
+        <p><strong>Alt Phone:</strong> ${partner.alternate_phone || "-"}</p>
+        <p><strong>Status:</strong> ${partner.is_active ? "Active" : "Inactive"}</p>
+        <p><strong>Availability:</strong> ${partner.is_available ? "Available" : "Busy"}</p>
+      </div>
+      <div class="col-md-6">
+        <h6>📦 Deliveries</h6>
+        <ul>
+          <li><strong>Total:</strong> ${partner.total_deliveries} (Completed: ${partner.total_completed})</li>
+          <li><strong>Today:</strong> ${partner.today_deliveries} (Completed: ${partner.completed_today})</li>
+          <li><strong>This Month:</strong> ${partner.this_month_deliveries} (Completed: ${partner.this_month_completed})</li>
+        </ul>
+        <h6>💰 Commission</h6>
+        <ul>
+          <li><strong>Total:</strong> ₹${partner.total_commission || 0}</li>
+          <li><strong>Today:</strong> ₹${partner.today_commission || 0}</li>
+          <li><strong>This Month:</strong> ₹${partner.this_month_commission || 0}</li>
+        </ul>
+      </div>
+    </div>
+  `
+
+  document.getElementById("partnerInfoContent").innerHTML = content
+  const modal = new bootstrap.Modal(document.getElementById("partnerInfoModal"))
+  modal.show()
 }
 
 function showEmptyState() {
