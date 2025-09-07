@@ -9,6 +9,7 @@ let unassign_delivery_person_url = null
 // Data storage
 let orderData = null
 let deliveryPersons = []
+let allProducts = []
 let selectedDeliveryPerson = null
 let selectedCommission = 0;
 
@@ -131,6 +132,20 @@ function populatePaymentInfo() {
         <small>${orderData.billing_first_name} ${orderData.billing_last_name}</small><br>
         <small>+91 ${orderData.billing_phone}</small><br>
         <small>${orderData.billing_address}, ${orderData.billing_city}, ${orderData.billing_pincode}</small><br>` : ""}
+        
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" id="paymentStatusToggle" ${orderData.payment_received ? 'checked' : ''}>
+          <label class="form-check-label" for="paymentStatusToggle">Order Paid</label>
+        </div>
+
+        <div class="mt-3">
+          <label for="paymentMethodSelect" class="form-label">Payment Method</label>
+          <select class="form-select" id="paymentMethodSelect">
+            <option value="razorpay" ${orderData.payment_method === 'razorpay' ? 'selected' : ''}>Razorpay</option>
+            <option value="cod" ${orderData.payment_method === 'cod' ? 'selected' : ''}>Cash on Delivery</option>
+          </select>
+        </div>
+
         <div class="form-check form-switch mt-3">
           <input class="form-check-input" type="checkbox" id="corporateOrderToggle" ${isCorporate ? 'checked' : ''}>
           <label class="form-check-label" for="corporateOrderToggle">Corporate Order</label>
@@ -139,8 +154,39 @@ function populatePaymentInfo() {
           <button class="btn btn-sm btn-outline-primary" id="updatePricingsBtn">
             <i class="fas fa-edit me-1"></i> Update Pricings
           </button>
-        </div>       
+        </div>
     `;
+    // Payment status toggle
+    document.getElementById('paymentStatusToggle').addEventListener('change', async function() {
+      const isChecked = this.checked;
+      const confirmed = confirm(`Are you sure you want to mark this order as ${isChecked ? 'Paid' : 'Unpaid'}?`);
+
+      if (!confirmed) {
+        // revert back to previous state if canceled
+        this.checked = !isChecked;
+        return;
+      }
+
+      showLoading();
+      await updatePaymentStatus(isChecked);
+      hideLoading();
+    });
+
+    // Payment method select
+    document.getElementById('paymentMethodSelect').addEventListener('change', async function() {
+      const selectedValue = this.value;
+      const confirmed = confirm(`Are you sure you want to change the payment method to "${selectedValue}"?`);
+
+      if (!confirmed) {
+        // revert to previous value if canceled
+        this.value = orderData.payment_method; // assumes you have orderData in scope
+        return;
+      }
+
+      showLoading();
+      await updatePaymentMethod(selectedValue);
+      hideLoading();
+    });
 
   // Add event listener for the toggle
   document.getElementById('corporateOrderToggle').addEventListener('change', function() {
@@ -581,6 +627,69 @@ async function saveDeliveryDetails() {
   }
 }
 
+async function updatePaymentMethod(method) {
+  try {
+    showLoading();
+    
+    // Prepare data for API call
+    const requestData = {
+      payment_method: method,
+    };
+
+    const [success, result] = await callApi(
+      "PATCH", 
+      `/order-api/place-order-api/${orderData.order_id}/`, 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {      
+      showNotification('Payment Details updated successfully!', 'success');
+      await loadOrderDetails();
+
+    } else {
+      throw new Error(result.error || "Failed to update payment details");
+    }
+  } catch (error) {
+    console.error("Error saving payment details:", error);
+    showNotification('Error saving payment details: ' + error.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+async function updatePaymentStatus(status) {
+  try {
+    showLoading();
+    
+    // Prepare data for API call
+    const requestData = {
+      payment_received: status,
+    };
+
+    const [success, result] = await callApi(
+      "PATCH", 
+      `/order-api/place-order-api/${orderData.order_id}/`, 
+      requestData,
+      csrf_token
+    );
+    
+    if (success && result.success) {      
+      showNotification('Payment Details updated successfully!', 'success');
+      await loadOrderDetails();
+
+    } else {
+      throw new Error(result.error || "Failed to update payment details");
+    }
+  } catch (error) {
+    console.error("Error saving payment details:", error);
+    showNotification('Error saving payment details: ' + error.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+
 function populateOrderSummary() {
   const orderSummary = document.getElementById("order-summary")
   orderSummary.innerHTML = `
@@ -592,7 +701,7 @@ function populateOrderSummary() {
     `
 }
 
-function populateOrderItems() {
+function populateOrderItems_old() {
   const tbody = document.getElementById("order-items-tbody")
   tbody.innerHTML = orderData.order_items
     .map(
@@ -617,6 +726,28 @@ function populateOrderItems() {
     `,
     )
     .join("")
+}
+
+function populateOrderItems() {
+    const tbody = document.getElementById("order-items-tbody");
+    tbody.innerHTML = orderData.order_items.map((item) => `
+        <tr data-item-id="${item.id}">
+            <td>
+                <div class="d-flex align-items-center">
+                    <img src="${item.product_image}" alt="${item.product_name}" 
+                         class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                    <div>
+                        <strong>${item.product_name}</strong>
+                    </div>
+                </div>
+            </td>
+            <td>${item.variation_name || "Standard"}</td>
+            <td class="item-quantity-cell">${item.quantity}</td>
+            <td class="item-price-cell">₹${parseFloat(item.amount).toFixed(2)}</td>
+            <td class="item-discount-cell">₹${parseFloat(item.discount).toFixed(2)}</td>
+            <td>₹${parseFloat(item.final_amount).toFixed(2)}</td>
+        </tr>
+    `).join("");
 }
 
 function populateDeliveryPhotos() {
@@ -1139,6 +1270,113 @@ function initializeEventListeners() {
     await loadDeliveryPersons()
     showNotification("Delivery persons list refreshed", "info")
   })
+  initializeEditButton();
+  // initializeAddItemButton();
+  loadAllProducts();
+  initializeOpenModalButton();
+
+
+  document.getElementById("productCategorySelect").addEventListener("change", function() {
+      const selectedCategory = this.value;
+      const subCategorySelect = document.getElementById("productSubCategorySelect");
+
+      const subcategories = [...new Set(
+          allProducts.filter(p => p.category_name === selectedCategory)
+                    .map(p => p.sub_category_name)
+      )].sort();
+
+      subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+      subcategories.forEach(sub => {
+          subCategorySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+      });
+  });
+
+  document.getElementById("productSubCategorySelect").addEventListener("change", function() {
+      const selectedCategory = document.getElementById("productCategorySelect").value;
+      const selectedSubCategory = this.value;
+      const productSelect = document.getElementById("productSelect");
+
+      const products = allProducts.filter(p => 
+          p.category_name === selectedCategory && p.sub_category_name === selectedSubCategory
+      );
+
+      productSelect.innerHTML = '<option value="">Select Product</option>';
+      products.forEach(product => {
+          productSelect.innerHTML += `<option value="${product.product_id}">${product.title}</option>`;
+      });
+  });
+
+  document.getElementById("productSelect").addEventListener("change", function() {
+      const selectedProductId = this.value;
+      const variationSelect = document.getElementById("variationSelect");
+
+      const product = allProducts.find(p => p.product_id === selectedProductId);
+      if (!product) {
+          variationSelect.innerHTML = '<option value="">Select Variation</option>';
+          return;
+      }
+
+      variationSelect.innerHTML = '<option value="">Select Variation</option>';
+      product.variations.forEach(variation => {
+          variationSelect.innerHTML += `
+              <option value="${variation.product_variation_id}" data-price="${variation.actual_price}">
+                  ${variation.weight_variation} (₹${variation.actual_price})
+              </option>
+          `;
+      });
+  });
+
+  document.getElementById("variationSelect").addEventListener("change", function() {
+      const selectedOption = this.options[this.selectedIndex];
+      const priceInput = document.getElementById("priceInput");
+      const price = selectedOption.getAttribute("data-price") || "0";
+      priceInput.value = parseFloat(price).toFixed(2);
+  });
+
+  document.getElementById("addSelectedProductBtn").addEventListener("click", function() {
+      const productId = document.getElementById("productSelect").value;
+      const variationId = document.getElementById("variationSelect").value;
+      const variationText = document.getElementById("variationSelect").selectedOptions[0]?.text || "";
+      const price = parseFloat(document.getElementById("priceInput").value) || 0;
+      const productTitle = document.getElementById("productSelect").selectedOptions[0]?.text || "";
+
+      if (!productId || !variationId) {
+          showNotification("Please select product and variation", "warning");
+          return;
+      }
+
+      const tbody = document.getElementById("order-items-tbody");
+      const newRow = document.createElement("tr");
+
+      newRow.setAttribute("data-item-id", ""); // Empty for new item
+      newRow.setAttribute("data-product-id", productId);
+      newRow.setAttribute("data-variation-id", variationId);
+
+      newRow.innerHTML = `
+          <td>${productTitle}</td>
+          <td>${variationText}</td>
+          <td class="item-quantity-cell"><input type="number" class="form-control item-quantity" value="1" min="0"></td>
+          <td class="item-price-cell"><input type="number" class="form-control item-price" value="${price.toFixed(2)}" min="0" step="0.01"></td>
+          <td class="item-discount-cell"><input type="number" class="form-control item-discount" value="0" min="0" step="0.01"></td>
+          <td><button class="btn btn-danger btn-sm remove-item-btn">Remove</button></td>
+      `;
+
+      makeOrderItemsEditable();
+      tbody.appendChild(newRow);
+
+      newRow.querySelector(".remove-item-btn").addEventListener("click", () => {
+          newRow.remove();
+      });
+
+      // Show the Save Changes button and hide Edit Items button
+      document.getElementById("editOrderBtn").style.display = "none";
+      document.getElementById("saveOrderBtn").style.display = "inline-block";
+
+      // Close the modal
+      const addProductModal = bootstrap.Modal.getInstance(document.getElementById("addProductModal"));
+      addProductModal.hide();
+  });
+
 }
 
 // Utility functions
@@ -1203,7 +1441,7 @@ function showNotification(message, type = "info") {
       <small>Just now</small>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
     </div>
-    <div class="toast-body">
+    <div class="toast-body text-white">
       ${message}
     </div>
   `
@@ -1225,3 +1463,177 @@ function showNotification(message, type = "info") {
     toast.remove()
   })
 }
+
+async function saveOrderItemChanges() {
+    try {
+        showLoading();
+
+        const updatedItems = [];
+        document.querySelectorAll("#order-items-table tbody tr").forEach((row) => {
+            const itemId = row.getAttribute("data-item-id");
+            const productId = row.getAttribute("data-product-id");
+            const variationId = row.getAttribute("data-variation-id");
+            const quantity = parseFloat(row.querySelector(".item-quantity").value) || 0;
+            const price = parseFloat(row.querySelector(".item-price").value) || 0;
+            const discount = parseFloat(row.querySelector(".item-discount").value) || 0;
+
+            updatedItems.push({
+                id: itemId ? parseInt(itemId) : null,  // null for new items
+                product_id: productId,
+                product_variation_id: variationId,
+                quantity: quantity,
+                price: price,
+                discount: discount
+            });
+        });
+
+        const requestData = {
+            order_id: orderData.order_id,
+            items: updatedItems
+        };
+
+        const [success, result] = await callApi(
+            "POST",
+            "/order-api/admin-update-order/",
+            requestData,
+            csrf_token
+        );
+
+        if (success && result.success) {
+            orderData.subtotal = parseFloat(result.subtotal);
+            orderData.tax_amount = parseFloat(result.tax_amount);
+            orderData.total_amount = parseFloat(result.total_amount);
+            showNotification("Order updated successfully!", "success");
+            await loadOrderDetails();  // Reload the updated order
+        } else {
+            throw new Error(result.error || "Failed to update order");
+        }
+    } catch (error) {
+        console.error("Error saving order changes:", error);
+        showNotification("Error saving order changes: " + error.message, "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+function makeOrderItemsEditable() {
+    document.getElementById('qtyInfo').style.display = '';
+    const tbody = document.querySelector("#order-items-table tbody");
+    tbody.querySelectorAll("tr").forEach((row) => {
+        const quantityCell = row.querySelector(".item-quantity-cell");
+        const priceCell = row.querySelector(".item-price-cell");
+        const discountCell = row.querySelector(".item-discount-cell");
+
+        const quantity = quantityCell.textContent.trim();
+        const price = priceCell.textContent.trim().replace("₹", "");
+        const discount = discountCell.textContent.trim().replace("₹", "");
+
+        quantityCell.innerHTML = `<input type="number" class="form-control item-quantity" value="${quantity}" min="0" step="1">`;
+        priceCell.innerHTML = `<input type="number" class="form-control item-price" value="${price}" min="0" step="0.01">`;
+        discountCell.innerHTML = `<input type="number" class="form-control item-discount" value="${discount}" min="0" step="0.01">`;
+    });
+}
+
+function initializeEditButton() {
+    const editBtn = document.getElementById("editOrderBtn");
+    const saveBtn = document.getElementById("saveOrderBtn");
+
+    editBtn.addEventListener("click", () => {
+        makeOrderItemsEditable();
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+    });
+
+    saveBtn.addEventListener("click", () => {
+        saveOrderItemChanges();
+        editBtn.style.display = "inline-block";
+        saveBtn.style.display = "none";
+        document.getElementById('qtyInfo').style.display = 'none';
+
+    });
+}
+
+function addNewOrderItem() {
+    const tbody = document.getElementById("order-items-table");
+    const newRow = document.createElement("tr");
+    newRow.innerHTML = `
+        <td>
+            <input type="text" class="form-control item-name" placeholder="Product Name">
+        </td>
+        <td>
+            <input type="text" class="form-control item-variation" placeholder="Variation">
+        </td>
+        <td class="item-quantity-cell">
+            <input type="number" class="form-control item-quantity" value="1" min="0">
+        </td>
+        <td class="item-price-cell">
+            <input type="number" class="form-control item-price" value="0" min="0" step="0.01">
+        </td>
+        <td class="item-discount-cell">
+            <input type="number" class="form-control item-discount" value="0" min="0" step="0.01">
+        </td>
+        <td>
+            <button class="btn btn-danger btn-sm remove-item-btn">Remove</button>
+        </td>
+    `;
+    newRow.setAttribute("data-item-id", "");
+    newRow.setAttribute("data-product-id", "");
+    newRow.setAttribute("data-variation-id", "");
+
+    tbody.appendChild(newRow);
+
+    newRow.querySelector(".remove-item-btn").addEventListener("click", () => {
+        newRow.remove();
+    });
+}
+
+function initializeAddItemButton() {
+    const addItemBtn = document.getElementById("addItemBtn");
+    addItemBtn.addEventListener("click", addNewOrderItem);
+}
+
+async function loadAllProducts() {
+    try {
+        showLoading();
+        const url = "/product-api/admin-product-tax-rates-api/?format=json&page=1&limit=1600&search=&category=&sub_category=";
+        const [success, result] = await callApi("GET", url);
+        if (success && result.success) {
+            allProducts = result.data.products || [];
+            populateCategoryDropdown();
+        } else {
+            throw new Error(result.error || "Failed to load products");
+        }
+    } catch (error) {
+        console.error("Error loading products:", error);
+        showNotification("Error loading products", "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+function populateCategoryDropdown() {
+    const categorySelect = document.getElementById("productCategorySelect");
+    const categories = [...new Set(allProducts.map(p => p.category_name))].sort();
+
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    categories.forEach(category => {
+        categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+    });
+}
+
+function initializeOpenModalButton() {
+    const openModalBtn = document.getElementById("openAddProductModalBtn");
+    const addProductModal = new bootstrap.Modal(document.getElementById("addProductModal"));
+
+    openModalBtn.addEventListener("click", () => {
+        // Reset selections
+        document.getElementById("productCategorySelect").value = "";
+        document.getElementById("productSubCategorySelect").innerHTML = '<option value="">Select Subcategory</option>';
+        document.getElementById("productSelect").innerHTML = '<option value="">Select Product</option>';
+        document.getElementById("variationSelect").innerHTML = '<option value="">Select Variation</option>';
+        document.getElementById("priceInput").value = "";
+
+        addProductModal.show();
+    });
+}
+

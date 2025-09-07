@@ -263,8 +263,6 @@ async function loadOrders() {
       queryParams.append("date_from", filters.dateRange.start)
       queryParams.append("date_to", filters.dateRange.end)
     }
-    console.log("aeghbruogrbeaghuorabhoubohuaebhuogbhuo")
-    console.log(confirmed)
     if (confirmed) queryParams.append("confirmed", true)
 
     const url = `${orders_list_url}?${queryParams.toString()}`

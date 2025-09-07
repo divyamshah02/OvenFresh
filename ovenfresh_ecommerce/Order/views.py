@@ -320,6 +320,30 @@ class OrderViewSet(viewsets.ViewSet):
             if not Order.objects.filter(order_id=order_id).exists():
                 return order_id
 
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    def partial_update(self, request, pk):
+        order_id = pk
+        payment_method_param = request.data.get("payment_method", None)
+        payment_received_param = request.data.get("payment_received", None)
+        
+        order_data = Order.objects.get(order_id=order_id)
+        if payment_method_param and (payment_method_param in ['cod', 'razorpay']):
+            order_data.payment_method = payment_method_param
+        
+        if payment_received_param is not None and (type(payment_received_param) == bool):
+            order_data.payment_received = payment_received_param
+
+        order_data.save()
+    
+        return Response({
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": f"Updated successfully.",
+            "error": None
+        }, status=status.HTTP_201_CREATED)
+
 
 class AdminOrderViewSet(viewsets.ViewSet):
     """
@@ -561,6 +585,7 @@ class AdminOrderViewSet(viewsets.ViewSet):
             order_id = get_random_string(10, allowed_chars="0123456789")
             if not Order.objects.filter(order_id=order_id).exists():
                 return order_id
+
 
 class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
     @handle_exceptions
@@ -961,7 +986,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
             
             # Prepare order items data
             items_data = []
-            for item in order_items:
+            for item in order_items:                
                 try:
                     product = Product.objects.get(product_id=item.product_id)
                     variation = ProductVariation.objects.filter(
@@ -969,6 +994,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
                     ).first()
                     
                     item_data = {
+                        "id": item.id,
                         "product_id": item.product_id,
                         "product_name": product.title,
                         "product_image": product.photos[0],
@@ -1309,7 +1335,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         serialized_orders = OrderSerializer(paginated_orders, many=True).data
         
         # Get stats for dashboard
-        stats = self.get_order_stats()
+        stats = self.get_order_stats(orders_query)
         
         return Response({
             "success": True,
@@ -1323,13 +1349,13 @@ class AdminOrderListViewSet(viewsets.ViewSet):
             }
         })
     
-    def get_order_stats(self):
+    def get_order_stats(self, orders_query):
         """
         Get order statistics for the dashboard
         """
         # Get total orders count
         # total_orders = Order.objects.count()
-        counts = Order.objects.aggregate(
+        counts = orders_query.aggregate(
             total=Count("id"),
             excluding_not_placed=Count("id", filter=~Q(status="not_placed"))
         )
@@ -1339,15 +1365,15 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         
         # Get today's orders count
         today = timezone.now().date()
-        today_orders = Order.objects.filter(created_at__date=today).count()
+        today_orders = orders_query.filter(created_at__date=today).count()
         
         # Get pending delivery count (orders that are not delivered or cancelled)
-        pending_delivery = Order.objects.filter(
+        pending_delivery = orders_query.filter(
             ~Q(status='delivered') & ~Q(status='not_placed')
         ).count()
         
         # Get total revenue
-        total_revenue = Order.objects.filter(payment_received=True).aggregate(
+        total_revenue = orders_query.filter(payment_received=True).aggregate(
             total=Sum('total_amount')
         )['total'] or 0
         
@@ -1517,6 +1543,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 product_data = Product.objects.filter(product_id=item.product_id).first()
                 product_variation_data = ProductVariation.objects.filter(product_variation_id=item.product_variation_id).first()
                 items_data.append({
+                    "id": item.id,
                     'product_id': item.product_id,
                     'product_name': f"{product_data.title}",
                     'product_image': f"{product_data.photos[0]}",
@@ -2325,4 +2352,101 @@ class AdminCreateOrderViewSet(viewsets.ViewSet):
             if not Order.objects.filter(order_id=order_id).exists():
                 return order_id
 
+
+class AdminUpdateOrderViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role='admin')
+    @transaction.atomic
+    def create(self, request):
+        data = request.data
+        order_id = data.get("order_id")
+        updated_items = data.get("items")  # List of items including new and existing
+
+        if not order_id or updated_items is None:
+            return Response({
+                "success": False,
+                "error": "Order ID and items are required."
+            }, status=400)
+
+        try:
+            order = Order.objects.select_for_update().get(order_id=order_id)
+        except Order.DoesNotExist:
+            return Response({
+                "success": False,
+                "error": "Order not found."
+            }, status=404)
+        if order.status == 'delivered':
+            return Response({
+                "success": False,
+                "error": "Order already delivered."
+            }, status=404)
+
+        existing_items = OrderItem.objects.filter(order_id=order.order_id)
+        existing_item_ids = {item.id for item in existing_items}
+
+        # Track items to delete and update
+        updated_item_ids = set()
+        subtotal = 0
+        tax_amount = 0
+
+        for item_data in updated_items:
+            item_id = item_data.get("id")  # Might be None for new items
+            product_id = item_data.get("product_id")
+            variation_id = item_data.get("product_variation_id")
+            quantity = item_data.get("quantity")
+            price = item_data.get("price")
+            discount = item_data.get("discount")
+            final_amount = round((price * quantity) - discount, 2)
+
+            if item_id and item_id in existing_item_ids:
+                # Update existing item
+                order_item = OrderItem.objects.get(id=item_id)
+                order_item.quantity = quantity
+                order_item.amount = round(float(price), 2)
+                order_item.discount = round(float(discount), 2)
+                order_item.final_amount = final_amount
+                order_item.save()
+                updated_item_ids.add(item_id)
+            else:
+                # Add new item
+                order_item = OrderItem.objects.create(
+                    order_id=order.order_id,
+                    product_id=product_id,
+                    product_variation_id=variation_id,
+                    quantity=quantity,
+                    amount=round(float(price), 2),
+                    discount=round(float(discount), 2),
+                    final_amount=final_amount
+                )
+                updated_item_ids.add(order_item.id)
+
+            subtotal += price * quantity
+            tax_rate = self.get_tax_rate(product_id)
+            tax_amount += ((price * quantity) - discount) * (tax_rate / 100)
+
+        # Delete removed items
+        items_to_delete = existing_item_ids - updated_item_ids
+        OrderItem.objects.filter(id__in=items_to_delete).delete()
+
+        # Update order totals
+        order.subtotal_amount = str(round(subtotal, 2))
+        order.tax_amount = str(round(tax_amount, 2))
+        order.total_amount = str(round(subtotal + tax_amount + float(order.delivery_charge), 2))
+        order.save()
+
+        return Response({
+            "success": True,
+            "message": "Order updated successfully",
+            "subtotal": order.subtotal_amount,
+            "tax_amount": order.tax_amount,
+            "total_amount": order.total_amount
+        })
+
+    def get_tax_rate(self, product_id):
+        try:
+            product = Product.objects.get(product_id=product_id)
+            return float(product.tax_rate)
+        except Product.DoesNotExist:
+            return 18.0  # Default tax rate
 

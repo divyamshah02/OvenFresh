@@ -8,6 +8,7 @@ router.register(r'payment_status_check', PaymentStatusCheckViewSet, basename='pa
 router.register(r'confirm-payment-order-api', ConfirmPaymentViewSet, basename='confirm-payment-order-api')
 
 router.register(r'admin-place-order-api', AdminOrderViewSet, basename='admin-place-order-api')
+router.register(r'admin-update-order', AdminUpdateOrderViewSet, basename='admin-update-order')
 
 router.register(r'order-detail-api', OrderDetailViewSet, basename='order-detail-api')
 router.register(r'all-my-orders-api', OrderListViewSet, basename='all-my-orders-api')

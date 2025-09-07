@@ -35,6 +35,7 @@ router.register(r'admin-delivery-person', AdminDeliverPersonViewSet, basename='a
 
 router.register(r'admin-all-orders', AdminAllOrdersViewSet, basename='admin-all-orders')
 router.register(r'admin-all-confirmed-orders', AdminAllConfirmedOrdersViewSet, basename='admin-all-confirmed-orders')
+router.register(r'admin-todays-delivery-orders', AdminTodaysDeliveryOrdersViewSet, basename='admin-todays-delivery-orders')
 router.register(r'admin-add-order', AdminAddOrderViewSet, basename='admin-add-order')
 router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 router.register(r'admin-pincode-order', AdminPincodeOrderDetailViewSet, basename='admin-pincode-order')

@@ -73,7 +73,7 @@
                     Orders
                 </a>
             </li>
-            <li class="nav-item" onclick="window.location=`{% url 'admin-all-orders-list' %}?delivery_date=` + new Date().toISOString().split('T')[0]" style="cursor: pointer;">
+            <li class="nav-item" onclick="window.location=`{% url 'admin-todays-delivery-orders-list' %}?delivery_date=` + new Date().toISOString().split('T')[0]" style="cursor: pointer;">
                 <a class="nav-link">
                     <i class="fas fa-calendar-day me-2"></i>
                     Today's Delivery

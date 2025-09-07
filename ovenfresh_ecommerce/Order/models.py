@@ -121,7 +121,6 @@ class Order(models.Model):
     def __str__(self):
         return self.order_id
 
-
 class OrderItem(models.Model):
     order_id = models.CharField(max_length=20)
     product_id = models.CharField(max_length=20)
@@ -138,3 +137,44 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"OrderItem ({self.order_id} - {self.product_id})"
+
+    def save(self, *args, **kwargs):
+        # if quantity is 0 -> move to DeletedOrderItem
+        if self.quantity == 0:
+            DeletedOrderItem.objects.create(
+                order_id=self.order_id,
+                order_item_id=str(self.pk) if self.pk else None,
+                product_id=self.product_id,
+                product_variation_id=self.product_variation_id,
+                quantity=self.quantity,
+                amount=self.amount,
+                discount=self.discount,
+                final_amount=self.final_amount,
+                payment_id=self.payment_id,
+                item_note=self.item_note,
+                order_item_created_at=self.created_at,
+            )
+            if self.pk:  # only delete if already saved in DB
+                super().delete(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
+
+
+class DeletedOrderItem(models.Model):
+    order_id = models.CharField(max_length=20)
+    order_item_id = models.CharField(max_length=255, null=True, blank=True)
+    product_id = models.CharField(max_length=20)
+    product_variation_id = models.CharField(max_length=20)
+
+    quantity = models.PositiveIntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    final_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    payment_id = models.CharField(max_length=100, null=True, blank=True)
+    item_note = models.TextField(null=True, blank=True)
+    order_item_created_at = models.DateTimeField(default=timezone.now, editable=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=True)
+
+    def __str__(self):
+        return f"DeletedOrderItem ({self.order_id} - {self.product_id})"

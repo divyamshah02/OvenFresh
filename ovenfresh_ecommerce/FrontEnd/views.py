@@ -442,6 +442,14 @@ class AdminAllOrdersViewSet(viewsets.ViewSet):
         return render(request, 'admin/admin_all_orders.html')
 
 
+class AdminTodaysDeliveryOrdersViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    @check_authentication(required_role="admin")
+    def list(self, request):
+        return render(request, 'admin/admin_todays_orders_delivery.html')
+
+
 class AdminOrderDetailViewSet(viewsets.ViewSet):
 
     @handle_exceptions
