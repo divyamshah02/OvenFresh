@@ -350,6 +350,7 @@ async function loadProductData() {
 
     document.getElementById("submitProductBtn").innerHTML = '<i class="fas fa-save me-1"></i> Update Product'
     document.getElementById("page-heading-custom").innerText = 'Update Product'
+    document.getElementById("viewProduct").href = '/product/' + Res.data.slug
   }
 }
 

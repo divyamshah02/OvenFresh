@@ -14,7 +14,7 @@ let currentFilters = {
   category: "",
   sub_category: "",
   status: "",
-  sortBy: "created_asc",
+  sortBy: "created_desc",
 }
 
 let allProducts = []

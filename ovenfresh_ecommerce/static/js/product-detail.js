@@ -233,7 +233,11 @@ function renderProductDetails(product) {
   if (productTitle) productTitle.textContent = product.title
 
   const productDescription = document.querySelector(".product-description p")
-  if (productDescription) productDescription.textContent = product.description
+  if (productDescription) {
+    productDescription.innerHTML = product.description.replace(/\n/g, "<br>");
+  }
+  //  productDescription.textContent = product.description
+  
 
   // Update Veg/Non-Veg indicator
 const vegIndicator = document.querySelector(".veg-indicator");
