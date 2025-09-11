@@ -40,6 +40,7 @@ router.register(r'admin-add-order', AdminAddOrderViewSet, basename='admin-add-or
 router.register(r'admin-order-detail', AdminOrderDetailViewSet, basename='admin-order-detail')
 router.register(r'admin-pincode-order', AdminPincodeOrderDetailViewSet, basename='admin-pincode-order')
 router.register(r'admin-review', AdminReviewsViewSet, basename='admin-review')
+router.register(r'admin-logout', logoutViewSet, basename='admin-logout')
 
 
 

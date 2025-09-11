@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
@@ -495,6 +495,13 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
     @check_authentication(required_role="delivery")
     def list(self, request):
         return render(request, 'delivery/delivery_dashboard.html')
+
+class logoutViewSet(viewsets.ViewSet):
+
+    @handle_exceptions
+    def list(self, request):
+        logout(request)
+        return redirect('admin_login')
 
 
 def admin_login(request):
