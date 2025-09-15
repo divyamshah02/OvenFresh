@@ -82,6 +82,10 @@ function populateOrderDetails() {
   updateOrderStatusBadge(orderData.status)
   document.getElementById("status-select").value = orderData.status
 
+  if (orderData.status === "out_for_delivery" || orderData.status === "delivered" || orderData.status === "cancelled") {
+    document.getElementById('orderCancelBtn').style.display = 'none';
+  } 
+
   // Populate customer information
   populateCustomerInfo()
 
@@ -1032,6 +1036,86 @@ async function confirmStatusUpdate() {
     showNotification("Error updating order status.", "error")
   } finally {
     hideLoading()
+  }
+}
+
+async function confirmStatusUpdate() {
+  const newStatus = document.getElementById("modal-status-select").value
+  const notes = document.getElementById("status-notes").value
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      update_order_status_url,
+      {
+        order_id: order_id,
+        status: newStatus,
+        notes: notes,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      showNotification("Order status updated successfully!", "success")
+
+      // Close modal
+      try{
+        bootstrap.Modal.getInstance(document.getElementById("updateStatusModal")).hide()
+      }
+      catch {
+        
+      }
+
+      // Refresh order details
+      await loadOrderDetails()
+    } else {
+      throw new Error(result.error || "Failed to update order status")
+    }
+  } catch (error) {
+    console.error("Error updating order status:", error)
+    showNotification("Error updating order status.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+async function cancelOrder() {
+  if (orderData.status === "out_for_delivery" || orderData.status === "delivered" || orderData.status === "cancelled") {
+    document.getElementById('orderCancelBtn').style.display = 'none';
+    alert("Order cannot be cancelled at this stage." )
+    return;
+  } 
+  if (confirm("Are you sure you want to cancel this order? This action cannot be undone.")){
+    const newStatus = "cancelled"
+    try {
+      showLoading()
+  
+      const [success, result] = await callApi(
+        "POST",
+        update_order_status_url,
+        {
+          order_id: order_id,
+          status: newStatus
+        },
+        csrf_token,
+      )
+  
+      if (success && result.success) {
+        showNotification("Order Cancelled successfully!", "success")
+  
+        // Refresh order details
+        await loadOrderDetails()
+      } else {
+        throw new Error(result.error || "Failed to update order status")
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error)
+      showNotification("Error cancelling order.", "error")
+    } finally {
+      hideLoading()
+    }
   }
 }
 

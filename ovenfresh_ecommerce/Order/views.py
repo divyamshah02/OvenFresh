@@ -329,6 +329,10 @@ class OrderViewSet(viewsets.ViewSet):
         
         order_data = Order.objects.get(order_id=order_id)
         if payment_method_param and (payment_method_param in ['cod', 'razorpay']):
+            if payment_method_param == 'cod':
+                order_data.is_cod = True
+            else:
+                order_data.is_cod = False
             order_data.payment_method = payment_method_param
         
         if payment_received_param is not None and (type(payment_received_param) == bool):
@@ -1283,7 +1287,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
             )
         
         if confirmed is not None:
-            orders_query = orders_query.filter(~Q(status="not_placed"))
+            orders_query = orders_query.filter(~Q(status="not_placed") & ~Q(status="cancelled"))
 
         if status:
             orders_query = orders_query.filter(status=status)
@@ -1353,30 +1357,36 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         """
         Get order statistics for the dashboard
         """
-        # Get total orders count
-        # total_orders = Order.objects.count()
+        # Aggregate counts
         counts = orders_query.aggregate(
             total=Count("id"),
-            excluding_not_placed=Count("id", filter=~Q(status="not_placed"))
+            excluding_invalid=Count(
+                "id",
+                filter=~Q(status__in=["not_placed", "cancelled"])
+            )
         )
 
-        total_orders = counts["excluding_not_placed"]
+        total_orders = counts["excluding_invalid"]
         all_orders = counts["total"]
-        
-        # Get today's orders count
+
+        # Today's orders (excluding not_placed + cancelled)
         today = timezone.now().date()
-        today_orders = orders_query.filter(created_at__date=today).count()
-        
-        # Get pending delivery count (orders that are not delivered or cancelled)
-        pending_delivery = orders_query.filter(
-            ~Q(status='delivered') & ~Q(status='not_placed')
+        today_orders = orders_query.filter(
+            created_at__date=today
+        ).exclude(status__in=["not_placed", "cancelled"]).count()
+
+        # Pending delivery count (exclude delivered, cancelled, not_placed)
+        pending_delivery = orders_query.exclude(
+            status__in=["delivered", "cancelled", "not_placed"]
         ).count()
-        
-        # Get total revenue
-        total_revenue = orders_query.filter(payment_received=True).aggregate(
+
+        # Total revenue (only paid + valid orders)
+        total_revenue = orders_query.filter(
+            payment_received=True
+        ).exclude(status__in=["not_placed", "cancelled"]).aggregate(
             total=Sum('total_amount')
         )['total'] or 0
-        
+
         return {
             "total_orders": total_orders,
             "today_orders": today_orders,

@@ -107,9 +107,17 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
             assigned_delivery_partner_id=user_id,
             delivery_date=today,
             status="delivered",
-            is_cod=True,
             payment_received=True
-        ).aggregate(total=Sum('total_amount'))['total'] or 0
+        ).aggregate(total=Sum('assigned_delivery_partner_commission'))['total'] or 0
+        
+
+        this_month_earnings = Order.objects.filter(
+            assigned_delivery_partner_id=user_id,
+            delivery_date__year=today.year,
+            delivery_date__month=today. month,
+            status="delivered",
+            payment_received=True
+        ).aggregate(total=Sum('assigned_delivery_partner_commission'))['total'] or 0
         
         # Format orders data
         def format_order_data(orders):
@@ -120,6 +128,7 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
                 timeslot_txt = f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
                 orders_data.append({
                     "order_id": order.order_id,
+                    "order_number": order.order_number,
                     "customer_name": f"{order.first_name} {order.last_name}",
                     "customer_phone": order.phone,
                     "delivery_address": order.delivery_address,
@@ -147,7 +156,8 @@ class DeliveryDashboardViewSet(viewsets.ViewSet):
                 "stats": {
                     "completed_today": completed_today,
                     "pending_count": pending_orders.count(),
-                    "today_earnings": float(today_earnings)
+                    "today_earnings": float(today_earnings),
+                    "this_month_earnings": float(this_month_earnings),
                 },
                 "user_info": {
                     "name": f"{request.user.first_name} {request.user.last_name}",

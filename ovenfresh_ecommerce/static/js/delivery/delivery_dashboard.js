@@ -77,6 +77,8 @@ function populateDashboard() {
   document.getElementById("availabilityToggle").checked = dashboardData.user_info.is_available
   document.getElementById("pendingCount").textContent = dashboardData.stats.pending_count
   document.getElementById("completedCount").textContent = dashboardData.stats.completed_today
+  document.getElementById("todayEarning").textContent = dashboardData.stats.today_earnings.toFixed(2)
+  document.getElementById("thisMonthEarning").textContent = dashboardData.stats.this_month_earnings.toFixed(2)
   populateOrders("todayOrders", dashboardData.today_orders)
   populateOrders("pendingOrders", dashboardData.pending_orders)
 }
@@ -132,6 +134,7 @@ function createOrderCard(order) {
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="mb-1">Order #${order.order_id}</h6>
+                        <h6 class="mb-1">Order Number - #${order.order_number}</h6>
                         <small class="text-muted">
                             <i class="fas fa-calendar me-1"></i>
                             ${formatDate(order.delivery_date)}
