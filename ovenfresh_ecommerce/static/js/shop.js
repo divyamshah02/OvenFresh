@@ -6,7 +6,7 @@ let cart_list_url = null
 let products = []
 let categories = []
 let displayedProducts = 0
-const productsPerPage = 8
+const productsPerPage = 20
 let filteredProducts = []
 let urlParams = {}
 let currentSearchTerm = ""
@@ -265,6 +265,16 @@ function createProductCard(product) {
 
   const productImage = product.photos && product.photos.length > 0 ? product.photos[0] : "/static/img/placeholder.jpg"
   const productPrice = product.actual_price || product.price || 0
+  let displayPrice = 0
+  try {
+    const cleanPrice = parseFloat(productPrice);
+    // if you want no decimals at all
+    displayPrice = Number.isInteger(cleanPrice) 
+      ? cleanPrice 
+      : cleanPrice.toFixed(2);
+  } catch {
+    displayPrice = productPrice
+  }
   const productWeight = product.weight || ""
   const productReviews = product.reviews || 0
 
@@ -282,17 +292,20 @@ function createProductCard(product) {
                 </div>
                 <div class="product-body">
                     <h5>${product.title}</h5>
-                    <div class="product-rating mb-2">
-                        ${stars}
-                        <span class="ms-2">(${productReviews})</span>
-                    </div>
                     <div class="product-price">
-                        <span class="price">₹${productPrice}${productWeight ? " - " + productWeight : ""}</span>
+                        <span class="price">₹${displayPrice}</span>
                     </div>
                 </div>
             </div>
         </div>
     `
+    // <div class="product-rating mb-2">
+    //                     ${stars}
+    //                     <span class="ms-2">(${productReviews})</span>
+    //                 </div>
+
+                        // <span class="price">₹${productPrice}${productWeight ? " - " + productWeight : ""}</span>
+
 }
 
 // Navigate to product detail page

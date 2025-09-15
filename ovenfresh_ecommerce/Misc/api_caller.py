@@ -3,8 +3,8 @@ import random
 from faker import Faker
 
 fake = Faker()
-base_url = 'http://127.0.0.1:8000/'
-# base_url = 'https://ovenfresh.in/'
+# base_url = 'http://127.0.0.1:8000/'
+base_url = 'https://ovenfresh.in/'
 
 used_numbers = set()  # to keep unique numbers
 
@@ -38,11 +38,12 @@ if __name__ == '__main__':
     print("Creating Admin Users...")
 
     users_to_create = [
-        {"name": "Ronak Mehta", "email": "ronakmehta@ovenfresh.in", "password": "Ronak@123"},
-        {"name": "Manish Poojari", "email": "manishpoojari@ovenfresh.in", "password": "Manish@123"},
-        {"name": "Deepa Sugandh", "email": "deepasugandh@ovenfresh.in", "password": "Deepa@123"},
-        {"name": "Aditya Gawde", "email": "adityagawde@ovenfresh.in", "password": "Aditya@123"},
-        {"name": "Adhiraj", "email": "adhiraj@ovenfresh.in", "password": "Adhiraj@123"},
+        # {"name": "Ronak Mehta", "email": "ronakmehta@ovenfresh.in", "password": "Ronak@123"},
+        # {"name": "Manish Poojari", "email": "manishpoojari@ovenfresh.in", "password": "Manish@123"},
+        # {"name": "Deepa Sugandh", "email": "deepasugandh@ovenfresh.in", "password": "Deepa@123"},
+        # {"name": "Aditya Gawde", "email": "adityagawde@ovenfresh.in", "password": "Aditya@123"},
+        # {"name": "Adhiraj", "email": "adhiraj@ovenfresh.in", "password": "Adhiraj@123"},
+        {"name": "Prinyanka", "email": "chefpriyanka22@gmail.com", "password": "Priyanka@123"},
     ]
 
     for user in users_to_create:

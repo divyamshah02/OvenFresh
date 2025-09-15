@@ -118,6 +118,10 @@ class Order(models.Model):
 
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        OrderItem.objects.filter(order_id=self.order_id).delete()
+        super().delete(*args, **kwargs)
+
     def __str__(self):
         return self.order_id
 
