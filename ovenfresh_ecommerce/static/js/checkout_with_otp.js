@@ -1,0 +1,1765 @@
+let csrf_token = null
+let check_user_loggedin_url = null
+let check_pincode_url = null
+let send_otp_url = null
+let verify_otp_url = null
+let place_order_url = null
+let cart_list_url = null
+let add_user_data_url = null
+let add_address_url = null
+let transfer_cart_url = null
+let apply_coupon_url = null
+
+// User data - keeping for compatibility but not using authentication
+let userData = null
+let userAddresses = []
+let isLoggedIn = false
+let userDataAdded = false
+let currentPaymentData = null
+
+// Delivery data
+let pincodeTimeslots = []
+let todayPincodeTimeslots = []
+let selectedAddress = "new"
+let selectedTimeslot = null
+
+// OTP verification - commented out for guest checkout
+let mobileVerified = false
+let otpRequestId = null
+
+// Cart and coupon data
+let cartItems = []
+let currentOrderData = null
+let appliedCoupon = null
+let couponDiscount = 0
+let test_otp = "123456"
+
+async function InitializeCheckout(
+  csrfTokenParam,
+  cartListUrlParam,
+  transferCartUrlParam,
+  checkUserLoggedinUrlParam,
+  checkPincodeUrlParam,
+  sendOtpUrlParam,
+  verifyOtpUrlParam,
+  placeOrderUrlParam,
+  addUserUrlParam,
+  addAddressUrlParam,
+  applyCouponUrlParam,
+) {
+  csrf_token = csrfTokenParam
+  cart_list_url = cartListUrlParam
+  check_user_loggedin_url = checkUserLoggedinUrlParam
+  check_pincode_url = checkPincodeUrlParam
+  send_otp_url = sendOtpUrlParam
+  verify_otp_url = verifyOtpUrlParam
+  place_order_url = placeOrderUrlParam
+  add_user_data_url = addUserUrlParam
+  add_address_url = addAddressUrlParam
+  transfer_cart_url = transferCartUrlParam
+  apply_coupon_url = applyCouponUrlParam
+
+  try {
+    // REMOVED: Check if user is logged in - now working as guest checkout
+    // await checkUserLoggedIn()
+    await checkUserLoggedIn()
+    await loadCartItems()
+    setupEventListeners()
+    setupCouponHandlers()
+    setupPincodeValidation()
+    setupPhoneVerification()
+    setupBillingAddressToggle()
+    setupPaymentMethodHandlers()
+    setupDeliveryTimeSlots()
+  } catch (error) {
+    console.error("Error initializing checkout:", error)
+    showNotification("Error loading checkout. Please refresh the page.", "error")
+  }
+}
+
+// COMMENTED OUT: Authentication check function
+/*
+async function checkUserLoggedIn() {
+  try {
+    const [success, result] = await callApi("GET", check_user_loggedin_url)
+
+    if (success && result.success) {
+      isLoggedIn = !result.user_not_logged_in
+
+      if (isLoggedIn) {
+        // User is logged in, populate form with user data
+        userData = result.data.user || {}
+        if (userData.first_name || userData.last_name || userData.email || userData.phone) {
+          userDataAdded = true
+        }
+
+        userAddresses = result.data.addresses || []
+        if (userAddresses.length == 0) {
+          userDataAdded = false
+        }
+
+        populateUserData()
+        renderAddresses()
+      } else {
+        // User is not logged in, show regular form
+        showGuestCheckoutForm()
+      }
+    } else {
+      throw new Error(result.error || "Failed to check login status")
+    }
+  } catch (error) {
+    console.error("Error checking login status:", error)
+    showGuestCheckoutForm()
+  }
+}
+*/
+
+async function checkUserLoggedIn() {
+  try {
+    const [success, result] = await callApi("GET", check_user_loggedin_url)
+
+    if (success && result.success) {
+      isLoggedIn = !result.user_not_logged_in
+
+      if (isLoggedIn) {
+        // User is logged in, populate form with user data
+        userData = result.data.user || {}
+        if (userData.first_name || userData.last_name || userData.email || userData.phone) {
+          userDataAdded = true
+        }
+
+        userAddresses = result.data.addresses || []
+        if (userAddresses.length == 0) {
+          userDataAdded = false
+        }
+
+        populateUserData()
+        renderAddresses()
+      } else {
+        // User is not logged in, show regular form
+        showGuestCheckoutForm()
+      }
+    } else {
+      throw new Error(result.error || "Failed to check login status")
+    }
+  } catch (error) {
+    console.error("Error checking login status:", error)
+    showGuestCheckoutForm()
+  }
+}
+
+// COMMENTED OUT: Cart transfer function
+/*
+async function transferCart(old_session_id) {
+  showLoading()
+  try {
+    const [success, result] = await callApi("POST", transfer_cart_url, { session_id: old_session_id }, csrf_token)
+    console.log(result)
+    if (success && result.success) {
+      return true
+    } else {
+      throw new Error(result.error || "Failed to transfer cart")
+    }
+  } catch (error) {
+    console.error("Error transferring cart:", error)
+    showNotification("Error transferring cart. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+*/
+
+async function transferCart(old_session_id) {
+  showLoading()
+  try {
+    const [success, result] = await callApi("POST", transfer_cart_url, { session_id: old_session_id }, csrf_token)
+
+    if (success && result.success) {
+      console.log("Cart transferred successfully")
+      await loadCartItems() // Reload cart items after transfer
+    } else {
+      console.error("Failed to transfer cart:", result.error)
+    }
+  } catch (error) {
+    console.error("Error transferring cart:", error)
+  } finally {
+    hideLoading()
+  }
+}
+
+// COMMENTED OUT: User data population
+/*
+function populateUserData() {
+  if (!userData) return
+
+  // Populate user information fields
+  if (userData.first_name) document.getElementById("firstName").value = userData.first_name
+  if (userData.last_name) document.getElementById("lastName").value = userData.last_name
+  if (userData.email) document.getElementById("email").value = userData.email
+  if (userData.phone) {
+    const phoneInput = document.getElementById("phone")
+    phoneInput.value = userData.phone
+    phoneInput.disabled = true // Lock phone field for logged in users
+    mobileVerified = true // Phone is already verified for logged in users
+  }
+}
+*/
+
+function populateUserData() {
+  if (!userData) return
+
+  // Populate user information fields
+  if (userData.first_name) document.getElementById("firstName").value = userData.first_name
+  if (userData.last_name) document.getElementById("lastName").value = userData.last_name
+  if (userData.email) document.getElementById("email").value = userData.email
+  if (userData.phone) {
+    const phoneInput = document.getElementById("phone")
+    phoneInput.value = userData.phone
+    phoneInput.disabled = true // Lock phone field for logged in users
+    mobileVerified = true // Phone is already verified for logged in users
+  }
+}
+
+// COMMENTED OUT: Address rendering
+/*
+function renderAddresses() {
+  if (!userAddresses || userAddresses.length === 0) return
+
+  // Create address selection section
+  const shippingSection = document.getElementById("shipping-section")
+  const addressesContainer = document.createElement("div")
+  addressesContainer.className = "mb-4"
+  addressesContainer.innerHTML = `
+        <h6 class="mb-3">Select a saved address or enter a new one</h6>
+        <div class="row g-3" id="saved-addresses">
+            ${userAddresses
+              .map(
+                (address, index) => `
+                <div class="col-md-6">
+                    <div class="card h-100 ${index === 0 ? "border-primary" : ""}" data-address-id="${address.id}">
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="savedAddress"
+                                       id="address${address.id}" value="${address.id}" ${index === 0 ? "checked" : ""}>
+                                <label class="form-check-label" for="address${address.id}">
+                                    <strong>${address.address_name || "Address " + (index + 1)}</strong>
+                                </label>
+                            </div>
+                            <p class="mb-1 mt-2">${address.address_line}</p>
+                            ${address.address_line2 ? `<p class="mb-1">${address.address_line2}</p>` : ""}
+                            <p class="mb-1">${address.city}, ${address.pincode}</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+              )
+              .join("")}
+            <div class="col-md-6">
+                <div class="card h-100 border-dashed" id="new-address-card">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="savedAddress"
+                                   id="newAddress" value="new">
+                            <label class="form-check-label" for="newAddress">
+                                <i class="fas fa-plus-circle me-2"></i>Add New Address
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Insert before the form fields
+  const formFields = shippingSection.querySelector(".row.g-3")
+  shippingSection.querySelector(".card-body").insertBefore(addressesContainer, formFields)
+
+  // Add event listeners for address selection
+  document.querySelectorAll('input[name="savedAddress"]').forEach((radio) => {
+    radio.addEventListener("change", handleAddressSelection)
+  })
+
+  // Select first address by default
+  if (userAddresses.length > 0) {
+    selectedAddress = userAddresses[0]
+    populateAddressFields(selectedAddress)
+  }
+}
+*/
+
+function renderAddresses() {
+  if (!userAddresses || userAddresses.length === 0) return
+
+  // Create address selection section
+  const shippingSection = document.getElementById("shipping-section")
+  const addressesContainer = document.createElement("div")
+  addressesContainer.className = "mb-4"
+  addressesContainer.innerHTML = `
+        <h6 class="mb-3">Select a saved address or enter a new one</h6>
+        <div class="row g-3" id="saved-addresses">
+            ${userAddresses
+              .map(
+                (address, index) => `
+                <div class="col-md-6">
+                    <div class="card h-100 ${index === 0 ? "border-primary" : ""}" data-address-id="${address.id}">
+                        <div class="card-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="savedAddress"
+                                       id="address${address.id}" value="${address.id}" ${index === 0 ? "checked" : ""}>
+                                <label class="form-check-label" for="address${address.id}">
+                                    <strong>${address.address_name || "Address " + (index + 1)}</strong>
+                                </label>
+                            </div>
+                            <p class="mb-1 mt-2">${address.address_line}</p>
+                            ${address.address_line2 ? `<p class="mb-1">${address.address_line2}</p>` : ""}
+                            <p class="mb-1">${address.city}, ${address.pincode}</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+              )
+              .join("")}
+            <div class="col-md-6">
+                <div class="card h-100 border-dashed" id="new-address-card">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="savedAddress"
+                                   id="newAddress" value="new">
+                            <label class="form-check-label" for="newAddress">
+                                <i class="fas fa-plus-circle me-2"></i>Add New Address
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Insert before the form fields
+  const formFields = shippingSection.querySelector(".row.g-3")
+  shippingSection.querySelector(".card-body").insertBefore(addressesContainer, formFields)
+
+  // Add event listeners for address selection
+  document.querySelectorAll('input[name="savedAddress"]').forEach((radio) => {
+    radio.addEventListener("change", handleAddressSelection)
+  })
+
+  // Select first address by default
+  if (userAddresses.length > 0) {
+    selectedAddress = userAddresses[0]
+    populateAddressFields(selectedAddress)
+  }
+}
+
+// COMMENTED OUT: Address selection handling
+/*
+function handleAddressSelection(event) {
+  const addressId = event.target.value
+
+  // Update card borders
+  document.querySelectorAll("#saved-addresses .card").forEach((card) => {
+    card.classList.remove("border-primary")
+  })
+
+  if (addressId === "new") {
+    // Clear form fields for new address
+    document.getElementById("new-address-card").classList.add("border-primary")
+    clearAddressFields()
+    enableAddressFields()
+    selectedAddress = "new"
+  } else {
+    // Find the selected address and populate form
+    event.target.closest(".card").classList.add("border-primary")
+    const address = userAddresses.find((addr) => addr.id == addressId)
+    if (address) {
+      selectedAddress = address
+      populateAddressFields(address)
+      disableAddressFields()
+
+      // Check pincode availability
+      if (address.pincode) {
+        document.getElementById("pincode").value = address.pincode
+        checkPincode(address.pincode)
+      }
+    }
+  }
+}
+*/
+
+function handleAddressSelection(event) {
+  const addressId = event.target.value
+
+  // Update card borders
+  document.querySelectorAll("#saved-addresses .card").forEach((card) => {
+    card.classList.remove("border-primary")
+  })
+
+  if (addressId === "new") {
+    // Clear form fields for new address
+    document.getElementById("new-address-card").classList.add("border-primary")
+    clearAddressFields()
+    enableAddressFields()
+    selectedAddress = "new"
+  } else {
+    // Find the selected address and populate form
+    event.target.closest(".card").classList.add("border-primary")
+    const address = userAddresses.find((addr) => addr.id == addressId)
+    if (address) {
+      selectedAddress = address
+      populateAddressFields(address)
+      disableAddressFields()
+
+      // Check pincode availability
+      if (address.pincode) {
+        document.getElementById("pincode").value = address.pincode
+        checkPincode(address.pincode)
+      }
+    }
+  }
+}
+
+// COMMENTED OUT: Address field functions
+/*
+function populateAddressFields(address) {
+  if (!address) return
+
+  document.getElementById("address").value = address.address_line || ""
+  document.getElementById("addressName").value = address.address_name || ""
+  document.getElementById("city").value = address.city || ""
+  document.getElementById("pincode").value = address.pincode || ""
+  checkPincode()
+}
+
+function clearAddressFields() {
+  document.getElementById("address").value = ""
+  document.getElementById("city").value = ""
+  document.getElementById("pincode").value = ""
+  selectedAddress = null
+}
+
+function disableAddressFields() {
+  document.getElementById("address").disabled = true
+  document.getElementById("city").disabled = true
+  document.getElementById("pincode").disabled = true
+}
+
+function enableAddressFields() {
+  document.getElementById("address").disabled = false
+  document.getElementById("city").disabled = false
+  document.getElementById("pincode").disabled = false
+}
+*/
+
+function populateAddressFields(address) {
+  if (!address) return
+
+  document.getElementById("address").value = address.address_line || ""
+  document.getElementById("addressName").value = address.address_name || ""
+  document.getElementById("city").value = address.city || ""
+  document.getElementById("pincode").value = address.pincode || ""
+  checkPincode()
+}
+
+function clearAddressFields() {
+  document.getElementById("address").value = ""
+  document.getElementById("city").value = ""
+  document.getElementById("pincode").value = ""
+  selectedAddress = null
+}
+
+function disableAddressFields() {
+  document.getElementById("address").disabled = true
+  document.getElementById("city").disabled = true
+  document.getElementById("pincode").disabled = true
+}
+
+function enableAddressFields() {
+  document.getElementById("address").disabled = false
+  document.getElementById("city").disabled = false
+  document.getElementById("pincode").disabled = false
+}
+
+function showGuestCheckoutForm() {
+  // Show regular checkout form for guest users - no verification needed
+  const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
+
+  // REMOVED: Add verify button - no longer needed for guest checkout
+  /*
+  const verifyButton = document.createElement("button")
+  verifyButton.type = "button"
+  verifyButton.className = "btn btn-sm of-btn-outline-primary mt-4 w-100"
+  verifyButton.textContent = "Verify"
+  verifyButton.onclick = showSendOtpModal
+  verifyContainer.appendChild(verifyButton)
+  */
+}
+
+// COMMENTED OUT: All OTP-related functions
+/*
+function showSendOtpModal() {
+  const phone = document.getElementById("phone").value.trim()
+
+  if (!phone || !/^\d{10}$/.test(phone)) {
+    showNotification("Please enter a valid 10-digit phone number.", "error")
+    return
+  }
+
+  // Create modal for confirming OTP send
+  const modalHtml = `
+        <div class="modal fade" id="sendOtpModal" tabindex="-1" aria-labelledby="sendOtpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sendOtpModalLabel">Verify Phone Number</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>We will send a verification code to <strong>${phone}</strong>. Do you want to proceed?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn of-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn of-btn-primary" onclick="sendOtp()">Send OTP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Append modal to body
+  document.body.insertAdjacentHTML("beforeend", modalHtml)
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById("sendOtpModal"))
+  modal.show()
+
+  // Remove modal from DOM when hidden
+  document.getElementById("sendOtpModal").addEventListener("hidden.bs.modal", function () {
+    this.remove()
+  })
+}
+
+async function sendOtp() {
+  const phone = document.getElementById("phone").value.trim()
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      send_otp_url,
+      {
+        mobile: phone,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      otpRequestId = result.data.otp_id
+      test_otp = result.data.otp
+      showNotification("OTP sent successfully!", "success")
+
+      // Close send OTP modal
+      const sendOtpModal = document.getElementById("sendOtpModal")
+      if (sendOtpModal) {
+        const modalInstance = bootstrap.Modal.getInstance(sendOtpModal)
+        if (modalInstance) {
+          modalInstance.hide()
+        }
+      }
+
+      // Show verify OTP modal
+      showVerifyOtpModal(phone)
+    } else {
+      throw new Error(result.error || "Failed to send OTP")
+    }
+  } catch (error) {
+    console.error("Error sending OTP:", error)
+    showNotification("Error sending OTP. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showVerifyOtpModal(phone) {
+  // Create modal for verifying OTP
+  const modalHtml = `
+        <div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-labelledby="verifyOtpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="verifyOtpModalLabel">Enter Verification Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter the verification code sent to <strong>${phone}</strong></p>
+                        <div class="mb-3">
+                            <label for="otpCode" class="form-label">OTP Code</label>
+                            <input type="text" class="form-control" id="otpCode" placeholder="Enter 6-digit code">
+                            <div id="otpError" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn of-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn of-btn-primary" onclick="verifyOtp()">Verify</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Append modal to body
+  document.body.insertAdjacentHTML("beforeend", modalHtml)
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById("verifyOtpModal"))
+  modal.show()
+
+  // Auto-fill OTP for testing (remove in production)
+  setTimeout(() => {
+    const otpInput = document.getElementById("otpCode")
+    if (otpInput) {
+      otpInput.value = test_otp
+    }
+  }, 500)
+
+  // Remove modal from DOM when hidden
+  document.getElementById("verifyOtpModal").addEventListener("hidden.bs.modal", function () {
+    this.remove()
+  })
+}
+
+async function verifyOtp() {
+  const otp = document.getElementById("otpCode").value.trim()
+  const phone = document.getElementById("phone").value.trim()
+
+  if (!otp || !/^\d{6}$/.test(otp)) {
+    document.getElementById("otpError").textContent = "Please enter a valid 6-digit OTP code."
+    document.getElementById("otpError").style.display = "block"
+    return
+  }
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "PUT",
+      `${verify_otp_url}${otpRequestId}/`,
+      {
+        phone: phone,
+        otp: otp,
+        otp_id: otpRequestId,
+      },
+      csrf_token,
+    )
+    console.log(result)
+    if (success && result.success) {
+      if (result.data.otp_verified) {
+        mobileVerified = true
+        showNotification("Phone number verified successfully!", "success")
+
+        // Close verify OTP modal
+        const verifyOtpModal = document.getElementById("verifyOtpModal")
+        if (verifyOtpModal) {
+          const modalInstance = bootstrap.Modal.getInstance(verifyOtpModal)
+          if (modalInstance) {
+            modalInstance.hide()
+          }
+        }
+
+        // Update UI to show verified status
+        updatePhoneVerifiedUI()
+
+        userDataAdded = result.data.user_details
+        csrf_token = getCSRFToken()
+        await transferCart(result.data.old_session_id)
+
+        window.location.reload()
+      } else {
+        document.getElementById("otpError").textContent = result.data.message || "Invalid OTP. Please try again."
+        document.getElementById("otpError").style.display = "block"
+      }
+    } else {
+      throw new Error(result.error || "Failed to verify OTP")
+    }
+  } catch (error) {
+    console.error("Error verifying OTP:", error)
+    document.getElementById("otpError").textContent = "Error verifying OTP. Please try again."
+    document.getElementById("otpError").style.display = "block"
+  } finally {
+    hideLoading()
+  }
+}
+
+function updatePhoneVerifiedUI() {
+  const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
+
+  phoneInput.disabled = true // Lock phone field after verification
+
+  // Clear verify container and add verified badge
+  verifyContainer.innerHTML = `
+    <span class="badge bg-success mt-4 w-100 py-2">
+      <i class="fas fa-check me-1"></i> Verified
+    </span>
+  `
+}
+*/
+
+function showSendOtpModal() {
+  const phone = document.getElementById("phone").value.trim()
+
+  if (!phone || !/^\d{10}$/.test(phone)) {
+    showNotification("Please enter a valid 10-digit phone number.", "error")
+    return
+  }
+
+  // Create modal for confirming OTP send
+  const modalHtml = `
+        <div class="modal fade" id="sendOtpModal" tabindex="-1" aria-labelledby="sendOtpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sendOtpModalLabel">Verify Phone Number</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>We will send a verification code to <strong>${phone}</strong>. Do you want to proceed?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn of-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn of-btn-primary" onclick="sendOtp()">Send OTP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Append modal to body
+  document.body.insertAdjacentHTML("beforeend", modalHtml)
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById("sendOtpModal"))
+  modal.show()
+
+  // Remove modal from DOM when hidden
+  document.getElementById("sendOtpModal").addEventListener("hidden.bs.modal", function () {
+    this.remove()
+  })
+}
+
+async function sendOtp() {
+  const phone = document.getElementById("phone").value.trim()
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "POST",
+      send_otp_url,
+      {
+        mobile: phone,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      otpRequestId = result.data.otp_id
+      test_otp = result.data.otp
+      showNotification("OTP sent successfully!", "success")
+
+      // Close send OTP modal
+      const sendOtpModal = document.getElementById("sendOtpModal")
+      if (sendOtpModal) {
+        const modalInstance = bootstrap.Modal.getInstance(sendOtpModal)
+        if (modalInstance) {
+          modalInstance.hide()
+        }
+      }
+
+      // Show verify OTP modal
+      showVerifyOtpModal(phone)
+    } else {
+      throw new Error(result.error || "Failed to send OTP")
+    }
+  } catch (error) {
+    console.error("Error sending OTP:", error)
+    showNotification("Error sending OTP. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showVerifyOtpModal(phone) {
+  // Create modal for verifying OTP
+  const modalHtml = `
+        <div class="modal fade" id="verifyOtpModal" tabindex="-1" aria-labelledby="verifyOtpModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="verifyOtpModalLabel">Enter Verification Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Enter the verification code sent to <strong>${phone}</strong></p>
+                        <div class="mb-3">
+                            <label for="otpCode" class="form-label">OTP Code</label>
+                            <input type="text" class="form-control" id="otpCode" placeholder="Enter 6-digit code">
+                            <div id="otpError" class="text-danger mt-2" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn of-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn of-btn-primary" onclick="verifyOtp()">Verify</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+  // Append modal to body
+  document.body.insertAdjacentHTML("beforeend", modalHtml)
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById("verifyOtpModal"))
+  modal.show()
+
+  // Auto-fill OTP for testing (remove in production)
+  setTimeout(() => {
+    const otpInput = document.getElementById("otpCode")
+    if (otpInput) {
+      otpInput.value = test_otp
+    }
+  }, 500)
+
+  // Remove modal from DOM when hidden
+  document.getElementById("verifyOtpModal").addEventListener("hidden.bs.modal", function () {
+    this.remove()
+  })
+}
+
+async function verifyOtp() {
+  const otp = document.getElementById("otpCode").value.trim()
+  const phone = document.getElementById("phone").value.trim()
+
+  if (!otp || !/^\d{6}$/.test(otp)) {
+    document.getElementById("otpError").textContent = "Please enter a valid 6-digit OTP code."
+    document.getElementById("otpError").style.display = "block"
+    return
+  }
+
+  try {
+    showLoading()
+
+    const [success, result] = await callApi(
+      "PUT",
+      `${verify_otp_url}${otpRequestId}/`,
+      {
+        phone: phone,
+        otp: otp,
+        otp_id: otpRequestId,
+      },
+      csrf_token,
+    )
+    console.log(result)
+    if (success && result.success) {
+      if (result.data.otp_verified) {
+        mobileVerified = true
+        showNotification("Phone number verified successfully!", "success")
+
+        // Close verify OTP modal
+        const verifyOtpModal = document.getElementById("verifyOtpModal")
+        if (verifyOtpModal) {
+          const modalInstance = bootstrap.Modal.getInstance(verifyOtpModal)
+          if (modalInstance) {
+            modalInstance.hide()
+          }
+        }
+
+        // Update UI to show verified status
+        updatePhoneVerifiedUI()
+
+        userDataAdded = result.data.user_details
+        csrf_token = getCSRFToken()
+        await transferCart(result.data.old_session_id)
+
+        window.location.reload()
+      } else {
+        document.getElementById("otpError").textContent = result.data.message || "Invalid OTP. Please try again."
+        document.getElementById("otpError").style.display = "block"
+      }
+    } else {
+      throw new Error(result.error || "Failed to verify OTP")
+    }
+  } catch (error) {
+    console.error("Error verifying OTP:", error)
+    document.getElementById("otpError").textContent = "Error verifying OTP. Please try again."
+    document.getElementById("otpError").style.display = "block"
+  } finally {
+    hideLoading()
+  }
+}
+
+function updatePhoneVerifiedUI() {
+  const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
+
+  phoneInput.disabled = true // Lock phone field after verification
+
+  // Clear verify container and add verified badge
+  verifyContainer.innerHTML = `
+    <span class="badge bg-success mt-4 w-100 py-2">
+      <i class="fas fa-check me-1"></i> Verified
+    </span>
+  `
+}
+
+function checkUrlParameters() {
+  const urlParams = new URLSearchParams(window.location.search)
+  const pincode = urlParams.get("pincode")
+  const deliveryDate = urlParams.get("delivery_date")
+  const timeslotId = urlParams.get("timeslot_id")
+
+  // Set pincode and check availability
+  if (pincode) {
+    document.getElementById("pincode").value = pincode
+    checkPincode(pincode)
+  }
+
+  // Set delivery date
+  if (deliveryDate) {
+    document.getElementById("deliveryDate").value = deliveryDate
+  }
+
+  // Store timeslot ID to select after loading timeslots
+  if (timeslotId) {
+    selectedTimeslot = timeslotId
+  }
+}
+
+async function checkPincode(pincodeValue = null) {
+  const pincode = pincodeValue || document.getElementById("pincode").value.trim()
+
+  if (!pincode) {
+    showNotification("Please enter a pincode.", "warning")
+    return
+  }
+
+  if (!/^\d{6}$/.test(pincode)) {
+    showNotification("Please enter a valid 6-digit pincode.", "error")
+    return
+  }
+
+  try {
+    showLoading() // Add loader
+
+    const pincode_params = {
+      pincode: pincode,
+    }
+    const url = `${check_pincode_url}?` + toQueryString(pincode_params)
+    const [success, result] = await callApi("GET", url)
+
+    if (success && result.success) {
+      if (result.data.is_deliverable) {
+        showNotification("Delivery available in your area!", "success")
+        pincodeTimeslots = result.data.availability_data || []
+        todayPincodeTimeslots = result.data.today_availability_data || []
+        document.getElementById("deliver-not-available").style.display = "none"
+        updateTimeslots()
+      } else {
+        showNotification("Sorry, delivery not available in your area.", "error")
+        document.getElementById("deliver-not-available").style.display = ""
+        clearTimeslots()
+      }
+    } else {
+      throw new Error(result.error || "Error checking pincode.")
+    }
+  } catch (error) {
+    console.error("Error checking pincode:", error)
+    showNotification("Error checking pincode availability.", "error")
+  } finally {
+    hideLoading() // Hide loader
+  }
+}
+
+function updateTimeslots() {
+  const deliveryDateInput = document.getElementById("deliveryDate")
+  const timeslotSelect = document.getElementById("deliveryTime")
+
+  if (!timeslotSelect) return
+
+  // Check if selected date is today
+  const isToday = isSelectedDateToday()
+  const timeslots = isToday ? todayPincodeTimeslots : pincodeTimeslots
+
+  if (timeslots.length === 0) {
+    timeslotSelect.innerHTML = '<option value="">No delivery slots available</option>'
+    return
+  }
+
+  timeslotSelect.innerHTML =
+    `<option value="">Select Time Slot</option>` +
+    timeslots
+      .map((slot) => {
+        const title = `${slot.timeslot_name} (${slot.start_time} - ${slot.end_time})`
+        const charge = Number.parseFloat(slot.delivery_charge || 0)
+
+        return `
+                <option value="${slot.timeslot_id}" data-charge="${charge}" ${selectedTimeslot == slot.timeslot_id ? "selected" : ""}>
+                    ${title} ${charge > 0 ? `(₹${charge} delivery charge)` : "(Free delivery)"}
+                </option>
+            `
+      })
+      .join("")
+}
+
+function updateShippingCharge() {
+  const selectElement = document.getElementById("deliveryTime")
+  if (!selectElement || selectElement.selectedIndex === 0) return 0
+
+  const selectedOption = selectElement.options[selectElement.selectedIndex]
+  const charge = selectedOption.getAttribute("data-charge")
+  return charge ? Number.parseFloat(charge) : 0
+}
+
+function clearTimeslots() {
+  const timeslotSelect = document.getElementById("deliveryTime")
+  if (timeslotSelect) {
+    timeslotSelect.innerHTML = '<option value="">Select Time Slot</option>'
+  }
+}
+
+function isSelectedDateToday() {
+  const deliveryDateInput = document.getElementById("deliveryDate")
+  if (!deliveryDateInput || !deliveryDateInput.value) return false
+
+  // Fix timezone issue by using local date
+  const selectedDate = new Date(deliveryDateInput.value + "T00:00:00")
+  const today = new Date()
+
+  // Get local date without time
+  const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const localSelected = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
+
+  return localSelected.getTime() === localToday.getTime()
+}
+
+async function loadCartItems() {
+  try {
+    const [success, result] = await callApi("GET", cart_list_url)
+    if (success && result.success) {
+      cartItems = result.data.cart_items || []
+      if (cartItems.length === 0) {
+        showEmptyCart()
+        return
+      }
+      renderCheckoutItems()
+      updateCartCount()
+      calculateTotals()
+    } else {
+      console.error("Failed to fetch cart items:", result)
+      showEmptyCart()
+    }
+  } catch (error) {
+    console.error("Error loading cart summary:", error)
+    showNotification("Error loading cart summary.", "error")
+  }
+}
+
+function showEmptyCart() {
+  showNotification("Your cart is empty. Redirecting to shop...", "warning")
+  setTimeout(() => {
+    window.location.href = "/cart/"
+  }, 2000)
+}
+
+function renderCheckoutItems() {
+  const checkoutItemsContainer = document.getElementById("checkout-items")
+
+  if (!checkoutItemsContainer || !cartItems || cartItems.length === 0) return
+
+  checkoutItemsContainer.innerHTML = cartItems
+    .map(
+      (item) => `
+        <div class="d-flex align-items-center mb-3">
+            <img src="${item.product_image}" alt="${item.product_name}" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+            <div class="flex-grow-1">
+                <h6 class="mb-1">${item.product_name}</h6>
+                <small class="text-muted">Qty: ${item.quantity}</small>
+            </div>
+            <div class="text-end">
+                <strong>₹${(item.price * item.quantity).toFixed(2)}</strong>
+            </div>
+        </div>
+    `,
+    )
+    .join("")
+}
+
+function calculateTotals() {
+  showOrderSummaryLoader()
+
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
+  const discount = couponDiscount || 0
+  const tax = (subtotal - discount) * 0.18 // 18% tax
+  const total = subtotal + shipping + tax - discount
+
+  updateOrderSummary(subtotal, shipping, tax, total, discount)
+
+  setTimeout(() => {
+    hideOrderSummaryLoader()
+  }, 500) // Small delay to show loading effect
+}
+
+function showOrderSummaryLoader() {
+  const summaryCard = document.getElementById("order-summary-card")
+  if (summaryCard) {
+    summaryCard.classList.add("order-summary-loading")
+  }
+}
+
+function hideOrderSummaryLoader() {
+  const summaryCard = document.getElementById("order-summary-card")
+  if (summaryCard) {
+    summaryCard.classList.remove("order-summary-loading")
+  }
+}
+
+function updateOrderSummary(subtotal, shipping = null, tax, total, discount = 0) {
+  const subtotalElement = document.getElementById("checkout-subtotal")
+  const shippingElement = document.getElementById("checkout-shipping")
+  const taxElement = document.getElementById("checkout-tax")
+  const discountElement = document.getElementById("checkout-discount")
+  const discountRow = document.getElementById("discount-row")
+  const totalElement = document.getElementById("checkout-total")
+
+  if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`
+
+  if (shipping === null) {
+    if (shippingElement) shippingElement.textContent = "To be calculated"
+  } else if (shipping === 0) {
+    if (shippingElement) shippingElement.textContent = "Free"
+  } else {
+    if (shippingElement) shippingElement.textContent = `₹${shipping.toFixed(2)}`
+  }
+
+  if (taxElement) taxElement.textContent = `₹${tax.toFixed(2)}`
+
+  if (discountElement && discountRow) {
+    if (discount > 0) {
+      discountRow.style.display = "flex"
+      discountElement.textContent = `-₹${discount.toFixed(2)}`
+    } else {
+      discountRow.style.display = "none"
+    }
+  }
+
+  if (totalElement) totalElement.textContent = `₹${total.toFixed(2)}`
+}
+
+function setupEventListeners() {
+  // Set minimum delivery date to today with proper timezone handling
+  const deliveryDateInput = document.getElementById("deliveryDate")
+  if (deliveryDateInput) {
+    // Fix timezone issue by using local date
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, "0")
+    const day = String(now.getDate()).padStart(2, "0")
+    const today = `${year}-${month}-${day}`
+
+    deliveryDateInput.min = today
+    deliveryDateInput.value = today
+
+    // Add event listener for date change
+    deliveryDateInput.addEventListener("change", () => {
+      updateTimeslots()
+    })
+  }
+
+  // Add event listener for pincode check
+  const pincodeInput = document.getElementById("pincode")
+  if (pincodeInput) {
+    pincodeInput.addEventListener("blur", () => {
+      checkPincode()
+    })
+  }
+
+  // Add event listener for different billing address checkbox
+  const differentBillingCheckbox = document.getElementById("differentBillingAddress")
+  if (differentBillingCheckbox) {
+    differentBillingCheckbox.addEventListener("change", function () {
+      const billingSection = document.getElementById("billing-address-section")
+      if (this.checked) {
+        billingSection.style.display = "block"
+      } else {
+        billingSection.style.display = "none"
+      }
+    })
+  }
+
+  // Add event listener for delivery time change
+  const deliveryTimeSelect = document.getElementById("deliveryTime")
+  if (deliveryTimeSelect) {
+    deliveryTimeSelect.addEventListener("change", calculateTotals)
+  }
+
+  // Add event listener for Razorpay payment button
+  const razorpayBtn = document.getElementById("razorpay-payment-btn")
+  if (razorpayBtn) {
+    razorpayBtn.addEventListener("click", processRazorpayPayment)
+  }
+}
+
+function setupCouponHandlers() {
+  // Add event listeners for coupon functionality
+  const applyCouponBtn = document.getElementById("apply-coupon-btn")
+  if (applyCouponBtn) {
+    applyCouponBtn.addEventListener("click", applyCoupon)
+  }
+
+  const removeCouponBtn = document.getElementById("remove-coupon-btn")
+  if (removeCouponBtn) {
+    removeCouponBtn.addEventListener("click", removeCoupon)
+  }
+
+  // Add enter key listener for coupon input
+  const couponInput = document.getElementById("couponCode")
+  if (couponInput) {
+    couponInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        applyCoupon()
+      }
+    })
+  }
+}
+
+function setupPincodeValidation() {
+  const pincodeInput = document.getElementById("pincode")
+  if (pincodeInput) {
+    pincodeInput.addEventListener("input", function () {
+      const value = this.value.replace(/\D/g, "") // Allow only digits
+      this.value = value.substring(0, 6) // Limit to 6 digits
+    })
+  }
+}
+
+function setupPhoneVerification() {
+  const phoneInput = document.getElementById("phone")
+  const verifyContainer = document.getElementById("phone-verify-container")
+
+  if (!isLoggedIn || !mobileVerified) {
+    const verifyButton = document.createElement("button")
+    verifyButton.type = "button"
+    verifyButton.className = "btn btn-sm of-btn-outline-primary mt-4 w-100"
+    verifyButton.textContent = "Verify"
+    verifyButton.onclick = showSendOtpModal
+    verifyContainer.appendChild(verifyButton)
+  }
+}
+
+function setupBillingAddressToggle() {
+  const differentBillingCheckbox = document.getElementById("differentBillingAddress")
+  if (differentBillingCheckbox) {
+    const billingSection = document.getElementById("billing-address-section")
+    if (billingSection) {
+      billingSection.style.display = differentBillingCheckbox.checked ? "block" : "none"
+    }
+  }
+}
+
+function setupPaymentMethodHandlers() {
+  const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]')
+  paymentMethodRadios.forEach((radio) => {
+    radio.addEventListener("change", function () {
+      const razorpayBtn = document.getElementById("razorpay-payment-btn")
+      if (razorpayBtn) {
+        razorpayBtn.style.display = this.value === "razorpay" ? "block" : "none"
+      }
+    })
+  })
+}
+
+function setupDeliveryTimeSlots() {
+  const deliveryTimeSelect = document.getElementById("deliveryTime")
+  if (deliveryTimeSelect) {
+    deliveryTimeSelect.addEventListener("change", calculateTotals)
+  }
+}
+
+// Coupon functionality
+async function applyCoupon() {
+  const couponCode = document.getElementById("couponCode").value.trim()
+  const couponSpinner = document.getElementById("coupon-spinner")
+  const applyCouponBtn = document.getElementById("apply-coupon-btn")
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponError = document.getElementById("coupon-error")
+
+  if (!couponCode) {
+    showCouponError("Please enter a coupon code.")
+    return
+  }
+
+  try {
+    // Show loading
+    couponSpinner.style.display = "inline-block"
+    applyCouponBtn.disabled = true
+    hideCouponMessages()
+
+    const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+
+    const [success, result] = await callApi(
+      "POST",
+      apply_coupon_url,
+      {
+        coupon_code: couponCode,
+        order_amount: subtotal,
+      },
+      csrf_token,
+    )
+
+    if (success && result.success) {
+      appliedCoupon = result.data.coupon
+      couponDiscount = result.data.discount_amount
+
+      showCouponSuccess(`Coupon applied! You saved ₹${couponDiscount.toFixed(2)}`)
+      document.getElementById("couponCode").disabled = true
+      applyCouponBtn.style.display = "none"
+
+      calculateTotals()
+    } else {
+      throw new Error(result.error || "Invalid coupon code")
+    }
+  } catch (error) {
+    console.error("Error applying coupon:", error)
+    showCouponError(error.message || "Error applying coupon. Please try again.")
+  } finally {
+    couponSpinner.style.display = "none"
+    applyCouponBtn.disabled = false
+  }
+}
+
+function removeCoupon() {
+  try {
+    showLoading()
+
+    appliedCoupon = null
+    couponDiscount = 0
+
+    document.getElementById("couponCode").value = ""
+    document.getElementById("couponCode").disabled = false
+    document.getElementById("apply-coupon-btn").style.display = "inline-block"
+    document.getElementById("discount-row").style.display = "none"
+    document.getElementById("checkout-discount").textContent = `-₹0.00`
+
+    hideCouponMessages()
+    calculateTotals()
+
+    showNotification("Coupon removed successfully.", "success")
+  } catch (error) {
+    console.error("Error removing coupon:", error)
+    showNotification("Error removing coupon. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showCouponSuccess(message) {
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponSuccessText = document.getElementById("coupon-success-text")
+
+  if (couponSuccessText) couponSuccessText.textContent = message
+  if (couponSuccess) couponSuccess.style.display = "block"
+}
+
+function showCouponError(message) {
+  const couponError = document.getElementById("coupon-error")
+  const couponErrorText = document.getElementById("coupon-error-text")
+
+  if (couponErrorText) couponErrorText.textContent = message
+  if (couponError) couponError.style.display = "block"
+}
+
+function hideCouponMessages() {
+  const couponSuccess = document.getElementById("coupon-success")
+  const couponError = document.getElementById("coupon-error")
+
+  if (couponSuccess) couponSuccess.style.display = "none"
+  if (couponError) couponError.style.display = "none"
+}
+
+async function updateUserData() {
+  const requiredFields = ["firstName", "lastName", "email", "phone", "alternate_phone", "address", "city", "pincode"]
+
+  const bodyData = {}
+  requiredFields.forEach((fieldId) => {
+    const field = document.getElementById(fieldId)
+    if (field) {
+      bodyData[fieldId] = field.value.trim()
+    }
+  })
+
+  try {
+    const [success, result] = await callApi("POST", add_user_data_url, bodyData, csrf_token)
+    console.log(result)
+    if (success && result.success) {
+      showNotification("User data updated.", "success")
+    } else {
+      throw new Error(result.error || "Failed to add data")
+    }
+  } catch (error) {
+    console.error("Error updating user data:", error)
+    showNotification("Error updating user data. Please try again.", "error")
+  }
+}
+
+async function addNewAddress() {
+  const address = document.getElementById("address").value.trim()
+  const city = document.getElementById("city").value.trim()
+  const pincode = document.getElementById("pincode").value.trim()
+  const addressName = "New Address" // Default address name
+
+  const bodyData = {
+    address: address,
+    city: city,
+    pincode: pincode,
+    addressName: addressName,
+  }
+
+  try {
+    const [success, result] = await callApi("POST", add_address_url, bodyData, csrf_token)
+    console.log(result)
+    if (success && result.success) {
+      showNotification("Address added.", "success")
+      userAddresses = result.data.addresses || userAddresses
+      renderAddresses()
+    } else {
+      throw new Error(result.error || "Failed to add address")
+    }
+  } catch (error) {
+    console.error("Error adding address:", error)
+    showNotification("Error adding address. Please try again.", "error")
+  }
+}
+
+function getCSRFToken() {
+  const name = "csrftoken"
+  const cookies = document.cookie.split(";")
+
+  for (let cookie of cookies) {
+    cookie = cookie.trim()
+    if (cookie.startsWith(name + "=")) {
+      return decodeURIComponent(cookie.substring(name.length + 1))
+    }
+  }
+  return null
+}
+
+async function continueToPayment() {
+  // Validate shipping form
+  if (!validateShippingForm()) {
+    return
+  }
+
+  const continueBtn = document.querySelector('button[onclick="continueToPayment()"]')
+  const spinner = document.getElementById("continue-payment-spinner")
+
+  try {
+    // Show loading
+    if (spinner) spinner.style.display = "inline-block"
+    if (continueBtn) continueBtn.disabled = true
+
+    if (!userDataAdded && isLoggedIn) {
+      await updateUserData()
+      await checkUserLoggedIn()
+    }
+
+    if (selectedAddress === "new" && isLoggedIn) {
+      await addNewAddress()
+    }
+
+    // Get payment method
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value
+
+    // Prepare order data with coupon information
+    currentOrderData = {
+      shipping_address_id: selectedAddress !== "new" && isLoggedIn ? selectedAddress.id : null,
+      different_billing_address: document.getElementById("differentBillingAddress").checked,
+      billing_address: getBillingAddressData(),
+      payment_method: paymentMethod,
+      first_name: document.getElementById("firstName").value,
+      last_name: document.getElementById("lastName").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      pincode: document.getElementById("pincode").value,
+      delivery_date: document.getElementById("deliveryDate").value,
+      timeslot_id: document.getElementById("deliveryTime").value,
+      special_instructions: document.getElementById("specialInstructions").value,
+      // Add coupon data
+      coupon_code: appliedCoupon ? appliedCoupon.coupon_code : null,
+      coupon_discount: couponDiscount || 0,
+    }
+
+    // Call place order API
+    await placeOrder()
+  } catch (error) {
+    console.error("Error in continue to payment:", error)
+    showNotification("Error processing order. Please try again.", "error")
+  } finally {
+    // Hide loading
+    if (spinner) spinner.style.display = "none"
+    if (continueBtn) continueBtn.disabled = false
+  }
+}
+
+function getBillingAddressData() {
+  const isDifferentBilling = document.getElementById("differentBillingAddress").checked
+
+  if (!isDifferentBilling) {
+    return null
+  }
+
+  return {
+    first_name: document.getElementById("billingFirstName").value,
+    last_name: document.getElementById("billingLastName").value,
+    address: document.getElementById("billingAddress").value,
+    city: document.getElementById("billingCity").value,
+    pincode: document.getElementById("billingPincode").value,
+    phone: document.getElementById("billingPhone").value,
+    alternate_phone: document.getElementById("billingAlternatePhone").value,
+  }
+}
+
+function validateShippingForm() {
+  const requiredFields = [
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "address",
+    "city",
+    "pincode",
+    "deliveryDate",
+    "deliveryTime",
+  ]
+
+  let isValid = true
+
+  // Check required fields
+  requiredFields.forEach((fieldId) => {
+    const field = document.getElementById(fieldId)
+    if (!field || !field.value.trim()) {
+      if (field) field.classList.add("is-invalid")
+      isValid = false
+    } else {
+      if (field) field.classList.remove("is-invalid")
+    }
+  })
+
+  // Check if phone is verified for guest users
+  if (!isLoggedIn && !mobileVerified) {
+    const phoneField = document.getElementById("phone")
+    if (phoneField) phoneField.classList.add("is-invalid")
+    showNotification("Please verify your phone number.", "error")
+    isValid = false
+    return;
+  }
+
+  // Validate billing address if different billing is checked
+  const isDifferentBilling = document.getElementById("differentBillingAddress").checked
+  if (isDifferentBilling) {
+    const billingRequiredFields = [
+      "billingFirstName",
+      "billingLastName",
+      "billingAddress",
+      "billingCity",
+      "billingPincode",
+    ]
+
+    billingRequiredFields.forEach((fieldId) => {
+      const field = document.getElementById(fieldId)
+      if (!field || !field.value.trim()) {
+        if (field) field.classList.add("is-invalid")
+        isValid = false
+      } else {
+        if (field) field.classList.remove("is-invalid")
+      }
+    })
+  }
+
+  if (!isValid) {
+    showNotification("Please fill in all required fields.", "error")
+  }
+
+  return isValid
+}
+
+async function placeOrder() {
+  try {
+    showLoading()
+
+    const [success, result] = await callApi("POST", place_order_url, currentOrderData, csrf_token)
+    console.log(result.data)
+
+    if (success && result.success) {
+      if (currentOrderData.payment_method === "razorpay") {
+        // Show payment overview section
+        showPaymentOverview(result.data)
+      } else {
+        // COD - Show success modal
+        showCODSuccessModal(result.data.order_id)
+      }
+    } else {
+      throw new Error(result.error || "Failed to place order")
+    }
+  } catch (error) {
+    console.error("Error placing order:", error)
+    showNotification("Error placing order. Please try again.", "error")
+  } finally {
+    hideLoading()
+  }
+}
+
+function showPaymentOverview(orderData) {
+  // Hide shipping section
+  document.getElementById("shipping-section").style.display = "none"
+
+  // Show payment overview section
+  const paymentOverviewSection = document.getElementById("payment-overview-section")
+  paymentOverviewSection.style.display = "block"
+
+  // Populate order summary in payment overview
+  const paymentOrderSummary = document.getElementById("payment-order-summary")
+  paymentOrderSummary.innerHTML = `
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <h6>Shipping Address</h6>
+        <p class="mb-1">${currentOrderData.first_name} ${currentOrderData.last_name}</p>
+        <p class="mb-1">${currentOrderData.address}</p>
+        <p class="mb-1">${currentOrderData.city}, ${currentOrderData.pincode}</p>
+        <p class="mb-0">Phone: ${currentOrderData.phone}</p>
+      </div>
+      <div class="col-md-6">
+        <h6>Order Details</h6>
+        <p class="mb-1">Order ID: ${orderData.order_id}</p>
+        <p class="mb-1">Payment ID: ${orderData.payment_id}</p>
+        <p class="mb-0">Amount: ₹${orderData.total_amount}</p>
+        ${appliedCoupon ? `<p class="mb-0 text-success">Coupon: ${appliedCoupon.coupon_code} (-₹${couponDiscount.toFixed(2)})</p>` : ""}
+      </div>
+    </div>
+  `
+
+  // Store payment data for processing
+  currentPaymentData = orderData
+  centerRazorpayButton()
+}
+
+function processRazorpayPayment() {
+  if (!currentPaymentData) {
+    showNotification("Payment data not available. Please try again.", "error")
+    return
+  }
+
+  const data = currentPaymentData
+  const options = {
+    key: data.razorpay_key_id,
+    amount: data.total_amount,
+    currency: "INR",
+    name: "OvenFresh",
+    description: "Order Payment",
+    order_id: data.payment_id,
+    callback_url: `${window.location.origin}/payment-success-callback/?razorpay_order_id=${data.order_id}`,
+    notes: {
+      order_receipt: data.order_id,
+    },
+    theme: {
+      color: "#F37254",
+    },
+  }
+
+  const rzp = new Razorpay(options)
+  rzp.open()
+}
+
+function showCODSuccessModal(orderId) {
+  const modalHtml = `
+    <div class="modal fade" id="codSuccessModal" tabindex="-1" aria-labelledby="codSuccessModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body text-center py-5">
+            <i class="fas fa-check-circle fa-4x text-success mb-4"></i>
+            <h3>Order Placed Successfully!</h3>
+            <p class="lead">Your order #${orderId} has been placed successfully.</p>
+            ${appliedCoupon ? `<p class="text-success">Coupon ${appliedCoupon.code} applied! You saved ₹${couponDiscount.toFixed(2)}</p>` : ""}
+            <p class="text-muted">You will be redirected shortly...</p>
+            <div class="spinner-border text-primary mt-3" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+
+  // Append modal to body
+  document.body.insertAdjacentHTML("beforeend", modalHtml)
+
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById("codSuccessModal"))
+  modal.show()
+
+  // Redirect after 3 seconds
+  setTimeout(() => {
+    window.location.href = `/order-detail/?order_id=${orderId}`
+  }, 3000)
+}
+
+function updateCartCount() {
+  const cartCount = cartItems.reduce((total, item) => total + Number.parseInt(item.quantity), 0)
+  const cartCountElement = document.getElementById("cart-count")
+  if (cartCountElement) {
+    cartCountElement.textContent = cartCount
+  }
+}
+
+function showLoading() {
+  const loader = document.getElementById("loader")
+  if (loader) loader.style.display = "flex"
+}
+
+function hideLoading() {
+  const loader = document.getElementById("loader")
+  if (loader) loader.style.display = "none"
+}
+
+function showNotification(message, type = "info") {
+  // Create notification element
+  const notification = document.createElement("div")
+  notification.className = `alert alert-${type === "error" ? "danger" : type} alert-dismissible fade show position-fixed`
+  notification.style.cssText = "top: 20px; right: 20px; z-index: 9999; min-width: 300px;"
+  notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `
+
+  document.body.appendChild(notification)
+
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove()
+    }
+  }, 5000)
+}
+
+function centerRazorpayButton() {
+  const btn = document.getElementById("razorpay-payment-btn")
+  if (!btn) return
+
+  // Apply styles to center it
+  btn.scrollIntoView({ behavior: "smooth", block: "center" })
+}
