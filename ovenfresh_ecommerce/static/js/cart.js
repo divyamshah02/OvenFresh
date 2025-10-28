@@ -394,8 +394,11 @@ function isSelectedDateToday() {
 }
 
 function calculateTotals() {
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const tax = subtotal * 0.18 // 18% tax
+  
+  const subtotal = cartItems.reduce((total, item) => total + item.base_price * item.quantity, 0)
+  const actual_total = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const tax = cartItems.reduce((total, item) => total + item.base_price * item.quantity * (item.tax_rate/100), 0)
+//   const tax = subtotal * 0.18 // 18% tax
   const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
 //   const total = subtotal + shipping + tax
   const discount = subtotal * promoDiscount;
@@ -405,7 +408,14 @@ function calculateTotals() {
   }
   const total = subtotal + shipping + tax - discount;
 
-  updateOrderSummary(subtotal, shipping, tax, total)
+
+  if (Math.abs(total - actual_total) < 1) {
+      updateOrderSummary(subtotal, shipping, tax, actual_total)
+
+  } else {
+      updateOrderSummary(subtotal, shipping, tax, total)
+  }
+
 }
 
 function updateOrderSummary(subtotal, shipping = null, tax, total) {

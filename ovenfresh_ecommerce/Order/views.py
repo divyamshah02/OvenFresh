@@ -126,7 +126,9 @@ class OrderViewSet(viewsets.ViewSet):
             }, status=400)
 
         delivery_charge = delivery_details.get("charges", 0)
-        subtotal = sum(float(float(item['price']) * float(item['quantity'])) for item in cart_items)
+        actual_total = sum(float(float(item['price']) * float(item['quantity'])) for item in cart_items)
+        subtotal = sum(float(float(item['base_price']) * float(item['quantity'])) for item in cart_items)
+        tax_amount = sum(float((float(item['base_price']) * float(item['quantity'])) * (float(item['tax_rate'])/100)) for item in cart_items)
 
         # Handle coupon discount
         coupon_discount = 0
@@ -176,10 +178,14 @@ class OrderViewSet(viewsets.ViewSet):
                     "error": "Invalid or expired coupon code."
                 }, status=400)
 
-        tax_amount = (float(subtotal) - float(coupon_discount)) * 0.18  # Assuming 18% tax
+        # tax_amount = (float(subtotal) - float(coupon_discount)) * 0.18  # Assuming 18% tax
         # Calculate final total
-        total_amount = float(delivery_charge) + float(subtotal) + float(tax_amount) - float(coupon_discount)
-        
+        if abs((float(subtotal) + float(tax_amount)) - actual_total) < 1:
+            total_amount = float(delivery_charge) + float(actual_total) - float(coupon_discount)
+
+        else:
+            total_amount = float(delivery_charge) + float(subtotal) + float(tax_amount) - float(coupon_discount)
+
         # Format delivery address
         delivery_address = f"{data['address']}, {data['city']}, {data['pincode']}"
         
@@ -2191,11 +2197,11 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
 
         # Taxes
         try:
-            items_data.append(["", "CGST (9%)", f"{round(float(order.tax_amount)/2, 2)}/-"])
-            items_data.append(["", "SGST (9%)", f"{round(float(order.tax_amount)/2, 2)}/-"])
+            items_data.append(["", "CGST", f"{round(float(order.tax_amount)/2, 2)}/-"])
+            items_data.append(["", "SGST", f"{round(float(order.tax_amount)/2, 2)}/-"])
         except:
-            items_data.append(["", "CGST (9%) + SGST (9%)", f"{order.tax_amount}/-"])
-        # items_data.append(["", "CGST (9%) + SGST (9%)", f"{order.tax_amount}/-"])
+            items_data.append(["", "CGST + SGST", f"{order.tax_amount}/-"])
+        # items_data.append(["", "CGST (2.5%) + SGST (2.5%)", f"{order.tax_amount}/-"])
 
         # Total
         items_data.append(["", "Total", f"{order.total_amount}/-"])

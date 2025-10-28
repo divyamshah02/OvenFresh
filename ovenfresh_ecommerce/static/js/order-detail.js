@@ -269,7 +269,7 @@ async function processPayment() {
         name: "OvenFresh",
         description: "Order Payment",
         order_id: orderData.payment_id,
-        callback_url: `${window.location.origin}/payment-success-callback/?razorpay_order_id=${data.order_id}`,
+        callback_url: `${window.location.origin}/payment-success-callback/?razorpay_order_id=${orderData.order_id}`,
         notes: {
           order_receipt: orderData.order_id,
         },

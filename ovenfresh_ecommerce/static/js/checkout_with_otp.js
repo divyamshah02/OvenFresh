@@ -1096,7 +1096,7 @@ function renderCheckoutItems() {
     .join("")
 }
 
-function calculateTotals() {
+function calculateTotals_old() {
   showOrderSummaryLoader()
 
   const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
@@ -1111,6 +1111,31 @@ function calculateTotals() {
     hideOrderSummaryLoader()
   }, 500) // Small delay to show loading effect
 }
+
+function calculateTotals() {
+  showOrderSummaryLoader()
+
+  const subtotal = cartItems.reduce((total, item) => total + item.base_price * item.quantity, 0)
+  const actual_total = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  const shipping = updateShippingCharge() // Get shipping charge from selected timeslot
+  const discount = couponDiscount || 0
+  const tax = cartItems.reduce((total, item) => total + item.base_price * item.quantity * (item.tax_rate/100), 0)
+  // console.log(tacc)
+  // const tax = (subtotal - discount) * 0.18 // 18% tax
+  const total = subtotal + shipping + tax - discount
+  console.log(total - actual_total)
+
+  if (Math.abs(total - actual_total) < 1) {
+      updateOrderSummary(subtotal, shipping, tax, actual_total, discount)
+  } else {
+      updateOrderSummary(subtotal, shipping, tax, total, discount)
+  }
+
+  setTimeout(() => {
+    hideOrderSummaryLoader()
+  }, 500) // Small delay to show loading effect
+}
+
 
 function showOrderSummaryLoader() {
   const summaryCard = document.getElementById("order-summary-card")

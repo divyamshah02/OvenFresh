@@ -14,10 +14,12 @@ class CartItemSerializer(serializers.ModelSerializer):
             product_data = Product.objects.filter(product_id=representation['product_id']).first()
             representation['product_image'] = product_data.photos[0]
             representation['product_name'] = product_data.title
+            representation['tax_rate'] = product_data.tax_rate
         
         if 'product_variation_id' in representation:
             product_varation_data = ProductVariation.objects.filter(product_variation_id=representation['product_variation_id']).first()
             representation['price'] = product_varation_data.discounted_price
+            representation['base_price'] = product_varation_data.base_price
             representation['weight'] = product_varation_data.weight_variation
 
         return representation
