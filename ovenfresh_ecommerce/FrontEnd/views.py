@@ -97,8 +97,8 @@ class HomeViewSet(viewsets.ViewSet):
     def list(self, request):
         # Use the CMS-controlled homepage
         # return render(request, 'home.html')
-        return render(request, 'home_dynamic.html')
-        # return render(request, 'issue.html')
+        # return render(request, 'home_dynamic.html')
+        return render(request, 'issue.html')
 
 class AboutUsViewSet(viewsets.ViewSet):
 

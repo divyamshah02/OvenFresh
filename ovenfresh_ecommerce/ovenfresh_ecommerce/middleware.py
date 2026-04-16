@@ -25,13 +25,13 @@ class FrontendRewriteMiddleware:
         r"|admin-delivery-person|admin-todays-delivery-orders|admin-all-confirmed-orders|admin-all-orders|admin-add-order|admin-order-detail"
         r"|admin-pincode-order|admin-review|delivery-login|delivery-dashboard|admin-product-tax-rates)"
     )
-    # FRONTEND_ALLOWED_REGEX = re.compile(
-    #     r"^(payment-success-callback|refund-policy|order-success|order-detail|account"
-    #     r"|admin-login|admin-logout|admin-dashboard|admin-home-cms|admin-cms|admin-products"
-    #     r"|admin-add-product|admin-category|admin-pincodes|admin-timeslot|admin-coupon"
-    #     r"|admin-delivery-person|admin-todays-delivery-orders|admin-all-confirmed-orders|admin-all-orders|admin-add-order|admin-order-detail"
-    #     r"|admin-pincode-order|admin-review|delivery-login|delivery-dashboard|admin-product-tax-rates)"
-    # )
+    FRONTEND_ALLOWED_REGEX = re.compile(
+        r"^(response|order-success|order-detail|checkout|payment-success-callback|refund-policy|order-success|order-detail|account"
+        r"|admin-login|admin-logout|admin-dashboard|admin-home-cms|admin-cms|admin-products"
+        r"|admin-add-product|admin-category|admin-pincodes|admin-timeslot|admin-coupon"
+        r"|admin-delivery-person|admin-todays-delivery-orders|admin-all-confirmed-orders|admin-all-orders|admin-add-order|admin-order-detail"
+        r"|admin-pincode-order|admin-review|delivery-login|delivery-dashboard|admin-product-tax-rates)"
+    )
 
     def __init__(self, get_response):
         self.get_response = get_response
