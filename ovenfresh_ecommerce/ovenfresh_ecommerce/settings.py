@@ -135,6 +135,14 @@ RAZORPAY_KEY_ID = base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ=")
 RAZORPAY_KEY_SECRET = base64_to_text("UkFYTXVZcGs2TEJkejcxTnBtTjRrVUdP")
 
 
+ICICI_MERCHANT_ID = "100000000400047"
+ICICI_AGGREGATOR_ID = f"100000000400046"
+ICICI_SECRET = "4f6f080e-2497-497b-b4ac-6c79410a8789"
+ICICI_INITIATE_URL = "https://pgpay.icicibank.com/pg/api/v2/initiateSale"
+ICICI_RETURN_URL = "https://ovenfresh.in/order-api/icici/response/"
+# ICICI_RETURN_URL = "http://127.0.0.1:8000/order-api/icici/response/"
+
+
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,

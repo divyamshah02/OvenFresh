@@ -1190,6 +1190,13 @@ async function placeOrder() {
     console.log(result.data)
 
     if (success && result.success) {
+      
+      // 🔥 ICICI FLOW
+      if (result.data && result.data.redirect_url) {
+          window.location.href = result.data.redirect_url
+          return
+      }
+      
       if (currentOrderData.payment_method === "razorpay") {
         // Show payment overview section
         showPaymentOverview(result.data)

@@ -38,4 +38,5 @@ router.register(r'generate-invoice', GenerateInvoiceViewSet, basename='generate-
 
 urlpatterns = [
     path('', include(router.urls)),    
+    path("icici/response/", icici_payment_response, name="icici-response"),
 ]

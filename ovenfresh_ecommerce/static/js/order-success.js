@@ -5,32 +5,63 @@ let paymentId = null
 let verificationAttempts = 0
 const maxAttempts = 3
 
-async function InitializeOrderSuccess(csrfTokenParam, verifyPaymentUrlParam) {
-  csrf_token = csrfTokenParam
-  verify_payment_url = verifyPaymentUrlParam
+// async function InitializeOrderSuccess(csrfTokenParam, verifyPaymentUrlParam) {
+//   csrf_token = csrfTokenParam
+//   verify_payment_url = verifyPaymentUrlParam
 
-  try {
-    showLoading()
+//   try {
+//     showLoading()
 
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search)
-    orderId = urlParams.get("order_id")
-    paymentId = urlParams.get("razorpay_payment_id") || urlParams.get("payment_id")
+//     // Get URL parameters
+//     const urlParams = new URLSearchParams(window.location.search)
+//     orderId = urlParams.get("order_id")
+//     paymentId = urlParams.get("razorpay_payment_id") || urlParams.get("payment_id")
 
-    // Validate required parameters
-    if (!orderId) {
-      showError("Order ID not found in URL parameters.")
-      return
+//     // Validate required parameters
+//     if (!orderId) {
+//       showError("Order ID not found in URL parameters.")
+//       return
+//     }
+
+//     // Start payment verification process
+//     await startPaymentVerification()
+//   } catch (error) {
+//     console.error("Error initializing order success:", error)
+//     showError("Error initializing payment verification.")
+//   } finally {
+//     hideLoading()
+//   }
+// }
+
+
+async function InitializeOrderSuccess(csrfTokenParam) {
+    csrf_token = csrfTokenParam
+
+    try {
+        showLoading()
+
+        const urlParams = new URLSearchParams(window.location.search)
+        orderId = urlParams.get("order_id")
+
+        if (!orderId) {
+            showError("Order ID not found.")
+            return
+        }
+
+        // ✅ ICICI already verified payment on backend
+        showSuccess()
+
+        // optional redirect after few seconds
+        setTimeout(() => {
+            window.location.href = `/order-detail/?order_id=${orderId}`
+        }, 3000)
+
+    } catch (error) {
+        console.error("Error initializing success page:", error)
+        showError("Something went wrong.")
+    } finally {
+        hideLoading()
     }
-
-    // Start payment verification process
-    await startPaymentVerification()
-  } catch (error) {
-    console.error("Error initializing order success:", error)
-    showError("Error initializing payment verification.")
-  } finally {
-    hideLoading()
-  }
 }
 
 async function startPaymentVerification() {

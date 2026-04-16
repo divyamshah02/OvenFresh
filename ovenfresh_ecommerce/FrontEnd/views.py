@@ -173,7 +173,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
             if product_obj.category_id == '6145109248':
                 not_topper = False 
 
-        get_toppers = Product.objects.filter(sub_category_id="8746472697")
+        get_toppers = Product.objects.filter(is_active=True, sub_category_id="8746472697")
         toppers = []
         for topper in get_toppers:
             temp_topper = {
@@ -186,7 +186,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
                 temp_topper["product_variation_id"] = product_variations.first().product_variation_id
             toppers.append(temp_topper)
 
-        get_cards = Product.objects.filter(sub_category_id="4437657422")
+        get_cards = Product.objects.filter(is_active=True, sub_category_id="4437657422")
         cards = []
         for card in get_cards:
             temp_card = {
@@ -221,7 +221,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
             if product_obj.category_id == '6145109248':
                 not_topper = False 
 
-        get_toppers = Product.objects.filter(sub_category_id="8746472697")
+        get_toppers = Product.objects.filter(is_active=True, sub_category_id="8746472697")
         toppers = []
         for topper in get_toppers:
             temp_topper = {
@@ -234,7 +234,7 @@ class ProductDetailViewSet(viewsets.ViewSet):
                 temp_topper["product_variation_id"] = product_variations.first().product_variation_id
             toppers.append(temp_topper)
 
-        get_cards = Product.objects.filter(sub_category_id="4437657422")
+        get_cards = Product.objects.filter(is_active=True, sub_category_id="4437657422")
         cards = []
         for card in get_cards:
             temp_card = {

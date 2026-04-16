@@ -22,6 +22,9 @@ from UserDetail.models import *
 import csv
 import datetime
 import razorpay
+import requests
+import hmac
+import hashlib
 import xlsxwriter
 from io import BytesIO
 
@@ -42,12 +45,14 @@ import tempfile
 import os
 from decimal import Decimal
 
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
 
 class OrderViewSet(viewsets.ViewSet):
     
     @handle_exceptions
     # @check_authentication()
-    def create(self, request):
+    def create(self, request):        
         """
         Place order from cart with coupon support
         """
@@ -279,8 +284,8 @@ class OrderViewSet(viewsets.ViewSet):
                 logger.error(f"Variation not found: {item['product_variation_id']}")
 
         # Clear the cart after order is placed
-        if cart_obj:
-            cart_obj.delete()
+        # if cart_obj:
+        #     cart_obj.delete()
 
         # Handle payment method
         response_data = {
@@ -294,21 +299,130 @@ class OrderViewSet(viewsets.ViewSet):
         }
         
         paisa_amount = float(total_amount) * 100
+
+        # ================= ICICI PAYMENT FLOW =================
         if not order.is_cod:
-            razorpay_order = create_razorpay_order(
-                order_id=order.order_id,
-                amount=paisa_amount,
-            )
+            txn_no = order.order_id
 
-            if razorpay_order:
-                order.razorpay_order_id = razorpay_order['id']
-                order.save()
+            payload = {
+                "aggregatorID": settings.ICICI_AGGREGATOR_ID,
+                "amount": str(total_amount),
+                "currencyCode": "356",
+                "customerEmailID": order.email,
+                "customerMobileNo": order.phone,
+                "customerName": f"{order.first_name} {order.last_name}",
+                "merchantId": settings.ICICI_MERCHANT_ID,
+                "merchantTxnNo": txn_no,
+                "payType": "0",
+                "returnURL": settings.ICICI_RETURN_URL,
+                "transactionType": "SALE",
+                "txnDate": datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
+            }
 
+            def generate_hash(data):
+                hash_string = (
+                    data["aggregatorID"] +
+                    data["amount"] +
+                    data["currencyCode"] +
+                    data["customerEmailID"] +
+                    data["customerMobileNo"] +
+                    data["customerName"] +
+                    data["merchantId"] +
+                    data["merchantTxnNo"] +
+                    data["payType"] +
+                    data["returnURL"] +
+                    data["transactionType"] +
+                    data["txnDate"]
+                )
+
+                return hmac.new(
+                    settings.ICICI_SECRET.encode("utf-8"),
+                    hash_string.encode("ascii"),   # 👈 IMPORTANT (they use ASCII)
+                    hashlib.sha256
+                ).hexdigest()
+
+            payload["secureHash"] = generate_hash(payload)
+            # print(f"settings.ICICI_MERCHANT_ID - {settings.ICICI_MERCHANT_ID}, settings.ICICI_AGGREGATOR_ID - {settings.ICICI_AGGREGATOR_ID}, settings.ICICI_RETURN_URL - {settings.ICICI_RETURN_URL}, settings.ICICI_SECRET - {settings.ICICI_SECRET}")
+            # print(f"Generated secureHash: {payload['secureHash']}")          
+            print(f"payload - {payload}")
+
+            # payload = {
+            #     "aggregatorID": "100000000400046",
+            #     "amount": "600.0",
+            #     "currencyCode": "356",
+            #     "customerEmailID": "divyamshah1234@gmail.com",
+            #     "customerMobileNo": "09054413199",
+            #     "customerName": "Divyam Shah",
+            #     "merchantId": "100000000400047",
+            #     "merchantTxnNo": "3115771718",
+            #     "payType": "0",
+            #     "returnURL": "https://ovenfresh.in/order-api/icici/response/",
+            #     "transactionType": "SALE",
+            #     "txnDate": datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
+            #     "secureHash": "cb66b2cdbbef3970a3b1d056f90f6cf855be561c5c9c4c4eb07f2ee52ce0fe7f"
+            # }
+
+            try:
+                icici_response = requests.post(
+                    settings.ICICI_INITIATE_URL,
+                    json=payload
+                )
+                print("ICICI INITIATE RESPONSE:", icici_response.text)  # keep this for debugging
+                icici_response = icici_response.json()
+                # 🔴 HARD CHECK (don't trust blindly)
+                if icici_response.get("responseCode") != "R1000":
+                    return Response({
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
+                        "error": "ICICI initiation failed"
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                redirect_url = f"{icici_response['redirectURI']}?tranCtx={icici_response['tranCtx']}"
+                
                 response_data.update({
-                    "payment_id": razorpay_order['id'],
-                    # "total_amount": paisa_amount,
-                    "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+                        "redirect_url": redirect_url,
+                        "order_id": order.order_id
                 })
+
+                # return Response({
+                #     "success": True,
+                #     "user_not_logged_in": False,
+                #     "user_unauthorized": False,
+                #     "data": {
+                #         "redirect_url": redirect_url,
+                #         "order_id": order.order_id
+                #     },
+                #     "error": None
+                # }, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response({
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
+                    "error": str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # =====================================================
+
+
+        # if not order.is_cod:
+        #     razorpay_order = create_razorpay_order(
+        #         order_id=order.order_id,
+        #         amount=paisa_amount,
+        #     )
+
+        #     if razorpay_order:
+        #         order.razorpay_order_id = razorpay_order['id']
+        #         order.save()
+
+                # response_data.update({
+                #     "payment_id": razorpay_order['id'],
+                #     # "total_amount": paisa_amount,
+                #     "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+                # })
         else:
             prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
 
@@ -353,6 +467,62 @@ class OrderViewSet(viewsets.ViewSet):
             "data": f"Updated successfully.",
             "error": None
         }, status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+def icici_payment_response(request):
+    data = request.POST.dict()
+
+    print("ICICI RESPONSE:", data)  # keep this for debugging
+
+    order_id = data.get("merchantTxnNo")
+
+    if not order_id:
+        return HttpResponse("Invalid Request - Missing Order ID")
+
+    # ================= HASH VERIFICATION =================
+    def verify_hash(data):
+        return True
+        received_hash = data.get("secureHash") or data.get("securehash")
+
+        hash_string = (
+            data.get("amount", "") +
+            data.get("paymentID", "") +
+            data.get("merchantId", "") +
+            data.get("merchantTxnNo", "") +
+            data.get("responseCode", "")
+        )
+
+        calculated_hash = hashlib.sha256(
+            (hash_string + settings.ICICI_SECRET).encode()
+        ).hexdigest()
+
+        return received_hash == calculated_hash
+    # ====================================================
+
+    # 🔴 SECURITY CHECK
+    if not verify_hash(data):
+        return HttpResponse("Hash mismatch", status=400)
+
+    order = Order.objects.filter(order_id=order_id).first()
+
+    if not order:
+        return HttpResponse("Order not found", status=404)
+
+    # ================= SUCCESS CASE =================
+    if data.get("responseCode") in ["0000", "000"]:  # both possible
+        order.payment_received = True
+        order.status = "placed"
+        order.save()
+        prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
+        return redirect(f"/order-success/?order_id={order_id}")
+
+    # ================= FAILURE CASE =================
+    else:
+        order.status = "failed"
+        order.save()
+
+        return redirect(f"/order-failed/?order_id={order_id}")
 
 
 class AdminOrderViewSet(viewsets.ViewSet):

@@ -19,7 +19,7 @@ class FrontendRewriteMiddleware:
     )
 
     FRONTEND_ALLOWED_REGEX = re.compile(
-        r"^(shop|payment-success-callback|refund-policy|contact-us|product|cart|checkout|order-success|order-detail|account"
+        r"^(shop|payment-success-callback|refund-policy|terms-conditions|contact-us|product|cart|checkout|order-success|order-detail|account"
         r"|admin-login|admin-logout|admin-dashboard|admin-home-cms|admin-cms|admin-products"
         r"|admin-add-product|admin-category|admin-pincodes|admin-timeslot|admin-coupon"
         r"|admin-delivery-person|admin-todays-delivery-orders|admin-all-confirmed-orders|admin-all-orders|admin-add-order|admin-order-detail"

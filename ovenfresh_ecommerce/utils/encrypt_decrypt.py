@@ -20,3 +20,4 @@ if __name__ == "__main__":
     print(f"Encoded Text: {encoded_text}")
     print(f"Decoded Text: {decoded_text}")
     
+    print(base64_to_text("cnpwX2xpdmVfUjVFMkdsQUtjeWVpZEQ="))
