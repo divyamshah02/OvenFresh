@@ -49,10 +49,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 
 class OrderViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     # @check_authentication()
-    def create(self, request):        
+    def create(self, request):
         """
         Place order from cart with coupon support
         """
@@ -61,20 +61,20 @@ class OrderViewSet(viewsets.ViewSet):
 
         session_id = request.session.get('session_token')
         data = request.data
-        
+
         # Check required fields
         required = [
-            "first_name", "last_name", "email", "phone", 
-            "address", "city", "pincode", "timeslot_id", 
+            "first_name", "last_name", "email", "phone",
+            "address", "city", "pincode", "timeslot_id",
             "delivery_date", "payment_method"
         ]
-        
+
         if any(key not in data for key in required):
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Missing required fields."
             }, status=400)
 
@@ -83,49 +83,49 @@ class OrderViewSet(viewsets.ViewSet):
             cart = Cart.objects.filter(user_id=user_id).first()
         else:
             cart = Cart.objects.filter(session_id=session_id).first()
-        
+
         if not cart and user_id:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Cart not found."
             }, status=400)
-        
+
         if cart:
             cart_obj = CartItem.objects.filter(cart_id=cart.cart_id)
         else:
             cart_obj = CartItem.objects.none()
-            
+
         if not cart_obj.exists():
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Cart is empty."
             }, status=400)
-        
+
         cart_items = CartItemSerializer(cart_obj, many=True).data
 
         # Calculate total amount
         pincode_data = Pincode.objects.filter(pincode=data["pincode"]).first()
         if not pincode_data:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Invalid pincode."
             }, status=400)
-        
+
         delivery_details = pincode_data.delivery_charge.get(str(data["timeslot_id"]), None)
         if not delivery_details or not delivery_details.get("available", False):
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
                 "data": None,
                 "error": "Delivery not available for this pincode and timeslot."
             }, status=400)
@@ -148,7 +148,7 @@ class OrderViewSet(viewsets.ViewSet):
                     valid_from__lte=timezone.now(),
                     valid_until__gte=timezone.now()
                 )
-                
+
                 # Validate minimum order amount
                 if subtotal >= coupon.minimum_order_amount:
                     # Calculate discount
@@ -159,27 +159,27 @@ class OrderViewSet(viewsets.ViewSet):
                         )
                     else:  # fixed amount
                         coupon_discount = min(coupon.discount_value, subtotal)
-                    
+
                     applied_coupon = coupon
-                    
+
                     # Update coupon usage
                     coupon.usage_count += 1
                     coupon.save()
                 else:
                     return Response({
-                        "success": False, 
-                        "user_not_logged_in": False, 
-                        "user_unauthorized": False, 
-                        "data": None, 
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
                         "error": f"Minimum order amount for this coupon is ₹{coupon.minimum_order_amount}"
                     }, status=400)
 
             except Coupon.DoesNotExist:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Invalid or expired coupon code."
                 }, status=400)
 
@@ -190,10 +190,11 @@ class OrderViewSet(viewsets.ViewSet):
 
         else:
             total_amount = float(delivery_charge) + float(subtotal) + float(tax_amount) - float(coupon_discount)
+        # total_amount = 5
 
         # Format delivery address
         delivery_address = f"{data['address']}, {data['city']}, {data['pincode']}"
-        
+
         # Create order
         order_id = self.generate_unique_order_id()
         order = Order.objects.create(
@@ -202,43 +203,43 @@ class OrderViewSet(viewsets.ViewSet):
             session_id=session_id or "",  # Use empty string if no user_id
             pincode_id=data["pincode"],
             timeslot_id=data["timeslot_id"],
-            
+
             # Customer details
             first_name=data["first_name"],
             last_name=data["last_name"],
             email=data["email"],
             phone=data["phone"],
-            
+
             # Shipping details
             delivery_date=data["delivery_date"],
             delivery_address=delivery_address,
             delivery_charge=delivery_charge,
             shipping_address_id=data.get("shipping_address_id"),
-            
+
             # Billing details
             different_billing_address=data.get("different_billing_address", False),
-            
+
             # Order details
             status="placed" if data["payment_method"] == "cod" else "not_placed",
             total_amount=str(total_amount),
             subtotal_amount=str(subtotal),
             tax_amount=str(tax_amount),
             discount_amount=str(coupon_discount),
-            
+
             # Coupon details
             coupon_code=coupon_code,
             coupon_discount=str(coupon_discount),
-            
+
             # Payment details
             payment_method=data["payment_method"],
             is_cod=(data["payment_method"] == "cod"),
             payment_received=False,
-            
+
             # Other details
             special_instructions=data.get("special_instructions", ""),
             order_note=data.get("order_note", "")
         )
-        
+
         # Handle billing address if different
         if data.get("different_billing_address") and data.get("billing_address"):
             billing = data.get("billing_address", {})
@@ -258,7 +259,7 @@ class OrderViewSet(viewsets.ViewSet):
             if coupon_discount > 0:
                 item_total = float(item['price']) * float(item['quantity'])
                 item_discount = (item_total / subtotal) * coupon_discount
-            
+
             OrderItem.objects.create(
                 order_id=order.order_id,
                 product_id=item['product_id'],
@@ -268,12 +269,12 @@ class OrderViewSet(viewsets.ViewSet):
                 discount=item_discount,
                 final_amount=(float(item['price']) * float(item['quantity'])) - item_discount,
             )
-            
+
             try:
                 variation = ProductVariation.objects.select_for_update().get(
                     product_variation_id=item['product_variation_id']
                 )
-                
+
                 # Only update if using quantity-based stock management
                 if not variation.stock_toggle_mode:
                     if variation.stock_quantity is not None:
@@ -297,7 +298,7 @@ class OrderViewSet(viewsets.ViewSet):
             "discount_amount": coupon_discount,
             "coupon_applied": applied_coupon.coupon_code if applied_coupon else None
         }
-        
+
         paisa_amount = float(total_amount) * 100
 
         # ================= ICICI PAYMENT FLOW =================
@@ -342,25 +343,6 @@ class OrderViewSet(viewsets.ViewSet):
                 ).hexdigest()
 
             payload["secureHash"] = generate_hash(payload)
-            # print(f"settings.ICICI_MERCHANT_ID - {settings.ICICI_MERCHANT_ID}, settings.ICICI_AGGREGATOR_ID - {settings.ICICI_AGGREGATOR_ID}, settings.ICICI_RETURN_URL - {settings.ICICI_RETURN_URL}, settings.ICICI_SECRET - {settings.ICICI_SECRET}")
-            # print(f"Generated secureHash: {payload['secureHash']}")          
-            print(f"payload - {payload}")
-
-            # payload = {
-            #     "aggregatorID": "100000000400046",
-            #     "amount": "600.0",
-            #     "currencyCode": "356",
-            #     "customerEmailID": "divyamshah1234@gmail.com",
-            #     "customerMobileNo": "09054413199",
-            #     "customerName": "Divyam Shah",
-            #     "merchantId": "100000000400047",
-            #     "merchantTxnNo": "3115771718",
-            #     "payType": "0",
-            #     "returnURL": "https://ovenfresh.in/order-api/icici/response/",
-            #     "transactionType": "SALE",
-            #     "txnDate": datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
-            #     "secureHash": "cb66b2cdbbef3970a3b1d056f90f6cf855be561c5c9c4c4eb07f2ee52ce0fe7f"
-            # }
 
             try:
                 icici_response = requests.post(
@@ -380,7 +362,7 @@ class OrderViewSet(viewsets.ViewSet):
                     }, status=status.HTTP_400_BAD_REQUEST)
 
                 redirect_url = f"{icici_response['redirectURI']}?tranCtx={icici_response['tranCtx']}"
-                
+
                 response_data.update({
                         "redirect_url": redirect_url,
                         "order_id": order.order_id
@@ -427,10 +409,10 @@ class OrderViewSet(viewsets.ViewSet):
             prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
 
         return Response({
-            "success": True, 
-            "user_not_logged_in": False, 
-            "user_unauthorized": False, 
-            "data": response_data, 
+            "success": True,
+            "user_not_logged_in": False,
+            "user_unauthorized": False,
+            "data": response_data,
             "error": None
         }, status=201)
 
@@ -446,7 +428,7 @@ class OrderViewSet(viewsets.ViewSet):
         order_id = pk
         payment_method_param = request.data.get("payment_method", None)
         payment_received_param = request.data.get("payment_received", None)
-        
+
         order_data = Order.objects.get(order_id=order_id)
         if payment_method_param and (payment_method_param in ['cod', 'razorpay']):
             if payment_method_param == 'cod':
@@ -454,12 +436,12 @@ class OrderViewSet(viewsets.ViewSet):
             else:
                 order_data.is_cod = False
             order_data.payment_method = payment_method_param
-        
+
         if payment_received_param is not None and (type(payment_received_param) == bool):
             order_data.payment_received = payment_received_param
 
         order_data.save()
-    
+
         return Response({
             "success": True,
             "user_not_logged_in": False,
@@ -529,7 +511,7 @@ class AdminOrderViewSet(viewsets.ViewSet):
     """
     Admin viewset to create orders directly (without cart).
     """
-    
+
     @handle_exceptions
     @check_authentication(required_role='admin')
     def create(self, request):
@@ -777,11 +759,11 @@ class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
         try:
             # Get only available delivery partners
             delivery_persons = User.objects.filter(
-                is_active=True, 
-                role="delivery", 
+                is_active=True,
+                role="delivery",
                 is_available=True  # Only show available delivery persons
             ).order_by('first_name')
-            
+
             persons_data = []
             for person in delivery_persons:
                 persons_data.append({
@@ -799,7 +781,7 @@ class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
                 },
                 "error": None
             }, status=200)
-            
+
         except Exception as e:
             return Response({
                 "success": False,
@@ -809,7 +791,7 @@ class AdminDeliveryPeronsViewSet(viewsets.ViewSet):
 
 
 class ConfirmOrderViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     # @check_authentication()
     def create(self, request):
@@ -819,20 +801,20 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
         user_id = request.user.user_id if request.user.is_authenticated else None
         session_id = request.session.get('session_token')
         data = request.data
-        
+
         # Validate required fields
         if 'order_id' not in data:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Order ID is required."
             }, status=400)
-        
+
         order_id = data['order_id']
         payment_id = data.get('payment_id')
-        
+
         try:
             # Get order from database
             if user_id:
@@ -841,140 +823,140 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
                 order = Order.objects.filter(order_id=order_id).first()
             if not order:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Order not found."
                 }, status=404)
-            
+
             # Check if order is already paid
             if order.payment_received:
                 return Response({
-                    "success": True, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
+                    "success": True,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
                     "data": {
                         "message": "Payment already verified",
                         "order_id": order_id,
                         "payment_status": "completed"
-                    }, 
+                    },
                     "error": None
                 }, status=200)
-            
+
             # For COD orders, no payment verification needed
             if order.is_cod or order.payment_method == 'cod':
                 return Response({
-                    "success": True, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
+                    "success": True,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
                     "data": {
                         "message": "COD order confirmed",
                         "order_id": order_id,
                         "payment_status": "cod"
-                    }, 
+                    },
                     "error": None
                 }, status=200)
-            
+
             # Initialize Razorpay client
             if not hasattr(settings, 'RAZORPAY_KEY_ID') or not hasattr(settings, 'RAZORPAY_KEY_SECRET'):
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Payment gateway configuration error."
                 }, status=500)
-            
+
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-            
+
             # Get payment details from Razorpay
             razorpay_order_id = order.razorpay_order_id
             if not razorpay_order_id:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Payment ID not found for this order."
                 }, status=400)
-            
+
             try:
                 # Fetch order details from Razorpay
                 razorpay_order = client.order.fetch(razorpay_order_id)
-                
+
                 # Check order status
                 if razorpay_order['status'] == 'paid':
                     #Payment is successful, update order
                     order.payment_received = True
                     order.status = 'placed'
-                    
+
                     if payment_id:
                         order.razorpay_payment_id = payment_id
 
                     order.save()
                     prepare_and_send_order_email(order_id=order.order_id, type="order_confirmed")
-                    
+
                     return Response({
-                        "success": True, 
-                        "user_not_logged_in": False, 
-                        "user_unauthorized": False, 
+                        "success": True,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
                         "data": {
                             "message": "Payment verified successfully",
                             "order_id": order_id,
                             "payment_status": "completed",
                             "razorpay_order_id": razorpay_order_id,
-                        }, 
+                        },
                         "error": None
                     }, status=200)
-                
+
                 elif razorpay_order['status'] == 'created':
                     # Payment is still pending
                     return Response({
-                        "success": False, 
-                        "user_not_logged_in": False, 
-                        "user_unauthorized": False, 
-                        "data": None, 
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
                         "error": "Payment is still pending. Please complete the payment."
                     }, status=400)
-                
+
                 else:
                     # Payment failed or other status
                     return Response({
-                        "success": False, 
-                        "user_not_logged_in": False, 
-                        "user_unauthorized": False, 
-                        "data": None, 
+                        "success": False,
+                        "user_not_logged_in": False,
+                        "user_unauthorized": False,
+                        "data": None,
                         "error": f"Payment verification failed. Status: {razorpay_order['status']}"
                     }, status=400)
-                
+
             except razorpay.errors.BadRequestError as e:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Invalid payment details."
                 }, status=400)
-            
+
             except Exception as e:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Error communicating with payment gateway."
                 }, status=500)
-        
+
         except Exception as e:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": str(e)
             }, status=500)
-    
+
     @handle_exceptions
     @check_authentication(required_role="customer")
     def check_payment_status(self, request):
@@ -983,47 +965,47 @@ class ConfirmOrderViewSet(viewsets.ViewSet):
         """
         user_id = request.user.user_id
         order_id = request.GET.get('order_id')
-        
+
         if not order_id:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": "Order ID is required."
             }, status=400)
-        
+
         try:
             order = Order.objects.filter(order_id=order_id, user_id=user_id).first()
             if not order:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Order not found."
                 }, status=404)
-            
+
             return Response({
-                "success": True, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
                 "data": {
                     "order_id": order_id,
                     "payment_received": order.payment_received,
                     "payment_method": order.payment_method,
                     "order_status": order.status,
                     "is_cod": order.is_cod
-                }, 
+                },
                 "error": None
             }, status=200)
-            
+
         except Exception as e:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": str(e)
             }, status=500)
 
@@ -1059,7 +1041,7 @@ class ConfirmPaymentViewSet(viewsets.ViewSet):
     @handle_exceptions
     def list(self, request):
         """
-        Check last 2 days' orders with pending Razorpay payments 
+        Check last 2 days' orders with pending Razorpay payments
         and update if payment is now completed.
         """
         try:
@@ -1134,7 +1116,7 @@ class ConfirmPaymentViewSet(viewsets.ViewSet):
 
 
 class OrderDetailViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     # @check_authentication()
     def list(self, request):
@@ -1144,7 +1126,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
         user_id = request.user.user_id if request.user.is_authenticated else None
         session_id = request.session.get('session_token')
         order_id = request.query_params.get("order_id")
-        
+
         try:
             # Get order details
             if user_id:
@@ -1154,25 +1136,25 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 order = Order.objects.filter(order_id=order_id).first()
             if not order:
                 return Response({
-                    "success": False, 
-                    "user_not_logged_in": False, 
-                    "user_unauthorized": False, 
-                    "data": None, 
+                    "success": False,
+                    "user_not_logged_in": False,
+                    "user_unauthorized": False,
+                    "data": None,
                     "error": "Order not found."
                 }, status=404)
-            
+
             # Get order items
             order_items = OrderItem.objects.filter(order_id=order_id)
-            
+
             # Prepare order items data
             items_data = []
-            for item in order_items:                
+            for item in order_items:
                 try:
                     product = Product.objects.get(product_id=item.product_id)
                     variation = ProductVariation.objects.filter(
                         product_variation_id=item.product_variation_id
                     ).first()
-                    
+
                     item_data = {
                         "id": item.id,
                         "product_id": item.product_id,
@@ -1189,7 +1171,7 @@ class OrderDetailViewSet(viewsets.ViewSet):
                     items_data.append(item_data)
                 except Product.DoesNotExist:
                     continue
-            
+
             # Get timeslot information
             timeslot_name = "Not specified"
             try:
@@ -1197,13 +1179,13 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 timeslot_name = f"{timeslot.time_slot_title} ({timeslot.start_time} - {timeslot.end_time})"
             except TimeSlot.DoesNotExist:
                 pass
-            
+
             # Calculate summary amounts
             subtotal = float(order.subtotal_amount) if hasattr(order, 'subtotal_amount') and order.subtotal_amount else sum(float(item.final_amount) for item in order_items)
             delivery_charges = float(order.delivery_charge) if order.delivery_charge else 0
             tax_amount = float(order.tax_amount) if hasattr(order, 'tax_amount') and order.tax_amount else subtotal * 0.18
             discount_amount = float(getattr(order, 'discount_amount', 0)) if hasattr(order, 'discount_amount') else 0
-            
+
             # Prepare order data
             order_data = {
                 "order_id": order.order_id,
@@ -1211,13 +1193,13 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 "created_at": order.created_at.isoformat(),
                 "delivery_date": order.delivery_date,
                 "timeslot_name": timeslot_name,
-                
+
                 # Customer details
                 "first_name": order.first_name,
                 "last_name": order.last_name,
                 "email": order.email,
                 "phone": order.phone,
-                
+
                 # Address details
                 "delivery_address": order.delivery_address,
                 "different_billing_address": order.different_billing_address,
@@ -1227,53 +1209,53 @@ class OrderDetailViewSet(viewsets.ViewSet):
                 "billing_city": getattr(order, 'billing_city', None),
                 "billing_pincode": getattr(order, 'billing_pincode', None),
                 "billing_phone": getattr(order, 'billing_phone', None),
-                
+
                 # Payment details
                 "payment_method": order.payment_method,
                 "payment_received": order.payment_received,
                 "is_cod": order.is_cod,
                 "payment_id": order.razorpay_order_id,
                 "razorpay_key_id": settings.RAZORPAY_KEY_ID if hasattr(settings, 'RAZORPAY_KEY_ID') else None,
-                
+
                 # Order amounts
                 "total_amount": str(order.total_amount),
                 "subtotal": str(subtotal),
                 "delivery_charges": str(delivery_charges),
                 "tax_amount": str(tax_amount),
                 "discount_amount": str(discount_amount),
-                
+
                 # Coupon details
                 "coupon_code": getattr(order, 'coupon_code', None),
                 "coupon_discount": str(getattr(order, 'coupon_discount', 0)),
-                
+
                 # Other details
                 "special_instructions": getattr(order, 'special_instructions', None),
                 "order_note": order.order_note,
-                
+
                 # Order items
                 "items": items_data
             }
-            
+
             return Response({
-                "success": True, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": order_data, 
+                "success": True,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": order_data,
                 "error": None
             }, status=200)
-            
+
         except Exception as e:
             return Response({
-                "success": False, 
-                "user_not_logged_in": False, 
-                "user_unauthorized": False, 
-                "data": None, 
+                "success": False,
+                "user_not_logged_in": False,
+                "user_unauthorized": False,
+                "data": None,
                 "error": str(e)
             }, status=500)
 
 
 class OrderListViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     # @check_authentication()
     def list(self, request):
@@ -1281,24 +1263,24 @@ class OrderListViewSet(viewsets.ViewSet):
         Get user orders with pagination and filtering
         """
         user_id = request.user.user_id
-        
+
         # Get query parameters
         page = int(request.GET.get('page', 1))
         limit = int(request.GET.get('limit', 10))
         status_filter = request.GET.get('status', '')
-        
-        
+
+
         # Build query
         orders_query = Order.objects.filter(user_id=user_id).order_by('-created_at')
-        
+
         # Apply status filter if provided
         if status_filter:
             orders_query = orders_query.filter(status=status_filter)
-        
+
         # Paginate results
         paginator = Paginator(orders_query, limit)
         orders_page = paginator.get_page(page)
-        
+
         # Format orders data
         orders_data = []
         for order in orders_page:
@@ -1314,7 +1296,7 @@ class OrderListViewSet(viewsets.ViewSet):
                 'coupon_code': getattr(order, 'coupon_code', None),
                 'discount_amount': str(getattr(order, 'discount_amount', 0)),
             })
-        
+
         return Response({
             "success": True,
             "user_not_logged_in": False,
@@ -1330,7 +1312,7 @@ class OrderListViewSet(viewsets.ViewSet):
 
 
 class ActiveTimeSlotsViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):
@@ -1339,10 +1321,10 @@ class ActiveTimeSlotsViewSet(viewsets.ViewSet):
         """
         try:
             date_str = request.query_params.get('date')
-            
+
             # Get all active time slots
             time_slots = TimeSlot.objects.filter(is_active=True)
-            
+
             # Serialize the time slots
             time_slots_data = []
             for slot in time_slots:
@@ -1353,13 +1335,13 @@ class ActiveTimeSlotsViewSet(viewsets.ViewSet):
                     'end_time': slot.end_time,
                     'delivery_charges': slot.delivery_charges
                 })
-            
+
             return Response({
                 "success": True,
                 "data": time_slots_data,
                 "error": None
             }, status=200)
-            
+
         except Exception as e:
             return Response({
                 "success": False,
@@ -1369,7 +1351,7 @@ class ActiveTimeSlotsViewSet(viewsets.ViewSet):
 
 
 class AdminUpdateDeliveryDetailsViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def create(self, request):
@@ -1381,7 +1363,7 @@ class AdminUpdateDeliveryDetailsViewSet(viewsets.ViewSet):
             order_id = data.get('order_id')
             delivery_date = data.get('delivery_date')
             timeslot_id = data.get('timeslot_id')
-            
+
             # Validate the date is not in the past
             from datetime import date
             if delivery_date and date.fromisoformat(delivery_date) < date.today():
@@ -1390,24 +1372,24 @@ class AdminUpdateDeliveryDetailsViewSet(viewsets.ViewSet):
                     "data": None,
                     "error": "Delivery date cannot be in the past"
                 }, status=400)
-            
+
             # Get the order
             order = Order.objects.get(order_id=order_id)
-            
+
             # Update delivery details
             if delivery_date:
                 order.delivery_date = delivery_date
             if timeslot_id:
                 order.timeslot_id = timeslot_id
-            
+
             order.save()
-            
+
             return Response({
                 "success": True,
                 "data": None,
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -1440,18 +1422,18 @@ class AdminOrderListViewSet(viewsets.ViewSet):
         date_from = request.query_params.get('date_from', '')
         date_to = request.query_params.get('date_to', '')
         sort_by = request.query_params.get('sort_by', 'created_desc')
-        
+
         # Pagination parameters
         page = int(request.query_params.get('page', 1))
         per_page = int(request.query_params.get('per_page', 10))
-        
+
         # Export flag
         export = request.query_params.get('export', 'false').lower() == 'true'
         export_format = request.query_params.get('format', 'csv')
-        
+
         # Start with all orders
         orders_query = Order.objects.all()
-        
+
         # Apply filters
         if search:
             orders_query = orders_query.filter(
@@ -1461,31 +1443,31 @@ class AdminOrderListViewSet(viewsets.ViewSet):
                 Q(email__icontains=search) |
                 Q(phone__icontains=search)
             )
-        
+
         if confirmed is not None:
             orders_query = orders_query.filter(~Q(status="not_placed") & ~Q(status="cancelled"))
 
         if status:
             orders_query = orders_query.filter(status=status)
-        
+
         if payment_status:
             if payment_status == 'paid':
                 orders_query = orders_query.filter(payment_received=True)
             elif payment_status == 'pending':
                 orders_query = orders_query.filter(payment_received=False)
-        
+
         if payment_method:
             orders_query = orders_query.filter(payment_method=payment_method)
-        
+
         if delivery_date:
             orders_query = orders_query.filter(delivery_date=delivery_date)
-        
+
         if timeslot_id:
             orders_query = orders_query.filter(timeslot_id=timeslot_id)
-        
+
         if date_from and date_to:
             orders_query = orders_query.filter(created_at__range=[date_from, date_to])
-        
+
         # Apply sorting
         if sort_by == 'created_desc':
             orders_query = orders_query.order_by('-created_at')
@@ -1495,28 +1477,28 @@ class AdminOrderListViewSet(viewsets.ViewSet):
             orders_query = orders_query.order_by('-total_amount')
         elif sort_by == 'total_asc':
             orders_query = orders_query.order_by('total_amount')
-        
+
         # Get total count before pagination
         total_count = orders_query.count()
-        
+
         # Handle export if requested
         if export:
             return self.export_orders(orders_query, export_format)
-        
+
         # Calculate total pages
         total_pages = (total_count + per_page - 1) // per_page
-        
+
         # Apply pagination
         start = (page - 1) * per_page
         en = start + per_page
         paginated_orders = orders_query[start:en]
-        
+
         # Serialize orders
         serialized_orders = OrderSerializer(paginated_orders, many=True).data
-        
+
         # Get stats for dashboard
         stats = self.get_order_stats(orders_query)
-        
+
         return Response({
             "success": True,
             "data": {
@@ -1528,7 +1510,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
                 "stats": stats
             }
         })
-    
+
     def get_order_stats(self, orders_query):
         """
         Get order statistics for the dashboard
@@ -1572,7 +1554,7 @@ class AdminOrderListViewSet(viewsets.ViewSet):
 
 
 class AdminOrderBriefeViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):
@@ -1582,18 +1564,18 @@ class AdminOrderBriefeViewSet(viewsets.ViewSet):
         order_id = request.query_params.get('order_id')
         if not order_id:
             return Response({"success": False, "error": "Order ID is required"}, status=400)
-        
+
         try:
             order = Order.objects.get(order_id=order_id)
         except Order.DoesNotExist:
             return Response({"success": False, "error": "Order not found"}, status=404)
-        
+
         # Get order items
         order_items = OrderItem.objects.filter(order=order)
-        
+
         # Serialize order with items
         serialized_order = OrderDetailSerializer(order).data
-        
+
         return Response({
             "success": True,
             "data": serialized_order
@@ -1608,14 +1590,14 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
         if format == 'csv':
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = 'attachment; filename="orders_export.csv"'
-            
+
             writer = csv.writer(response)
             writer.writerow([
-                'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date', 
-                'Delivery Date', 'Timeslot', 'Status', 'Payment Method', 
+                'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date',
+                'Delivery Date', 'Timeslot', 'Status', 'Payment Method',
                 'Payment Status', 'Total Amount', 'Discount Amount', 'Coupon Code', 'Items'
             ])
-            
+
             for order in orders_query:
                 writer.writerow([
                     order.order_id,
@@ -1633,24 +1615,24 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
                     getattr(order, 'coupon_code', ''),
                     order.orderitem_set.count()
                 ])
-            
+
             return response
-        
+
         elif format == 'excel':
             output = BytesIO()
             workbook = xlsxwriter.Workbook(output)
             worksheet = workbook.add_worksheet()
-            
+
             # Add header row
             headers = [
-                'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date', 
-                'Delivery Date', 'Timeslot', 'Status', 'Payment Method', 
+                'Order ID', 'Customer Name', 'Email', 'Phone', 'Order Date',
+                'Delivery Date', 'Timeslot', 'Status', 'Payment Method',
                 'Payment Status', 'Total Amount', 'Discount Amount', 'Coupon Code', 'Items'
             ]
-            
+
             for col, header in enumerate(headers):
                 worksheet.write(0, col, header)
-            
+
             # Add data rows
             for row, order in enumerate(orders_query, start=1):
                 worksheet.write(row, 0, order.order_id)
@@ -1667,28 +1649,28 @@ class AdminExportOrdersViewSet(viewsets.ViewSet):
                 worksheet.write(row, 11, float(getattr(order, 'discount_amount', 0)))
                 worksheet.write(row, 12, getattr(order, 'coupon_code', ''))
                 worksheet.write(row, 13, order.orderitem_set.count())
-            
+
             workbook.close()
             output.seek(0)
-            
+
             response = HttpResponse(
                 output.read(),
                 content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
             response['Content-Disposition'] = 'attachment; filename="orders_export.xlsx"'
             return response
-        
+
         elif format == 'pdf':
             # PDF export would require a PDF library like ReportLab
             # This is a placeholder for future implementation
             return Response({"success": False, "error": "PDF export not implemented yet"}, status=501)
-        
+
         else:
             return Response({"success": False, "error": f"Invalid export format: {format}"}, status=400)
 
 
 class AdminOrderDetailViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def list(self, request):
@@ -1699,13 +1681,13 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
             order_id = request.query_params.get("order_id")
             order = Order.objects.get(order_id=order_id)
             order_items = OrderItem.objects.filter(order_id=order_id)
-            
+
             # Calculate totals
             subtotal = float(getattr(order, 'subtotal_amount', 0)) if hasattr(order, 'subtotal_amount') and order.subtotal_amount else sum(float(item.final_amount) for item in order_items)
             tax_amount = float(getattr(order, 'tax_amount', 0)) if hasattr(order, 'tax_amount') and order.tax_amount else subtotal * 0.18
             delivery_charge = float(order.delivery_charge) if order.delivery_charge else 0
             discount_amount = float(getattr(order, 'discount_amount', 0)) if hasattr(order, 'discount_amount') and order.discount_amount else 0
-            
+
             # Get delivery person name if assigned
             delivery_partner_name = None
             if order.assigned_delivery_partner_id:
@@ -1714,7 +1696,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                     delivery_partner_name = f"{delivery_person.first_name} {delivery_person.last_name}"
                 except User.DoesNotExist:
                     pass
-            
+
             # Get timeslot information
             timeslot_name = "Not specified"
             try:
@@ -1741,19 +1723,19 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                     'final_amount': float(item.final_amount),
                     'item_note': item.item_note or ""
                 })
-            
+
             order_data = {
                 'order_number': order.order_number,
                 'order_id': order.order_id,
                 'status': order.status,
                 'created_at': order.created_at.isoformat(),
-                
+
                 # Customer information
                 'first_name': order.first_name,
                 'last_name': order.last_name,
                 'email': order.email,
                 'phone': order.phone,
-                
+
                 # Delivery information
                 'delivery_date': order.delivery_date,
                 'delivery_address': order.delivery_address,
@@ -1775,7 +1757,7 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'billing_pincode': order.billing_pincode,
                 'billing_phone': order.billing_phone,
                 'billing_alternate_phone': order.billing_alternate_phone,
-                
+
                 # Order details
                 'total_amount': float(order.total_amount),
                 'subtotal': subtotal,
@@ -1783,29 +1765,29 @@ class AdminOrderDetailViewSet(viewsets.ViewSet):
                 'delivery_charge': delivery_charge,
                 'discount_amount': discount_amount,
                 'is_corporate': order.is_corporate,
-                
+
                 # Coupon details
                 'coupon_code': getattr(order, 'coupon_code', None),
                 'coupon_discount': float(getattr(order, 'coupon_discount', 0)),
-                
+
                 # Special instructions
                 'special_instructions': order.special_instructions or "",
                 'order_note': order.order_note or "",
-                
+
                 # Delivery person
                 'assigned_delivery_partner_id': order.assigned_delivery_partner_id,
                 'assigned_delivery_partner_name': delivery_partner_name,
                 'assigned_delivery_partner_commission': order.assigned_delivery_partner_commission,
-                
+
                 # Order items
                 'order_items': items_data,
-                
+
                 # Photos and extra cost
                 'delivery_photos': order.delivery_photos if order.delivery_photos else [],
                 'extra_cost': float(order.extra_cost or 0),
                 'transport_mode': order.transport_mode,
             }
-            
+
             return Response({
                 "success": True,
                 "data": order_data,
@@ -1899,13 +1881,13 @@ class AdminUpdateCorporateOrderViewSet(viewsets.ViewSet):
                 order_items = OrderItem.objects.filter(order_id=order_id)
                 if index < len(order_items):
                     order_item = order_items[index]
-                    
+
                     # Update the order item
                     order_item.amount = price
                     order_item.discount = discount
                     order_item.final_amount = (price * quantity) - discount
                     order_item.item_note = notes
-                    
+
                     order_item.save()
 
             # Save the order
@@ -1939,7 +1921,7 @@ class Old_AdminDeliveryPeronsViewSet(viewsets.ViewSet):
         """
         try:
             delivery_persons = User.objects.filter(is_active=True, role="admin").order_by('first_name')
-            
+
             persons_data = []
             for person in delivery_persons:
                 persons_data.append({
@@ -1957,7 +1939,7 @@ class Old_AdminDeliveryPeronsViewSet(viewsets.ViewSet):
                 },
                 "error": None
             }, status=200)
-            
+
         except Exception as e:
             return Response({
                 "success": False,
@@ -1977,26 +1959,26 @@ class AdminUpdateOrderStatusViewSet(viewsets.ViewSet):
             order_id = request.data.get('order_id')
             new_status = request.data.get('status')
             notes = request.data.get('notes', '')
-            
+
             if not order_id or not new_status:
                 return Response({
                     "success": False,
                     "data": None,
                     "error": "Order ID and status are required"
                 }, status=400)
-            
+
             order = Order.objects.get(order_id=order_id)
             order.status = new_status
-            
+
             # Add status change to order notes
             if notes:
                 existing_notes = order.order_note or ""
                 timestamp = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
                 new_note = f"\n[{timestamp}] Status changed to {new_status}: {notes}"
                 order.order_note = existing_notes + new_note
-            
+
             order.save()
-            
+
             return Response({
                 "success": True,
                 "data": {
@@ -2005,7 +1987,7 @@ class AdminUpdateOrderStatusViewSet(viewsets.ViewSet):
                 },
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -2018,7 +2000,7 @@ class AdminUpdateOrderStatusViewSet(viewsets.ViewSet):
                 "data": None,
                 "error": str(e)
             }, status=500)
-    
+
 
 class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
 
@@ -2032,25 +2014,25 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
             order_id = request.data.get('order_id')
             delivery_person_id = request.data.get('delivery_person_id')
             commission = request.data.get('commission', 0)
-            
+
             if not order_id or not delivery_person_id:
                 return Response({
                     "success": False,
                     "data": None,
                     "error": "Order ID and delivery person ID are required"
                 }, status=400)
-            
+
             # Verify order exists
             order = Order.objects.get(order_id=order_id)
-            
+
             # Verify delivery person exists
             delivery_person = User.objects.get(user_id=delivery_person_id)
-            
+
             # Assign delivery person
             order.assigned_delivery_partner_id = delivery_person_id
             order.assigned_delivery_partner_commission = commission
             order.save()
-            
+
             return Response({
                 "success": True,
                 "data": {
@@ -2061,7 +2043,7 @@ class AdminAssignDeliveryPartnerViewSet(viewsets.ViewSet):
                 },
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -2092,14 +2074,14 @@ class AdminUnAssignDeliveryPartnerViewSet(viewsets.ViewSet):
         """
         try:
             order_id = request.data.get('order_id')
-            
+
             if not order_id:
                 return Response({
                     "success": False,
                     "data": None,
                     "error": "Order ID and delivery person ID are required"
                 }, status=400)
-            
+
             # Verify order exists
             order = Order.objects.get(order_id=order_id)
 
@@ -2107,7 +2089,7 @@ class AdminUnAssignDeliveryPartnerViewSet(viewsets.ViewSet):
             order.assigned_delivery_partner_id = ''
             order.assigned_delivery_partner_commission = ''
             order.save()
-            
+
             return Response({
                 "success": True,
                 "data": {
@@ -2115,7 +2097,7 @@ class AdminUnAssignDeliveryPartnerViewSet(viewsets.ViewSet):
                 },
                 "error": None
             }, status=200)
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -2213,28 +2195,28 @@ class CODApprovalViewSet(viewsets.ViewSet):
 
 
 class GenerateInvoiceViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     def list(self, request):
         """
         Generate and download invoice PDF for a given order_id
         """
         order_id = request.query_params.get('order_id')
-        
+
         if not order_id:
             return Response({
                 "success": False,
                 "error": "Order ID is required"
             }, status=400)
-        
+
         try:
             # Get order details
             order = Order.objects.get(order_id=order_id)
             order_items = OrderItem.objects.filter(order_id=order_id)
-            
+
             # Generate PDF
             pdf_file = self.generate_invoice_pdf(order, order_items)
-            
+
             # Return PDF as download
             response = FileResponse(
                 open(pdf_file, 'rb'),
@@ -2242,17 +2224,17 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
                 filename=f'invoice_{order_id}.pdf',
                 content_type='application/pdf'
             )
-            
+
             # Clean up temporary file after response
             def cleanup():
                 try:
                     os.unlink(pdf_file)
                 except:
                     pass
-            
+
             response.close = cleanup
             return response
-            
+
         except Order.DoesNotExist:
             return Response({
                 "success": False,
@@ -2320,16 +2302,16 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
 
         sold_by_block = """
         <b>Sold By</b><br/>
-        AVRONSAA WEBFOODS PRIVATE LTD<br/>
-        Unit No. 210 2nd floor,<br/>
-        Mahim Industrial Estate,<br/>
-        Off Cadel Road Mahim,<br/>
-        Mumbai-400016<br/>
-        GST No: 27AAUCA4280D1ZI<br/>
-        FSSAI NO: 11521004000462<br/>
+        OVENFRESH<br/>
+        GROUND FLOOR, SHOP NO 2 AND 3,<br/>
+        KIRAN BUILDING, 68,<br/>
+        RANADE ROAD, DADAR WEST,<br/>
+        Mumbai City - 400028<br/>
+        GST No: 27AACFO1495R1ZK<br/>
+        FSSAI NO: 11524004000014<br/>
         State Name: Maharashtra, Code: 27<br/>
-        Contact: +91-8080-146666<br/>
-        Email: online@ovenfresh.in
+        Contact: +91-8433991502<br/>
+        Email: ovenfreshretail01@gmail.com
         """
 
         addr_table = Table(
@@ -2410,7 +2392,7 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
         # ---------------- Declaration ----------------
         declaration = """
         <b>Declaration:</b><br/>
-        We declare that this invoice shows the actual price of the foods described and that all particulars are true and correct. 
+        We declare that this invoice shows the actual price of the foods described and that all particulars are true and correct.
         All disputes subject to Mumbai jurisdiction only.
         """
         elements.append(Paragraph(declaration, normal))
@@ -2428,13 +2410,13 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
             ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine']
             teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen']
             tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety']
-            
+
             if number == 0:
                 return "Zero Rupees"
-            
+
             # Convert to integer (ignoring decimals for simplicity)
             num = int(number)
-            
+
             if num < 10:
                 return f"{ones[num]} Rupees"
             elif num < 20:
@@ -2447,13 +2429,13 @@ class GenerateInvoiceViewSet(viewsets.ViewSet):
                 return f"{self.number_to_words(num//1000)} Thousand {self.number_to_words(num%1000)}".replace(" Rupees", "").strip() + " Rupees"
             else:
                 return f"{self.number_to_words(num//100000)} Lakh {self.number_to_words(num%100000)}".replace(" Rupees", "").strip() + " Rupees"
-                
+
         except:
             return f"Rupees {number}"
 
 
 class AdminCreateOrderViewSet(viewsets.ViewSet):
-    
+
     @handle_exceptions
     @check_authentication(required_role="admin")
     def create(self, request):
@@ -2463,17 +2445,17 @@ class AdminCreateOrderViewSet(viewsets.ViewSet):
         try:
             with transaction.atomic():
                 data = request.data
-                
+
                 # Generate unique order ID
                 order_id = self.generate_unique_order_id()
-                
+
                 # Calculate discount
                 items_subtotal = sum(item['final_amount'] for item in data['items'])
                 delivery_charge = data.get('delivery_charge', 0)
                 calculated_total = items_subtotal + delivery_charge
                 final_amount = data['final_amount']
                 discount_amount = calculated_total - final_amount
-                
+
                 # Create order
                 order = Order.objects.create(
                     order_id=order_id,
@@ -2500,7 +2482,7 @@ class AdminCreateOrderViewSet(viewsets.ViewSet):
                     special_instructions=data.get('special_instructions', ''),
                     order_note=f"Admin created order. {data.get('order_note', '')}"
                 )
-                
+
                 # Create order items
                 for item_data in data['items']:
                     OrderItem.objects.create(
@@ -2512,7 +2494,7 @@ class AdminCreateOrderViewSet(viewsets.ViewSet):
                         discount=0,  # No item-level discount
                         final_amount=item_data['final_amount']
                     )
-                
+
                 return Response({
                     "success": True,
                     "data": {
@@ -2523,14 +2505,14 @@ class AdminCreateOrderViewSet(viewsets.ViewSet):
                     },
                     "error": None
                 }, status=201)
-                
+
         except Exception as e:
             return Response({
                 "success": False,
                 "data": None,
                 "error": str(e)
             }, status=400)
-    
+
     def generate_unique_order_id(self):
         """Generate unique 10-digit order ID"""
         while True:
